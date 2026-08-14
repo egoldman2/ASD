@@ -1,4 +1,4 @@
-const PRODUCTS_API_URL = "http://localhost:5001/api/products";
+const PRODUCTS_API_URL = "http://localhost:5000/api/products";
 
 const productGrid = document.querySelector("#productGrid");
 const searchForm = document.querySelector("#searchForm");
