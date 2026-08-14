@@ -10,3 +10,10 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_products_name_unique
 ON products (LOWER(TRIM(name)));
+
+CREATE TABLE IF NOT EXISTS cart_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL UNIQUE,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);

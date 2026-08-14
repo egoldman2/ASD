@@ -115,6 +115,10 @@ body {
   margin-bottom: 2rem;
 }
 
+.catalogueHero--compact {
+  min-height: 190px;
+}
+
 .sectionEyebrow {
   margin-bottom: 0.85rem;
   color: #1d5b9e;
@@ -160,29 +164,34 @@ body {
   color: #4a627a;
 }
 
-.addProductButton,
-.primaryButton,
-.secondaryButton {
+.cartLink {
   min-height: 42px;
   padding: 0.65rem 1rem;
-  border-radius: 6px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.addProductButton,
-.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid #1d5b9e;
+  border-radius: 6px;
   background: #1d5b9e;
   color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
 }
 
-.addProductButton:hover,
-.addProductButton:focus-visible,
-.primaryButton:hover,
-.primaryButton:focus-visible {
+.cartLink:hover,
+.cartLink:focus-visible {
   background: #164777;
+}
+
+.cartLink--secondary {
+  background: #ffffff;
+  color: #1d5b9e;
+}
+
+.cartLink--secondary:hover,
+.cartLink--secondary:focus-visible {
+  background: #edf4f9;
 }
 
 .productSearch {
@@ -238,99 +247,6 @@ body {
   border: 0;
 }
 
-.addProductForm {
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
-  border: 1px solid #c9ddec;
-  border-radius: 8px;
-  background: #ffffff;
-}
-
-.addProductForm[hidden] {
-  display: none;
-}
-
-.formHeader {
-  margin-bottom: 1.25rem;
-}
-
-.formHeader h3 {
-  color: #0b2545;
-  font-size: 1.35rem;
-}
-
-.formGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem 1.25rem;
-}
-
-.formField {
-  display: grid;
-  gap: 0.45rem;
-  color: #2c3e5c;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.formField--full {
-  grid-column: 1 / -1;
-}
-
-.formField input,
-.formField select,
-.formField textarea {
-  width: 100%;
-  padding: 0.7rem 0.8rem;
-  border: 1px solid #afc6d9;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #1e2f4d;
-  font: inherit;
-  font-weight: 400;
-}
-
-.formField textarea {
-  resize: vertical;
-}
-
-.formField input:focus,
-.formField select:focus,
-.formField textarea:focus {
-  border-color: #1d5b9e;
-  outline: 3px solid rgba(29, 91, 158, 0.16);
-}
-
-.formActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-}
-
-.secondaryButton {
-  border: 1px solid #afc6d9;
-  background: #ffffff;
-  color: #2c3e5c;
-}
-
-.secondaryButton:hover,
-.secondaryButton:focus-visible {
-  background: #edf4f9;
-}
-
-.primaryButton:disabled {
-  opacity: 0.65;
-  cursor: wait;
-}
-
-.formMessage {
-  min-height: 1.25rem;
-  margin-top: 0.8rem;
-  color: #a33a2b;
-  font-size: 0.9rem;
-}
-
 .catalogueNotice {
   margin-bottom: 1.5rem;
   padding: 0.8rem 1rem;
@@ -338,6 +254,12 @@ body {
   border-radius: 6px;
   background: #e5f5ec;
   color: #176b3a;
+}
+
+.catalogueNotice--error {
+  border-color: #efc0ba;
+  background: #fbe9e7;
+  color: #a33a2b;
 }
 
 .catalogueNotice[hidden] {
@@ -416,22 +338,34 @@ body {
   font-size: 0.9rem;
 }
 
-.productCardActions {
+.purchaseControls,
+.cartActions {
   margin-top: 1rem;
   padding-top: 1rem;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.75rem;
   border-top: 1px solid #eef2f6;
 }
 
-.editButton,
-.deleteButton,
-.cancelDeleteButton,
-.confirmDeleteButton {
+.quantitySelector {
+  height: 40px;
+  display: grid;
+  grid-template-columns: 38px 42px 38px;
+  align-items: stretch;
+  border: 1px solid #afc6d9;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.quantityButton,
+.addToCartButton,
+.updateCartButton,
+.removeCartButton {
   min-height: 38px;
   padding: 0.55rem 0.8rem;
+  border: 1px solid transparent;
   border-radius: 6px;
   font: inherit;
   font-size: 0.88rem;
@@ -439,80 +373,135 @@ body {
   cursor: pointer;
 }
 
-.editButton {
-  border: 1px solid #8eb2d0;
+.quantityButton {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background: #ffffff;
   color: #1d5b9e;
+  font-size: 1.1rem;
 }
 
-.editButton:hover,
-.editButton:focus-visible {
+.quantityButton:hover,
+.quantityButton:focus-visible {
   background: #edf4f9;
 }
 
-.deleteButton {
-  border: 1px solid #d8877c;
+.quantityValue {
+  display: grid;
+  place-items: center;
+  border-right: 1px solid #d5e2ec;
+  border-left: 1px solid #d5e2ec;
   background: #ffffff;
-  color: #a33a2b;
-}
-
-.deleteButton:hover,
-.deleteButton:focus-visible {
-  background: #fbe9e7;
-}
-
-.deleteConfirmation {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.deleteConfirmation[hidden] {
-  display: none;
-}
-
-.deletePrompt,
-.deleteError {
-  width: 100%;
-  font-size: 0.88rem;
-}
-
-.deletePrompt {
-  color: #2c3e5c;
+  color: #0b2545;
   font-weight: 700;
 }
 
-.deleteError {
-  color: #a33a2b;
-}
-
-.cancelDeleteButton {
-  border: 1px solid #afc6d9;
-  background: #ffffff;
-  color: #2c3e5c;
-}
-
-.cancelDeleteButton:hover,
-.cancelDeleteButton:focus-visible {
-  background: #edf4f9;
-}
-
-.confirmDeleteButton {
-  border: 1px solid #a33a2b;
-  background: #a33a2b;
+.addToCartButton,
+.updateCartButton {
+  border-color: #1d5b9e;
+  background: #1d5b9e;
   color: #ffffff;
 }
 
-.confirmDeleteButton:hover,
-.confirmDeleteButton:focus-visible {
-  background: #842f23;
+.addToCartButton:hover,
+.addToCartButton:focus-visible,
+.updateCartButton:hover,
+.updateCartButton:focus-visible {
+  background: #164777;
 }
 
-.confirmDeleteButton:disabled {
-  opacity: 0.65;
-  cursor: wait;
+.quantityButton:disabled,
+.addToCartButton:disabled,
+.updateCartButton:disabled,
+.removeCartButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cardNotice {
+  width: 100%;
+  min-height: 1.2rem;
+  color: #176b3a;
+  font-size: 0.88rem;
+}
+
+.cardNotice--error {
+  color: #a33a2b;
+}
+
+.cartCard {
+  min-height: 310px;
+}
+
+.cartPriceDetails {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #2c3e5c;
+  font-size: 0.9rem;
+}
+
+.cartPriceDetails strong {
+  color: #1d5b9e;
+  font-size: 1.05rem;
+}
+
+.cartQuantityField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2c3e5c;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.cartQuantityField input {
+  width: 68px;
+  min-height: 38px;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #afc6d9;
+  border-radius: 6px;
+  color: #0b2545;
+  font: inherit;
+}
+
+.cartQuantityField input:focus {
+  border-color: #1d5b9e;
+  outline: 3px solid rgba(29, 91, 158, 0.16);
+}
+
+.removeCartButton {
+  border-color: #d8877c;
+  background: #ffffff;
+  color: #a33a2b;
+}
+
+.removeCartButton:hover,
+.removeCartButton:focus-visible {
+  background: #fbe9e7;
+}
+
+.cartSummary {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 2px solid #1d5b9e;
+  background: #ffffff;
+  color: #4a627a;
+}
+
+.cartSummary[hidden] {
+  display: none;
+}
+
+.cartSummary strong {
+  color: #0b2545;
+  font-size: 1.35rem;
 }
 
 .productMessage {
@@ -575,11 +564,9 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .formGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .formField--full {
-    grid-column: auto;
+  .cartSummary,
+  .cartPriceDetails {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Product Catalogue | ASD 2026</title>
+    <title>My Cart | ASD 2026</title>
     <link rel="stylesheet" href="css/styles.css?v=8">
-    <script src="js/products.js?v=8" defer></script>
+    <script src="js/cart.js?v=1" defer></script>
   </head>
   <body>
     <header class="navbar">
@@ -27,34 +27,26 @@
     </header>
 
     <main class="cataloguePage">
-      <section class="catalogueHero">
+      <section class="catalogueHero catalogueHero--compact">
         <div>
           <p class="sectionEyebrow">Product Catalogue</p>
-          <h1>Discover products for smarter shopping</h1>
+          <h1>My Cart</h1>
         </div>
       </section>
 
-      <section class="productSection" aria-label="Featured products">
+      <section class="productSection" aria-label="Shopping cart">
         <div class="sectionHeader">
-          <h2>Featured Products</h2>
-          <a class="cartLink" href="cart.html">My Cart</a>
+          <h2>Cart Items</h2>
+          <a class="cartLink cartLink--secondary" href="index.html">Continue Shopping</a>
         </div>
-        <form id="searchForm" class="productSearch" role="search">
-          <label for="searchInput" class="visuallyHidden">Search products by name</label>
-          <input
-            id="searchInput"
-            class="searchInput"
-            type="search"
-            name="search"
-            placeholder="Search by product name"
-            autocomplete="off"
-          >
-          <button class="searchButton" type="submit">Search</button>
-        </form>
-        <p id="catalogueNotice" class="catalogueNotice" aria-live="polite" hidden></p>
-        <div id="productGrid" class="productGrid" aria-live="polite">
-          <p class="productMessage">Loading products...</p>
+        <p id="cartNotice" class="catalogueNotice" aria-live="polite" hidden></p>
+        <div id="cartGrid" class="productGrid" aria-live="polite">
+          <p class="productMessage">Loading your cart...</p>
         </div>
+        <section id="cartSummary" class="cartSummary" aria-label="Cart total" hidden>
+          <span id="cartItemCount">0 items</span>
+          <strong id="cartTotal">Total: $0.00</strong>
+        </section>
       </section>
     </main>
 
