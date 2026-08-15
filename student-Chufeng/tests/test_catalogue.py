@@ -84,3 +84,71 @@ def test_delete_cart_item(client):
     assert deleted.json["item"]["name"] == item["name"]
     assert deleted_again.status_code == 404
     assert client.get("/api/cart-items").json["count"] == 9
+
+
+def test_ai_product_assistant_is_read_only(client, monkeypatch):
+    ai_controller = import_module(
+        "student-Chufeng.backend.controllers.ai_controller"
+    )
+    prompts = []
+
+    def fake_ollama(prompt):
+        prompts.append(prompt)
+        return (
+            "This balanced selection supports everyday listening, entertainment, "
+            "and productive work."
+        )
+
+    monkeypatch.setattr(ai_controller, "_call_ollama", fake_ollama)
+    products_before = client.get("/api/products").json["count"]
+    cart_before = client.get("/api/cart-items").json
+
+    response = client.post(
+        "/api/ai/product-assistant",
+        json={
+            "message": (
+                "I have a $500 budget. Can you recommend a combination "
+                "of electronic products?"
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json["model"] == "qwen2.5:0.5b"
+    assert "$471.50" in response.json["answer"]
+    assert set(response.json["workflow"]) == {"plan", "act", "observe", "adapt"}
+    assert "Wireless Earbuds" in prompts[0]
+    assert "Mechanical Keyboard" in prompts[0]
+    assert "Fitness Watch" not in prompts[0]
+    assert "backend selected the supplied product combination" in prompts[0]
+    assert client.get("/api/products").json["count"] == products_before
+    assert client.get("/api/cart-items").json == cart_before
+
+
+def test_ai_product_assistant_requires_question(client):
+    response = client.post(
+        "/api/ai/product-assistant",
+        json={"message": "   "},
+    )
+
+    assert response.status_code == 400
+    assert response.json["error"] == "A product question is required."
+
+
+def test_ai_product_assistant_handles_unavailable_model(client, monkeypatch):
+    ai_controller = import_module(
+        "student-Chufeng.backend.controllers.ai_controller"
+    )
+
+    def unavailable_ollama(_prompt):
+        raise ai_controller.OllamaUnavailableError
+
+    monkeypatch.setattr(ai_controller, "_call_ollama", unavailable_ollama)
+
+    response = client.post(
+        "/api/ai/product-assistant",
+        json={"message": "Recommend an electronic product combination."},
+    )
+
+    assert response.status_code == 503
+    assert response.json["error"] == "The AI assistant is currently unavailable."

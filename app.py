@@ -23,8 +23,12 @@ def create_app():
     cart_routes = import_module(
         "student-Chufeng.backend.routes.cart_routes"
     )
+    ai_routes = import_module(
+        "student-Chufeng.backend.routes.ai_routes"
+    )
     app.register_blueprint(product_routes.product_blueprint)
     app.register_blueprint(cart_routes.cart_blueprint)
+    app.register_blueprint(ai_routes.ai_blueprint)
 
     @app.after_request
     def allow_frontend_requests(response):

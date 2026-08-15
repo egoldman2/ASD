@@ -236,6 +236,101 @@ body {
   background: #164777;
 }
 
+.aiMode {
+  margin: 0.5rem 0 2rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid #c9ddec;
+  border-bottom: 1px solid #c9ddec;
+}
+
+.aiModeHeader {
+  margin-bottom: 1rem;
+}
+
+.aiModeHeader .sectionEyebrow {
+  margin-bottom: 0.35rem;
+}
+
+.aiModeHeader h3 {
+  color: #0b2545;
+  font-size: 1.35rem;
+}
+
+.aiForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.aiField {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.aiField label {
+  color: #2c3e5c;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.aiField textarea {
+  width: 100%;
+  min-height: 82px;
+  padding: 0.75rem 0.9rem;
+  resize: vertical;
+  border: 1px solid #afc6d9;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e2f4d;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.aiField textarea:focus {
+  border-color: #1d5b9e;
+  outline: 3px solid rgba(29, 91, 158, 0.16);
+}
+
+.askAiButton {
+  min-width: 104px;
+  min-height: 46px;
+  padding: 0.7rem 1.25rem;
+  border: 0;
+  border-radius: 6px;
+  background: #176b3a;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.askAiButton:hover,
+.askAiButton:focus-visible {
+  background: #11542d;
+}
+
+.askAiButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.aiResponseField {
+  margin-top: 1rem;
+}
+
+.aiResponseField textarea {
+  min-height: 120px;
+  resize: vertical;
+  background: #f8fbfd;
+}
+
+.aiResponseField textarea.aiOutput--error {
+  border-color: #d8877c;
+  background: #fbe9e7;
+  color: #a33a2b;
+}
+
 .visuallyHidden {
   position: absolute;
   width: 1px;
@@ -562,6 +657,14 @@ body {
 
   .productSearch {
     grid-template-columns: 1fr;
+  }
+
+  .aiForm {
+    grid-template-columns: 1fr;
+  }
+
+  .askAiButton {
+    width: 100%;
   }
 
   .cartSummary,

@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Product Catalogue | ASD 2026</title>
-    <link rel="stylesheet" href="css/styles.css?v=8">
-    <script src="js/products.js?v=8" defer></script>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/styles.css?v=9">
+    <script src="js/products.js?v=9" defer></script>
   </head>
   <body>
     <header class="navbar">
@@ -51,6 +52,31 @@
           >
           <button class="searchButton" type="submit">Search</button>
         </form>
+
+        <section class="aiMode" aria-labelledby="aiModeTitle">
+          <div class="aiModeHeader">
+            <p class="sectionEyebrow">AI Mode</p>
+            <h3 id="aiModeTitle">AI Product Assistant</h3>
+          </div>
+          <form id="aiForm" class="aiForm">
+            <div class="aiField">
+              <label for="aiQuestion">Your product question</label>
+              <textarea id="aiQuestion" name="message" rows="3" maxlength="500">I have a $500 budget. Can you recommend a combination of electronic products?</textarea>
+            </div>
+            <button id="askAiButton" class="askAiButton" type="submit">Ask AI</button>
+          </form>
+          <div class="aiField aiResponseField">
+            <label for="aiOutput">AI response</label>
+            <textarea
+              id="aiOutput"
+              rows="5"
+              placeholder="The AI response will appear here."
+              aria-live="polite"
+              readonly
+            ></textarea>
+          </div>
+        </section>
+
         <p id="catalogueNotice" class="catalogueNotice" aria-live="polite" hidden></p>
         <div id="productGrid" class="productGrid" aria-live="polite">
           <p class="productMessage">Loading products...</p>

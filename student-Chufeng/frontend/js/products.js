@@ -1,10 +1,15 @@
 const PRODUCTS_API_URL = "http://localhost:5000/api/products";
 const CART_API_URL = "http://localhost:5000/api/cart-items";
+const AI_API_URL = "http://localhost:5000/api/ai/product-assistant";
 
 const productGrid = document.querySelector("#productGrid");
 const searchForm = document.querySelector("#searchForm");
 const searchInput = document.querySelector("#searchInput");
 const catalogueNotice = document.querySelector("#catalogueNotice");
+const aiForm = document.querySelector("#aiForm");
+const aiQuestion = document.querySelector("#aiQuestion");
+const aiOutput = document.querySelector("#aiOutput");
+const askAiButton = document.querySelector("#askAiButton");
 
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-AU", {
@@ -26,6 +31,13 @@ function showCatalogueNotice(text, isError = false) {
   catalogueNotice.textContent = text;
   catalogueNotice.classList.toggle("catalogueNotice--error", isError);
   catalogueNotice.hidden = false;
+}
+
+function showAiOutput(text, isError = false) {
+  aiOutput.value = text;
+  aiOutput.classList.toggle("aiOutput--error", isError);
+  aiOutput.style.height = "auto";
+  aiOutput.style.height = `${aiOutput.scrollHeight}px`;
 }
 
 function createProductCard(product) {
@@ -182,6 +194,42 @@ searchForm.addEventListener("submit", (event) => {
   event.preventDefault();
   catalogueNotice.hidden = true;
   loadProducts(searchInput.value.trim());
+});
+
+aiForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const message = aiQuestion.value.trim();
+
+  if (!message) {
+    showAiOutput("Please enter a product question.", true);
+    return;
+  }
+
+  askAiButton.disabled = true;
+  askAiButton.textContent = "Thinking...";
+  showAiOutput("The AI assistant is reviewing the available products...");
+
+  try {
+    const response = await fetch(AI_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Unable to get an AI response.");
+    }
+
+    showAiOutput(data.answer);
+  } catch (error) {
+    console.error("Unable to use the AI product assistant:", error);
+    showAiOutput(error.message, true);
+  } finally {
+    askAiButton.disabled = false;
+    askAiButton.textContent = "Ask AI";
+  }
 });
 
 loadProducts();

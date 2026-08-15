@@ -22,5 +22,8 @@ services:
       dockerfile: shared/Dockerfile.backend
     ports:
       - "5000:5000"
+    environment:
+      OLLAMA_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: qwen2.5:0.5b
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
