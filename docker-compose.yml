@@ -1,0 +1,26 @@
+services:
+  shared-home:
+    image: nginx:1.27-alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./shared:/usr/share/nginx/html:ro
+
+  product-catalogue:
+    build:
+      context: .
+      dockerfile: student-Chufeng/Dockerfile
+      target: frontend
+    ports:
+      - "8001:80"
+    depends_on:
+      - shared-backend
+
+  shared-backend:
+    build:
+      context: .
+      dockerfile: shared/Dockerfile.backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./student-Chufeng/database:/app/student-Chufeng/database
