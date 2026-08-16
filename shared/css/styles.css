@@ -141,54 +141,6 @@ body {
   line-height: 1.7;
 }
 
-.heroActions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 2rem;
-}
-
-.primaryButton,
-.secondaryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0.8rem 1.4rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-
-.primaryButton {
-  border: 2px solid #1d5b9e;
-  background: #1d5b9e;
-  color: #ffffff;
-}
-
-.secondaryButton {
-  border: 2px solid #1d5b9e;
-  background: #ffffff;
-  color: #1d5b9e;
-}
-
-.primaryButton:hover,
-.secondaryButton:hover {
-  transform: translateY(-2px);
-}
-
-.primaryButton:hover {
-  background: #0b2545;
-  border-color: #0b2545;
-}
-
-.secondaryButton:hover {
-  background: #1d5b9e;
-  color: #ffffff;
-}
-
 .marketPreview {
   overflow: hidden;
   border: 1px solid #d7e4ef;
