@@ -1,6 +1,10 @@
-@"
 __pycache__/
 *.py[cod]
-*.db
+.pytest_cache/
 .venv/
-"@ | Set-Content .gitignore
+venv/
+.vscode/
+
+# Ignore local SQLite databases except the seeded Release 0 catalogue.
+*.db
+!student-Chufeng/database/products.db
