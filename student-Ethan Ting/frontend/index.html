@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Sign In | ASD 2026</title>
+
+    <link rel="icon" href="data:,">
+    <link
+      rel="stylesheet"
+      href="http://localhost:8000/css/styles.css"
+    >
+    <link rel="stylesheet" href="css/login.css">
+
+    <script src="js/login.js" defer></script>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <div class="navContainer">
+        <div class="navLogo">
+          <a href="http://localhost:8000" class="logoLink">
+            <span class="logoMain">ASD 2026</span>
+          </a>
+        </div>
+
+        <nav class="navLinks" aria-label="Main navigation">
+          <a href="http://localhost:8001" class="navLink">
+            Product Catalogue
+          </a>
+
+          <a href="http://localhost:8002" class="navLink">
+            Inventory Management
+          </a>
+
+          <a href="index.html" class="navLink">
+            Customer & Loyalty
+          </a>
+
+          <a href="http://localhost:8004" class="navLink">
+            Order & Returns
+          </a>
+
+          <a href="http://localhost:8005" class="navLink">
+            Customer Support
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="loginPage">
+      <section class="loginCard" aria-labelledby="loginTitle">
+        <p class="loginEyebrow">Customer & Loyalty</p>
+
+        <h1 id="loginTitle">Sign in to your account</h1>
+
+        <p class="loginDescription">
+          Enter your account details to continue.
+        </p>
+
+        <form id="loginForm" class="loginForm">
+          <div class="formField">
+            <label for="email">Email address</label>
+
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="username"
+              required
+            >
+          </div>
+
+          <div class="formField">
+            <label for="password">Password</label>
+
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <button id="loginButton" type="submit">
+            Sign in
+          </button>
+
+          <p
+            id="loginMessage"
+            class="loginMessage"
+            aria-live="polite"
+          ></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="footer">
+      asd(2026)-group7
+    </footer>
+  </body>
+</html>
