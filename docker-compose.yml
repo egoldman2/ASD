@@ -28,14 +28,10 @@ services:
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
 
-  order-returns-backend:
+  order-returns-frontend:
     build:
       context: .
       dockerfile: student-Howard/Dockerfile
+      target: frontend
     ports:
-      - "5003:5001"
-    environment:
-      OLLAMA_URL: http://host.docker.internal:11434
-      OLLAMA_MODEL: qwen2.5:0.5b
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "8004:80"

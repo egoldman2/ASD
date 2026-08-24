@@ -6,9 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order &amp; Returns Management</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <link rel="stylesheet" href="../../shared/css/styles.css">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css">
     <style>
-        /* Feature-specific styles, using the shared theme's palette */
         .featurePage {
             width: min(1200px, calc(100% - 4rem));
             margin: 0 auto;
@@ -32,7 +31,7 @@
             padding: 1.2rem;
             border: 1px solid #eef2f6;
             border-radius: 12px;
-            background: #ffffff;
+            background: #fff;
             box-shadow: 0 20px 25px -10px rgba(0, 40, 70, 0.10);
             margin-bottom: 1.5rem;
         }
@@ -60,7 +59,7 @@
             color: #2c3e5c;
         }
 
-        button {
+        .actionBtn {
             cursor: pointer;
             padding: 0.5rem 1.1rem;
             border: none;
@@ -69,10 +68,9 @@
             color: #fff;
             font-size: 0.95rem;
             font-weight: 500;
-            transition: opacity 0.2s ease;
         }
 
-        button:hover {
+        .actionBtn:hover {
             opacity: 0.85;
         }
 
@@ -98,52 +96,56 @@
 </head>
 
 <body>
-    <nav class="navbar">
+    <header class="navbar">
         <div class="navContainer">
             <div class="navLogo">
-                <a href="../../shared/frontend/index.html" class="logoLink">
-                    <span class="logoMain">RetailAssist AI</span>
+                <a href="http://localhost:8000" class="logoLink">
+                    <span class="logoMain">ASD 2026</span>
                 </a>
             </div>
-            <div class="navLinks">
-                <a href="../../shared/frontend/index.html" class="navLink">Home</a>
-                <a href="#orders" class="navLink">Orders</a>
-                <a href="#returns" class="navLink">Returns</a>
-            </div>
+            <nav class="navLinks" aria-label="Main navigation">
+                <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
+                <a href="http://localhost:8002" class="navLink">Inventory Management</a>
+                <a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a>
+                <a href="http://localhost:8004" class="navLink">Order &amp; Returns</a>
+                <a href="http://localhost:8005" class="navLink">Customer Support</a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
     <main class="featurePage">
         <h1>Order &amp; Returns Management</h1>
 
         <h2 id="orders">Orders</h2>
         <div class="card">
-            <button hx-get="http://localhost:5001/orders/html" hx-target="#orders-table">Load orders</button>
+            <button class="actionBtn" hx-get="http://localhost:5000/api/order-returns/orders/html"
+                hx-target="#orders-table">Load Orders</button>
             <div id="orders-table" style="margin-top:1rem;"></div>
         </div>
 
         <h2 id="returns">Returns</h2>
         <div class="card">
-            <button hx-get="http://localhost:5001/returns/html" hx-target="#returns-table">Load returns</button>
+            <button class="actionBtn" hx-get="http://localhost:5000/api/order-returns/returns/html"
+                hx-target="#returns-table">Load Returns</button>
             <div id="returns-table" style="margin-top:1rem;"></div>
         </div>
 
         <h2>AI Return Advice</h2>
         <div class="card">
             <input type="number" id="ret-id" placeholder="Return ID" min="1">
-            <button onclick="getAdvice()">Ask AI</button>
+            <button class="actionBtn" onclick="getAdvice()">Ask AI</button>
             <div id="advice" class="ai-box"></div>
         </div>
     </main>
 
     <footer class="footer">
-        RetailAssist AI — Order &amp; Returns Management (Howard)
+        ASD 2026 &mdash; Order &amp; Returns Management (Howard)
     </footer>
 
     <script>
         function getAdvice() {
             const id = document.getElementById('ret-id').value;
-            fetch(`http://localhost:5001/returns/${id}/advice`)
+            fetch(`http://localhost:5000/api/order-returns/returns/${id}/advice`)
                 .then(r => r.json())
                 .then(d => {
                     document.getElementById('advice').textContent =
