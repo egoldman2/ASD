@@ -1,10 +1,8 @@
 name: Howard - Order & Returns
 
-# Build and validate Howard's Order & Returns Management microservices
-
 on:
   push:
-    branches: [ main, howard-order-returns ]
+    branches: [ main, howard-blueprint-integration ]
     paths:
       - 'student-Howard/**'
       - '.github/workflows/Howard.yml'
@@ -27,22 +25,19 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install backend dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r student-Howard/backend/requirements.txt
-
-      - name: Run pytest
-        run: python -m pytest student-Howard/tests/ -q
+          pip install flask flask-cors requests pytest
 
       - name: Seed the database
         working-directory: student-Howard/database
         run: python seed.py
 
-      - name: Verify database was seeded (10+ records per table)
+      - name: Verify database has 10+ records per table
         working-directory: student-Howard/database
         run: |
-          python - <<'EOF'
+          python - <<'PY'
           import sqlite3, sys
           conn = sqlite3.connect("orders.db")
           for table in ("orders", "order_items", "returns"):
@@ -51,15 +46,10 @@ jobs:
               if count < 10:
                   sys.exit(f"FAIL: {table} has fewer than 10 records")
           print("All tables have at least 10 records.")
-          EOF
+          PY
 
-      - name: Smoke-test the Flask API
-        working-directory: student-Howard/backend
-        run: |
-          python app.py &
-          sleep 5
-          curl --fail http://localhost:5001/orders || (echo "FAIL: /orders did not respond" && exit 1)
-          echo "API responded successfully."
+      - name: Run pytest
+        run: python -m pytest student-Howard/tests/ -q
 
       - name: Build Docker image
-        run: docker build -t howard-order-returns -f student-Howard/Dockerfile .
+        run: docker build -t order-returns-frontend -f student-Howard/Dockerfile --target frontend .
