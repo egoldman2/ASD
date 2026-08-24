@@ -59,4 +59,4 @@ jobs:
           echo "API responded successfully."
 
       - name: Build Docker image
-        run: docker build -t howard-order-returns student-Howard/
+        run: docker build -t howard-order-returns -f student-Howard/Dockerfile .

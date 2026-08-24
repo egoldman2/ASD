@@ -2,7 +2,7 @@ import sqlite3, os
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-DB = os.path.join(os.path.dirname(__file__), "..", "database", "orders.db")
+DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "database", "orders.db")
 
 def get_db():
   conn = sqlite3.connect(DB)
