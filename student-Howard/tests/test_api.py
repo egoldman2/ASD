@@ -2,16 +2,19 @@ import os
 import sqlite3
 import sys
 import pytest
+from flask import Flask
 
-# Make the backend importable
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
-import app as flask_app  # noqa: E402
+# Make the blueprint importable
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend", "routes"))
+from order_routes import order_blueprint  # noqa: E402
 
 
 @pytest.fixture
 def client():
-    flask_app.app.config["TESTING"] = True
-    with flask_app.app.test_client() as c:
+    app = Flask(__name__)
+    app.register_blueprint(order_blueprint)
+    app.config["TESTING"] = True
+    with app.test_client() as c:
         yield c
 
 
@@ -28,7 +31,7 @@ def test_database_has_minimum_records():
 
 # ---------- Read ----------
 def test_list_orders(client):
-    resp = client.get("/orders")
+    resp = client.get("/api/order-returns/orders")
     assert resp.status_code == 200
     data = resp.get_json()
     assert isinstance(data, list)
@@ -36,7 +39,7 @@ def test_list_orders(client):
 
 
 def test_get_single_order_with_items(client):
-    resp = client.get("/orders/1")
+    resp = client.get("/api/order-returns/orders/1")
     assert resp.status_code == 200
     data = resp.get_json()
     assert data["order_id"] == 1
@@ -44,19 +47,19 @@ def test_get_single_order_with_items(client):
 
 
 def test_get_missing_order_returns_404(client):
-    resp = client.get("/orders/99999")
+    resp = client.get("/api/order-returns/orders/99999")
     assert resp.status_code == 404
 
 
 def test_list_returns(client):
-    resp = client.get("/returns")
+    resp = client.get("/api/order-returns/returns")
     assert resp.status_code == 200
     assert len(resp.get_json()) >= 10
 
 
 # ---------- Create ----------
 def test_create_order(client):
-    resp = client.post("/orders", json={
+    resp = client.post("/api/order-returns/orders", json={
         "customer_id": 500,
         "order_date": "2026-08-24",
         "total": 42.0
@@ -66,7 +69,7 @@ def test_create_order(client):
 
 
 def test_create_return(client):
-    resp = client.post("/returns", json={
+    resp = client.post("/api/order-returns/returns", json={
         "order_id": 1,
         "reason": "test reason",
         "created_at": "2026-08-24"
@@ -77,12 +80,14 @@ def test_create_return(client):
 
 # ---------- Status change (separate from CRUD) ----------
 def test_update_order_status(client):
-    resp = client.patch("/orders/1/status", json={"status": "shipped"})
+    resp = client.patch("/api/order-returns/orders/1/status", json={"status": "shipped"})
     assert resp.status_code == 200
     assert resp.get_json()["status"] == "shipped"
 
 
 def test_update_return_status(client):
-    resp = client.patch("/returns/13/status", json={"status": "approved"})
+    resp = client.get("/api/order-returns/returns")
+    return_id = resp.get_json()[0]["return_id"]
+    resp = client.patch(f"/api/order-returns/returns/{return_id}/status", json={"status": "approved"})
     assert resp.status_code == 200
     assert resp.get_json()["status"] == "approved"
