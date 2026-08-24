@@ -93,5 +93,48 @@ def update_return_status(return_id):
     conn.close()
     return jsonify({"return_id": return_id, "status": d["status"]})
 
+import requests
+
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434") + "/api/generate"
+MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:0.5b")
+
+def ask_ollama(prompt):
+    resp = requests.post(OLLAMA_URL, json={
+        "model": MODEL,
+        "prompt": prompt,
+        "stream": False
+    })
+    resp.raise_for_status()
+    return resp.json()["response"].strip()
+
+@app.route("/returns/<int:return_id>/advice", methods=["GET"])
+def return_advice(return_id):
+    conn = get_db()
+    ret = conn.execute("SELECT * FROM returns WHERE return_id=?", (return_id,)).fetchone()
+    if ret is None:
+        conn.close()
+        return jsonify({"error": "not found"}), 404
+    order = conn.execute("SELECT * FROM orders WHERE order_id=?", (ret["order_id"],)).fetchone()
+    conn.close()
+
+    prompt = (
+        "You are a retail customer-service assistant. "
+        "Summarise the order problem and recommend the next action. "
+        "Do NOT change any status yourself — only advise.\n\n"
+        f"Return reason: {ret['reason']}\n"
+        f"Current return status: {ret['status']}\n"
+        f"Order status: {order['status'] if order else 'unknown'}\n"
+        f"Order total: {order['total'] if order else 'unknown'}\n\n"
+        "Give a 2-sentence summary and one recommended action."
+    )
+
+    advice = ask_ollama(prompt)
+    # Note: we return advice as text. We do NOT update the DB here.
+    return jsonify({
+        "return_id": return_id,
+        "ai_summary": advice,
+        "note": "Advisory only. Use PATCH /returns/<id>/status to actually change status."
+    })
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)
