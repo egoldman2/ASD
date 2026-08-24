@@ -27,3 +27,15 @@ services:
       OLLAMA_MODEL: qwen2.5:0.5b
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
+
+  order-returns-backend:
+    build:
+      context: .
+      dockerfile: student-Howard/Dockerfile
+    ports:
+      - "5003:5001"
+    environment:
+      OLLAMA_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: qwen2.5:0.5b
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

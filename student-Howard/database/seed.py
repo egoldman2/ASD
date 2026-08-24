@@ -12,6 +12,7 @@ cur = conn.cursor()
 cur.execute("DELETE FROM returns")
 cur.execute("DELETE FROM order_items")
 cur.execute("DELETE FROM orders")
+cur.execute("DELETE FROM sqlite_sequence WHERE name IN ('orders','order_items','returns')")
 
 statuses = ["pending", "shipped", "delivered", "cancelled"]
 base = datetime(2026, 7, 1)
