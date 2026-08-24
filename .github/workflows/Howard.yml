@@ -32,6 +32,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r student-Howard/backend/requirements.txt
 
+      - name: Run pytest
+        run: python -m pytest student-Howard/tests/ -q
+
       - name: Seed the database
         working-directory: student-Howard/database
         run: python seed.py
