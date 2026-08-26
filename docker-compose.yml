@@ -35,3 +35,11 @@ services:
       target: frontend
     ports:
       - "8004:80"
+
+  customer-support:
+    build:
+      context: .
+      dockerfile: student-Ethan Goldman/Dockerfile
+      target: frontend
+    ports:
+      - "8005:80"
