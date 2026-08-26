@@ -63,22 +63,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 2rem;
-  flex-wrap: wrap;
+  gap: 1.5rem;
+  flex-wrap: nowrap;
 }
 
 .navLink {
   position: relative;
   padding: 0.5rem 0.2rem;
   color: #2c3e5c;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   text-decoration: none;
+  white-space: nowrap;
   transition: color 0.2s ease;
 }
 
 .navLink:hover,
-.navLink:focus-visible {
+.navLink:focus-visible,
+.navLink.active {
   color: #1d5b9e;
   outline: none;
 }
@@ -95,7 +97,8 @@ body {
 }
 
 .navLink:hover::after,
-.navLink:focus-visible::after {
+.navLink:focus-visible::after,
+.navLink.active::after {
   width: 100%;
 }
 
@@ -166,6 +169,7 @@ body {
 
 .previewContent {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   padding: 1.2rem;
 }
@@ -175,6 +179,20 @@ body {
   border: 1px solid #eef2f6;
   border-radius: 8px;
   background: #fbfdff;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.previewCard:last-child {
+  grid-column: 1 / -1;
+}
+
+.previewCard:hover,
+.previewCard:focus-visible {
+  border-color: #8fb5d4;
+  outline: none;
+  transform: translateY(-2px);
 }
 
 .previewCard strong {
@@ -214,6 +232,7 @@ body {
   .navLinks {
     justify-content: flex-start;
     gap: 0.75rem 1.25rem;
+    flex-wrap: wrap;
   }
 
   .navLink {
@@ -233,5 +252,13 @@ body {
 
   .heroDescription {
     font-size: 1.05rem;
+  }
+
+  .previewContent {
+    grid-template-columns: 1fr;
+  }
+
+  .previewCard:last-child {
+    grid-column: auto;
   }
 }

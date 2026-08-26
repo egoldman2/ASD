@@ -4,6 +4,7 @@ __pycache__/
 .venv/
 venv/
 .vscode/
+.DS_Store
 
 # Ignore local SQLite databases except the seeded Release 0 catalogue.
 *.db
