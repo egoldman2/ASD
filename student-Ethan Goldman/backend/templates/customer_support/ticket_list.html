@@ -1,0 +1,54 @@
+<div class="ticketQueue">
+  <div class="ticketQueue__heading">
+    <div>
+      <h2>All tickets</h2>
+      <p>Prioritise work by the next person who needs to respond.</p>
+    </div>
+    <p class="ticketCount"><strong>{{ count }}</strong> tickets</p>
+  </div>
+  <div class="ticketQueue__toolbar" role="search" aria-label="Ticket search and filters">
+    <div class="ticketFilters__search"><label for="ticket-search">Search tickets</label><input id="ticket-search"
+        name="search" type="search" placeholder="Search requester, subject, or ID"></div>
+    <div class="ticketFilters__select"><label for="filter-status">Status</label><select id="filter-status"
+        name="status">
+        <option value="">All statuses</option>
+        <option value="open">Open — staff reply needed</option>
+        <option value="pending">Pending — customer reply needed</option>
+        <option value="solved">Solved</option>
+      </select></div>
+    <div class="ticketFilters__select"><label for="filter-assignee">Assignee</label><select id="filter-assignee"
+        name="assigned_to">
+        <option value="">All staff</option>
+        <option value="alex-morgan">Alex Morgan</option>
+        <option value="jordan-lee">Jordan Lee</option>
+        <option value="unassigned">Unassigned</option>
+      </select></div>
+  </div>
+  <div class="ticketQueue__statusSummary" aria-label="Ticket status totals"><span
+      class="ticketStatus ticketStatus--open">{{ status_counts.open }} Open <small>Staff reply
+        needed</small></span><span class="ticketStatus ticketStatus--pending">{{ status_counts.pending }} Pending
+      <small>Customer reply needed</small></span><span class="ticketStatus ticketStatus--solved">{{ status_counts.solved
+      }} Solved <small>Completed</small></span></div>
+  <div class="ticketQueue__table" role="table" aria-label="All support tickets">
+    <div class="ticketQueue__tableHeader" role="row"><span role="columnheader">Ticket</span><span
+        role="columnheader">Requester</span><span role="columnheader">Assignee</span><span
+        role="columnheader">Updated</span><span role="columnheader">Status</span></div>
+    {% for ticket in tickets %}
+    <a class="ticketRow" href="staff-ticket.html?ticket={{ ticket.id }}" role="row"><span class="ticketRow__subject"
+        role="cell"><strong>#{{ ticket.id }} · {{ ticket.subject }}</strong><small>{{ ticket.category|title
+          }}</small></span><span role="cell">{{ ticket.customer_name }}</span><span role="cell">{{ ticket.assigned_to or
+        'Unassigned' }}</span><span role="cell">{{ ticket.updated_at|replace('T', ' ')|replace('Z', ' UTC')
+        }}</span><span role="cell" class="ticketStatus ticketStatus--{{ ticket.status }}">{{ ticket.status|title }}
+        <small>{% if ticket.status == 'open' %}Staff reply needed{% elif ticket.status == 'pending' %}Customer reply
+          needed{% else %}Completed{% endif %}</small></span></a>
+    {% endfor %}
+  </div>
+  <section class="ticketState ticketState--empty" hidden aria-label="Empty ticket state">
+    <h3>No tickets found</h3>
+    <p>Try clearing a search term or choosing different filters.</p>
+  </section>
+  <section class="ticketState ticketState--error" hidden aria-label="Ticket error state">
+    <h3>Tickets could not be loaded</h3>
+    <p>Please try again. If the issue continues, contact a support administrator.</p>
+  </section>
+</div>

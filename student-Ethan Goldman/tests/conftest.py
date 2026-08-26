@@ -19,3 +19,12 @@ def database_path(tmp_path, monkeypatch):
     init_db.initialize_database(path, reset=True)
     monkeypatch.setattr(database, "DATABASE_PATH", path)
     return path
+
+
+@pytest.fixture
+def client(database_path):
+    application = import_module("app").app
+    application.config.update(TESTING=True)
+
+    with application.test_client() as test_client:
+        yield test_client

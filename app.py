@@ -26,10 +26,24 @@ def create_app():
     order_routes = import_module(
         "student-Howard.backend.routes.order_routes"
     )
+    support_init_db = import_module(
+        "student-Ethan Goldman.database.init_db"
+    )
+    support_ticket_routes = import_module(
+        "student-Ethan Goldman.backend.routes.ticket_routes"
+    )
+    support_ticket_ui_routes = import_module(
+        "student-Ethan Goldman.backend.routes.ticket_ui_routes"
+    )
+    support_init_db.initialize_database()
     app.register_blueprint(product_routes.product_blueprint)
     app.register_blueprint(cart_routes.cart_blueprint)
     app.register_blueprint(ai_routes.ai_blueprint)
     app.register_blueprint(order_routes.order_blueprint)
+    app.register_blueprint(support_ticket_routes.support_ticket_blueprint)
+    app.register_blueprint(
+        support_ticket_ui_routes.support_ticket_ui_blueprint
+    )
 
     @app.after_request
     def allow_frontend_requests(response):

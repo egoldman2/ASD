@@ -1,22 +1,50 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Customer Support staff ticket queue for ASD 2026.">
-    <title>Support Tickets | ASD 2026</title>
-    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=2">
-    <link rel="stylesheet" href="css/support.css">
-    <script src="js/htmx.min.js" defer></script>
-  </head>
-  <body>
-    <header class="navbar"><div class="navContainer"><div class="navLogo"><a href="http://localhost:8000" class="logoLink" aria-label="ASD 2026 home"><span class="logoMain">ASD 2026</span></a></div><nav class="navLinks" aria-label="Main navigation"><a href="http://localhost:8001" class="navLink">Product Catalogue</a><a href="http://localhost:8002" class="navLink">Inventory Management</a><a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8004" class="navLink">Order &amp; Returns</a><a href="http://localhost:8005" class="navLink navLink--active">Customer Support</a></nav></div></header>
-    <main class="supportPage">
-      <nav class="supportViewNav" aria-label="Customer Support views"><a href="index.html">Customer Support home</a><a href="customer.html">Customer ticket form</a><a href="staff.html" aria-current="page">Staff workspace</a></nav>
-      <section class="staffWorkspaceHeading" aria-labelledby="page-title"><div><p class="supportEyebrow">Support staff</p><h1 id="page-title">Tickets</h1><p>Track what needs a staff reply, a customer reply, or no further action.</p></div><span class="supportStatus" role="status">Staff workspace</span></section>
-      <nav class="staffSubviewNav" aria-label="Staff ticket subviews"><a href="staff.html" aria-current="page">All tickets</a><a href="staff-ticket.html">Selected ticket</a></nav>
-      <section class="supportShell supportShell--queue" aria-labelledby="ticket-list-title"><h2 id="ticket-list-title" class="visuallyHidden">All support tickets</h2><div id="ticket-list-region" aria-live="polite" hx-get="fragments/ticket-dashboard.html" hx-trigger="load" hx-swap="innerHTML"><p class="supportRegion__placeholder">Loading ticket queue…</p></div></section>
-    </main>
-    <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Customer Support staff ticket queue for ASD 2026.">
+  <title>Support Tickets | ASD 2026</title>
+  <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=2">
+  <link rel="stylesheet" href="css/support.css">
+  <script src="js/htmx.min.js" defer></script>
+  <script src="js/support.js?v=2" defer></script>
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="navContainer">
+      <div class="navLogo"><a href="http://localhost:8000" class="logoLink" aria-label="ASD 2026 home"><span
+            class="logoMain">ASD 2026</span></a></div>
+      <nav class="navLinks" aria-label="Main navigation"><a href="http://localhost:8001" class="navLink">Product
+          Catalogue</a><a href="http://localhost:8002" class="navLink">Inventory Management</a><a
+          href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8004"
+          class="navLink">Order &amp; Returns</a><a href="http://localhost:8005"
+          class="navLink navLink--active">Customer Support</a></nav>
+    </div>
+  </header>
+  <main class="supportPage">
+    <nav class="supportViewNav" aria-label="Customer Support views"><a href="index.html">Customer Support home</a><a
+        href="customer.html">Customer ticket form</a><a href="staff.html" aria-current="page">Staff workspace</a></nav>
+    <section class="staffWorkspaceHeading" aria-labelledby="page-title">
+      <div>
+        <p class="supportEyebrow">Support staff</p>
+        <h1 id="page-title">Tickets</h1>
+        <p>Track what needs a staff reply, a customer reply, or no further action.</p>
+      </div><span class="supportStatus" role="status">Staff workspace</span>
+    </section>
+    <nav class="staffSubviewNav" aria-label="Staff ticket subviews"><a href="staff.html" aria-current="page">All
+        tickets</a><a href="staff-ticket.html">Selected ticket</a></nav>
+    <section class="supportShell supportShell--queue" aria-labelledby="ticket-list-title">
+      <h2 id="ticket-list-title" class="visuallyHidden">All support tickets</h2>
+      <div id="ticket-list-region" aria-live="polite" hx-get="http://localhost:5000/support-ui/staff/tickets"
+        hx-trigger="load" hx-swap="innerHTML">
+        <p class="supportRegion__placeholder">Loading ticket queue…</p>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>
+</body>
+
 </html>
