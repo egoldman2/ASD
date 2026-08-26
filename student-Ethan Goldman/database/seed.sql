@@ -1,0 +1,16 @@
+INSERT INTO support_tickets (
+    id, customer_name, customer_email, subject, message, category,
+    priority, status, assigned_to, created_at, updated_at
+) VALUES
+  (1012, 'Mia Chen', 'mia.chen@example.com', 'Order confirmation has not arrived', 'I placed an order yesterday but have not received a confirmation email or order number.', 'order', 'urgent', 'open', NULL, '2026-08-24T10:40:00Z', '2026-08-24T11:32:00Z'),
+  (1011, 'Oliver Jones', 'oliver.jones@example.com', 'Parcel marked delivered but not received', 'My tracking page says my parcel was delivered this morning, but it is not at my address. I have checked with my neighbours. Please let me know what happens next.', 'delivery', 'high', 'open', 'Alex Morgan', '2026-08-24T09:15:00Z', '2026-08-24T10:02:00Z'),
+  (1010, 'Amelia Brown', 'amelia.brown@example.com', 'Need help returning the wrong size', 'The item I received is the wrong size. I need the return instructions and a label.', 'return', 'medium', 'pending', 'Jordan Lee', '2026-08-23T14:15:00Z', '2026-08-23T16:45:00Z'),
+  (1009, 'Noah Williams', 'noah.williams@example.com', 'Duplicate charge on my card', 'I can see two charges for the same order on my bank statement.', 'payment', 'high', 'solved', 'Alex Morgan', '2026-08-23T11:10:00Z', '2026-08-23T14:30:00Z'),
+  (1008, 'Sophia Patel', 'sophia.patel@example.com', 'Question about product warranty', 'Could you clarify how long the warranty lasts for the headphones I purchased?', 'product', 'low', 'solved', 'Jordan Lee', '2026-08-22T09:45:00Z', '2026-08-22T15:10:00Z'),
+  (1007, 'Liam Wilson', 'liam.wilson@example.com', 'Unable to reset account password', 'The password reset email does not appear in my inbox or spam folder.', 'account', 'medium', 'open', NULL, '2026-08-22T08:54:00Z', '2026-08-22T10:24:00Z'),
+  (1006, 'Emma Davis', 'emma.davis@example.com', 'Delivery address needs correction', 'I entered the apartment number incorrectly and need to know whether the delivery address can still be changed.', 'delivery', 'medium', 'pending', 'Alex Morgan', '2026-08-21T12:05:00Z', '2026-08-21T16:18:00Z'),
+  (1005, 'Jack Taylor', 'jack.taylor@example.com', 'Item arrived with missing part', 'The product arrived without the charging cable shown in the product listing.', 'product', 'high', 'open', 'Jordan Lee', '2026-08-21T11:30:00Z', '2026-08-21T13:47:00Z'),
+  (1004, 'Ava Martin', 'ava.martin@example.com', 'Refund confirmed, funds not visible', 'I received a refund confirmation but the money is not visible in my account yet.', 'payment', 'medium', 'solved', 'Alex Morgan', '2026-08-20T13:12:00Z', '2026-08-20T17:12:00Z'),
+  (1003, 'Leo Nguyen', 'leo.nguyen@example.com', 'Need invoice for recent order', 'I need a tax invoice with the billing details for an order placed last week.', 'order', 'low', 'pending', NULL, '2026-08-20T09:00:00Z', '2026-08-20T11:06:00Z'),
+  (1002, 'Isla Moore', 'isla.moore@example.com', 'Product colour differs from photos', 'The colour of the product I received looks different from the listing photos.', 'product', 'low', 'solved', 'Jordan Lee', '2026-08-19T12:42:00Z', '2026-08-19T15:41:00Z'),
+  (1001, 'Lucas Smith', 'lucas.smith@example.com', 'Order still processing', 'My order has been processing for several days and I would like an update.', 'order', 'medium', 'open', 'Alex Morgan', '2026-08-19T08:30:00Z', '2026-08-19T09:22:00Z');
