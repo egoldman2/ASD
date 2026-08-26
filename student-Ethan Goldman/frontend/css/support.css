@@ -499,6 +499,124 @@
   opacity: 0.55;
 }
 
+.staffDetail {
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.staffDetail__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.staffDetail__heading h2 {
+  margin-bottom: 0.35rem;
+}
+
+.staffDetail__heading > div > p:last-child {
+  color: #4a627a;
+  line-height: 1.5;
+}
+
+.staffDetail__heading .button {
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.staffDetail__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.staffDetail__summary > div,
+.staffDetail__message {
+  padding: 0.9rem;
+  border: 1px solid #d7e4ef;
+  border-radius: 8px;
+  background: #f5f9ff;
+}
+
+.staffDetail__summary span,
+.staffDetail__summary strong,
+.staffDetail__summary a {
+  display: block;
+}
+
+.staffDetail__summary span {
+  margin-bottom: 0.3rem;
+  color: #4a627a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.staffDetail__summary strong {
+  color: #1e2f4d;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.staffDetail__summary a {
+  margin-top: 0.25rem;
+  color: #1d5b9e;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.staffDetail__message {
+  margin-bottom: 1rem;
+  background: #ffffff;
+}
+
+.staffDetail__message h3 {
+  margin-bottom: 0.5rem;
+}
+
+.staffDetail__message p,
+.deletePreview p {
+  color: #2c3e5c;
+  line-height: 1.6;
+}
+
+.staffTicketForm__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.staffTicketForm__actions .formHelp {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.deletePreview {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #efc3c3;
+  border-radius: 8px;
+  background: #fff8f8;
+}
+
+.deletePreview summary {
+  color: #982f2f;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.deletePreview p {
+  margin: 0.75rem 0;
+}
+
+.button--danger {
+  background: #a83535;
+}
+
 @media (max-width: 820px) {
   .supportPage {
     width: min(100% - 2rem, 1200px);
@@ -526,5 +644,13 @@
 
   .createTicket__heading {
     flex-direction: column;
+  }
+
+  .staffDetail__heading {
+    flex-direction: column;
+  }
+
+  .staffDetail__summary {
+    grid-template-columns: 1fr;
   }
 }
