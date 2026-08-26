@@ -1,0 +1,111 @@
+<div class="ticketDashboard" aria-busy="false">
+  <div class="ticketDashboard__heading">
+    <div>
+      <p class="ticketDashboard__eyebrow">Support queue</p>
+      <h2>Customer tickets</h2>
+      <p>Review, prioritise, and resolve incoming customer requests.</p>
+    </div>
+    <p class="ticketCount"><strong>12</strong> tickets</p>
+  </div>
+
+  <div class="ticketFilters" role="search" aria-label="Ticket search and filters">
+    <div class="ticketFilters__search">
+      <label for="ticket-search">Search tickets</label>
+      <input id="ticket-search" name="search" type="search" placeholder="Search subject, customer, or ticket ID">
+    </div>
+
+    <div class="ticketFilters__select">
+      <label for="filter-category">Category</label>
+      <select id="filter-category" name="category">
+        <option value="">All categories</option>
+        <option value="order">Order</option>
+        <option value="return">Return</option>
+        <option value="payment">Payment</option>
+        <option value="product">Product</option>
+        <option value="delivery">Delivery</option>
+        <option value="account">Account</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="ticketFilters__select">
+      <label for="filter-priority">Priority</label>
+      <select id="filter-priority" name="priority">
+        <option value="">All priorities</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="urgent">Urgent</option>
+      </select>
+    </div>
+
+    <div class="ticketFilters__select">
+      <label for="filter-status">Status</label>
+      <select id="filter-status" name="status">
+        <option value="">All statuses</option>
+        <option value="open">Open</option>
+        <option value="in_progress">In progress</option>
+        <option value="resolved">Resolved</option>
+        <option value="closed">Closed</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="ticketDashboard__prototype" role="status">
+    Prototype data is shown while the support API is being connected.
+  </p>
+
+  <div class="ticketGrid" aria-label="Prototype support tickets">
+    <article class="ticketCard">
+      <div class="ticketCard__topline"><span>#1012</span><span class="ticketBadge ticketBadge--open">Open</span></div>
+      <h3>Order confirmation has not arrived</h3>
+      <p class="ticketCard__customer">Mia Chen · 24 Aug 2026</p>
+      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--order">Order</span><span class="ticketBadge ticketBadge--urgent">Urgent</span></div>
+    </article>
+
+    <article class="ticketCard">
+      <div class="ticketCard__topline"><span>#1011</span><span class="ticketBadge ticketBadge--progress">In progress</span></div>
+      <h3>Parcel marked delivered but not received</h3>
+      <p class="ticketCard__customer">Oliver Jones · 24 Aug 2026</p>
+      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--delivery">Delivery</span><span class="ticketBadge ticketBadge--high">High</span></div>
+    </article>
+
+    <article class="ticketCard">
+      <div class="ticketCard__topline"><span>#1010</span><span class="ticketBadge ticketBadge--open">Open</span></div>
+      <h3>Need help returning the wrong size</h3>
+      <p class="ticketCard__customer">Amelia Brown · 23 Aug 2026</p>
+      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--return">Return</span><span class="ticketBadge ticketBadge--medium">Medium</span></div>
+    </article>
+
+    <article class="ticketCard">
+      <div class="ticketCard__topline"><span>#1009</span><span class="ticketBadge ticketBadge--resolved">Resolved</span></div>
+      <h3>Duplicate charge on my card</h3>
+      <p class="ticketCard__customer">Noah Williams · 23 Aug 2026</p>
+      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--payment">Payment</span><span class="ticketBadge ticketBadge--high">High</span></div>
+    </article>
+
+    <article class="ticketCard">
+      <div class="ticketCard__topline"><span>#1008</span><span class="ticketBadge ticketBadge--closed">Closed</span></div>
+      <h3>Question about product warranty</h3>
+      <p class="ticketCard__customer">Sophia Patel · 22 Aug 2026</p>
+      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--product">Product</span><span class="ticketBadge ticketBadge--low">Low</span></div>
+    </article>
+
+    <article class="ticketCard">
+      <div class="ticketCard__topline"><span>#1007</span><span class="ticketBadge ticketBadge--open">Open</span></div>
+      <h3>Unable to reset account password</h3>
+      <p class="ticketCard__customer">Liam Wilson · 22 Aug 2026</p>
+      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--account">Account</span><span class="ticketBadge ticketBadge--medium">Medium</span></div>
+    </article>
+  </div>
+
+  <section class="ticketState ticketState--empty" hidden aria-label="Empty ticket state">
+    <h3>No tickets found</h3>
+    <p>Try clearing a search term or choosing different filters.</p>
+  </section>
+
+  <section class="ticketState ticketState--error" hidden aria-label="Ticket error state">
+    <h3>Tickets could not be loaded</h3>
+    <p>Please try again. If the issue continues, contact a support administrator.</p>
+  </section>
+</div>

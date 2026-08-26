@@ -47,11 +47,17 @@
         </div>
 
         <div class="supportRegions">
-          <section class="supportRegion" aria-labelledby="ticket-list-title">
-            <h3 id="ticket-list-title">Tickets</h3>
-            <p id="ticket-list-region" class="supportRegion__placeholder" aria-live="polite">
-              Ticket listings will be available once the support service is connected.
-            </p>
+          <section class="supportRegion supportRegion--tickets" aria-labelledby="ticket-list-title">
+            <h3 id="ticket-list-title" class="visuallyHidden">Tickets</h3>
+            <div
+              id="ticket-list-region"
+              aria-live="polite"
+              hx-get="fragments/ticket-dashboard.html"
+              hx-trigger="load"
+              hx-swap="innerHTML"
+            >
+              <p class="supportRegion__placeholder">Loading ticket dashboard…</p>
+            </div>
           </section>
 
           <section class="supportRegion" aria-labelledby="ticket-detail-title">
