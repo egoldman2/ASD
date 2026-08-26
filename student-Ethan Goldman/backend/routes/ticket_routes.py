@@ -1,6 +1,6 @@
 """JSON read endpoints for Customer Support tickets."""
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from ..controllers import ticket_controller
 
@@ -12,7 +12,7 @@ support_ticket_blueprint = Blueprint(
 
 @support_ticket_blueprint.get("")
 def list_tickets():
-    payload, status_code = ticket_controller.get_tickets()
+    payload, status_code = ticket_controller.get_tickets(request.args)
     return jsonify(payload), status_code
 
 
