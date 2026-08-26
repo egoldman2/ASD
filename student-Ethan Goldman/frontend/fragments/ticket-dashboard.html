@@ -1,111 +1,30 @@
-<div class="ticketDashboard" aria-busy="false">
-  <div class="ticketDashboard__heading">
-    <div>
-      <p class="ticketDashboard__eyebrow">Support queue</p>
-      <h2>Customer tickets</h2>
-      <p>Review, prioritise, and resolve incoming customer requests.</p>
-    </div>
+<div class="ticketQueue">
+  <div class="ticketQueue__heading">
+    <div><h2>All tickets</h2><p>Prioritise work by the next person who needs to respond.</p></div>
     <p class="ticketCount"><strong>12</strong> tickets</p>
   </div>
-
-  <div class="ticketFilters" role="search" aria-label="Ticket search and filters">
-    <div class="ticketFilters__search">
-      <label for="ticket-search">Search tickets</label>
-      <input id="ticket-search" name="search" type="search" placeholder="Search subject, customer, or ticket ID">
-    </div>
-
-    <div class="ticketFilters__select">
-      <label for="filter-category">Category</label>
-      <select id="filter-category" name="category">
-        <option value="">All categories</option>
-        <option value="order">Order</option>
-        <option value="return">Return</option>
-        <option value="payment">Payment</option>
-        <option value="product">Product</option>
-        <option value="delivery">Delivery</option>
-        <option value="account">Account</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-
-    <div class="ticketFilters__select">
-      <label for="filter-priority">Priority</label>
-      <select id="filter-priority" name="priority">
-        <option value="">All priorities</option>
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-        <option value="urgent">Urgent</option>
-      </select>
-    </div>
-
-    <div class="ticketFilters__select">
-      <label for="filter-status">Status</label>
-      <select id="filter-status" name="status">
-        <option value="">All statuses</option>
-        <option value="open">Open</option>
-        <option value="in_progress">In progress</option>
-        <option value="resolved">Resolved</option>
-        <option value="closed">Closed</option>
-      </select>
-    </div>
+  <div class="ticketQueue__toolbar" role="search" aria-label="Ticket search and filters">
+    <div class="ticketFilters__search"><label for="ticket-search">Search tickets</label><input id="ticket-search" name="search" type="search" placeholder="Search requester, subject, or ID"></div>
+    <div class="ticketFilters__select"><label for="filter-status">Status</label><select id="filter-status" name="status"><option value="">All statuses</option><option value="open">Open — staff reply needed</option><option value="pending">Pending — customer reply needed</option><option value="solved">Solved</option></select></div>
+    <div class="ticketFilters__select"><label for="filter-assignee">Assignee</label><select id="filter-assignee" name="assigned_to"><option value="">All staff</option><option value="alex-morgan">Alex Morgan</option><option value="jordan-lee">Jordan Lee</option><option value="unassigned">Unassigned</option></select></div>
   </div>
-
-  <p class="ticketDashboard__prototype" role="status">
-    Prototype data is shown while the support API is being connected.
-  </p>
-
-  <div class="ticketGrid" aria-label="Prototype support tickets">
-    <article class="ticketCard">
-      <div class="ticketCard__topline"><span>#1012</span><span class="ticketBadge ticketBadge--open">Open</span></div>
-      <h3>Order confirmation has not arrived</h3>
-      <p class="ticketCard__customer">Mia Chen · 24 Aug 2026</p>
-      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--order">Order</span><span class="ticketBadge ticketBadge--urgent">Urgent</span></div>
-    </article>
-
-    <article class="ticketCard">
-      <div class="ticketCard__topline"><span>#1011</span><span class="ticketBadge ticketBadge--progress">In progress</span></div>
-      <h3>Parcel marked delivered but not received</h3>
-      <p class="ticketCard__customer">Oliver Jones · 24 Aug 2026</p>
-      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--delivery">Delivery</span><span class="ticketBadge ticketBadge--high">High</span></div>
-    </article>
-
-    <article class="ticketCard">
-      <div class="ticketCard__topline"><span>#1010</span><span class="ticketBadge ticketBadge--open">Open</span></div>
-      <h3>Need help returning the wrong size</h3>
-      <p class="ticketCard__customer">Amelia Brown · 23 Aug 2026</p>
-      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--return">Return</span><span class="ticketBadge ticketBadge--medium">Medium</span></div>
-    </article>
-
-    <article class="ticketCard">
-      <div class="ticketCard__topline"><span>#1009</span><span class="ticketBadge ticketBadge--resolved">Resolved</span></div>
-      <h3>Duplicate charge on my card</h3>
-      <p class="ticketCard__customer">Noah Williams · 23 Aug 2026</p>
-      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--payment">Payment</span><span class="ticketBadge ticketBadge--high">High</span></div>
-    </article>
-
-    <article class="ticketCard">
-      <div class="ticketCard__topline"><span>#1008</span><span class="ticketBadge ticketBadge--closed">Closed</span></div>
-      <h3>Question about product warranty</h3>
-      <p class="ticketCard__customer">Sophia Patel · 22 Aug 2026</p>
-      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--product">Product</span><span class="ticketBadge ticketBadge--low">Low</span></div>
-    </article>
-
-    <article class="ticketCard">
-      <div class="ticketCard__topline"><span>#1007</span><span class="ticketBadge ticketBadge--open">Open</span></div>
-      <h3>Unable to reset account password</h3>
-      <p class="ticketCard__customer">Liam Wilson · 22 Aug 2026</p>
-      <div class="ticketCard__meta"><span class="ticketBadge ticketBadge--account">Account</span><span class="ticketBadge ticketBadge--medium">Medium</span></div>
-    </article>
+  <div class="ticketQueue__statusSummary" aria-label="Ticket status totals"><span class="ticketStatus ticketStatus--open">5 Open <small>Staff reply needed</small></span><span class="ticketStatus ticketStatus--pending">3 Pending <small>Customer reply needed</small></span><span class="ticketStatus ticketStatus--solved">4 Solved <small>Completed</small></span></div>
+  <p class="ticketDashboard__prototype" role="status">Prototype data is shown while the staff ticket API is being connected.</p>
+  <div class="ticketQueue__table" role="table" aria-label="All support tickets">
+    <div class="ticketQueue__tableHeader" role="row"><span role="columnheader">Ticket</span><span role="columnheader">Requester</span><span role="columnheader">Assignee</span><span role="columnheader">Updated</span><span role="columnheader">Status</span></div>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1012 · Order confirmation has not arrived</strong><small>Order</small></span><span role="cell">Mia Chen</span><span role="cell">Unassigned</span><span role="cell">24 Aug, 11:32 AM</span><span role="cell" class="ticketStatus ticketStatus--open">Open <small>Staff reply needed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1011 · Parcel marked delivered but not received</strong><small>Delivery</small></span><span role="cell">Oliver Jones</span><span role="cell">Alex Morgan</span><span role="cell">24 Aug, 10:02 AM</span><span role="cell" class="ticketStatus ticketStatus--open">Open <small>Staff reply needed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1010 · Need help returning the wrong size</strong><small>Return</small></span><span role="cell">Amelia Brown</span><span role="cell">Jordan Lee</span><span role="cell">23 Aug, 4:45 PM</span><span role="cell" class="ticketStatus ticketStatus--pending">Pending <small>Customer reply needed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1009 · Duplicate charge on my card</strong><small>Payment</small></span><span role="cell">Noah Williams</span><span role="cell">Alex Morgan</span><span role="cell">23 Aug, 2:30 PM</span><span role="cell" class="ticketStatus ticketStatus--solved">Solved <small>Completed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1008 · Question about product warranty</strong><small>Product</small></span><span role="cell">Sophia Patel</span><span role="cell">Jordan Lee</span><span role="cell">22 Aug, 3:10 PM</span><span role="cell" class="ticketStatus ticketStatus--solved">Solved <small>Completed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1007 · Unable to reset account password</strong><small>Account</small></span><span role="cell">Liam Wilson</span><span role="cell">Unassigned</span><span role="cell">22 Aug, 10:24 AM</span><span role="cell" class="ticketStatus ticketStatus--open">Open <small>Staff reply needed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1006 · Delivery address needs correction</strong><small>Delivery</small></span><span role="cell">Emma Davis</span><span role="cell">Alex Morgan</span><span role="cell">21 Aug, 4:18 PM</span><span role="cell" class="ticketStatus ticketStatus--pending">Pending <small>Customer reply needed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1005 · Item arrived with missing part</strong><small>Product</small></span><span role="cell">Jack Taylor</span><span role="cell">Jordan Lee</span><span role="cell">21 Aug, 1:47 PM</span><span role="cell" class="ticketStatus ticketStatus--open">Open <small>Staff reply needed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1004 · Refund confirmed, funds not visible</strong><small>Payment</small></span><span role="cell">Ava Martin</span><span role="cell">Alex Morgan</span><span role="cell">20 Aug, 5:12 PM</span><span role="cell" class="ticketStatus ticketStatus--solved">Solved <small>Completed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1003 · Need invoice for recent order</strong><small>Order</small></span><span role="cell">Leo Nguyen</span><span role="cell">Unassigned</span><span role="cell">20 Aug, 11:06 AM</span><span role="cell" class="ticketStatus ticketStatus--pending">Pending <small>Customer reply needed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1002 · Product colour differs from photos</strong><small>Product</small></span><span role="cell">Isla Moore</span><span role="cell">Jordan Lee</span><span role="cell">19 Aug, 3:41 PM</span><span role="cell" class="ticketStatus ticketStatus--solved">Solved <small>Completed</small></span></a>
+    <a class="ticketRow" href="staff-ticket.html" role="row"><span class="ticketRow__subject" role="cell"><strong>#1001 · Order still processing</strong><small>Order</small></span><span role="cell">Lucas Smith</span><span role="cell">Alex Morgan</span><span role="cell">19 Aug, 9:22 AM</span><span role="cell" class="ticketStatus ticketStatus--open">Open <small>Staff reply needed</small></span></a>
   </div>
-
-  <section class="ticketState ticketState--empty" hidden aria-label="Empty ticket state">
-    <h3>No tickets found</h3>
-    <p>Try clearing a search term or choosing different filters.</p>
-  </section>
-
-  <section class="ticketState ticketState--error" hidden aria-label="Ticket error state">
-    <h3>Tickets could not be loaded</h3>
-    <p>Please try again. If the issue continues, contact a support administrator.</p>
-  </section>
+  <section class="ticketState ticketState--empty" hidden aria-label="Empty ticket state"><h3>No tickets found</h3><p>Try clearing a search term or choosing different filters.</p></section>
+  <section class="ticketState ticketState--error" hidden aria-label="Ticket error state"><h3>Tickets could not be loaded</h3><p>Please try again. If the issue continues, contact a support administrator.</p></section>
 </div>
