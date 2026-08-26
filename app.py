@@ -44,6 +44,9 @@ def create_app():
     app.register_blueprint(
         support_ticket_ui_routes.support_ticket_ui_blueprint
     )
+    app.register_blueprint(
+        support_ticket_ui_routes.support_customer_ui_blueprint
+    )
 
     @app.after_request
     def allow_frontend_requests(response):

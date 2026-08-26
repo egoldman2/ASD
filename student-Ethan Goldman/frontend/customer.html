@@ -30,8 +30,8 @@
     <section class="supportHero supportHero--compact" aria-labelledby="page-title">
       <p class="supportEyebrow">For customers</p>
       <h1 id="page-title">Create a support ticket</h1>
-      <p class="supportIntroduction">Describe your issue and the support team will follow up. This page does not show
-        internal ticket records or staff tools.</p>
+      <p class="supportIntroduction">Describe your issue and the support team will follow up. Customers can also
+        continue an existing conversation after verifying the ticket email address.</p>
     </section>
     <section class="supportShell" aria-labelledby="create-ticket-title">
       <div class="createTicket__heading">
@@ -94,6 +94,26 @@
             implemented.</p>
         </div>
       </form>
+    </section>
+    <section class="supportShell customerLookup" aria-labelledby="existing-ticket-title">
+      <div class="createTicket__heading">
+        <div>
+          <h2 id="existing-ticket-title">Continue an existing conversation</h2>
+          <p>Enter the ticket ID and the same email address used to create it.</p>
+        </div><span class="createTicket__status">Customer replies</span>
+      </div>
+      <form class="customerLookup__form" hx-get="http://localhost:5000/support-ui/customer/tickets"
+        hx-target="#customer-conversation-region" hx-swap="innerHTML" hx-indicator="#customer-ticket-loading">
+        <div class="formField"><label for="existing-ticket-id">Ticket ID</label><input id="existing-ticket-id"
+            name="ticket_id" type="number" min="1" inputmode="numeric" required></div>
+        <div class="formField"><label for="existing-ticket-email">Your email</label><input
+            id="existing-ticket-email" name="customer_email" type="email" autocomplete="email" maxlength="254"
+            required></div>
+        <div class="customerLookup__actions"><button class="button button--secondary" type="submit">Open
+            conversation</button><span id="customer-ticket-loading" class="htmx-indicator" role="status">Loading
+            conversation…</span></div>
+      </form>
+      <div id="customer-conversation-region" class="customerLookup__result" aria-live="polite"></div>
     </section>
   </main>
   <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>

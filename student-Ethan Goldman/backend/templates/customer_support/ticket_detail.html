@@ -2,7 +2,7 @@
     <div>
         <p class="ticketDashboard__eyebrow">Selected ticket</p>
         <h2 id="ticket-detail-title">#{{ ticket.id }} · {{ ticket.subject }}</h2>
-        <p>Use the ticket context below to prepare and record the next staff action.</p>
+        <p>Review the complete conversation and record the next staff action.</p>
     </div><a class="button button--secondary" href="staff.html">Back to queue</a>
 </div>
 <div class="staffDetail__summary">
@@ -11,17 +11,38 @@
     <div><span>Created</span><strong>{{ ticket.created_at|replace('T', ' ')|replace('Z', ' UTC') }}</strong></div>
     <div><span>Last updated</span><strong>{{ ticket.updated_at|replace('T', ' ')|replace('Z', ' UTC') }}</strong></div>
 </div>
-<section class="staffDetail__message" aria-labelledby="customer-message-title">
-    <h3 id="customer-message-title">Customer message</h3>
-    <p>{{ ticket.message }}</p>
+<section class="ticketConversation" aria-labelledby="conversation-title">
+    <div class="ticketConversation__heading">
+        <h3 id="conversation-title">Conversation</h3>
+        <span>{{ ticket.message_count }} message{% if ticket.message_count != 1 %}s{% endif %}</span>
+    </div>
+    <ol class="messageThread">
+        {% for item in ticket.messages %}
+        <li class="messageThread__item messageThread__item--{{ item.sender_role }}">
+            <div class="messageThread__meta"><strong>{{ item.author_name }}</strong><span>{{ item.sender_role|title
+                    }}</span><time datetime="{{ item.created_at }}">{{ item.created_at|replace('T', ' ')|replace('Z',
+                    ' UTC') }}</time></div>
+            <p>{{ item.message }}</p>
+        </li>
+        {% else %}
+        <li class="messageThread__empty">No messages have been added to this ticket.</li>
+        {% endfor %}
+    </ol>
 </section>
-<div id="staff-ticket-notice" class="formNotice formNotice--success" hidden role="status">Ticket updated successfully.
-</div>
-<div id="staff-ticket-validation" class="formNotice formNotice--error" hidden role="alert">Please correct the
-    highlighted fields and try again.</div>
-<form class="staffTicketForm" aria-describedby="staff-ticket-help staff-ticket-notice staff-ticket-validation">
-    <p id="staff-ticket-help" class="formHelp">This is a staff-only management view. Saving and deletion will be enabled
-        when the staff ticket API is connected.</p>
+{% if message_notice %}<div class="formNotice formNotice--success" role="status">{{ message_notice }}</div>{% endif %}
+{% if message_error %}<div class="formNotice formNotice--error" role="alert">{{ message_error }}</div>{% endif %}
+<form class="messageComposer" hx-post="http://localhost:5000/support-ui/staff/tickets/{{ ticket.id }}/messages"
+    hx-target="#ticket-detail-region" hx-swap="innerHTML" hx-indicator="#staff-message-loading">
+    <label for="staff-message">Add a staff reply</label>
+    <textarea id="staff-message" name="message" rows="4" maxlength="2000" required></textarea>
+    <div class="messageComposer__actions"><button class="button" type="submit">Add reply</button><span
+            id="staff-message-loading" class="htmx-indicator" role="status">Adding reply…</span></div>
+    <p class="fieldHelp">The reply is stored in this ticket's history. Review it before using the team’s approved
+        customer communication process.</p>
+</form>
+<form class="staffTicketForm" aria-describedby="staff-ticket-help">
+    <p id="staff-ticket-help" class="formHelp">Ticket management fields will be enabled when the staff update API is
+        connected.</p>
     <div class="createTicket__grid">
         <div class="formField"><label for="staff-category">Category</label><select id="staff-category"
                 name="category">{% for category in ['order', 'return', 'payment', 'product', 'delivery', 'account',
@@ -40,21 +61,16 @@
             </select></div>
         <div class="formField"><label for="staff-assignee">Assigned staff</label><input id="staff-assignee"
                 name="assigned_to" type="text" value="{{ ticket.assigned_to or '' }}" maxlength="100"></div>
-        <div class="formField formField--wide"><label for="staff-response">Staff response</label><textarea
-                id="staff-response" name="staff_response" rows="5"
-                maxlength="2000">{{ ticket.staff_response or '' }}</textarea>
-            <p class="fieldHelp">Review this response before sending it through the team’s approved communication
-                process.</p>
-        </div>
     </div>
     <div class="staffTicketForm__actions"><button class="button" type="button" disabled
-            aria-describedby="staff-save-help">Save staff update</button>
-        <p id="staff-save-help" class="formHelp">Saving is disabled until further development connects the staff update
-            API.</p>
+            aria-describedby="staff-save-help">Save ticket fields</button>
+        <p id="staff-save-help" class="formHelp">Saving ticket fields is disabled until the staff update API is
+            implemented.</p>
     </div>
 </form>
 <details class="deletePreview">
     <summary>Delete ticket</summary>
-    <p>Deleting ticket #{{ ticket.id }} permanently removes the ticket and its staff response. This action will require
-        confirmation.</p><button class="button button--danger" type="button" disabled>Confirm delete</button>
+    <p>Deleting ticket #{{ ticket.id }} permanently removes the ticket and all {{ ticket.message_count }} messages.
+        This action will require confirmation.</p><button class="button button--danger" type="button" disabled>Confirm
+        delete</button>
 </details>

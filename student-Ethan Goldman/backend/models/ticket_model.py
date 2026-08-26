@@ -1,4 +1,4 @@
-"""Read models for Customer Support tickets."""
+"""Persistence models for Customer Support tickets and message threads."""
 
 from contextlib import closing
 
@@ -6,8 +6,12 @@ from .database import get_database_connection
 
 
 TICKET_COLUMNS = """
-    id, customer_name, customer_email, subject, message, category, priority,
-    status, assigned_to, staff_response, responded_at, created_at, updated_at
+    id, customer_name, customer_email, subject, category, priority,
+    status, assigned_to, created_at, updated_at
+"""
+
+MESSAGE_COLUMNS = """
+    id, ticket_id, sender_role, author_name, message, created_at
 """
 
 
@@ -22,10 +26,10 @@ def get_tickets(filters=None):
         conditions.append(
             """
             (
-                LOWER(customer_name) LIKE ?
-                OR LOWER(customer_email) LIKE ?
-                OR LOWER(subject) LIKE ?
-                OR CAST(id AS TEXT) LIKE ?
+                LOWER(ticket.customer_name) LIKE ?
+                OR LOWER(ticket.customer_email) LIKE ?
+                OR LOWER(ticket.subject) LIKE ?
+                OR CAST(ticket.id AS TEXT) LIKE ?
             )
             """
         )
@@ -33,25 +37,34 @@ def get_tickets(filters=None):
 
     for field in ("status", "priority", "category"):
         if filters.get(field):
-            conditions.append(f"{field} = ?")
+            conditions.append(f"ticket.{field} = ?")
             parameters.append(filters[field])
 
     assigned_to = filters.get("assigned_to")
     if assigned_to == "unassigned":
-        conditions.append("assigned_to IS NULL")
+        conditions.append("ticket.assigned_to IS NULL")
     elif assigned_to:
-        conditions.append("LOWER(assigned_to) = ?")
+        conditions.append("LOWER(ticket.assigned_to) = ?")
         parameters.append(assigned_to.casefold())
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+    selected_columns = ", ".join(
+        f"ticket.{column.strip()}" for column in TICKET_COLUMNS.split(",")
+    )
 
     with closing(get_database_connection()) as connection:
         rows = connection.execute(
             f"""
-            SELECT {TICKET_COLUMNS}
-            FROM support_tickets
+            SELECT
+                {selected_columns},
+                COUNT(message.id) AS message_count,
+                MAX(message.created_at) AS last_message_at
+            FROM support_tickets AS ticket
+            LEFT JOIN support_ticket_messages AS message
+                ON message.ticket_id = ticket.id
             {where_clause}
-            ORDER BY datetime(updated_at) DESC, id DESC
+            GROUP BY ticket.id
+            ORDER BY datetime(ticket.updated_at) DESC, ticket.id DESC
             """,
             parameters,
         ).fetchall()
@@ -59,11 +72,72 @@ def get_tickets(filters=None):
     return [dict(row) for row in rows]
 
 
+def _get_ticket_with_connection(connection, ticket_id):
+    ticket_row = connection.execute(
+        f"SELECT {TICKET_COLUMNS} FROM support_tickets WHERE id = ?",
+        (ticket_id,),
+    ).fetchone()
+    if ticket_row is None:
+        return None
+
+    ticket = dict(ticket_row)
+    message_rows = connection.execute(
+        f"""
+        SELECT {MESSAGE_COLUMNS}
+        FROM support_ticket_messages
+        WHERE ticket_id = ?
+        ORDER BY datetime(created_at), id
+        """,
+        (ticket_id,),
+    ).fetchall()
+    ticket["messages"] = [dict(row) for row in message_rows]
+    ticket["message_count"] = len(ticket["messages"])
+    return ticket
+
+
 def get_ticket(ticket_id):
     with closing(get_database_connection()) as connection:
-        row = connection.execute(
-            f"SELECT {TICKET_COLUMNS} FROM support_tickets WHERE id = ?",
+        return _get_ticket_with_connection(connection, ticket_id)
+
+
+def create_ticket_message(ticket_id, sender_role, message, created_at):
+    with closing(get_database_connection()) as connection:
+        ticket = connection.execute(
+            """
+            SELECT customer_name, assigned_to
+            FROM support_tickets
+            WHERE id = ?
+            """,
             (ticket_id,),
         ).fetchone()
+        if ticket is None:
+            return None
 
-    return dict(row) if row is not None else None
+        author_name = (
+            ticket["customer_name"]
+            if sender_role == "customer"
+            else ticket["assigned_to"] or "Support staff"
+        )
+        cursor = connection.execute(
+            """
+            INSERT INTO support_ticket_messages (
+                ticket_id, sender_role, author_name, message, created_at
+            ) VALUES (?, ?, ?, ?, ?)
+            """,
+            (ticket_id, sender_role, author_name, message, created_at),
+        )
+        connection.execute(
+            "UPDATE support_tickets SET updated_at = ? WHERE id = ?",
+            (created_at, ticket_id),
+        )
+        message_row = connection.execute(
+            f"""
+            SELECT {MESSAGE_COLUMNS}
+            FROM support_ticket_messages
+            WHERE id = ?
+            """,
+            (cursor.lastrowid,),
+        ).fetchone()
+        connection.commit()
+
+    return dict(message_row)

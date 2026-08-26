@@ -21,6 +21,14 @@ def test_get_support_ticket_json(client):
     assert response.status_code == 200
     assert response.json["ticket"]["customer_name"] == "Oliver Jones"
     assert response.json["ticket"]["status"] == "open"
+    assert response.json["ticket"]["message_count"] == 5
+    assert [message["sender_role"] for message in response.json["ticket"]["messages"]] == [
+        "customer",
+        "staff",
+        "customer",
+        "staff",
+        "customer",
+    ]
 
 
 def test_case_insensitive_ticket_search(client):
@@ -99,7 +107,9 @@ def test_staff_ticket_detail_htmx_fragment(client):
     assert response.status_code == 200
     assert b"Parcel marked delivered but not received" in response.data
     assert b"Oliver Jones" in response.data
-    assert b"staff-response" in response.data
+    assert b"Conversation" in response.data
+    assert b"staff-message" in response.data
+    assert response.data.count(b'<li class="messageThread__item ') == 5
 
 
 def test_database_failure_returns_safe_error(client, monkeypatch):
