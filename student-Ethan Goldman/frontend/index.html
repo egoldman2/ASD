@@ -10,75 +10,8 @@
     <script src="js/htmx.min.js" defer></script>
   </head>
   <body>
-    <header class="navbar">
-      <div class="navContainer">
-        <div class="navLogo">
-          <a href="http://localhost:8000" class="logoLink" aria-label="ASD 2026 home">
-            <span class="logoMain">ASD 2026</span>
-          </a>
-        </div>
-
-        <nav class="navLinks" aria-label="Main navigation">
-          <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
-          <a href="http://localhost:8002" class="navLink">Inventory Management</a>
-          <a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a>
-          <a href="http://localhost:8004" class="navLink">Order &amp; Returns</a>
-          <a href="http://localhost:8005" class="navLink navLink--active" aria-current="page">Customer Support</a>
-        </nav>
-      </div>
-    </header>
-
-    <main class="supportPage">
-      <section class="supportHero" aria-labelledby="page-title">
-        <p class="supportEyebrow">Customer care workspace</p>
-        <h1 id="page-title">Customer Support</h1>
-        <p class="supportIntroduction">
-          Manage customer tickets in one place and use AI-assisted guidance to prepare thoughtful, staff-reviewed responses.
-        </p>
-      </section>
-
-      <section class="supportShell" aria-label="Customer support workspace">
-        <div class="supportShell__header">
-          <div>
-            <h2>Ticket workspace</h2>
-            <p>Ticket search, management, and AI assistance will appear here.</p>
-          </div>
-          <span class="supportStatus" role="status">Preparing support tools</span>
-        </div>
-
-        <div class="supportRegions">
-          <section class="supportRegion supportRegion--tickets" aria-labelledby="ticket-list-title">
-            <h3 id="ticket-list-title" class="visuallyHidden">Tickets</h3>
-            <div
-              id="ticket-list-region"
-              aria-live="polite"
-              hx-get="fragments/ticket-dashboard.html"
-              hx-trigger="load"
-              hx-swap="innerHTML"
-            >
-              <p class="supportRegion__placeholder">Loading ticket dashboard…</p>
-            </div>
-          </section>
-
-          <section class="supportRegion" aria-labelledby="ticket-detail-title">
-            <h3 id="ticket-detail-title">Ticket details</h3>
-            <p id="ticket-detail-region" class="supportRegion__placeholder" aria-live="polite">
-              Select a ticket to review its details and manage its status.
-            </p>
-          </section>
-
-          <section class="supportRegion" aria-labelledby="ai-assistance-title">
-            <h3 id="ai-assistance-title">AI assistance</h3>
-            <p id="ai-assistance-region" class="supportRegion__placeholder" aria-live="polite">
-              AI guidance is advisory only and will always require staff review.
-            </p>
-          </section>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      ASD 2026 &mdash; Customer Support Ticket Management
-    </footer>
+    <header class="navbar"><div class="navContainer"><div class="navLogo"><a href="http://localhost:8000" class="logoLink" aria-label="ASD 2026 home"><span class="logoMain">ASD 2026</span></a></div><nav class="navLinks" aria-label="Main navigation"><a href="http://localhost:8001" class="navLink">Product Catalogue</a><a href="http://localhost:8002" class="navLink">Inventory Management</a><a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8004" class="navLink">Order &amp; Returns</a><a href="http://localhost:8005" class="navLink navLink--active" aria-current="page">Customer Support</a></nav></div></header>
+    <main class="supportPage"><section class="supportHero" aria-labelledby="page-title"><p class="supportEyebrow">Customer care workspace</p><h1 id="page-title">Customer Support</h1><p class="supportIntroduction">Choose the workspace that matches what you need to do. Customer requests and staff ticket management are kept separate.</p></section><section class="viewChooser" aria-label="Choose a Customer Support view"><article class="viewChooser__card"><p class="ticketDashboard__eyebrow">For customers</p><h2>Submit a support request</h2><p>Tell us about an order, product, delivery, payment, or account issue.</p><a class="button" href="customer.html">Create a ticket</a></article><article class="viewChooser__card"><p class="ticketDashboard__eyebrow">For support staff</p><h2>Manage the ticket queue</h2><p>Review tickets, assign work, prepare responses, and use staff-only AI guidance.</p><a class="button button--secondary" href="staff.html">Open staff workspace</a></article></section></main>
+    <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>
   </body>
 </html>

@@ -20,6 +20,10 @@
   margin-bottom: 2.5rem;
 }
 
+.supportHero--compact {
+  margin-bottom: 1.75rem;
+}
+
 .supportEyebrow {
   margin-bottom: 0.8rem;
   color: #1d5b9e;
@@ -45,6 +49,61 @@
   color: #2c3e5c;
   font-size: 1.15rem;
   line-height: 1.7;
+}
+
+.supportViewNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.supportViewNav a {
+  color: #1d5b9e;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.supportViewNav a[aria-current="page"] {
+  color: #0b2545;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
+.viewChooser {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.viewChooser__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 235px;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid #d7e4ef;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 20px 25px -10px rgba(0, 40, 70, 0.12);
+}
+
+.viewChooser__card h2 {
+  margin-bottom: 0.7rem;
+  color: #0b2545;
+  font-size: 1.5rem;
+}
+
+.viewChooser__card > p:not(.ticketDashboard__eyebrow) {
+  margin-bottom: 1.5rem;
+  color: #4a627a;
+  line-height: 1.6;
+}
+
+.viewChooser__card .button {
+  margin-top: auto;
+  text-decoration: none;
 }
 
 .supportShell {
@@ -102,6 +161,10 @@
   padding: 0;
   border: 0;
   background: transparent;
+}
+
+.supportRegion--create {
+  padding: clamp(1.25rem, 3vw, 2rem);
 }
 
 .supportRegion h3 {
@@ -292,6 +355,150 @@
 .ticketState--empty { background: #f5f9ff; }
 .ticketState--error { background: #fff0f0; }
 
+.createTicket__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.createTicket__heading h2 {
+  margin-bottom: 0.4rem;
+}
+
+.createTicket__heading > div > p:last-child,
+.formHelp,
+.fieldHelp {
+  color: #4a627a;
+  line-height: 1.5;
+}
+
+.createTicket__status {
+  flex-shrink: 0;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  background: #eef4f9;
+  color: #385c7c;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.formNotice {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.formNotice--success {
+  border: 1px solid #b9e2c8;
+  background: #e6f6ed;
+  color: #237244;
+}
+
+.formNotice--error {
+  border: 1px solid #efc3c3;
+  background: #fff0f0;
+  color: #982f2f;
+}
+
+.formHelp {
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.createTicket__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.formField--wide {
+  grid-column: 1 / -1;
+}
+
+.formField label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #2c3e5c;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.formField input,
+.formField select,
+.formField textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #c9ddec;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #1e2f4d;
+  font: inherit;
+}
+
+.formField textarea {
+  resize: vertical;
+}
+
+.formField input:focus,
+.formField select:focus,
+.formField textarea:focus {
+  border-color: #1d5b9e;
+  outline: 3px solid rgba(29, 91, 158, 0.18);
+}
+
+.fieldHelp {
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+}
+
+.createTicket__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.createTicket__actions .formHelp {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.button {
+  min-height: 2.6rem;
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0a2a44, #1d5b9e);
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+.button:focus-visible {
+  outline: 3px solid rgba(29, 91, 158, 0.3);
+  outline-offset: 2px;
+}
+
+.button--secondary {
+  border: 1px solid #c9ddec;
+  background: #ffffff;
+  color: #1d5b9e;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 @media (max-width: 820px) {
   .supportPage {
     width: min(100% - 2rem, 1200px);
@@ -311,7 +518,13 @@
   }
 
   .ticketFilters,
-  .ticketGrid {
+  .ticketGrid,
+  .createTicket__grid,
+  .viewChooser {
     grid-template-columns: 1fr;
+  }
+
+  .createTicket__heading {
+    flex-direction: column;
   }
 }
