@@ -1,9 +1,7 @@
 <section id="customer-conversation" class="customerConversation" aria-labelledby="customer-conversation-title">
-    <div class="ticketConversation__heading">
-        <div>
-            <p class="ticketDashboard__eyebrow">Ticket #{{ ticket.id }}</p>
-            <h3 id="customer-conversation-title">{{ ticket.subject }}</h3>
-        </div><span>{{ ticket.messages|length }} message{% if ticket.messages|length != 1 %}s{% endif %}</span>
+    <div class="sectionHeader sectionHeader--compact">
+        <h2 id="customer-conversation-title">{{ ticket.subject }}</h2>
+        <span>#{{ ticket.id }} · {{ ticket.messages|length }} message{% if ticket.messages|length != 1 %}s{% endif %}</span>
     </div>
     <ol class="messageThread">
         {% for item in ticket.messages %}

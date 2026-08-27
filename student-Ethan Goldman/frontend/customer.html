@@ -7,7 +7,7 @@
   <meta name="description" content="Create a Customer Support ticket for ASD 2026.">
   <title>Create a Support Ticket | ASD 2026</title>
   <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=2">
-  <link rel="stylesheet" href="css/support.css">
+  <link rel="stylesheet" href="css/support.css?v=3">
   <script src="js/htmx.min.js" defer></script>
   <script src="js/support.js?v=2" defer></script>
 </head>
@@ -21,52 +21,35 @@
           Catalogue</a><a href="http://localhost:8002" class="navLink">Inventory Management</a><a
           href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8004"
           class="navLink">Order &amp; Returns</a><a href="http://localhost:8005"
-          class="navLink navLink--active">Customer Support</a></nav>
+          class="navLink navLink--active" aria-current="page">Customer Support</a></nav>
     </div>
   </header>
   <main class="supportPage">
-    <nav class="supportViewNav" aria-label="Customer Support views"><a href="index.html">Customer Support home</a><a
-        href="customer.html" aria-current="page">Customer ticket form</a><a href="staff.html">Staff workspace</a></nav>
-    <section class="supportHero supportHero--compact" aria-labelledby="page-title">
-      <p class="supportEyebrow">For customers</p>
-      <h1 id="page-title">Create a support ticket</h1>
-      <p class="supportIntroduction">Describe your issue and the support team will follow up. Customers can also
-        continue an existing conversation after verifying the ticket email address.</p>
-    </section>
-    <section class="supportShell" aria-labelledby="create-ticket-title">
-      <div class="createTicket__heading">
-        <div>
-          <h2 id="create-ticket-title">Tell us what happened</h2>
-          <p>Provide enough detail for the support team to investigate.</p>
-        </div><span class="createTicket__status">Customer form</span>
-      </div>
+    <nav class="supportNav" aria-label="Customer Support"><a href="index.html">Overview</a><a href="customer.html"
+        aria-current="page">Customer</a><a href="staff.html">Staff</a></nav>
+    <header class="pageHeader">
+      <h1 id="page-title">Customer support</h1>
+      <p>Create a new ticket or continue an existing conversation.</p>
+    </header>
+    <section class="panel" aria-labelledby="create-ticket-title">
+      <div class="sectionHeader"><h2 id="create-ticket-title">New ticket</h2></div>
       <div id="ticket-form-notice" class="formNotice formNotice--success" hidden role="status">Ticket created
         successfully.</div>
       <div id="ticket-form-validation" class="formNotice formNotice--error" hidden role="alert">Please correct the
         highlighted fields and try again.</div>
-      <form class="createTicket" aria-describedby="ticket-form-help ticket-form-notice ticket-form-validation">
-        <p id="ticket-form-help" class="formHelp">Fields marked <span aria-hidden="true">*</span> are required. Ticket
-          submission will be enabled when the support service is connected.</p>
-        <div class="createTicket__grid">
+      <form class="ticketForm" aria-describedby="ticket-form-notice ticket-form-validation">
+        <div class="formGrid">
           <div class="formField"><label for="customer-name">Your name <span aria-hidden="true">*</span></label><input
               id="customer-name" name="customer_name" type="text" autocomplete="name" minlength="2" maxlength="100"
-              required>
-            <p class="fieldHelp">Use the name supplied with your order.</p>
-          </div>
+              required></div>
           <div class="formField"><label for="customer-email">Your email <span aria-hidden="true">*</span></label><input
-              id="customer-email" name="customer_email" type="email" autocomplete="email" maxlength="254" required>
-            <p class="fieldHelp">We use this only for the support follow-up.</p>
-          </div>
+              id="customer-email" name="customer_email" type="email" autocomplete="email" maxlength="254" required></div>
           <div class="formField formField--wide"><label for="ticket-subject">Subject <span
                 aria-hidden="true">*</span></label><input id="ticket-subject" name="subject" type="text" minlength="5"
-              maxlength="160" required>
-            <p class="fieldHelp">Summarise the issue in a short, clear title.</p>
-          </div>
+              maxlength="160" required></div>
           <div class="formField formField--wide"><label for="ticket-message">Message <span
                 aria-hidden="true">*</span></label><textarea id="ticket-message" name="message" rows="6" minlength="10"
-              maxlength="2000" required></textarea>
-            <p class="fieldHelp">Include order, product, or delivery details that help staff investigate.</p>
-          </div>
+              maxlength="2000" required></textarea></div>
           <div class="formField"><label for="ticket-category">Category <span aria-hidden="true">*</span></label><select
               id="ticket-category" name="category" required>
               <option value="" selected>Select a category</option>
@@ -87,21 +70,13 @@
               <option value="urgent">Urgent</option>
             </select></div>
         </div>
-        <div class="createTicket__actions"><a class="button button--secondary" href="index.html">Cancel</a><button
-            class="button button--secondary" type="reset">Reset form</button><button class="button" type="button"
-            disabled aria-describedby="ticket-submit-help">Create ticket</button>
-          <p id="ticket-submit-help" class="formHelp">Submission is disabled until the customer ticket API is
-            implemented.</p>
+        <div class="formActions"><button class="button button--secondary" type="reset">Reset</button><button
+            class="button" type="button" disabled title="Ticket creation is not connected yet">Create ticket</button>
         </div>
       </form>
     </section>
-    <section class="supportShell customerLookup" aria-labelledby="existing-ticket-title">
-      <div class="createTicket__heading">
-        <div>
-          <h2 id="existing-ticket-title">Continue an existing conversation</h2>
-          <p>Enter the ticket ID and the same email address used to create it.</p>
-        </div><span class="createTicket__status">Customer replies</span>
-      </div>
+    <section class="panel customerLookup" aria-labelledby="existing-ticket-title">
+      <div class="sectionHeader"><h2 id="existing-ticket-title">Existing ticket</h2></div>
       <form class="customerLookup__form" hx-get="http://localhost:5000/support-ui/customer/tickets"
         hx-target="#customer-conversation-region" hx-swap="innerHTML" hx-indicator="#customer-ticket-loading">
         <div class="formField"><label for="existing-ticket-id">Ticket ID</label><input id="existing-ticket-id"

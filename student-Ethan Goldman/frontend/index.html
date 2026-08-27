@@ -7,7 +7,7 @@
   <meta name="description" content="Customer Support Ticket Management for ASD 2026.">
   <title>Customer Support | ASD 2026</title>
   <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=2">
-  <link rel="stylesheet" href="css/support.css">
+  <link rel="stylesheet" href="css/support.css?v=3">
   <script src="js/htmx.min.js" defer></script>
   <script src="js/support.js?v=2" defer></script>
 </head>
@@ -25,24 +25,22 @@
     </div>
   </header>
   <main class="supportPage">
-    <section class="supportHero" aria-labelledby="page-title">
-      <p class="supportEyebrow">Customer care workspace</p>
-      <h1 id="page-title">Customer Support</h1>
-      <p class="supportIntroduction">Choose the workspace that matches what you need to do. Customer requests and staff
-        ticket management are kept separate.</p>
-    </section>
+    <nav class="supportNav" aria-label="Customer Support"><a href="index.html" aria-current="page">Overview</a><a
+        href="customer.html">Customer</a><a href="staff.html">Staff</a></nav>
+    <header class="pageHeader">
+      <h1 id="page-title">Customer support</h1>
+      <p>Create a request or manage the support queue.</p>
+    </header>
     <section class="viewChooser" aria-label="Choose a Customer Support view">
-      <article class="viewChooser__card">
-        <p class="ticketDashboard__eyebrow">For customers</p>
-        <h2>Submit a support request</h2>
-        <p>Tell us about an order, product, delivery, payment, or account issue.</p><a class="button"
-          href="customer.html">Create a ticket</a>
+      <article class="panel choiceCard">
+        <h2>Customer</h2>
+        <p>Create a ticket or continue an existing conversation.</p><a class="button" href="customer.html">Open
+          customer support</a>
       </article>
-      <article class="viewChooser__card">
-        <p class="ticketDashboard__eyebrow">For support staff</p>
-        <h2>Manage the ticket queue</h2>
-        <p>Review tickets, assign work, prepare responses, and use staff-only AI guidance.</p><a
-          class="button button--secondary" href="staff.html">Open staff workspace</a>
+      <article class="panel choiceCard">
+        <h2>Staff</h2>
+        <p>Review tickets, respond to customers, and manage the queue.</p><a class="button button--secondary"
+          href="staff.html">Open staff workspace</a>
       </article>
     </section>
   </main>

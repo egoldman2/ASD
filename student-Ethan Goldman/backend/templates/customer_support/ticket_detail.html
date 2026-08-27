@@ -1,19 +1,17 @@
-<div class="staffDetail__heading">
+<div class="sectionHeader ticketHeader">
     <div>
-        <p class="ticketDashboard__eyebrow">Selected ticket</p>
-        <h2 id="ticket-detail-title">#{{ ticket.id }} · {{ ticket.subject }}</h2>
-        <p>Review the complete conversation and record the next staff action.</p>
+        <h1 id="ticket-detail-title">#{{ ticket.id }} · {{ ticket.subject }}</h1>
     </div><a class="button button--secondary" href="staff.html">Back to queue</a>
 </div>
-<div class="staffDetail__summary">
+<div class="ticketMeta">
     <div><span>Requester</span><strong>{{ ticket.customer_name }}</strong><a
             href="mailto:{{ ticket.customer_email }}">{{ ticket.customer_email }}</a></div>
     <div><span>Created</span><strong>{{ ticket.created_at|replace('T', ' ')|replace('Z', ' UTC') }}</strong></div>
     <div><span>Last updated</span><strong>{{ ticket.updated_at|replace('T', ' ')|replace('Z', ' UTC') }}</strong></div>
 </div>
 <section class="ticketConversation" aria-labelledby="conversation-title">
-    <div class="ticketConversation__heading">
-        <h3 id="conversation-title">Conversation</h3>
+    <div class="sectionHeader sectionHeader--compact">
+        <h2 id="conversation-title">Conversation</h2>
         <span>{{ ticket.message_count }} message{% if ticket.message_count != 1 %}s{% endif %}</span>
     </div>
     <ol class="messageThread">
@@ -37,13 +35,11 @@
     <textarea id="staff-message" name="message" rows="4" maxlength="2000" required></textarea>
     <div class="messageComposer__actions"><button class="button" type="submit">Add reply</button><span
             id="staff-message-loading" class="htmx-indicator" role="status">Adding reply…</span></div>
-    <p class="fieldHelp">The reply is stored in this ticket's history. Review it before using the team’s approved
-        customer communication process.</p>
 </form>
-<form class="staffTicketForm" aria-describedby="staff-ticket-help">
-    <p id="staff-ticket-help" class="formHelp">Ticket management fields will be enabled when the staff update API is
-        connected.</p>
-    <div class="createTicket__grid">
+<section class="ticketFields" aria-labelledby="ticket-fields-title">
+    <div class="sectionHeader sectionHeader--compact"><h2 id="ticket-fields-title">Ticket details</h2></div>
+    <form class="staffTicketForm">
+    <div class="formGrid">
         <div class="formField"><label for="staff-category">Category</label><select id="staff-category"
                 name="category">{% for category in ['order', 'return', 'payment', 'product', 'delivery', 'account',
                 'other'] %}<option value="{{ category }}" {% if ticket.category==category %}selected{% endif %}>{{
@@ -62,15 +58,12 @@
         <div class="formField"><label for="staff-assignee">Assigned staff</label><input id="staff-assignee"
                 name="assigned_to" type="text" value="{{ ticket.assigned_to or '' }}" maxlength="100"></div>
     </div>
-    <div class="staffTicketForm__actions"><button class="button" type="button" disabled
-            aria-describedby="staff-save-help">Save ticket fields</button>
-        <p id="staff-save-help" class="formHelp">Saving ticket fields is disabled until the staff update API is
-            implemented.</p>
+    <div class="formActions"><button class="button" type="button" disabled
+            title="Ticket updates are not connected yet">Save changes</button>
     </div>
-</form>
+</form></section>
 <details class="deletePreview">
     <summary>Delete ticket</summary>
-    <p>Deleting ticket #{{ ticket.id }} permanently removes the ticket and all {{ ticket.message_count }} messages.
-        This action will require confirmation.</p><button class="button button--danger" type="button" disabled>Confirm
-        delete</button>
+    <p>Permanently remove this ticket and its {{ ticket.message_count }} messages.</p><button
+        class="button button--danger" type="button" disabled>Delete ticket</button>
 </details>

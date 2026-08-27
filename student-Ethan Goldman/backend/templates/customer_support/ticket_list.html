@@ -1,11 +1,5 @@
 <div class="ticketQueue">
-  <div class="ticketQueue__heading">
-    <div>
-      <h2>All tickets</h2>
-      <p>Prioritise work by the next person who needs to respond.</p>
-    </div>
-    <p class="ticketCount"><strong>{{ count }}</strong> tickets</p>
-  </div>
+  <p class="queueCount"><strong>{{ count }}</strong> ticket{% if count != 1 %}s{% endif %}</p>
   <form class="ticketFilters" role="search" aria-label="Ticket search and filters"
     hx-get="http://localhost:5000/support-ui/staff/tickets" hx-target="#ticket-list-region" hx-swap="innerHTML"
     hx-trigger="submit" hx-indicator="#ticket-filter-loading">
@@ -33,11 +27,10 @@
       </select></div>
     <div class="ticketFilters__actions"><button class="button button--secondary" type="submit">Apply filters</button><span id="ticket-filter-loading" class="htmx-indicator" role="status">Loading tickets…</span></div>
   </form>
-  <div class="ticketQueue__statusSummary" aria-label="Ticket status totals"><span
-      class="ticketStatus ticketStatus--open">{{ status_counts.open }} Open <small>Staff reply
-        needed</small></span><span class="ticketStatus ticketStatus--pending">{{ status_counts.pending }} Pending
-      <small>Customer reply needed</small></span><span class="ticketStatus ticketStatus--solved">{{ status_counts.solved
-      }} Solved <small>Completed</small></span></div>
+  <div class="statusSummary" aria-label="Ticket status totals"><span class="ticketStatus ticketStatus--open">{{
+      status_counts.open }} Open<span class="visuallyHidden"> — Staff reply needed</span></span><span
+      class="ticketStatus ticketStatus--pending">{{ status_counts.pending }} Pending</span><span
+      class="ticketStatus ticketStatus--solved">{{ status_counts.solved }} Solved</span></div>
   {% if tickets %}<div class="ticketQueue__table" role="table" aria-label="All support tickets">
     <div class="ticketQueue__tableHeader" role="row"><span role="columnheader">Ticket</span><span
         role="columnheader">Requester</span><span role="columnheader">Assignee</span><span
@@ -47,9 +40,8 @@
         role="cell"><strong>#{{ ticket.id }} · {{ ticket.subject }}</strong><small>{{ ticket.category|title
           }}</small></span><span role="cell">{{ ticket.customer_name }}</span><span role="cell">{{ ticket.assigned_to or
         'Unassigned' }}</span><span role="cell">{{ ticket.updated_at|replace('T', ' ')|replace('Z', ' UTC')
-        }}</span><span role="cell" class="ticketStatus ticketStatus--{{ ticket.status }}">{{ ticket.status|title }}
-        <small>{% if ticket.status == 'open' %}Staff reply needed{% elif ticket.status == 'pending' %}Customer reply
-          needed{% else %}Completed{% endif %}</small></span></a>
+        }}</span><span role="cell" class="ticketStatus ticketStatus--{{ ticket.status }}">{{ ticket.status|title
+        }}</span></a>
     {% endfor %}
   </div>{% else %}
   <section class="ticketState ticketState--empty" aria-label="Empty ticket state">
@@ -57,7 +49,7 @@
     <p>Try clearing a search term or choosing different filters.</p>
   </section>{% endif %}
   <section class="ticketState ticketState--error" hidden aria-label="Ticket error state">
-    <h3>Tickets could not be loaded</h3>
+    <strong>Tickets could not be loaded</strong>
     <p>Please try again. If the issue continues, contact a support administrator.</p>
   </section>
 </div>

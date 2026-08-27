@@ -83,7 +83,7 @@ def test_staff_ticket_list_htmx_fragment(client):
     )
 
     assert response.status_code == 200
-    assert b"All tickets" in response.data
+    assert b'<p class="queueCount"><strong>12</strong> tickets</p>' in response.data
     assert b"#1011" in response.data
     assert b"Staff reply needed" in response.data
 
