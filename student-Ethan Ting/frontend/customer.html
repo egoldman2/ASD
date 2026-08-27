@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Account | ASD 2026</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=3">
-    <link rel="stylesheet" href="css/dashboard.css?v=2">
-    <script src="js/customer.js?v=1" defer></script>
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=7">
+    <link rel="stylesheet" href="css/dashboard.css?v=4">
+    <script src="http://localhost:8000/js/account-menu.js?v=2" defer></script>
+    <script src="js/customer.js?v=3" defer></script>
   </head>
 
   <body>
@@ -20,37 +21,44 @@
         </div>
 
         <nav class="navLinks" aria-label="Main navigation">
-          <a href="http://localhost:8001" class="navLink">Catalogue</a>
-          <a href="http://localhost:8002" class="navLink">Inventory</a>
+          <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
           <a href="http://localhost:8004" class="navLink">Orders & Returns</a>
           <a href="http://localhost:8005" class="navLink">Support</a>
-          <a href="customer.html" class="navLink active">Account</a>
+          <div class="accountMenu" data-account-menu>
+            <button
+              class="navLink accountMenuButton active"
+              type="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              data-account-trigger
+            >Account</button>
+            <div class="accountMenuPanel" aria-label="Account options">
+              <a class="accountMenuItem" href="customer.html" data-account-primary>My account</a>
+              <button
+                class="accountMenuItem"
+                type="button"
+                data-account-logout
+              >Log out</button>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
 
-    <main class="dashboardPage">
+    <main class="dashboardPage customerPage">
       <section class="dashboardHero">
         <div>
-          <p class="dashboardEyebrow">Customer account</p>
           <h1 id="customerGreeting">Welcome</h1>
           <p class="dashboardDescription">
-            Manage your profile and check current product availability.
+            Manage your profile and continue shopping from one simple account page.
           </p>
-        </div>
-        <div class="dashboardHeroActions">
-          <span class="roleBadge">Customer</span>
-          <button id="logoutButton" class="secondaryButton" type="button">Log out</button>
         </div>
       </section>
 
       <section class="dashboardGrid">
         <article class="dashboardPanel" aria-labelledby="profileTitle">
           <div class="panelHeading">
-            <div>
-              <p class="dashboardEyebrow">My details</p>
-              <h2 id="profileTitle">Profile</h2>
-            </div>
+            <h2 id="profileTitle">Profile</h2>
           </div>
 
           <form id="profileForm" class="detailsForm">
@@ -72,39 +80,6 @@
           <p id="profileMessage" class="dashboardMessage" aria-live="polite"></p>
         </article>
 
-        <aside class="dashboardPanel accountInfo" aria-labelledby="accessTitle">
-          <p class="dashboardEyebrow">Account access</p>
-          <h2 id="accessTitle">Your permissions</h2>
-          <ul class="permissionList">
-            <li>View your own customer profile</li>
-            <li>Update your own name and email</li>
-            <li>View products and stock availability</li>
-            <li>Customer administration is restricted</li>
-          </ul>
-        </aside>
-      </section>
-
-      <section id="inventory" class="dashboardPanel" aria-labelledby="inventoryTitle">
-        <div class="panelHeading panelHeading--responsive">
-          <div>
-            <p class="dashboardEyebrow">Live catalogue data</p>
-            <h2 id="inventoryTitle">Product availability</h2>
-          </div>
-          <div class="panelTools">
-            <label class="visuallyHidden" for="inventorySearch">Search products</label>
-            <input
-              id="inventorySearch"
-              class="searchField"
-              type="search"
-              placeholder="Search products"
-            >
-          </div>
-        </div>
-
-        <p id="inventoryMessage" class="dashboardMessage" aria-live="polite">
-          Loading inventory...
-        </p>
-        <div id="inventoryGrid" class="inventoryGrid"></div>
       </section>
     </main>
 

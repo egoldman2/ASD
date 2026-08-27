@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard | ASD 2026</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=3">
-    <link rel="stylesheet" href="css/dashboard.css?v=2">
-    <script src="js/admin.js" defer></script>
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=7">
+    <link rel="stylesheet" href="css/dashboard.css?v=4">
+    <script src="http://localhost:8000/js/account-menu.js?v=2" defer></script>
+    <script src="js/admin.js?v=3" defer></script>
   </head>
 
   <body>
@@ -20,11 +21,26 @@
         </div>
 
         <nav class="navLinks" aria-label="Main navigation">
-          <a href="http://localhost:8001" class="navLink">Catalogue</a>
-          <a href="http://localhost:8002" class="navLink">Inventory</a>
+          <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
           <a href="http://localhost:8004" class="navLink">Orders & Returns</a>
           <a href="http://localhost:8005" class="navLink">Support</a>
-          <a href="admin.html" class="navLink active">Account</a>
+          <div class="accountMenu" data-account-menu>
+            <button
+              class="navLink accountMenuButton active"
+              type="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              data-account-trigger
+            >Account</button>
+            <div class="accountMenuPanel" aria-label="Account options">
+              <a class="accountMenuItem" href="admin.html" data-account-primary>My account</a>
+              <button
+                class="accountMenuItem"
+                type="button"
+                data-account-logout
+              >Log out</button>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
@@ -35,10 +51,6 @@
           <p class="dashboardEyebrow">Administrator account</p>
           <h1>Customer management</h1>
           <p id="userGreeting" class="dashboardDescription">Checking your session...</p>
-        </div>
-        <div class="dashboardHeroActions">
-          <a class="primaryLink" href="http://localhost:8001">Open catalogue</a>
-          <button id="logoutButton" class="secondaryButton" type="button">Log out</button>
         </div>
       </section>
 
@@ -102,7 +114,6 @@
       <section class="dashboardPanel" aria-labelledby="customersTitle">
         <div class="panelHeading panelHeading--responsive">
           <div>
-            <p class="dashboardEyebrow">Admin CRUD</p>
             <h2 id="customersTitle">Customer accounts</h2>
           </div>
 
@@ -141,17 +152,6 @@
         </div>
       </section>
 
-      <section class="dashboardPanel integrationPanel">
-        <div>
-          <p class="dashboardEyebrow">Cross-feature integration</p>
-          <h2>Product catalogue</h2>
-          <p>
-            View the integrated product catalogue now. Editing will be connected through
-            the catalogue owner's API when its update route is available.
-          </p>
-        </div>
-        <a class="primaryLink" href="http://localhost:8001">View catalogue</a>
-      </section>
     </main>
 
     <footer class="footer">asd(2026)-group7</footer>

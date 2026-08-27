@@ -9,10 +9,11 @@
     <link rel="icon" href="data:,">
     <link
       rel="stylesheet"
-      href="http://localhost:8000/css/styles.css?v=3"
+      href="http://localhost:8000/css/styles.css?v=7"
     >
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/login.css?v=2">
 
+    <script src="http://localhost:8000/js/account-menu.js?v=2" defer></script>
     <script src="js/login.js" defer></script>
   </head>
 
@@ -26,11 +27,27 @@
         </div>
 
         <nav class="navLinks" aria-label="Main navigation">
-          <a href="http://localhost:8001" class="navLink">Catalogue</a>
-          <a href="http://localhost:8002" class="navLink">Inventory</a>
+          <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
           <a href="http://localhost:8004" class="navLink">Orders & Returns</a>
           <a href="http://localhost:8005" class="navLink">Support</a>
-          <a href="index.html" class="navLink active">Account</a>
+          <div class="accountMenu" data-account-menu>
+            <button
+              class="navLink accountMenuButton active"
+              type="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              data-account-trigger
+            >Account</button>
+            <div class="accountMenuPanel" aria-label="Account options">
+              <a class="accountMenuItem" href="index.html" data-account-primary>Sign in</a>
+              <button
+                class="accountMenuItem"
+                type="button"
+                data-account-logout
+                hidden
+              >Log out</button>
+            </div>
+          </div>
         </nav>
       </div>
     </header>

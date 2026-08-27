@@ -228,12 +228,6 @@ document.querySelector("#cancelCustomerButton").addEventListener("click", () => 
   customerFormPanel.hidden = true;
 });
 customerSearch.addEventListener("input", renderCustomers);
-document.querySelector("#logoutButton").addEventListener("click", async () => {
-  await authRequest("/api/logout", { method: "POST" });
-  window.location.replace("index.html");
-});
-
-
 async function startAdminPage() {
   try {
     const sessionResult = await authRequest("/api/session");

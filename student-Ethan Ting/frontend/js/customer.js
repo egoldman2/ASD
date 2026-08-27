@@ -1,13 +1,7 @@
 const AUTH_API_URL = "http://localhost:6002";
-const PRODUCT_API_URL = "http://localhost:5000";
 
 const profileForm = document.querySelector("#profileForm");
 const profileMessage = document.querySelector("#profileMessage");
-const inventoryMessage = document.querySelector("#inventoryMessage");
-const inventoryGrid = document.querySelector("#inventoryGrid");
-const inventorySearch = document.querySelector("#inventorySearch");
-
-let products = [];
 
 
 async function authRequest(path, options = {}) {
@@ -37,53 +31,6 @@ function showProfileMessage(message, success = false) {
 }
 
 
-function renderInventory() {
-  const searchTerm = inventorySearch.value.trim().toLowerCase();
-  const matchingProducts = products.filter((product) => (
-    product.name.toLowerCase().includes(searchTerm)
-    || product.category.toLowerCase().includes(searchTerm)
-  ));
-
-  inventoryGrid.replaceChildren();
-
-  for (const product of matchingProducts) {
-    const card = document.createElement("article");
-    const title = document.createElement("h3");
-    const meta = document.createElement("p");
-    const details = document.createElement("div");
-    const price = document.createElement("strong");
-    const stock = document.createElement("span");
-
-    card.className = "inventoryCard";
-    title.textContent = product.name;
-    meta.className = "inventoryMeta";
-    meta.textContent = product.category;
-    details.className = "inventoryDetails";
-    price.textContent = `$${Number(product.price).toFixed(2)}`;
-    stock.className = product.stock_quantity > 0
-      ? "stockBadge stockBadge--available"
-      : "stockBadge stockBadge--unavailable";
-    stock.textContent = product.stock_quantity > 0
-      ? `${product.stock_quantity} in stock`
-      : "Out of stock";
-
-    details.append(price, stock);
-    card.append(title, meta, details);
-    inventoryGrid.append(card);
-  }
-
-  if (matchingProducts.length === 0) {
-    inventoryMessage.textContent = "No products match your search.";
-  } else if (matchingProducts.length === 1) {
-    inventoryMessage.textContent = "1 product available to view.";
-  } else {
-    inventoryMessage.textContent = (
-      `${matchingProducts.length} products available to view.`
-    );
-  }
-}
-
-
 async function loadProfile() {
   const result = await authRequest("/api/profile");
   const user = result.user;
@@ -93,23 +40,6 @@ async function loadProfile() {
   );
   profileForm.elements.full_name.value = user.full_name;
   profileForm.elements.email.value = user.email;
-}
-
-
-async function loadInventory() {
-  try {
-    const response = await fetch(`${PRODUCT_API_URL}/api/products`);
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || "Unable to load products.");
-    }
-
-    products = result.products;
-    renderInventory();
-  } catch (error) {
-    inventoryMessage.textContent = "Product inventory is currently unavailable.";
-  }
 }
 
 
@@ -134,13 +64,6 @@ profileForm.addEventListener("submit", async (event) => {
 });
 
 
-inventorySearch.addEventListener("input", renderInventory);
-document.querySelector("#logoutButton").addEventListener("click", async () => {
-  await authRequest("/api/logout", { method: "POST" });
-  window.location.replace("index.html");
-});
-
-
 async function startCustomerPage() {
   try {
     const sessionResult = await authRequest("/api/session");
@@ -150,7 +73,7 @@ async function startCustomerPage() {
       return;
     }
 
-    await Promise.all([loadProfile(), loadInventory()]);
+    await loadProfile();
   } catch (error) {
     window.location.replace("index.html");
   }
