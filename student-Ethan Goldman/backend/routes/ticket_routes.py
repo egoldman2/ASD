@@ -16,6 +16,14 @@ def list_tickets():
     return jsonify(payload), status_code
 
 
+@support_ticket_blueprint.post("")
+def create_ticket():
+    payload, status_code = ticket_controller.create_ticket(
+        request.get_json(silent=True) or {}
+    )
+    return jsonify(payload), status_code
+
+
 @support_ticket_blueprint.get("/<int:ticket_id>")
 def get_ticket(ticket_id):
     payload, status_code = ticket_controller.get_ticket(ticket_id)

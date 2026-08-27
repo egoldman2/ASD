@@ -100,6 +100,46 @@ def get_ticket(ticket_id):
         return _get_ticket_with_connection(connection, ticket_id)
 
 
+def create_ticket(ticket_values, created_at):
+    """Create a ticket and its opening customer message atomically."""
+    with closing(get_database_connection()) as connection:
+        cursor = connection.execute(
+            """
+            INSERT INTO support_tickets (
+                customer_name, customer_email, subject, category, priority,
+                status, assigned_to, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, 'open', NULL, ?, ?)
+            """,
+            (
+                ticket_values["customer_name"],
+                ticket_values["customer_email"],
+                ticket_values["subject"],
+                ticket_values["category"],
+                ticket_values["priority"],
+                created_at,
+                created_at,
+            ),
+        )
+        ticket_id = cursor.lastrowid
+        connection.execute(
+            """
+            INSERT INTO support_ticket_messages (
+                ticket_id, sender_role, author_name, message, created_at
+            ) VALUES (?, 'customer', ?, ?, ?)
+            """,
+            (
+                ticket_id,
+                ticket_values["customer_name"],
+                ticket_values["message"],
+                created_at,
+            ),
+        )
+        ticket = _get_ticket_with_connection(connection, ticket_id)
+        connection.commit()
+
+    return ticket
+
+
 def create_ticket_message(ticket_id, sender_role, message, created_at):
     with closing(get_database_connection()) as connection:
         ticket = connection.execute(

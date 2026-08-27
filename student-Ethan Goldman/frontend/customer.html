@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=2">
   <link rel="stylesheet" href="css/support.css?v=3">
   <script src="js/htmx.min.js" defer></script>
-  <script src="js/support.js?v=2" defer></script>
+  <script src="js/support.js?v=3" defer></script>
 </head>
 
 <body>
@@ -33,11 +33,9 @@
     </header>
     <section class="panel" aria-labelledby="create-ticket-title">
       <div class="sectionHeader"><h2 id="create-ticket-title">New ticket</h2></div>
-      <div id="ticket-form-notice" class="formNotice formNotice--success" hidden role="status">Ticket created
-        successfully.</div>
-      <div id="ticket-form-validation" class="formNotice formNotice--error" hidden role="alert">Please correct the
-        highlighted fields and try again.</div>
-      <form class="ticketForm" aria-describedby="ticket-form-notice ticket-form-validation">
+      <div id="ticket-form-feedback" aria-live="polite"></div>
+      <form class="ticketForm" hx-post="http://localhost:5000/support-ui/customer/tickets"
+        hx-target="#ticket-form-feedback" hx-swap="innerHTML" hx-indicator="#ticket-create-loading">
         <div class="formGrid">
           <div class="formField"><label for="customer-name">Your name <span aria-hidden="true">*</span></label><input
               id="customer-name" name="customer_name" type="text" autocomplete="name" minlength="2" maxlength="100"
@@ -71,7 +69,8 @@
             </select></div>
         </div>
         <div class="formActions"><button class="button button--secondary" type="reset">Reset</button><button
-            class="button" type="button" disabled title="Ticket creation is not connected yet">Create ticket</button>
+            class="button" type="submit">Create ticket</button><span id="ticket-create-loading" class="htmx-indicator"
+              role="status">Creating ticket…</span>
         </div>
       </form>
     </section>

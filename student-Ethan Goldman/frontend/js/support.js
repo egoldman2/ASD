@@ -2,6 +2,23 @@
 // localhost:8005. CORS is configured by the shared app for these local origins.
 htmx.config.selfRequestsOnly = false;
 
+document.addEventListener("htmx:beforeSwap", (event) => {
+  const form = event.detail.requestConfig?.elt;
+
+  if (form?.matches(".ticketForm") && event.detail.xhr.status >= 400) {
+    event.detail.shouldSwap = true;
+    event.detail.isError = false;
+  }
+});
+
+document.addEventListener("htmx:afterRequest", (event) => {
+  const form = event.detail.requestConfig?.elt;
+
+  if (form?.matches(".ticketForm") && event.detail.xhr.status === 201) {
+    form.reset();
+  }
+});
+
 function loadSelectedTicket() {
   const ticketDetailRegion = document.querySelector("#ticket-detail-region");
 

@@ -1,6 +1,7 @@
 """Orchestration and validation for Customer Support tickets."""
 
 from datetime import datetime, timezone
+from email.utils import parseaddr
 import logging
 import sqlite3
 
@@ -18,6 +19,70 @@ FILTER_ENUMS = {
 }
 MESSAGE_ROLES = {"customer", "staff"}
 MAX_MESSAGE_LENGTH = 2000
+
+
+def _utc_timestamp():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace(
+        "+00:00", "Z"
+    )
+
+
+def _valid_email(value):
+    parsed_name, parsed_address = parseaddr(value)
+    return (
+        not parsed_name
+        and parsed_address == value
+        and "@" in parsed_address
+        and "." in parsed_address.rsplit("@", 1)[-1]
+    )
+
+
+def validate_ticket(values):
+    cleaned = {
+        field: str(values.get(field, "")).strip()
+        for field in (
+            "customer_name", "customer_email", "subject", "message",
+            "category", "priority",
+        )
+    }
+
+    length_rules = {
+        "customer_name": (2, 100, "Name must be between 2 and 100 characters."),
+        "subject": (5, 160, "Subject must be between 5 and 160 characters."),
+        "message": (
+            10,
+            MAX_MESSAGE_LENGTH,
+            "Message must be between 10 and 2000 characters.",
+        ),
+    }
+    for field, (minimum, maximum, error) in length_rules.items():
+        if not minimum <= len(cleaned[field]) <= maximum:
+            return None, error
+
+    email = cleaned["customer_email"]
+    if len(email) > 254 or not _valid_email(email):
+        return None, "Enter a valid email address."
+
+    for field in ("category", "priority"):
+        cleaned[field] = cleaned[field].casefold()
+        if cleaned[field] not in FILTER_ENUMS[field]:
+            return None, f"Select a valid {field}."
+
+    return cleaned, None
+
+
+def create_ticket(values):
+    ticket_values, validation_error = validate_ticket(values)
+    if validation_error:
+        return {"error": validation_error}, 400
+
+    try:
+        ticket = ticket_model.create_ticket(ticket_values, _utc_timestamp())
+    except sqlite3.Error:
+        LOGGER.exception("Unable to create support ticket")
+        return {"error": "Unable to create the support ticket."}, 500
+
+    return {"ticket": ticket}, 201
 
 
 def validate_filters(arguments):
@@ -116,9 +181,7 @@ def add_ticket_message(ticket_id, values, fixed_sender_role=None):
     if len(message) > MAX_MESSAGE_LENGTH:
         return {"error": "Message must be 2000 characters or fewer."}, 400
 
-    created_at = datetime.now(timezone.utc).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    created_at = _utc_timestamp()
     try:
         created_message = ticket_model.create_ticket_message(
             ticket_id, sender_role, message, created_at

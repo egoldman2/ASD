@@ -83,6 +83,17 @@ def get_customer_ticket():
     return render_template("customer_support/customer_conversation.html", **payload)
 
 
+@support_customer_ui_blueprint.post("")
+def create_customer_ticket():
+    payload, status_code = ticket_controller.create_ticket(request.form)
+    if status_code != 201:
+        return render_template("customer_support/notice.html", **payload), status_code
+
+    return render_template(
+        "customer_support/ticket_created.html", ticket=payload["ticket"]
+    ), status_code
+
+
 @support_customer_ui_blueprint.post("/<int:ticket_id>/messages")
 def add_customer_message(ticket_id):
     payload, status_code = ticket_controller.add_customer_ticket_message(
