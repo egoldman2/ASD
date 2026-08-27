@@ -85,6 +85,40 @@ def create_ticket(values):
     return {"ticket": ticket}, 201
 
 
+def validate_ticket_update(values):
+    cleaned = {}
+    for field in ("category", "priority", "status"):
+        value = str(values.get(field, "")).strip().casefold()
+        if value not in FILTER_ENUMS[field]:
+            return None, f"Select a valid {field}."
+        cleaned[field] = value
+
+    assigned_to = str(values.get("assigned_to", "")).strip()
+    if assigned_to and not 2 <= len(assigned_to) <= 100:
+        return None, "Assigned staff must be between 2 and 100 characters."
+    cleaned["assigned_to"] = assigned_to or None
+    return cleaned, None
+
+
+def update_ticket(ticket_id, values):
+    ticket_values, validation_error = validate_ticket_update(values)
+    if validation_error:
+        return {"error": validation_error}, 400
+
+    try:
+        ticket = ticket_model.update_ticket(
+            ticket_id, ticket_values, _utc_timestamp()
+        )
+    except sqlite3.Error:
+        LOGGER.exception("Unable to update support ticket %s", ticket_id)
+        return {"error": "Unable to update the support ticket."}, 500
+
+    if ticket is None:
+        return {"error": "Support ticket not found."}, 404
+
+    return {"ticket": ticket}, 200
+
+
 def validate_filters(arguments):
     filters = {}
 

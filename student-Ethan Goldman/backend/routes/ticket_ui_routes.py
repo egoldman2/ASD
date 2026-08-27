@@ -38,6 +38,30 @@ def get_ticket(ticket_id):
     return render_template("customer_support/ticket_detail.html", **payload)
 
 
+@support_ticket_ui_blueprint.put("/<int:ticket_id>")
+def update_ticket(ticket_id):
+    payload, status_code = ticket_controller.update_ticket(ticket_id, request.form)
+    if status_code not in (200, 400):
+        return render_template("customer_support/notice.html", **payload), status_code
+
+    if status_code == 400:
+        ticket_payload, ticket_status = ticket_controller.get_ticket(ticket_id)
+        if ticket_status != 200:
+            return (
+                render_template("customer_support/notice.html", **ticket_payload),
+                ticket_status,
+            )
+    else:
+        ticket_payload = payload
+
+    return render_template(
+        "customer_support/ticket_detail.html",
+        **ticket_payload,
+        update_notice="Ticket details updated." if status_code == 200 else None,
+        update_error=payload.get("error") if status_code == 400 else None,
+    ), status_code
+
+
 @support_ticket_ui_blueprint.post("/<int:ticket_id>/messages")
 def add_staff_message(ticket_id):
     payload, status_code = ticket_controller.add_ticket_message(

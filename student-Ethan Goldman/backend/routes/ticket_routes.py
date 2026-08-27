@@ -30,6 +30,14 @@ def get_ticket(ticket_id):
     return jsonify(payload), status_code
 
 
+@support_ticket_blueprint.put("/<int:ticket_id>")
+def update_ticket(ticket_id):
+    payload, status_code = ticket_controller.update_ticket(
+        ticket_id, request.get_json(silent=True) or {}
+    )
+    return jsonify(payload), status_code
+
+
 @support_ticket_blueprint.post("/<int:ticket_id>/messages")
 def add_ticket_message(ticket_id):
     payload, status_code = ticket_controller.add_ticket_message(

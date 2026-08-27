@@ -140,6 +140,33 @@ def create_ticket(ticket_values, created_at):
     return ticket
 
 
+def update_ticket(ticket_id, ticket_values, updated_at):
+    with closing(get_database_connection()) as connection:
+        cursor = connection.execute(
+            """
+            UPDATE support_tickets
+            SET category = ?, priority = ?, status = ?, assigned_to = ?,
+                updated_at = ?
+            WHERE id = ?
+            """,
+            (
+                ticket_values["category"],
+                ticket_values["priority"],
+                ticket_values["status"],
+                ticket_values["assigned_to"],
+                updated_at,
+                ticket_id,
+            ),
+        )
+        if cursor.rowcount == 0:
+            return None
+
+        ticket = _get_ticket_with_connection(connection, ticket_id)
+        connection.commit()
+
+    return ticket
+
+
 def create_ticket_message(ticket_id, sender_role, message, created_at):
     with closing(get_database_connection()) as connection:
         ticket = connection.execute(

@@ -38,16 +38,17 @@
 </form>
 <section class="ticketFields" aria-labelledby="ticket-fields-title">
     <div class="sectionHeader sectionHeader--compact"><h2 id="ticket-fields-title">Ticket details</h2></div>
-    <form class="staffTicketForm">
+    {% if update_notice %}<div class="formNotice formNotice--success" role="status">{{ update_notice }}</div>{% endif %}
+    {% if update_error %}<div class="formNotice formNotice--error" role="alert">{{ update_error }}</div>{% endif %}
+    <form class="staffTicketForm" hx-put="http://localhost:5000/support-ui/staff/tickets/{{ ticket.id }}"
+        hx-target="#ticket-detail-region" hx-swap="innerHTML" hx-indicator="#ticket-update-loading">
     <div class="formGrid">
         <div class="formField"><label for="staff-category">Category</label><select id="staff-category"
                 name="category">{% for category in ['order', 'return', 'payment', 'product', 'delivery', 'account',
                 'other'] %}<option value="{{ category }}" {% if ticket.category==category %}selected{% endif %}>{{
                     category|title }}</option>{% endfor %}</select></div>
         <div class="formField"><label for="staff-priority">Priority</label><select id="staff-priority"
-                name="priority">{% for priority in ['low', 'medium', 'high', 'urgent'] %}<option value="{{ priority }}"
-                    {% if ticket.priority==priority %}selected{% endif %}>{{ priority|title }}</option>{% endfor
-                %}</select></div>
+                name="priority">{% for priority in ['low', 'medium', 'high', 'urgent'] %}<option value="{{ priority }}" {% if ticket.priority==priority %}selected{% endif %}>{{ priority|title }}</option>{% endfor %}</select></div>
         <div class="formField"><label for="staff-status">Status</label><select id="staff-status" name="status">
                 <option value="open" {% if ticket.status=='open' %}selected{% endif %}>Open — staff reply needed
                 </option>
@@ -58,8 +59,8 @@
         <div class="formField"><label for="staff-assignee">Assigned staff</label><input id="staff-assignee"
                 name="assigned_to" type="text" value="{{ ticket.assigned_to or '' }}" maxlength="100"></div>
     </div>
-    <div class="formActions"><button class="button" type="button" disabled
-            title="Ticket updates are not connected yet">Save changes</button>
+    <div class="formActions"><button class="button" type="submit">Save changes</button><span
+            id="ticket-update-loading" class="htmx-indicator" role="status">Saving changes…</span>
     </div>
 </form></section>
 <details class="deletePreview">

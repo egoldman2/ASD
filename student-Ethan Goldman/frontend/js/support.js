@@ -5,7 +5,10 @@ htmx.config.selfRequestsOnly = false;
 document.addEventListener("htmx:beforeSwap", (event) => {
   const form = event.detail.requestConfig?.elt;
 
-  if (form?.matches(".ticketForm") && event.detail.xhr.status >= 400) {
+  if (
+    form?.matches(".ticketForm, .staffTicketForm") &&
+    event.detail.xhr.status >= 400
+  ) {
     event.detail.shouldSwap = true;
     event.detail.isError = false;
   }
