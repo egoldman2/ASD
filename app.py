@@ -35,6 +35,9 @@ def create_app():
     support_ticket_ui_routes = import_module(
         "student-Ethan Goldman.backend.routes.ticket_ui_routes"
     )
+    support_ai_routes = import_module(
+        "student-Ethan Goldman.backend.routes.ai_routes"
+    )
     support_init_db.initialize_database()
     app.register_blueprint(product_routes.product_blueprint)
     app.register_blueprint(cart_routes.cart_blueprint)
@@ -47,6 +50,8 @@ def create_app():
     app.register_blueprint(
         support_ticket_ui_routes.support_customer_ui_blueprint
     )
+    app.register_blueprint(support_ai_routes.support_ai_blueprint)
+    app.register_blueprint(support_ai_routes.support_ai_ui_blueprint)
 
     @app.after_request
     def allow_frontend_requests(response):

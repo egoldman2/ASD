@@ -6,7 +6,9 @@ document.addEventListener("htmx:beforeSwap", (event) => {
   const form = event.detail.requestConfig?.elt;
 
   if (
-    form?.matches(".ticketForm, .staffTicketForm, .deleteTicketButton") &&
+    form?.matches(
+      ".ticketForm, .staffTicketForm, .deleteTicketButton, .aiAnalyseButton"
+    ) &&
     event.detail.xhr.status >= 400
   ) {
     event.detail.shouldSwap = true;
@@ -29,7 +31,16 @@ function loadSelectedTicket() {
     return;
   }
 
-  const ticketId = new URLSearchParams(window.location.search).get("ticket") || "1011";
+  const requestedTicketId = new URLSearchParams(window.location.search).get("ticket");
+  const ticketId = /^\d+$/.test(requestedTicketId || "") ? requestedTicketId : "1011";
+  const analyseButton = document.querySelector("#analyse-ticket-button");
+  if (analyseButton) {
+    analyseButton.setAttribute(
+      "hx-post",
+      `http://localhost:5000/support-ui/staff/tickets/${ticketId}/ai-analysis`
+    );
+    htmx.process(analyseButton);
+  }
   htmx.ajax("GET", `http://localhost:5000/support-ui/staff/tickets/${ticketId}`, {
     target: "#ticket-detail-region",
     swap: "innerHTML",

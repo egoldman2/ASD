@@ -614,6 +614,44 @@
   color: #982f2f;
 }
 
+.aiResult {
+  margin-top: 1rem;
+}
+
+.aiResult__labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0;
+}
+
+.aiResult__labels span {
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: var(--support-soft);
+  color: var(--support-blue);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.aiResult h4 {
+  margin: 0.85rem 0 0.3rem;
+  color: var(--support-navy);
+}
+
+.aiResult p {
+  margin: 0;
+  color: var(--support-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.aiResult__draft {
+  padding: 0.85rem;
+  border-left: 3px solid var(--support-blue);
+  background: var(--support-soft);
+}
+
 .workflowSteps {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
