@@ -27,6 +27,7 @@ services:
       OLLAMA_MODEL: qwen2.5:0.5b
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
+      - ./student-Ethan Goldman/database:/app/student-Ethan Goldman/database
 
   ethan-frontend:
     build:
@@ -70,6 +71,14 @@ services:
       target: frontend
     ports:
       - "8004:80"
+
+  customer-support:
+    build:
+      context: .
+      dockerfile: student-Ethan Goldman/Dockerfile
+      target: frontend
+    ports:
+      - "8005:80"
 
 volumes:
   ethan-user-data:

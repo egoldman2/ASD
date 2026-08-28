@@ -1,0 +1,55 @@
+<div class="ticketQueue">
+  <p class="queueCount"><strong>{{ count }}</strong> ticket{% if count != 1 %}s{% endif %}</p>
+  <form class="ticketFilters" role="search" aria-label="Ticket search and filters"
+    hx-get="http://localhost:5000/support-ui/staff/tickets" hx-target="#ticket-list-region" hx-swap="innerHTML"
+    hx-trigger="submit" hx-indicator="#ticket-filter-loading">
+    <div class="ticketFilters__search"><label for="ticket-search">Search tickets</label><input id="ticket-search"
+        name="search" type="search" value="{{ filters.search or '' }}" placeholder="Search requester, subject, email, or ID"></div>
+    <div class="ticketFilters__select"><label for="filter-status">Status</label><select id="filter-status" name="status">
+        <option value="">All statuses</option>
+        <option value="open" {% if filters.status == 'open' %}selected{% endif %}>Open — staff reply needed</option>
+        <option value="pending" {% if filters.status == 'pending' %}selected{% endif %}>Pending — customer reply needed</option>
+        <option value="solved" {% if filters.status == 'solved' %}selected{% endif %}>Solved</option>
+      </select></div>
+    <div class="ticketFilters__select"><label for="filter-priority">Priority</label><select id="filter-priority" name="priority">
+        <option value="">All priorities</option>
+        {% for priority in ['low', 'medium', 'high', 'urgent'] %}<option value="{{ priority }}" {% if filters.priority == priority %}selected{% endif %}>{{ priority|title }}</option>{% endfor %}
+      </select></div>
+    <div class="ticketFilters__select"><label for="filter-category">Category</label><select id="filter-category" name="category">
+        <option value="">All categories</option>
+        {% for category in ['order', 'return', 'payment', 'product', 'delivery', 'account', 'other'] %}<option value="{{ category }}" {% if filters.category == category %}selected{% endif %}>{{ category|title }}</option>{% endfor %}
+      </select></div>
+    <div class="ticketFilters__select"><label for="filter-assignee">Assignee</label><select id="filter-assignee" name="assigned_to">
+        <option value="">All staff</option>
+        <option value="Alex Morgan" {% if filters.assigned_to == 'Alex Morgan' %}selected{% endif %}>Alex Morgan</option>
+        <option value="Jordan Lee" {% if filters.assigned_to == 'Jordan Lee' %}selected{% endif %}>Jordan Lee</option>
+        <option value="unassigned" {% if filters.assigned_to == 'unassigned' %}selected{% endif %}>Unassigned</option>
+      </select></div>
+    <div class="ticketFilters__actions"><button class="button button--secondary" type="submit">Apply filters</button><span id="ticket-filter-loading" class="htmx-indicator" role="status">Loading tickets…</span></div>
+  </form>
+  <div class="statusSummary" aria-label="Ticket status totals"><span class="ticketStatus ticketStatus--open">{{
+      status_counts.open }} Open<span class="visuallyHidden"> — Staff reply needed</span></span><span
+      class="ticketStatus ticketStatus--pending">{{ status_counts.pending }} Pending</span><span
+      class="ticketStatus ticketStatus--solved">{{ status_counts.solved }} Solved</span></div>
+  {% if tickets %}<div class="ticketQueue__table" role="table" aria-label="All support tickets">
+    <div class="ticketQueue__tableHeader" role="row"><span role="columnheader">Ticket</span><span
+        role="columnheader">Requester</span><span role="columnheader">Assignee</span><span
+        role="columnheader">Updated</span><span role="columnheader">Status</span></div>
+    {% for ticket in tickets %}
+    <a class="ticketRow" href="staff-ticket.html?ticket={{ ticket.id }}" role="row"><span class="ticketRow__subject"
+        role="cell"><strong>#{{ ticket.id }} · {{ ticket.subject }}</strong><small>{{ ticket.category|title
+          }}</small></span><span role="cell">{{ ticket.customer_name }}</span><span role="cell">{{ ticket.assigned_to or
+        'Unassigned' }}</span><span role="cell">{{ ticket.updated_at|replace('T', ' ')|replace('Z', ' UTC')
+        }}</span><span role="cell" class="ticketStatus ticketStatus--{{ ticket.status }}">{{ ticket.status|title
+        }}</span></a>
+    {% endfor %}
+  </div>{% else %}
+  <section class="ticketState ticketState--empty" aria-label="Empty ticket state">
+    <h3>No tickets found</h3>
+    <p>Try clearing a search term or choosing different filters.</p>
+  </section>{% endif %}
+  <section class="ticketState ticketState--error" hidden aria-label="Ticket error state">
+    <strong>Tickets could not be loaded</strong>
+    <p>Please try again. If the issue continues, contact a support administrator.</p>
+  </section>
+</div>
