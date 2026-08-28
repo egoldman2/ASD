@@ -119,6 +119,22 @@ def update_ticket(ticket_id, values):
     return {"ticket": ticket}, 200
 
 
+def delete_ticket(ticket_id):
+    try:
+        deleted = ticket_model.delete_ticket(ticket_id)
+    except sqlite3.Error:
+        LOGGER.exception("Unable to delete support ticket %s", ticket_id)
+        return {"error": "Unable to delete the support ticket."}, 500
+
+    if not deleted:
+        return {"error": "Support ticket not found."}, 404
+
+    return {
+        "message": "Support ticket deleted.",
+        "ticket_id": ticket_id,
+    }, 200
+
+
 def validate_filters(arguments):
     filters = {}
 

@@ -167,6 +167,19 @@ def update_ticket(ticket_id, ticket_values, updated_at):
     return ticket
 
 
+def delete_ticket(ticket_id):
+    with closing(get_database_connection()) as connection:
+        cursor = connection.execute(
+            "DELETE FROM support_tickets WHERE id = ?",
+            (ticket_id,),
+        )
+        if cursor.rowcount == 0:
+            return False
+
+        connection.commit()
+    return True
+
+
 def create_ticket_message(ticket_id, sender_role, message, created_at):
     with closing(get_database_connection()) as connection:
         ticket = connection.execute(

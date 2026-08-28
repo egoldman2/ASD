@@ -66,5 +66,10 @@
 <details class="deletePreview">
     <summary>Delete ticket</summary>
     <p>Permanently remove this ticket and its {{ ticket.message_count }} messages.</p><button
-        class="button button--danger" type="button" disabled>Delete ticket</button>
+        class="button button--danger deleteTicketButton" type="button"
+        hx-delete="http://localhost:5000/support-ui/staff/tickets/{{ ticket.id }}"
+        hx-target="#ticket-detail-region" hx-swap="innerHTML"
+        hx-confirm="Delete ticket #{{ ticket.id }} and its entire conversation? This cannot be undone."
+        hx-indicator="#ticket-delete-loading">Delete ticket</button><span id="ticket-delete-loading"
+        class="htmx-indicator" role="status">Deleting ticket…</span>
 </details>

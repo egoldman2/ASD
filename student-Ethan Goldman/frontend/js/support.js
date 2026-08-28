@@ -6,7 +6,7 @@ document.addEventListener("htmx:beforeSwap", (event) => {
   const form = event.detail.requestConfig?.elt;
 
   if (
-    form?.matches(".ticketForm, .staffTicketForm") &&
+    form?.matches(".ticketForm, .staffTicketForm, .deleteTicketButton") &&
     event.detail.xhr.status >= 400
   ) {
     event.detail.shouldSwap = true;

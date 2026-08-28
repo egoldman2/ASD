@@ -38,6 +38,12 @@ def update_ticket(ticket_id):
     return jsonify(payload), status_code
 
 
+@support_ticket_blueprint.delete("/<int:ticket_id>")
+def delete_ticket(ticket_id):
+    payload, status_code = ticket_controller.delete_ticket(ticket_id)
+    return jsonify(payload), status_code
+
+
 @support_ticket_blueprint.post("/<int:ticket_id>/messages")
 def add_ticket_message(ticket_id):
     payload, status_code = ticket_controller.add_ticket_message(

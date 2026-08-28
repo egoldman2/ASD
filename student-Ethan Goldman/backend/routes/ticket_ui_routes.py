@@ -62,6 +62,17 @@ def update_ticket(ticket_id):
     ), status_code
 
 
+@support_ticket_ui_blueprint.delete("/<int:ticket_id>")
+def delete_ticket(ticket_id):
+    payload, status_code = ticket_controller.delete_ticket(ticket_id)
+    if status_code != 200:
+        return render_template("customer_support/notice.html", **payload), status_code
+
+    return render_template(
+        "customer_support/ticket_deleted.html", ticket_id=payload["ticket_id"]
+    )
+
+
 @support_ticket_ui_blueprint.post("/<int:ticket_id>/messages")
 def add_staff_message(ticket_id):
     payload, status_code = ticket_controller.add_ticket_message(
