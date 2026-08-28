@@ -28,6 +28,41 @@ services:
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
 
+  ethan-frontend:
+    build:
+      context: .
+      dockerfile: student-Ethan Ting/Dockerfile
+      target: frontend
+    ports:
+      - "8003:80"
+    depends_on:
+      - ethan-backend
+
+  ethan-backend:
+    build:
+      context: .
+      dockerfile: student-Ethan Ting/Dockerfile
+      target: backend
+    ports:
+      - "6002:6002"
+    environment:
+      DATABASE_API_URL: http://ethan-database:6003
+      SESSION_SECRET: ${ETHAN_SESSION_SECRET:-release-0-local-secret}
+    depends_on:
+      - ethan-database
+
+  ethan-database:
+    build:
+      context: .
+      dockerfile: student-Ethan Ting/Dockerfile
+      target: database
+    expose:
+      - "6003"
+    environment:
+      DATABASE_PATH: /data/users.db
+    volumes:
+      - ethan-user-data:/data
+
   order-returns-frontend:
     build:
       context: .
@@ -35,3 +70,6 @@ services:
       target: frontend
     ports:
       - "8004:80"
+
+volumes:
+  ethan-user-data:
