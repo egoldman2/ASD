@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ASD 2026 Release 0</title>
-    <link rel="stylesheet" href="css/styles.css?v=2">
+    <link rel="stylesheet" href="css/styles.css?v=7">
+    <script src="js/account-menu.js?v=2" defer></script>
   </head>
   <body>
     <header class="navbar">
@@ -17,10 +18,30 @@
 
         <nav class="navLinks" aria-label="Main navigation">
           <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
-          <a href="http://localhost:8002" class="navLink">Inventory Management</a>
-          <a href="http://localhost:8003" class="navLink">Customer & Loyalty</a>
-          <a href="http://localhost:8004" class="navLink">Order & Returns</a>
-          <a href="http://localhost:8005" class="navLink">Customer Support</a>
+          <a href="http://localhost:8004" class="navLink">Orders & Returns</a>
+          <a href="http://localhost:8005" class="navLink">Support</a>
+          <div class="accountMenu" data-account-menu>
+            <button
+              class="navLink accountMenuButton"
+              type="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              data-account-trigger
+            >Account</button>
+            <div class="accountMenuPanel" aria-label="Account options">
+              <a
+                class="accountMenuItem"
+                href="http://localhost:8003"
+                data-account-primary
+              >Sign in</a>
+              <button
+                class="accountMenuItem"
+                type="button"
+                data-account-logout
+                hidden
+              >Log out</button>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
@@ -31,8 +52,8 @@
           <p class="heroEyebrow">Release 0 Online Shopping Platform</p>
           <h1>AI-Powered Online Marketplace</h1>
           <p class="heroDescription">
-            A smart shopping platform that connects product browsing, inventory management,
-            customer loyalty, orders, returns, and customer support in one integrated system.
+            A smart shopping platform that connects product browsing, customer accounts,
+            orders, returns, and customer support in one integrated system.
           </p>
 
         </div>
@@ -44,18 +65,22 @@
             <span></span>
           </div>
           <div class="previewContent">
-            <div class="previewCard">
+            <a class="previewCard" href="http://localhost:8001">
               <strong>Product Catalogue</strong>
               <p>Browse products and view item details.</p>
-            </div>
-            <div class="previewCard">
+            </a>
+            <a class="previewCard" href="http://localhost:8003">
+              <strong>Customer & Loyalty</strong>
+              <p>Sign in and manage your customer account.</p>
+            </a>
+            <a class="previewCard" href="http://localhost:8004">
               <strong>Order & Returns</strong>
               <p>Manage purchases, orders, and return requests.</p>
-            </div>
-            <div class="previewCard">
+            </a>
+            <a class="previewCard" href="http://localhost:8005">
               <strong>Customer Support</strong>
               <p>Use AI-assisted support for shopping questions.</p>
-            </div>
+            </a>
           </div>
         </div>
       </section>

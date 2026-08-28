@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard | ASD 2026</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=7">
+    <link rel="stylesheet" href="css/dashboard.css?v=4">
+    <script src="http://localhost:8000/js/account-menu.js?v=2" defer></script>
+    <script src="js/admin.js?v=3" defer></script>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <div class="navContainer">
+        <div class="navLogo">
+          <a href="http://localhost:8000" class="logoLink">
+            <span class="logoMain">ASD 2026</span>
+          </a>
+        </div>
+
+        <nav class="navLinks" aria-label="Main navigation">
+          <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
+          <a href="http://localhost:8004" class="navLink">Orders & Returns</a>
+          <a href="http://localhost:8005" class="navLink">Support</a>
+          <div class="accountMenu" data-account-menu>
+            <button
+              class="navLink accountMenuButton active"
+              type="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              data-account-trigger
+            >Account</button>
+            <div class="accountMenuPanel" aria-label="Account options">
+              <a class="accountMenuItem" href="admin.html" data-account-primary>My account</a>
+              <button
+                class="accountMenuItem"
+                type="button"
+                data-account-logout
+              >Log out</button>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="dashboardPage">
+      <section class="dashboardHero">
+        <div>
+          <p class="dashboardEyebrow">Administrator account</p>
+          <h1>Customer management</h1>
+          <p id="userGreeting" class="dashboardDescription">Checking your session...</p>
+        </div>
+      </section>
+
+      <section class="summaryGrid" aria-label="Customer summary">
+        <article class="summaryCard">
+          <span class="summaryLabel">Total customers</span>
+          <strong id="totalCustomers">0</strong>
+        </article>
+        <article class="summaryCard">
+          <span class="summaryLabel">Active accounts</span>
+          <strong id="activeCustomers">0</strong>
+        </article>
+        <article class="summaryCard">
+          <span class="summaryLabel">Disabled accounts</span>
+          <strong id="disabledCustomers">0</strong>
+        </article>
+      </section>
+
+      <section id="customerFormPanel" class="dashboardPanel" hidden>
+        <div class="panelHeading">
+          <div>
+            <p class="dashboardEyebrow">Account details</p>
+            <h2 id="customerFormTitle">Create customer</h2>
+          </div>
+          <button id="cancelCustomerButton" class="secondaryButton" type="button">Cancel</button>
+        </div>
+
+        <form id="customerForm" class="detailsForm">
+          <input id="customerId" name="customerId" type="hidden">
+
+          <div class="formField">
+            <label for="customerName">Full name</label>
+            <input id="customerName" name="full_name" type="text" required>
+          </div>
+
+          <div class="formField">
+            <label for="customerEmail">Email address</label>
+            <input id="customerEmail" name="email" type="email" required>
+          </div>
+
+          <div id="customerPasswordField" class="formField">
+            <label for="customerPassword">Temporary password</label>
+            <input
+              id="customerPassword"
+              name="password"
+              type="password"
+              minlength="8"
+              autocomplete="new-password"
+            >
+            <small>Use at least 8 characters.</small>
+          </div>
+
+          <div class="formActions">
+            <button id="saveCustomerButton" class="primaryButton" type="submit">
+              Save customer
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="dashboardPanel" aria-labelledby="customersTitle">
+        <div class="panelHeading panelHeading--responsive">
+          <div>
+            <h2 id="customersTitle">Customer accounts</h2>
+          </div>
+
+          <div class="panelTools">
+            <label class="visuallyHidden" for="customerSearch">Search customers</label>
+            <input
+              id="customerSearch"
+              class="searchField"
+              type="search"
+              placeholder="Search name or email"
+            >
+            <button id="newCustomerButton" class="primaryButton" type="button">
+              Add customer
+            </button>
+          </div>
+        </div>
+
+        <p id="adminMessage" class="dashboardMessage" aria-live="polite"></p>
+
+        <div class="tableWrapper">
+          <table class="dataTable">
+            <thead>
+              <tr>
+                <th scope="col">Customer</th>
+                <th scope="col">Email</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody">
+              <tr>
+                <td colspan="4">Loading customers...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">asd(2026)-group7</footer>
+  </body>
+</html>

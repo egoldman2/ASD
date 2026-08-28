@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from pathlib import Path
 
@@ -5,7 +6,9 @@ from werkzeug.security import generate_password_hash
 
 
 DATABASE_FOLDER = Path(__file__).resolve().parent
-DATABASE_PATH = DATABASE_FOLDER / "users.db"
+DATABASE_PATH = Path(
+    os.environ.get("DATABASE_PATH", DATABASE_FOLDER / "users.db")
+)
 SCHEMA_PATH = DATABASE_FOLDER / "schema.sql"
 
 USERS = [
@@ -23,6 +26,8 @@ USERS = [
 
 
 def initialise_database():
+    DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
     with sqlite3.connect(DATABASE_PATH) as connection:
         schema = SCHEMA_PATH.read_text()
         connection.executescript(schema)

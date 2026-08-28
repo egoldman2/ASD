@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Account | ASD 2026</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=7">
+    <link rel="stylesheet" href="css/dashboard.css?v=4">
+    <script src="http://localhost:8000/js/account-menu.js?v=2" defer></script>
+    <script src="js/customer.js?v=3" defer></script>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <div class="navContainer">
+        <div class="navLogo">
+          <a href="http://localhost:8000" class="logoLink">
+            <span class="logoMain">ASD 2026</span>
+          </a>
+        </div>
+
+        <nav class="navLinks" aria-label="Main navigation">
+          <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
+          <a href="http://localhost:8004" class="navLink">Orders & Returns</a>
+          <a href="http://localhost:8005" class="navLink">Support</a>
+          <div class="accountMenu" data-account-menu>
+            <button
+              class="navLink accountMenuButton active"
+              type="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              data-account-trigger
+            >Account</button>
+            <div class="accountMenuPanel" aria-label="Account options">
+              <a class="accountMenuItem" href="customer.html" data-account-primary>My account</a>
+              <button
+                class="accountMenuItem"
+                type="button"
+                data-account-logout
+              >Log out</button>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="dashboardPage customerPage">
+      <section class="dashboardHero">
+        <div>
+          <h1 id="customerGreeting">Welcome</h1>
+          <p class="dashboardDescription">
+            Manage your profile and continue shopping from one simple account page.
+          </p>
+        </div>
+      </section>
+
+      <section class="dashboardGrid">
+        <article class="dashboardPanel" aria-labelledby="profileTitle">
+          <div class="panelHeading">
+            <h2 id="profileTitle">Profile</h2>
+          </div>
+
+          <form id="profileForm" class="detailsForm">
+            <div class="formField">
+              <label for="profileName">Full name</label>
+              <input id="profileName" name="full_name" type="text" required>
+            </div>
+
+            <div class="formField">
+              <label for="profileEmail">Email address</label>
+              <input id="profileEmail" name="email" type="email" required>
+            </div>
+
+            <div class="formActions">
+              <button class="primaryButton" type="submit">Save changes</button>
+            </div>
+          </form>
+
+          <p id="profileMessage" class="dashboardMessage" aria-live="polite"></p>
+        </article>
+
+      </section>
+    </main>
+
+    <footer class="footer">asd(2026)-group7</footer>
+  </body>
+</html>
