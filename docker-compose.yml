@@ -79,3 +79,6 @@ services:
       target: frontend
     ports:
       - "8005:80"
+
+volumes:
+  ethan-user-data:
