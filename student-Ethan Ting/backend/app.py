@@ -167,6 +167,60 @@ def login():
         "user": safe_user,
     })
 
+
+@app.post("/api/register")
+def register():
+    data = request.get_json(silent=True) or {}
+
+    full_name = str(data.get("full_name", "")).strip()
+    email = str(data.get("email", "")).strip().lower()
+    password = str(data.get("password", ""))
+    password_confirmation = str(data.get("password_confirmation", ""))
+
+    if not full_name:
+        return jsonify({"error": "Full name is required."}), 400
+
+    if not email or "@" not in email:
+        return jsonify({"error": "A valid email is required."}), 400
+
+    if len(password) < 8:
+        return jsonify({
+            "error": "Password must contain at least 8 characters."
+        }), 400
+
+    if password != password_confirmation:
+        return jsonify({"error": "Passwords do not match."}), 400
+
+    try:
+        result = database_request(
+            "/internal/users",
+            method="POST",
+            payload={
+                "full_name": full_name,
+                "email": email,
+                "password": password,
+            },
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    created_user = result["user"]
+    safe_user = {
+        "id": created_user["id"],
+        "email": created_user["email"],
+        "full_name": created_user["full_name"],
+        "role": created_user["role"],
+    }
+
+    session.clear()
+    session["user"] = safe_user
+
+    return jsonify({
+        "message": "Account created successfully.",
+        "user": safe_user,
+    }), 201
+
+
 @app.get("/api/session")
 def current_session():
     user = session.get("user")

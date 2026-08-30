@@ -9,16 +9,17 @@
     <link rel="icon" href="data:,">
     <link
       rel="stylesheet"
-      href="http://localhost:8000/css/styles.css?v=7"
+      href="http://localhost:8000/css/styles.css?v=12"
     >
-    <link rel="stylesheet" href="css/login.css?v=2">
+    <link rel="stylesheet" href="css/login.css?v=4">
 
-    <script src="http://localhost:8000/js/account-menu.js?v=2" defer></script>
-    <script src="js/login.js" defer></script>
+    <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
+    <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+    <script src="js/login.js?v=4" defer></script>
   </head>
 
   <body>
-    <header class="navbar">
+    <header class="navbar appleNav" data-site-header data-active="account">
       <div class="navContainer">
         <div class="navLogo">
           <a href="http://localhost:8000" class="logoLink">
@@ -26,10 +27,22 @@
           </a>
         </div>
 
-        <nav class="navLinks" aria-label="Main navigation">
-          <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
-          <a href="http://localhost:8004" class="navLink">Orders & Returns</a>
+        <button class="mobileMenuButton" type="button" aria-controls="mainNavigation" aria-expanded="false" data-mobile-menu-trigger>
+          <span class="mobileMenuButtonBar" aria-hidden="true"></span>
+          <span class="mobileMenuButtonBar" aria-hidden="true"></span>
+          <span class="visuallyHidden">Menu</span>
+        </button>
+
+        <nav id="mainNavigation" class="navLinks" aria-label="Main navigation">
+          <a href="http://localhost:8001" class="navLink">Catalogue</a>
           <a href="http://localhost:8005" class="navLink">Support</a>
+          <a href="http://localhost:8001" class="navLink navSearchLink" aria-label="Search products">
+            <svg class="navSearchIcon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="6.5"></circle>
+              <path d="m15.5 15.5 5 5"></path>
+            </svg>
+            <span class="navSearchLabel">Search</span>
+          </a>
           <div class="accountMenu" data-account-menu>
             <button
               class="navLink accountMenuButton active"
@@ -37,15 +50,44 @@
               aria-expanded="false"
               aria-haspopup="true"
               data-account-trigger
-            >Account</button>
+            >
+              <span class="accountMenuIcon" aria-hidden="true"></span>
+              <span>Account</span>
+            </button>
             <div class="accountMenuPanel" aria-label="Account options">
-              <a class="accountMenuItem" href="index.html" data-account-primary>Sign in</a>
-              <button
-                class="accountMenuItem"
-                type="button"
-                data-account-logout
-                hidden
-              >Log out</button>
+              <div class="accountMenuHeader">
+                <p class="accountMenuWelcome" data-account-welcome>Welcome to ASD 2026</p>
+                <div class="accountMenuActions">
+                  <a class="accountMenuAction accountMenuActionPrimary" href="index.html" data-account-sign-in>Sign in</a>
+                  <a class="accountMenuAction accountMenuActionSecondary" href="?view=register" data-account-register>Create account</a>
+                  <a class="accountMenuAction accountMenuActionPrimary" href="customer.html" data-account-primary hidden>My account</a>
+                  <button class="accountMenuAction accountMenuActionSecondary" type="button" data-account-logout hidden>Log out</button>
+                </div>
+              </div>
+              <div class="accountMenuLinks">
+                <a class="accountMenuItem" href="index.html" data-account-profile>
+                  <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="7" r="4"></circle>
+                    <path d="M4.5 21c.8-5 3.3-7 7.5-7s6.7 2 7.5 7"></path>
+                  </svg>
+                  <span>My account</span>
+                </a>
+                <a class="accountMenuItem" href="http://localhost:8004">
+                  <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16v14H4z"></path>
+                    <path d="M7 3h10l3 4H4z"></path>
+                  </svg>
+                  <span>My orders</span>
+                </a>
+                <a class="accountMenuItem" href="http://localhost:8004">
+                  <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16v14H4z"></path>
+                    <path d="M7 3h10l3 4H4z"></path>
+                    <path d="M15 14H8m0 0 3-3m-3 3 3 3"></path>
+                  </svg>
+                  <span>My returns</span>
+                </a>
+              </div>
             </div>
           </div>
         </nav>
@@ -53,50 +95,117 @@
     </header>
 
     <main class="loginPage">
-      <section class="loginCard" aria-labelledby="loginTitle">
-        <p class="loginEyebrow">Customer & Loyalty</p>
+      <section class="loginCard">
+        <div id="loginPanel">
+          <h1 id="loginTitle">Sign in to your account</h1>
 
-        <h1 id="loginTitle">Sign in to your account</h1>
+          <p class="loginDescription">
+            Enter your account details to continue.
+          </p>
 
-        <p class="loginDescription">
-          Enter your account details to continue.
-        </p>
+          <form id="loginForm" class="loginForm">
+            <div class="formField">
+              <label for="email">Email address</label>
 
-        <form id="loginForm" class="loginForm">
-          <div class="formField">
-            <label for="email">Email address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="username"
+                required
+              >
+            </div>
 
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autocomplete="username"
-              required
-            >
-          </div>
+            <div class="formField">
+              <label for="password">Password</label>
 
-          <div class="formField">
-            <label for="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+              >
+            </div>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              required
-            >
-          </div>
+            <button id="loginButton" class="authSubmitButton" type="submit">
+              Sign in
+            </button>
 
-          <button id="loginButton" type="submit">
-            Sign in
-          </button>
+            <p
+              id="loginMessage"
+              class="loginMessage"
+              aria-live="polite"
+            ></p>
+          </form>
+        </div>
 
-          <p
-            id="loginMessage"
-            class="loginMessage"
-            aria-live="polite"
-          ></p>
-        </form>
+        <div id="registerPanel" hidden>
+          <h1 id="registerTitle">Create your account</h1>
+
+          <p class="loginDescription">
+            Register as a customer to manage your profile and use shopping features.
+          </p>
+
+          <form id="registerForm" class="loginForm">
+            <div class="formField">
+              <label for="registerName">Full name</label>
+              <input
+                id="registerName"
+                name="full_name"
+                type="text"
+                autocomplete="name"
+                required
+              >
+            </div>
+
+            <div class="formField">
+              <label for="registerEmail">Email address</label>
+              <input
+                id="registerEmail"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+              >
+            </div>
+
+            <div class="formField">
+              <label for="registerPassword">Password</label>
+              <input
+                id="registerPassword"
+                name="password"
+                type="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+              >
+              <small>Use at least 8 characters.</small>
+            </div>
+
+            <div class="formField">
+              <label for="registerPasswordConfirmation">Confirm password</label>
+              <input
+                id="registerPasswordConfirmation"
+                name="password_confirmation"
+                type="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+              >
+            </div>
+
+            <button id="registerButton" class="authSubmitButton" type="submit">
+              Create account
+            </button>
+
+            <p
+              id="registerMessage"
+              class="loginMessage"
+              aria-live="polite"
+            ></p>
+          </form>
+        </div>
       </section>
     </main>
 

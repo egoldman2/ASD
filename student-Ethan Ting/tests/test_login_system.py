@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 STUDENT_FOLDER = Path(__file__).resolve().parents[1]
@@ -65,6 +65,78 @@ def test_valid_customer_login_creates_session(auth_module, monkeypatch):
         assert session_response.get_json()["authenticated"] is True
 
 
+def test_customer_registration_creates_customer_session(auth_module, monkeypatch):
+    captured_request = {}
+
+    def create_customer(path, method="GET", payload=None):
+        captured_request.update({
+            "path": path,
+            "method": method,
+            "payload": payload,
+        })
+        return {
+            "user": {
+                "id": 12,
+                "email": payload["email"],
+                "full_name": payload["full_name"],
+                "role": "customer",
+                "is_active": 1,
+            }
+        }
+
+    monkeypatch.setattr(auth_module, "database_request", create_customer)
+
+    with auth_module.app.test_client() as client:
+        response = client.post("/api/register", json={
+            "email": "new.customer@example.test",
+            "full_name": "New Customer",
+            "password": "NewCustomerPass!2026",
+            "password_confirmation": "NewCustomerPass!2026",
+            "role": "admin",
+        })
+
+        assert response.status_code == 201
+        assert response.get_json()["user"]["role"] == "customer"
+        assert captured_request == {
+            "path": "/internal/users",
+            "method": "POST",
+            "payload": {
+                "email": "new.customer@example.test",
+                "full_name": "New Customer",
+                "password": "NewCustomerPass!2026",
+            },
+        }
+
+        session_response = client.get("/api/session")
+        assert session_response.status_code == 200
+        assert session_response.get_json()["user"]["id"] == 12
+
+
+def test_customer_registration_requires_matching_passwords(
+    auth_module,
+    monkeypatch,
+):
+    def unexpected_database_request(*args, **kwargs):
+        pytest.fail("The database should not be called for invalid input.")
+
+    monkeypatch.setattr(
+        auth_module,
+        "database_request",
+        unexpected_database_request,
+    )
+
+    with auth_module.app.test_client() as client:
+        response = client.post("/api/register", json={
+            "email": "new.customer@example.test",
+            "full_name": "New Customer",
+            "password": "NewCustomerPass!2026",
+            "password_confirmation": "DifferentPass!2026",
+        })
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Passwords do not match."
+
+
 def test_customer_is_forbidden_from_admin_api(auth_module):
     with auth_module.app.test_client() as client:
         with client.session_transaction() as login_session:
@@ -123,6 +195,23 @@ def test_database_customer_crud_uses_soft_delete(database_module):
 
         customer = create_response.get_json()["user"]
         customer_id = customer["id"]
+
+        stored_response = client.get(
+            "/internal/users/by-email?email=new.customer@example.test"
+        )
+        stored_user = stored_response.get_json()["user"]
+        assert stored_user["password_hash"] != "TemporaryPass!2026"
+        assert check_password_hash(
+            stored_user["password_hash"],
+            "TemporaryPass!2026",
+        )
+
+        duplicate_response = client.post("/internal/users", json={
+            "email": "new.customer@example.test",
+            "full_name": "Duplicate Customer",
+            "password": "DifferentPass!2026",
+        })
+        assert duplicate_response.status_code == 409
 
         update_response = client.put(
             f"/internal/users/{customer_id}",

@@ -10,7 +10,11 @@ function accountPageUrl(role) {
 
 async function configureAccountMenu(menu) {
   const trigger = menu.querySelector("[data-account-trigger]");
+  const welcomeMessage = menu.querySelector("[data-account-welcome]");
+  const signInAction = menu.querySelector("[data-account-sign-in]");
+  const registerAction = menu.querySelector("[data-account-register]");
   const primaryAction = menu.querySelector("[data-account-primary]");
+  const profileAction = menu.querySelector("[data-account-profile]");
   const logoutAction = menu.querySelector("[data-account-logout]");
 
   function setOpen(open) {
@@ -53,12 +57,22 @@ async function configureAccountMenu(menu) {
     }
 
     const result = await response.json();
-    primaryAction.textContent = "My account";
-    primaryAction.href = accountPageUrl(result.user.role);
+    const accountUrl = accountPageUrl(result.user.role);
+
+    welcomeMessage.textContent = `Welcome, ${result.user.full_name}`;
+    signInAction.hidden = true;
+    registerAction.hidden = true;
+    primaryAction.hidden = false;
+    primaryAction.href = accountUrl;
+    profileAction.hidden = true;
     logoutAction.hidden = false;
   } catch (error) {
-    primaryAction.textContent = "Sign in";
-    primaryAction.href = "http://localhost:8003";
+    welcomeMessage.textContent = "Welcome to ASD 2026";
+    signInAction.hidden = false;
+    registerAction.hidden = false;
+    primaryAction.hidden = true;
+    profileAction.hidden = false;
+    profileAction.href = "http://localhost:8003";
     logoutAction.hidden = true;
   }
 
@@ -80,4 +94,38 @@ async function configureAccountMenu(menu) {
 
 for (const menu of document.querySelectorAll("[data-account-menu]")) {
   configureAccountMenu(menu);
+}
+
+
+for (const navContainer of document.querySelectorAll(".appleNav .navContainer")) {
+  const menuButton = navContainer.querySelector("[data-mobile-menu-trigger]");
+  const navigation = navContainer.querySelector(".navLinks");
+
+  function setMobileMenuOpen(open) {
+    navContainer.classList.toggle("mobileOpen", open);
+    menuButton.setAttribute("aria-expanded", String(open));
+  }
+
+  menuButton.addEventListener("click", () => {
+    setMobileMenuOpen(!navContainer.classList.contains("mobileOpen"));
+  });
+
+  navigation.addEventListener("click", (event) => {
+    if (event.target.closest("a")) {
+      setMobileMenuOpen(false);
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!navContainer.contains(event.target)) {
+      setMobileMenuOpen(false);
+    }
+  });
+
+  navContainer.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      setMobileMenuOpen(false);
+      menuButton.focus();
+    }
+  });
 }
