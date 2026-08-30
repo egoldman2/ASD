@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from urllib.request import Request as URLRequest
 from urllib.request import urlopen
 
-from flask import Flask, jsonify, request, session
+from flask import Flask, g, jsonify, request, session
 from werkzeug.security import check_password_hash
 
 
@@ -27,8 +27,26 @@ DATABASE_API_URL = os.environ.get(
 
 ALLOWED_ORIGINS = {
     "http://localhost:8000",
+    "http://localhost:8001",
+    "http://localhost:8002",
     "http://localhost:8003",
+    "http://localhost:8004",
+    "http://localhost:8005",
 }
+
+
+def clean_text(value):
+    return value.strip() if isinstance(value, str) else ""
+
+
+def valid_email(email):
+    local_part, separator, domain = email.partition("@")
+    return (
+        bool(local_part and separator and domain)
+        and "@" not in domain
+        and not any(character.isspace() for character in email)
+        and len(email) <= 254
+    )
 
 
 def database_request(path, method="GET", payload=None):
@@ -70,14 +88,66 @@ def database_error_response(error):
             payload = {"error": "The database rejected the request."}
         return jsonify(payload), error.code
 
-    return jsonify({"error": "The user database is unavailable."}), 503
+    return jsonify({"error": "The customer database is unavailable."}), 503
+
+
+def validated_session_user():
+    """Return the current active database user, not only cookie data."""
+    if hasattr(g, "authenticated_user"):
+        return g.authenticated_user, None
+
+    cookie_user = session.get("user")
+    if cookie_user is None:
+        return None, (jsonify({"error": "You must sign in."}), 401)
+
+    if (
+        not isinstance(cookie_user, dict)
+        or not isinstance(cookie_user.get("id"), int)
+        or cookie_user.get("role") not in {"admin", "customer"}
+    ):
+        session.clear()
+        return None, (jsonify({"error": "You must sign in."}), 401)
+
+    try:
+        result = database_request(f"/internal/users/{cookie_user['id']}")
+    except HTTPError as error:
+        if error.code == 404:
+            session.clear()
+            return None, (jsonify({"error": "You must sign in."}), 401)
+        return None, database_error_response(error)
+    except URLError as error:
+        return None, database_error_response(error)
+
+    stored_user = result.get("user", {})
+    if (
+        not isinstance(stored_user, dict)
+        or stored_user.get("is_active") != 1
+        or stored_user.get("role") != cookie_user.get("role")
+        or any(
+            field not in stored_user
+            for field in ("id", "email", "full_name", "role")
+        )
+    ):
+        session.clear()
+        return None, (jsonify({"error": "You must sign in."}), 401)
+
+    safe_user = {
+        "id": stored_user["id"],
+        "email": stored_user["email"],
+        "full_name": stored_user["full_name"],
+        "role": stored_user["role"],
+    }
+    session["user"] = safe_user
+    g.authenticated_user = safe_user
+    return safe_user, None
 
 
 def login_required(function):
     @wraps(function)
     def protected_function(*args, **kwargs):
-        if session.get("user") is None:
-            return jsonify({"error": "You must sign in."}), 401
+        _, error_response = validated_session_user()
+        if error_response is not None:
+            return error_response
         return function(*args, **kwargs)
 
     return protected_function
@@ -95,6 +165,10 @@ def admin_required(function):
             return jsonify({
                 "error": "Administrator access required."
             }), 403
+
+        _, error_response = validated_session_user()
+        if error_response is not None:
+            return error_response
 
         return function(*args, **kwargs)
 
@@ -122,12 +196,29 @@ def health():
     return jsonify({"status": "healthy"})
 
 
+@app.get("/ready")
+def ready():
+    try:
+        database_health = database_request("/health")
+    except (HTTPError, URLError):
+        return jsonify({
+            "status": "starting",
+            "database": "unavailable",
+        }), 503
+
+    return jsonify({
+        "status": "ready",
+        "database": database_health.get("status", "unknown"),
+    })
+
+
 @app.post("/api/login")
 def login():
     data = request.get_json(silent=True) or {}
 
-    email = str(data.get("email", "")).strip().lower()
-    password = str(data.get("password", ""))
+    email = clean_text(data.get("email")).lower()
+    supplied_password = data.get("password")
+    password = supplied_password if isinstance(supplied_password, str) else ""
 
     if not email or not password:
         return jsonify({
@@ -172,15 +263,26 @@ def login():
 def register():
     data = request.get_json(silent=True) or {}
 
-    full_name = str(data.get("full_name", "")).strip()
-    email = str(data.get("email", "")).strip().lower()
-    password = str(data.get("password", ""))
-    password_confirmation = str(data.get("password_confirmation", ""))
+    full_name = clean_text(data.get("full_name"))
+    email = clean_text(data.get("email")).lower()
+    supplied_password = data.get("password")
+    supplied_confirmation = data.get("password_confirmation")
+    password = supplied_password if isinstance(supplied_password, str) else ""
+    password_confirmation = (
+        supplied_confirmation
+        if isinstance(supplied_confirmation, str)
+        else ""
+    )
 
     if not full_name:
         return jsonify({"error": "Full name is required."}), 400
 
-    if not email or "@" not in email:
+    if len(full_name) > 100:
+        return jsonify({
+            "error": "Full name must be 100 characters or fewer."
+        }), 400
+
+    if not valid_email(email):
         return jsonify({"error": "A valid email is required."}), 400
 
     if len(password) < 8:
@@ -223,12 +325,9 @@ def register():
 
 @app.get("/api/session")
 def current_session():
-    user = session.get("user")
-
-    if user is None:
-        return jsonify({
-            "authenticated": False
-        }), 401
+    user, error_response = validated_session_user()
+    if error_response is not None:
+        return error_response
 
     return jsonify({
         "authenticated": True,
@@ -289,6 +388,34 @@ def update_profile():
     return jsonify({"user": session["user"]})
 
 
+@app.get("/api/loyalty")
+@login_required
+def get_own_loyalty():
+    user_id = session["user"]["id"]
+
+    try:
+        result = database_request(f"/internal/loyalty/{user_id}")
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result)
+
+
+@app.get("/api/loyalty/history")
+@login_required
+def get_own_loyalty_history():
+    user_id = session["user"]["id"]
+
+    try:
+        result = database_request(
+            f"/internal/loyalty/{user_id}/transactions?limit=20"
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result)
+
+
 @app.get("/api/admin/customers")
 @admin_required
 def get_customers():
@@ -298,6 +425,51 @@ def get_customers():
         return database_error_response(error)
 
     return jsonify(result)
+
+
+@app.get("/api/admin/loyalty")
+@admin_required
+def get_all_loyalty_accounts():
+    try:
+        result = database_request("/internal/loyalty")
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result)
+
+
+@app.get("/api/admin/loyalty/<int:user_id>/history")
+@admin_required
+def get_customer_loyalty_history(user_id):
+    try:
+        result = database_request(
+            f"/internal/loyalty/{user_id}/transactions?limit=20"
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result)
+
+
+@app.post("/api/admin/loyalty/<int:user_id>/adjustments")
+@admin_required
+def create_loyalty_adjustment(user_id):
+    data = request.get_json(silent=True) or {}
+
+    try:
+        result = database_request(
+            f"/internal/loyalty/{user_id}/adjustments",
+            method="POST",
+            payload={
+                "points_change": data.get("points_change"),
+                "reason": data.get("reason"),
+                "created_by_admin_id": session["user"]["id"],
+            },
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result), 201
 
 
 @app.post("/api/admin/customers")
@@ -328,6 +500,10 @@ def update_customer(user_id):
     }
 
     try:
+        target_result = database_request(f"/internal/users/{user_id}")
+        if target_result["user"].get("role") != "customer":
+            return jsonify({"error": "Customer not found."}), 404
+
         result = database_request(
             f"/internal/users/{user_id}",
             method="PUT",

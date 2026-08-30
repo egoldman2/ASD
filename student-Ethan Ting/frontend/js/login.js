@@ -8,6 +8,14 @@ const registerButton = document.querySelector("#registerButton");
 const registerMessage = document.querySelector("#registerMessage");
 const loginPanel = document.querySelector("#loginPanel");
 const registerPanel = document.querySelector("#registerPanel");
+const loginEmail = document.querySelector("#loginEmail");
+const loginPassword = document.querySelector("#loginPassword");
+const registerName = document.querySelector("#registerName");
+const registerEmail = document.querySelector("#registerEmail");
+const registerPassword = document.querySelector("#registerPassword");
+const registerPasswordConfirmation = document.querySelector(
+  "#registerPasswordConfirmation"
+);
 
 
 function redirectForRole(user) {
@@ -35,8 +43,8 @@ function showAuthView(view) {
   registerMessage.textContent = "";
 
   const firstField = showingRegistration
-    ? registerForm.elements.full_name
-    : loginForm.elements.email;
+    ? registerName
+    : loginEmail;
   firstField.focus();
 }
 
@@ -66,8 +74,8 @@ loginForm.addEventListener("submit", async (event) => {
   loginButton.textContent = "Signing in...";
 
   const loginDetails = {
-    email: loginForm.elements.email.value,
-    password: loginForm.elements.password.value,
+    email: loginEmail.value,
+    password: loginPassword.value,
   };
 
   try {
@@ -104,15 +112,15 @@ registerForm.addEventListener("submit", async (event) => {
   registerMessage.classList.remove("success");
 
   const registrationDetails = {
-    full_name: registerForm.elements.full_name.value,
-    email: registerForm.elements.email.value,
-    password: registerForm.elements.password.value,
-    password_confirmation: registerForm.elements.password_confirmation.value,
+    full_name: registerName.value,
+    email: registerEmail.value,
+    password: registerPassword.value,
+    password_confirmation: registerPasswordConfirmation.value,
   };
 
   if (registrationDetails.password !== registrationDetails.password_confirmation) {
     registerMessage.textContent = "Passwords do not match.";
-    registerForm.elements.password_confirmation.focus();
+    registerPasswordConfirmation.focus();
     return;
   }
 

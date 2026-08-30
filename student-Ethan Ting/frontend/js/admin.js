@@ -7,8 +7,18 @@ const customerPasswordField = document.querySelector("#customerPasswordField");
 const customerPassword = document.querySelector("#customerPassword");
 const customerSearch = document.querySelector("#customerSearch");
 const adminMessage = document.querySelector("#adminMessage");
+const loyaltyAdjustmentPanel = document.querySelector("#loyaltyAdjustmentPanel");
+const loyaltyAdjustmentForm = document.querySelector("#loyaltyAdjustmentForm");
+const adminLoyaltyHistoryBody = document.querySelector("#adminLoyaltyHistoryBody");
+const loyaltyCustomerId = document.querySelector("#loyaltyCustomerId");
+const pointsChangeInput = document.querySelector("#pointsChange");
+const pointsReasonInput = document.querySelector("#pointsReason");
+const customerIdInput = document.querySelector("#customerId");
+const customerNameInput = document.querySelector("#customerName");
+const customerEmailInput = document.querySelector("#customerEmail");
 
 let customers = [];
+let loyaltyAccounts = [];
 
 
 async function authRequest(path, options = {}) {
@@ -46,6 +56,53 @@ function updateSummary() {
   document.querySelector("#disabledCustomers").textContent = customers.filter(
     (customer) => customer.is_active === 0
   ).length;
+  document.querySelector("#totalLoyaltyPoints").textContent = loyaltyAccounts.reduce(
+    (total, loyalty) => total + loyalty.points_balance,
+    0
+  ).toLocaleString("en-AU");
+}
+
+
+function formatDate(dateValue) {
+  return new Intl.DateTimeFormat("en-AU", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(`${dateValue.replace(" ", "T")}Z`));
+}
+
+
+function renderLoyaltyHistory(transactions) {
+  adminLoyaltyHistoryBody.replaceChildren();
+
+  if (transactions.length === 0) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 3;
+    cell.textContent = "No points activity yet.";
+    row.append(cell);
+    adminLoyaltyHistoryBody.append(row);
+    return;
+  }
+
+  for (const transaction of transactions) {
+    const row = document.createElement("tr");
+    const dateCell = document.createElement("td");
+    const reasonCell = document.createElement("td");
+    const pointsCell = document.createElement("td");
+
+    dateCell.textContent = formatDate(transaction.created_at);
+    reasonCell.textContent = transaction.reason;
+    pointsCell.className = transaction.points_change > 0
+      ? "pointsChange pointsChange--positive"
+      : "pointsChange pointsChange--negative";
+    pointsCell.textContent = transaction.points_change > 0
+      ? `+${transaction.points_change}`
+      : String(transaction.points_change);
+
+    row.append(dateCell, reasonCell, pointsCell);
+    adminLoyaltyHistoryBody.append(row);
+  }
 }
 
 
@@ -71,7 +128,7 @@ function renderCustomers() {
   if (matchingCustomers.length === 0) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 4;
+    cell.colSpan = 6;
     cell.textContent = "No customers match your search.";
     row.append(cell);
     customerTableBody.append(row);
@@ -82,6 +139,8 @@ function renderCustomers() {
     const row = document.createElement("tr");
     const nameCell = document.createElement("td");
     const emailCell = document.createElement("td");
+    const tierCell = document.createElement("td");
+    const pointsCell = document.createElement("td");
     const statusCell = document.createElement("td");
     const actionCell = document.createElement("td");
     const statusBadge = document.createElement("span");
@@ -89,6 +148,8 @@ function renderCustomers() {
 
     nameCell.textContent = customer.full_name;
     emailCell.textContent = customer.email;
+    tierCell.textContent = customer.loyalty?.tier || "Bronze";
+    pointsCell.textContent = (customer.loyalty?.points_balance || 0).toLocaleString("en-AU");
 
     statusBadge.className = customer.is_active === 1
       ? "statusBadge statusBadge--active"
@@ -97,6 +158,11 @@ function renderCustomers() {
     statusCell.append(statusBadge);
 
     actions.className = "tableActions";
+    actions.append(createActionButton(
+      "Adjust points",
+      "actionButton",
+      () => openLoyaltyForm(customer)
+    ));
     actions.append(createActionButton(
       "Edit",
       "actionButton",
@@ -118,15 +184,36 @@ function renderCustomers() {
     }
 
     actionCell.append(actions);
-    row.append(nameCell, emailCell, statusCell, actionCell);
+    row.append(nameCell, emailCell, tierCell, pointsCell, statusCell, actionCell);
     customerTableBody.append(row);
+  }
+}
+
+
+async function openLoyaltyForm(customer) {
+  loyaltyAdjustmentForm.reset();
+  loyaltyCustomerId.value = customer.id;
+  document.querySelector("#loyaltyCustomerName").textContent = (
+    `${customer.full_name} currently has ${customer.loyalty?.points_balance || 0} points.`
+  );
+  loyaltyAdjustmentPanel.hidden = false;
+  loyaltyAdjustmentPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  try {
+    const result = await authRequest(
+      `/api/admin/loyalty/${customer.id}/history`
+    );
+    renderLoyaltyHistory(result.transactions);
+    document.querySelector("#pointsChange").focus();
+  } catch (error) {
+    showMessage(error.message);
   }
 }
 
 
 function openCreateForm() {
   customerForm.reset();
-  customerForm.elements.customerId.value = "";
+  customerIdInput.value = "";
   customerPasswordField.hidden = false;
   customerPassword.required = true;
   document.querySelector("#customerFormTitle").textContent = "Create customer";
@@ -136,21 +223,32 @@ function openCreateForm() {
 
 
 function openEditForm(customer) {
-  customerForm.elements.customerId.value = customer.id;
-  customerForm.elements.full_name.value = customer.full_name;
-  customerForm.elements.email.value = customer.email;
+  customerForm.reset();
+  customerIdInput.value = customer.id;
   customerPassword.value = "";
   customerPassword.required = false;
   customerPasswordField.hidden = true;
   document.querySelector("#customerFormTitle").textContent = "Edit customer";
   customerFormPanel.hidden = false;
+  customerNameInput.value = customer.full_name;
+  customerEmailInput.value = customer.email;
   customerFormPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 
 async function loadCustomers() {
-  const result = await authRequest("/api/admin/customers");
-  customers = result.users;
+  const [customerResult, loyaltyResult] = await Promise.all([
+    authRequest("/api/admin/customers"),
+    authRequest("/api/admin/loyalty"),
+  ]);
+  loyaltyAccounts = loyaltyResult.loyalty_accounts;
+  const loyaltyByUserId = new Map(
+    loyaltyAccounts.map((loyalty) => [loyalty.user_id, loyalty])
+  );
+  customers = customerResult.users.map((customer) => ({
+    ...customer,
+    loyalty: loyaltyByUserId.get(customer.id),
+  }));
   updateSummary();
   renderCustomers();
 }
@@ -194,14 +292,14 @@ async function reactivateCustomer(customer) {
 customerForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const customerId = customerForm.elements.customerId.value;
+  const customerId = customerIdInput.value;
   const payload = {
-    full_name: customerForm.elements.full_name.value,
-    email: customerForm.elements.email.value,
+    full_name: customerNameInput.value,
+    email: customerEmailInput.value,
   };
 
   if (!customerId) {
-    payload.password = customerForm.elements.password.value;
+    payload.password = customerPassword.value;
   }
 
   try {
@@ -223,9 +321,50 @@ customerForm.addEventListener("submit", async (event) => {
 });
 
 
+loyaltyAdjustmentForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const customerId = loyaltyCustomerId.value;
+  const pointsChange = Number(pointsChangeInput.value);
+  const reason = pointsReasonInput.value.trim();
+  const customer = customers.find((item) => String(item.id) === customerId);
+
+  if (!Number.isInteger(pointsChange) || pointsChange === 0) {
+    showMessage("Enter a whole number other than zero.");
+    return;
+  }
+
+  const actionText = pointsChange > 0
+    ? `Add ${pointsChange} points to ${customer.full_name}?`
+    : `Remove ${Math.abs(pointsChange)} points from ${customer.full_name}?`;
+
+  if (!window.confirm(actionText)) {
+    return;
+  }
+
+  try {
+    await authRequest(`/api/admin/loyalty/${customerId}/adjustments`, {
+      method: "POST",
+      body: JSON.stringify({
+        points_change: pointsChange,
+        reason,
+      }),
+    });
+    loyaltyAdjustmentPanel.hidden = true;
+    await loadCustomers();
+    showMessage("Loyalty points updated.", true);
+  } catch (error) {
+    showMessage(error.message);
+  }
+});
+
+
 document.querySelector("#newCustomerButton").addEventListener("click", openCreateForm);
 document.querySelector("#cancelCustomerButton").addEventListener("click", () => {
   customerFormPanel.hidden = true;
+});
+document.querySelector("#cancelLoyaltyButton").addEventListener("click", () => {
+  loyaltyAdjustmentPanel.hidden = true;
 });
 customerSearch.addEventListener("input", renderCustomers);
 async function startAdminPage() {

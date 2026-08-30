@@ -15,7 +15,7 @@
 
     <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
     <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
-    <script src="js/login.js?v=4" defer></script>
+    <script src="js/login.js?v=6" defer></script>
   </head>
 
   <body>
@@ -105,10 +105,10 @@
 
           <form id="loginForm" class="loginForm">
             <div class="formField">
-              <label for="email">Email address</label>
+              <label for="loginEmail">Email address</label>
 
               <input
-                id="email"
+                id="loginEmail"
                 name="email"
                 type="email"
                 autocomplete="username"
@@ -117,10 +117,10 @@
             </div>
 
             <div class="formField">
-              <label for="password">Password</label>
+              <label for="loginPassword">Password</label>
 
               <input
-                id="password"
+                id="loginPassword"
                 name="password"
                 type="password"
                 autocomplete="current-password"
@@ -154,6 +154,7 @@
                 id="registerName"
                 name="full_name"
                 type="text"
+                maxlength="100"
                 autocomplete="name"
                 required
               >
@@ -165,6 +166,7 @@
                 id="registerEmail"
                 name="email"
                 type="email"
+                maxlength="254"
                 autocomplete="email"
                 required
               >

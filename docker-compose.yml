@@ -37,7 +37,8 @@ services:
     ports:
       - "8003:80"
     depends_on:
-      - ethan-backend
+      ethan-backend:
+        condition: service_healthy
 
   ethan-backend:
     build:
@@ -50,7 +51,14 @@ services:
       DATABASE_API_URL: http://ethan-database:6003
       SESSION_SECRET: ${ETHAN_SESSION_SECRET:-release-0-local-secret}
     depends_on:
-      - ethan-database
+      ethan-database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:6002/ready')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 2s
 
   ethan-database:
     build:
@@ -63,6 +71,12 @@ services:
       DATABASE_PATH: /data/users.db
     volumes:
       - ethan-user-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:6003/health')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 2s
 
   order-returns-frontend:
     build:
