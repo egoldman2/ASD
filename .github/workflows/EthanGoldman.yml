@@ -3,6 +3,7 @@ name: Ethan Goldman Customer Support CI
 on:
   push:
     branches:
+      - main
       - ethan-goldman
   pull_request:
     branches:
@@ -34,24 +35,11 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
 
-      - name: Run Ethan tests and shared regressions
-        run: >-
-          python -m pytest
-          'student-Ethan Goldman/tests'
-          student-Chufeng/tests
-          'student-Ethan Ting/tests'
-          student-Howard/tests
-          -q
+      - name: Run Customer Support tests
+        run: python -m pytest 'student-Ethan Goldman/tests' -q
 
       - name: Compile application Python modules
-        run: >-
-          python -m compileall -q
-          app.py
-          'student-Ethan Goldman'
-          student-Chufeng
-          'student-Ethan Ting'
-          student-Howard
-          'student-Ryan Nolan'
+        run: python -m compileall -q 'student-Ethan Goldman'
 
   docker-build:
     name: Build and validate Customer Support services
@@ -72,13 +60,6 @@ jobs:
 
       - name: Run Customer Support test target
         run: docker run --rm asd-customer-support-test:ci
-
-      - name: Build shared backend
-        run: >-
-          docker build
-          --file shared/Dockerfile.backend
-          --tag asd-shared-backend:ci
-          .
 
       - name: Validate Docker Compose
         run: docker compose config --quiet

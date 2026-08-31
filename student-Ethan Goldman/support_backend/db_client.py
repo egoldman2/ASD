@@ -22,39 +22,20 @@ class SupportDatabaseError(Exception):
     status_code = 502
     public_message = "The support database could not complete the request."
 
-    def __init__(self, *_args: Any, status_code: int | None = None):
+    def __init__(
+        self,
+        *_args: Any,
+        status_code: int | None = None,
+        public_message: str | None = None,
+    ):
         self.status_code = status_code or type(self).status_code
-        super().__init__(type(self).public_message)
-
-
-class DatabaseBadRequestError(SupportDatabaseError):
-    status_code = 400
-    public_message = "The support database rejected the request."
-
-
-class DatabaseNotFoundError(SupportDatabaseError):
-    status_code = 404
-    public_message = "The requested support record was not found."
-
-
-class DatabaseConflictError(SupportDatabaseError):
-    status_code = 409
-    public_message = "The support database reported a conflict."
-
-
-class DatabaseServerError(SupportDatabaseError):
-    status_code = 502
-    public_message = "The support database is temporarily unavailable."
+        self.public_message = public_message or type(self).public_message
+        super().__init__(self.public_message)
 
 
 class DatabaseUnavailableError(SupportDatabaseError):
     status_code = 503
     public_message = "The support database is unavailable."
-
-
-class DatabaseMalformedResponseError(SupportDatabaseError):
-    status_code = 502
-    public_message = "The support database returned an invalid response."
 
 
 def _bounded_timeout(value: Any) -> float:
@@ -135,27 +116,36 @@ class SupportDatabaseClient:
         if not isinstance(status, int):
             raise DatabaseUnavailableError()
         if status not in expected:
-            if status == 400:
-                raise DatabaseBadRequestError()
-            if status == 404:
-                raise DatabaseNotFoundError()
-            if status == 409:
-                raise DatabaseConflictError()
-            if 500 <= status <= 599:
-                raise DatabaseServerError()
-            raise SupportDatabaseError(status_code=502)
+            mapped = {
+                400: "The support database rejected the request.",
+                404: "The requested support record was not found.",
+                409: "The support database reported a conflict.",
+            }
+            raise SupportDatabaseError(
+                status_code=status if status in mapped else 502,
+                public_message=mapped.get(
+                    status,
+                    "The support database is temporarily unavailable.",
+                ),
+            )
         if status == 204:
             return None
 
         raw = getattr(response, "content", b"")
         if isinstance(raw, (bytes, bytearray)) and len(raw) > MAX_RESPONSE_BYTES:
-            raise DatabaseMalformedResponseError()
+            raise SupportDatabaseError(
+                public_message="The support database returned an invalid response."
+            )
         try:
             result = response.json()
         except (ValueError, TypeError, AttributeError) as exc:
-            raise DatabaseMalformedResponseError() from exc
+            raise SupportDatabaseError(
+                public_message="The support database returned an invalid response."
+            ) from exc
         if not isinstance(result, (Mapping, list)):
-            raise DatabaseMalformedResponseError()
+            raise SupportDatabaseError(
+                public_message="The support database returned an invalid response."
+            )
         return result
 
     def list_tickets(

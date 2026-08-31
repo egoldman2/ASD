@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from functools import wraps
-from typing import Any, Callable, Mapping, TypeVar, cast
+from typing import Any, Mapping
 
 import requests
-from flask import Flask, Response, current_app, g, jsonify, request
+from flask import current_app, request
 
 
 AUTH_SERVICE_URL = "http://ethan-backend:6002"
@@ -16,9 +15,6 @@ AUTH_SESSION_COOKIE = "ethan_session"
 SESSION_ENDPOINT = "/api/session"
 DEFAULT_TIMEOUT_SECONDS = 5.0
 MAX_TIMEOUT_SECONDS = 30.0
-
-F = TypeVar("F", bound=Callable[..., Any])
-
 
 class AuthError(Exception):
     """Base type for safe expected authentication failures."""
@@ -169,63 +165,7 @@ def authenticate_request() -> Principal:
     cookie_name = current_app.config.get(
         "AUTH_SESSION_COOKIE_NAME", AUTH_SESSION_COOKIE
     )
-    principal = client.authenticate(
+    return client.authenticate(
         request.cookies.get(cookie_name),
         correlation_id=_request_correlation_id(),
     )
-    return set_current_principal(principal)
-
-
-def set_current_principal(principal: Principal) -> Principal:
-    g.principal = principal
-    return principal
-
-
-def get_current_principal() -> Principal:
-    principal = getattr(g, "principal", None)
-    if not isinstance(principal, Principal):
-        raise InvalidSession()
-    return principal
-
-
-def _auth_error(error: AuthError) -> tuple[Response, int]:
-    if isinstance(error, AuthServiceUnavailable):
-        return jsonify({"error": "Authentication service unavailable."}), 503
-    return jsonify({"error": "You must sign in."}), 401
-
-
-def auth_required(function: F) -> F:
-    @wraps(function)
-    def wrapped(*args: Any, **kwargs: Any) -> Any:
-        try:
-            authenticate_request()
-        except AuthError as error:
-            return _auth_error(error)
-        return function(*args, **kwargs)
-
-    return cast(F, wrapped)
-
-
-def role_required(*roles: str) -> Callable[[F], F]:
-    allowed = {str(role).strip().casefold() for role in roles}
-    if not allowed:
-        raise ValueError("At least one role is required")
-
-    def decorator(function: F) -> F:
-        @wraps(function)
-        def wrapped(*args: Any, **kwargs: Any) -> Any:
-            try:
-                principal = authenticate_request()
-            except AuthError as error:
-                return _auth_error(error)
-            if (principal.role or "").casefold() not in allowed:
-                return jsonify({"error": "You do not have permission for this resource."}), 403
-            return function(*args, **kwargs)
-
-        return cast(F, wrapped)
-
-    return decorator
-
-
-customer_required = role_required("customer")
-admin_required = role_required("admin")

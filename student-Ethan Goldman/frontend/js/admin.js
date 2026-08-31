@@ -290,7 +290,7 @@ function renderQueueSummary(payload, tickets) {
     return;
   }
   region.replaceChildren();
-  const counts = payload?.status_counts || payload?.data?.status_counts || {};
+  const counts = payload?.status_counts || {};
   const values = [
     ["Open", counts.open],
     ["Pending", counts.pending],
@@ -326,10 +326,10 @@ function renderTicketRow(ticket) {
   category.dataset.label = "Category";
   const assignee = createElement("span", "adminTicketCell", ticketAssignee(ticket) || "Unassigned");
   assignee.dataset.label = "Assignee";
-  const updated = createElement("time", "adminTicketCell", formatTimestamp(ticket?.updated_at || ticket?.last_updated || ticket?.created_at));
+  const updated = createElement("time", "adminTicketCell", formatTimestamp(ticket?.updated_at || ticket?.created_at));
   updated.dataset.label = "Updated";
-  if (ticket?.updated_at || ticket?.last_updated || ticket?.created_at) {
-    updated.dateTime = text(ticket.updated_at || ticket.last_updated || ticket.created_at, "");
+  if (ticket?.updated_at || ticket?.created_at) {
+    updated.dateTime = text(ticket.updated_at || ticket.created_at, "");
   }
   const badge = createElement("span", `adminStatusBadge adminStatusBadge--${statusClass(ticket?.status)}`, label(ticket?.status, "Open"));
   badge.dataset.label = "Status";
@@ -366,7 +366,7 @@ async function loadQueue() {
       list.appendChild(fragment);
       list.hidden = tickets.length === 0;
     }
-    setText("queue-count", `${text(payload?.count ?? payload?.data?.count, String(tickets.length))} matching`);
+    setText("queue-count", `${text(payload?.count, String(tickets.length))} matching`);
     renderQueueSummary(payload, tickets);
     if (tickets.length === 0) {
       stateRegion("queue-state", "No tickets found", "Try a different ticket number, search phrase, or filter combination.", "empty");
@@ -479,7 +479,7 @@ function renderTicket(ticket) {
   setText("ticket-customer-name", customerName(ticket));
   renderCustomerEmail(customerEmail(ticket));
   setText("ticket-created", formatTimestamp(ticket?.created_at));
-  setText("ticket-updated", formatTimestamp(ticket?.updated_at || ticket?.last_updated));
+  setText("ticket-updated", formatTimestamp(ticket?.updated_at));
 
   const status = byId("ticket-status");
   if (status) {
@@ -600,8 +600,7 @@ async function sendReply(event) {
 }
 
 function normaliseAnalysis(payload) {
-  const raw = payload?.analysis || payload?.suggestion || payload?.suggestions
-    || payload?.data?.analysis || payload?.data?.suggestion;
+  const raw = payload?.analysis;
   if (!raw || typeof raw !== "object") {
     return null;
   }
@@ -610,7 +609,7 @@ function normaliseAnalysis(payload) {
     category: trimmed(raw.category).toLowerCase(),
     sentiment: trimmed(raw.sentiment).toLowerCase(),
     priority: trimmed(raw.priority).toLowerCase(),
-    draftResponse: trimmed(raw.draft_response || raw.draftResponse || raw.draft),
+    draftResponse: trimmed(raw.draft_response),
   };
   if (!analysis.summary || !CATEGORY_VALUES.includes(analysis.category)
     || !PRIORITY_VALUES.includes(analysis.priority) || !analysis.draftResponse) {
@@ -618,8 +617,8 @@ function normaliseAnalysis(payload) {
   }
   return {
     ...analysis,
-    model: text(payload?.model || payload?.data?.model, "Support AI"),
-    workflow: payload?.workflow || payload?.data?.workflow || {},
+    model: text(payload?.model, "Support AI"),
+    workflow: payload?.workflow || {},
   };
 }
 

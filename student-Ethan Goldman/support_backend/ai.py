@@ -98,9 +98,6 @@ class InvalidTicketContextError(OllamaError):
     safe_message = "A minimal redacted ticket context is required."
 
 
-OllamaResponseError = OllamaInvalidOutputError
-
-
 def _timeout(value: Any) -> float:
     try:
         parsed = float(value)
@@ -350,4 +347,3 @@ def analyze_ticket(
         _workflow_log("Adapt", active_client.model, "failed", True, correlation_id)
         raise OllamaInvalidOutputError()
     raise OllamaInvalidOutputError()
-

@@ -153,8 +153,14 @@ def test_anonymous_and_role_boundaries(support_client):
     assert support_client.get("/api/support/customer/tickets").status_code == 401
     _as_user(support_client, "customer-a")
     assert support_client.get("/api/support/admin/tickets").status_code == 403
+    assert support_client.delete(
+        "/api/support/admin/tickets/1", headers=TRUSTED_ORIGIN
+    ).status_code == 403
     _as_user(support_client, "admin")
     assert support_client.get("/api/support/admin/tickets?search=2").status_code == 200
+    assert support_client.delete(
+        "/api/support/admin/tickets/2", headers=TRUSTED_ORIGIN
+    ).status_code == 200
 
 
 def test_customer_list_and_idor_are_scoped_to_verified_user(support_client):
@@ -244,6 +250,42 @@ def test_database_service_seeds_and_enforces_owner_filter(tmp_path):
         assert all(item["customer_user_id"] == "2" for item in records.json["tickets"])
         assert all(item["customer_name_snapshot"] == "Demo Customer" for item in records.json["tickets"])
         assert client.get("/api/tickets/2002?owner_user_id=not-the-owner").status_code == 404
+
+
+def test_database_api_crud(tmp_path):
+    init_db = _module("student-Ethan Goldman.database_service.init_db")
+    db_app = _module("student-Ethan Goldman.database_service.app")
+    database_path = Path(tmp_path) / "support-crud.db"
+    init_db.initialize_database(database_path)
+    application = db_app.create_app(database_path)
+    application.config.update(TESTING=True)
+
+    with application.test_client() as client:
+        created = client.post("/api/tickets", json={
+            "customer_user_id": 42,
+            "customer_name_snapshot": "Test Customer",
+            "customer_email_snapshot": "test@example.com",
+            "subject": "A complete CRUD check",
+            "message": "Please verify the current database service.",
+        })
+        assert created.status_code == 201
+        ticket_id = created.json["id"]
+        assert client.get(f"/api/tickets/{ticket_id}").status_code == 200
+        updated = client.put(f"/api/tickets/{ticket_id}", json={
+            "category": "account",
+            "priority": "medium",
+            "status": "open",
+        })
+        assert updated.status_code == 200
+        assert updated.json["category"] == "account"
+        message = client.post(f"/api/tickets/{ticket_id}/messages", json={
+            "sender_role": "staff",
+            "author_name": "Test Admin",
+            "message": "The database CRUD path works.",
+        })
+        assert message.status_code == 201
+        assert client.delete(f"/api/tickets/{ticket_id}").status_code == 200
+        assert client.get(f"/api/tickets/{ticket_id}").status_code == 404
 
 
 def test_ai_privacy_bounds_and_completed_action_safety(support_modules):

@@ -1,5 +1,5 @@
 const LOGIN_PAGE_URL = "http://localhost:8003/index.html";
-const CUSTOMER_PAGE_PATH = "/customer.html";
+const CUSTOMER_RETURN_URL = "http://localhost:8005/customer.html";
 const MAX_SUBJECT_LENGTH = 160;
 const MAX_MESSAGE_LENGTH = 2000;
 
@@ -55,7 +55,7 @@ function makeElement(tagName, className, text) {
 }
 
 function clearElement(element) {
-  while (element.firstChild) element.removeChild(element.firstChild);
+  element.replaceChildren();
 }
 
 function renderState(container, variant, title, message, retry) {
@@ -94,24 +94,9 @@ function clearFeedback(container) {
   container.hidden = true;
 }
 
-function safeReturnUrl() {
-  const fallback = "http://localhost:8005/customer.html";
-  try {
-    const current = new URL(window.location.href);
-    const trustedHost = ["localhost", "127.0.0.1"].includes(current.hostname);
-    const trustedPort = current.port === "" || current.port === "8005";
-    if (!trustedHost || !trustedPort || !current.pathname.endsWith(CUSTOMER_PAGE_PATH)) return fallback;
-    current.search = "";
-    current.hash = "";
-    return current.href;
-  } catch (error) {
-    return fallback;
-  }
-}
-
 function loginPageUrl() {
   const loginUrl = new URL(LOGIN_PAGE_URL);
-  loginUrl.searchParams.set("return_url", safeReturnUrl());
+  loginUrl.searchParams.set("return_url", CUSTOMER_RETURN_URL);
   return loginUrl.href;
 }
 
@@ -147,7 +132,7 @@ function statusLabel(status) {
   if (normalized === "needs_triage") return "Needs triage";
   if (normalized === "open") return "Open";
   if (normalized === "pending") return "Waiting for your reply";
-  if (normalized === "solved" || normalized === "closed") return "Solved";
+  if (normalized === "solved") return "Solved";
   return "In progress";
 }
 
@@ -268,7 +253,7 @@ function renderTicketDetail(container, ticket, ticketId, onReply) {
   conversation.setAttribute("aria-labelledby", "customer-conversation-title");
   conversation.appendChild(makeElement("h4", "customerConversation__title", "Conversation"));
   const messageList = makeElement("ol", "messageThread");
-  renderMessages(messageList, ticket.messages || ticket.conversation);
+  renderMessages(messageList, ticket.messages);
   conversation.appendChild(messageList);
   container.appendChild(conversation);
   const feedback = makeElement("div", "customerFeedback");
