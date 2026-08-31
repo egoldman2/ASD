@@ -1,0 +1,7 @@
+<section{% if target_id %} id="{{ target_id }}"{% endif %} class="customerState customerState--{{ 'auth-expired' if status == 401 else 'forbidden' if status == 403 else 'not-found' if status == 404 else 'unavailable' if status in (502, 503) else 'error' }}"
+  role="alert" aria-live="assertive" data-status="{{ status }}">
+  <strong>{{ 'Sign-in required' if status == 401 else 'Support request failed' }}</strong>
+  <p>{{ message }}</p>
+  {% if status == 401 and login_url %}<a class="button button--secondary" href="{{ login_url }}">Sign in again</a>{% endif %}
+  {% if retry_path and target_id and status not in (401, 403, 404) %}<button class="button button--secondary" type="button" hx-get="{{ retry_path }}" hx-target="#{{ target_id }}" hx-swap="outerHTML">Try again</button>{% endif %}
+</section>

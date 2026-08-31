@@ -5,13 +5,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Customer Support Ticket Management for ASD 2026.">
+  <meta name="htmx-config" content='{"allowEval": false, "allowScriptTags": false}'>
   <title>Customer Support | ASD 2026</title>
   <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
   <link rel="stylesheet" href="css/support.css?v=4">
   <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
   <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
-  <script src="js/htmx.min.js" defer></script>
-  <script src="js/support.js?v=4" defer></script>
+  <script src="js/htmx.min.js?v=2.0.4" defer></script>
+  <script src="js/support.js?v=2" defer></script>
 </head>
 
 <body>
@@ -26,24 +27,13 @@
     </div>
   </header>
   <main class="supportPage">
-    <nav class="supportNav" aria-label="Customer Support"><a href="index.html" aria-current="page">Overview</a><a
-        href="customer.html">Customer</a><a href="staff.html">Staff</a></nav>
-    <header class="pageHeader">
-      <h1 id="page-title">Customer support</h1>
-      <p>Create a request or manage the support queue.</p>
-    </header>
-    <section class="viewChooser" aria-label="Choose a Customer Support view">
-      <article class="panel choiceCard">
-        <h2>Customer</h2>
-        <p>Create a ticket or continue an existing conversation.</p><a class="button" href="customer.html">Open
-          customer support</a>
-      </article>
-      <article class="panel choiceCard">
-        <h2>Staff</h2>
-        <p>Review tickets, respond to customers, and manage the queue.</p><a class="button button--secondary"
-          href="staff.html">Open staff workspace</a>
-      </article>
+    <nav class="supportNav" aria-label="Customer Support"><a href="index.html" aria-current="page">Customer Support</a></nav>
+    <section id="support-entry-state" class="customerState customerState--loading" role="status" aria-live="polite"
+      hx-get="/api/support/ui/entry" hx-trigger="load" hx-swap="outerHTML">
+      <strong>Checking your support access…</strong>
+      <p>We will take you to the correct workspace for your account.</p>
     </section>
+    <noscript><p><a class="button" href="http://localhost:8003/index.html?return_url=http%3A%2F%2Flocalhost%3A8005%2F">Sign in to Customer Support</a></p></noscript>
   </main>
   <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>
 </body>

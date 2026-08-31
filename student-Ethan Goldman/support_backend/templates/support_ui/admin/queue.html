@@ -1,0 +1,74 @@
+<nav class="supportNav" aria-label="Customer Support"><a href="index.html">Overview</a><a href="customer.html">Customer</a><a href="staff.html" aria-current="page">Staff</a></nav>
+<header class="pageHeader">
+  <p class="adminEyebrow">Staff workspace</p>
+  <h1 id="page-title">Support queue</h1>
+  <p>Search every ticket, triage the next action, and keep customers moving.</p>
+  <p class="adminUserContext">Signed in as {{ user.name or 'Administrator' }}</p>
+</header>
+
+<section class="panel adminQueuePanel" aria-labelledby="queue-title">
+  <div class="sectionHeader">
+    <div><h2 id="queue-title">All tickets</h2><p>Search is restricted to signed-in administrators.</p></div>
+    <span class="adminQueueCount">{{ tickets|length }} matching</span>
+  </div>
+  <form class="adminFilters" role="search" aria-label="Search and filter support tickets"
+    hx-get="/api/support/ui/admin/tickets"
+    hx-target="#admin-workspace"
+    hx-swap="innerHTML"
+    hx-disabled-elt="find button">
+    <div class="adminSearchField">
+      <label for="queue-search">Ticket number or text</label>
+      <input id="queue-search" name="search" type="search" inputmode="search"
+        value="{{ filters.get('search', '') }}"
+        placeholder="Search by ticket #, customer, email, or subject" autocomplete="off" autofocus>
+      <p class="adminFieldHint">Search ticket numbers, customer names, email addresses, and subjects.</p>
+    </div>
+    <div class="adminFilterGrid">
+      <div class="adminFilterField"><label for="filter-status">Status</label><select id="filter-status" name="status">
+        <option value="">All statuses</option>
+        {% for value in ('needs_triage', 'open', 'pending', 'solved') %}<option value="{{ value }}"{% if filters.get('status') == value %} selected{% endif %}>{{ value|replace('_', ' ')|title }}</option>{% endfor %}
+      </select></div>
+      <div class="adminFilterField"><label for="filter-priority">Priority</label><select id="filter-priority" name="priority">
+        <option value="">All priorities</option>
+        {% for value in ('unclassified', 'low', 'medium', 'high', 'urgent') %}<option value="{{ value }}"{% if filters.get('priority') == value %} selected{% endif %}>{{ value|title }}</option>{% endfor %}
+      </select></div>
+      <div class="adminFilterField"><label for="filter-category">Category</label><select id="filter-category" name="category">
+        <option value="">All categories</option>
+        {% for value in ('unclassified', 'order', 'return', 'payment', 'product', 'delivery', 'account', 'other') %}<option value="{{ value }}"{% if filters.get('category') == value %} selected{% endif %}>{{ value|title }}</option>{% endfor %}
+      </select></div>
+      <div class="adminFilterField"><label for="filter-assignee">Assignee</label><input
+        id="filter-assignee" name="assigned_to" type="text" maxlength="100"
+        value="{{ filters.get('assigned_to', '') }}" placeholder="Name or unassigned"></div>
+    </div>
+    <div class="adminFilterActions">
+      <button class="button" type="submit">Search queue</button>
+      <button class="button button--secondary" type="button"
+        hx-get="/api/support/ui/admin/tickets" hx-target="#admin-workspace" hx-swap="innerHTML">Clear filters</button>
+      <span class="htmx-indicator adminInlineStatus" role="status">Loading tickets…</span>
+    </div>
+  </form>
+  <div class="adminQueueSummary" aria-live="polite">
+    {% for value in ('needs_triage', 'open', 'pending', 'solved') %}<span class="adminSummaryPill"><strong>{{ counts.get(value, 0) }}</strong> {{ value|replace('_', ' ')|title }}</span>{% endfor %}
+  </div>
+  {% if tickets %}
+  <div class="adminTicketHeaderRow" aria-hidden="true"><span>Ticket</span><span>Category</span><span>Assignee</span><span>Updated</span><span>Status</span></div>
+  <ul class="adminTicketList" aria-label="Support tickets">
+    {% for ticket in tickets %}
+    <li class="adminTicketListItem">
+      <a class="adminTicketRow" href="staff-ticket.html?ticket={{ ticket.id }}">
+        <div class="adminTicketPrimary">
+          <strong>#{{ ticket.id }} · {{ ticket.subject or 'Untitled ticket' }}</strong>
+          <span class="adminTicketMeta">{{ ticket.customer_name_snapshot or 'Unknown customer' }}{% if ticket.customer_email_snapshot %} · {{ ticket.customer_email_snapshot }}{% endif %}</span>
+        </div>
+        <span class="adminTicketCell" data-label="Category">{{ (ticket.category or 'unclassified')|title }}</span>
+        <span class="adminTicketCell" data-label="Assignee">{{ ticket.assigned_to or 'Unassigned' }}</span>
+        <time class="adminTicketCell" data-label="Updated"{% if ticket.updated_at or ticket.created_at %} datetime="{{ ticket.updated_at or ticket.created_at }}"{% endif %}>{{ ticket.updated_at or ticket.created_at or 'Not available' }}</time>
+        <span class="adminStatusBadge adminStatusBadge--{{ ticket.status if ticket.status in ('open', 'pending', 'solved') else 'unknown' }}" data-label="Status">{{ (ticket.status or 'needs_triage')|replace('_', ' ')|title }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="adminState adminState--empty" role="status"><strong>No tickets found</strong><p>Try a different ticket number, search phrase, or filter combination.</p></div>
+  {% endif %}
+</section>

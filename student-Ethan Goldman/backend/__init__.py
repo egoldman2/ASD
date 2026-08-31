@@ -1,1 +1,0 @@
-"""Customer Support backend package."""

@@ -3,6 +3,7 @@ name: Ethan Goldman Customer Support CI
 on:
   push:
     branches:
+      - main
       - ethan-goldman
   pull_request:
     branches:
@@ -34,32 +35,21 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
 
-      - name: Run Customer Support and shared regressions
-        run: >-
-          python -m pytest
-          'student-Ethan Goldman/tests'
-          student-Chufeng/tests
-          -q
+      - name: Run Customer Support tests
+        run: python -m pytest 'student-Ethan Goldman/tests' -q
 
-      - name: Compile Customer Support Python modules
-        run: python -m compileall -q app.py 'student-Ethan Goldman'
+      - name: Compile application Python modules
+        run: python -m compileall -q 'student-Ethan Goldman'
 
   docker-build:
     name: Build and validate Customer Support services
     runs-on: ubuntu-latest
     needs: test
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Build Customer Support frontend
-        run: >-
-          docker build
-          --file 'student-Ethan Goldman/Dockerfile'
-          --target frontend
-          --tag asd-customer-support:ci
-          .
 
       - name: Build Customer Support test target
         run: >-
@@ -72,12 +62,97 @@ jobs:
       - name: Run Customer Support test target
         run: docker run --rm asd-customer-support-test:ci
 
-      - name: Build shared backend
-        run: >-
-          docker build
-          --file shared/Dockerfile.backend
-          --tag asd-shared-backend:ci
-          .
-
       - name: Validate Docker Compose
         run: docker compose config --quiet
+
+      - name: Start support and authentication services
+        run: |
+          docker compose up -d --build ethan-database ethan-backend customer-support-database ollama
+          docker compose run --rm ollama-init
+          docker compose up -d --build --no-deps customer-support-backend
+          docker compose up -d --build --no-deps customer-support
+
+      - name: Verify service health and database ownership
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://localhost:6002/health >/dev/null \
+              && curl --fail --silent http://localhost:6005/health >/dev/null \
+              && curl --fail --silent http://localhost:8005/health >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker compose ps
+              exit 1
+            fi
+            sleep 2
+          done
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://localhost:6005/api/support/customer/tickets)" = "401"
+          curl --fail --silent --output /tmp/customer-support-page.html \
+            http://localhost:8005/customer.html
+          grep -q 'src="js/htmx.min.js?v=2.0.4"' /tmp/customer-support-page.html
+          curl --fail --silent --output /tmp/customer-support-entry.html \
+            http://localhost:8005/index.html
+          grep -q 'hx-get="/api/support/ui/entry"' /tmp/customer-support-entry.html
+          test "$(curl --fail --silent http://localhost:8005/js/htmx.min.js | sha256sum | cut -d ' ' -f 1)" = \
+            "e209dda5c8235479f3166defc7750e1dbcd5a5c1808b7792fc2e6733768fb447"
+          curl --fail --silent --cookie-jar /tmp/customer-support.cookies \
+            --header 'Content-Type: application/json' \
+            --data '{"email":"customer@asd.local","password":"CustomerPass!2026"}' \
+            http://localhost:6002/api/login >/dev/null
+          curl --fail --silent --cookie /tmp/customer-support.cookies \
+            --output /tmp/customer-support-tickets.json \
+            http://localhost:8005/api/support/customer/tickets
+          grep -q '"customer_user_id":"2"' /tmp/customer-support-tickets.json
+          curl --fail --silent --cookie /tmp/customer-support.cookies \
+            --header 'HX-Request: true' \
+            --dump-header /tmp/customer-support-entry.headers \
+            --output /dev/null \
+            http://localhost:8005/api/support/ui/entry
+          grep -qi '^HX-Redirect: /customer.html' /tmp/customer-support-entry.headers
+          curl --fail --silent --cookie /tmp/customer-support.cookies \
+            --header 'HX-Request: true' \
+            --output /tmp/customer-support-dashboard.html \
+            http://localhost:8005/api/support/ui/customer/dashboard
+          grep -q 'Signed-in account' /tmp/customer-support-dashboard.html
+          curl --fail --silent --cookie /tmp/customer-support.cookies \
+            --header 'HX-Request: true' \
+            --header 'Origin: http://localhost:8005' \
+            --data-urlencode 'subject=CI HTMX integration' \
+            --data-urlencode 'message=Created through the genuine Nginx and HTMX fragment route.' \
+            --output /tmp/customer-support-create.html \
+            http://localhost:8005/api/support/ui/customer/tickets
+          grep -q 'Support ticket created' /tmp/customer-support-create.html
+          curl --fail --silent --cookie-jar /tmp/customer-support-admin.cookies \
+            --header 'Content-Type: application/json' \
+            --data '{"email":"admin@asd.local","password":"AdminPass!2026"}' \
+            http://localhost:6002/api/login >/dev/null
+          before_ai_hash="$(docker compose exec -T customer-support-database sha256sum /data/support_tickets.db | cut -d ' ' -f 1)"
+          curl --fail --silent --max-time 100 \
+            --cookie /tmp/customer-support-admin.cookies \
+            --header 'HX-Request: true' \
+            --header 'Origin: http://localhost:8005' \
+            --header 'X-Correlation-ID: ci-real-ai' \
+            --request POST \
+            --output /tmp/customer-support-ai.html \
+            http://localhost:8005/api/support/ui/admin/tickets/2002/ai-analysis
+          grep -q 'qwen2.5:0.5b' /tmp/customer-support-ai.html
+          grep -q 'Suggested next steps' /tmp/customer-support-ai.html
+          ! grep -q 'Draft response' /tmp/customer-support-ai.html
+          after_ai_hash="$(docker compose exec -T customer-support-database sha256sum /data/support_tickets.db | cut -d ' ' -f 1)"
+          test "$before_ai_hash" = "$after_ai_hash"
+          docker compose logs --no-color customer-support-backend \
+            > /tmp/customer-support-backend.log
+          for stage in Plan Act Observe Adapt; do
+            grep -q "\"stage\":\"$stage\"" /tmp/customer-support-backend.log
+          done
+          grep -q '"correlation_id":"ci-real-ai"' /tmp/customer-support-backend.log
+          docker compose exec -T customer-support-backend test ! -e '/app/student-Ethan Goldman/database/support_tickets.db'
+          docker compose exec -T customer-support-database test -f /data/support_tickets.db
+
+      - name: Show integration logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail=250 customer-support customer-support-backend customer-support-database ethan-backend ethan-database ollama
+
+      - name: Stop integration services
+        if: always()
+        run: docker compose down --volumes

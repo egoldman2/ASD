@@ -1,0 +1,66 @@
+<main id="ticket-detail-shell" class="supportPage adminWorkspace" aria-labelledby="ticket-subject">
+  <nav class="supportNav" aria-label="Customer Support"><a href="index.html">Overview</a><a href="customer.html">Customer</a><a href="staff.html" aria-current="page">Staff</a></nav>
+  <div class="adminDetailTopbar"><a class="button button--secondary" href="staff.html">Back to queue</a><span class="adminEyebrow">Staff-only ticket workspace</span></div>
+  {% if notice %}<div class="adminFeedback adminFeedback--success" role="status">{{ notice }}</div>{% endif %}
+  {% if error %}<div class="adminFeedback adminFeedback--error" role="alert">{{ error }}</div>{% endif %}
+  <div class="adminDetailLayout">
+    <section class="panel adminTicketPanel" aria-labelledby="ticket-subject">
+      <header class="adminTicketHeader">
+        <div><p class="adminEyebrow">Ticket #{{ ticket.id }}</p><h1 id="ticket-subject">{{ ticket.subject or 'Untitled ticket' }}</h1></div>
+        <span class="adminStatusBadge adminStatusBadge--{{ ticket.status if ticket.status in ('open', 'pending', 'solved') else 'unknown' }}">{{ (ticket.status or 'needs_triage')|replace('_', ' ')|title }}</span>
+      </header>
+      <section class="adminCustomerCard" aria-labelledby="customer-title">
+        <h2 id="customer-title">Customer</h2>
+        <dl class="adminCustomerDetails">
+          <div><dt>Name</dt><dd>{{ ticket.customer_name_snapshot or 'Unknown customer' }}</dd></div>
+          <div><dt>Email</dt><dd>{{ ticket.customer_email_snapshot or 'Not available' }}</dd></div>
+          <div><dt>Created</dt><dd>{{ ticket.created_at or 'Not available' }}</dd></div>
+          <div><dt>Last updated</dt><dd>{{ ticket.updated_at or ticket.created_at or 'Not available' }}</dd></div>
+        </dl>
+      </section>
+      <section class="adminConversation" aria-labelledby="conversation-title">
+        <div class="sectionHeader sectionHeader--compact"><h2 id="conversation-title">Conversation</h2><span>{{ (ticket.messages or [])|length }} messages</span></div>
+        <ol class="adminMessageThread">
+          {% for message in ticket.messages or [] %}
+          {% set sender = 'staff' if message.sender_role == 'staff' else 'customer' %}
+          <li class="adminMessage adminMessage--{{ sender }}">
+            <div class="adminMessageMeta"><strong>{{ message.author_name or ('Support staff' if sender == 'staff' else 'Customer') }}</strong><span>{{ sender|title }}</span>{% if message.created_at %}<time datetime="{{ message.created_at }}">{{ message.created_at }}</time>{% endif %}</div>
+            <p>{{ message.message or '' }}</p>
+          </li>
+          {% else %}<li class="adminMessageEmpty">No messages have been added to this ticket.</li>{% endfor %}
+        </ol>
+      </section>
+      <form class="adminReplyForm" novalidate
+        hx-post="/api/support/ui/admin/tickets/{{ ticket.id }}/messages"
+        hx-target="#ticket-detail-shell" hx-swap="outerHTML" hx-disabled-elt="find button">
+        <label for="staff-reply">Reply to customer</label>
+        <textarea id="staff-reply" name="message" rows="5" maxlength="2000" placeholder="Write a clear, helpful staff reply…" required></textarea>
+        <p class="adminFieldHint">Replies are added as the signed-in staff member. Do not include internal notes.</p>
+        <div class="adminFormActions"><button class="button" type="submit">Send reply</button><span class="htmx-indicator adminInlineStatus" role="status">Sending reply…</span></div>
+      </form>
+    </section>
+    <aside class="adminSideColumn">
+      <section class="panel adminTriagePanel" aria-labelledby="triage-title">
+        <div class="sectionHeader sectionHeader--compact"><div><h2 id="triage-title">Triage and assignment</h2><p>Changes are saved only after you submit.</p></div></div>
+        <form novalidate hx-put="/api/support/ui/admin/tickets/{{ ticket.id }}" hx-target="#ticket-detail-shell" hx-swap="outerHTML" hx-disabled-elt="find button">
+          <div class="adminFormStack">
+            <div class="adminFilterField"><label for="ticket-category">Category</label><select id="ticket-category" name="category" required>{% for value in ('unclassified', 'order', 'return', 'payment', 'product', 'delivery', 'account', 'other') %}<option value="{{ value }}"{% if ticket.category == value %} selected{% endif %}>{{ value|title }}</option>{% endfor %}</select></div>
+            <div class="adminFilterField"><label for="ticket-priority">Priority</label><select id="ticket-priority" name="priority" required>{% for value in ('unclassified', 'low', 'medium', 'high', 'urgent') %}<option value="{{ value }}"{% if ticket.priority == value %} selected{% endif %}>{{ value|title }}</option>{% endfor %}</select></div>
+            <div class="adminFilterField"><label for="ticket-status-select">Status</label><select id="ticket-status-select" name="status" required>{% for value in ('needs_triage', 'open', 'pending', 'solved') %}<option value="{{ value }}"{% if ticket.status == value %} selected{% endif %}>{{ value|replace('_', ' ')|title }}</option>{% endfor %}</select></div>
+            <div class="adminFilterField"><label for="ticket-assignee">Assignee</label><input id="ticket-assignee" name="assigned_to" type="text" maxlength="100" value="{{ ticket.assigned_to or '' }}" placeholder="Leave blank if unassigned"></div>
+          </div>
+          <div class="adminFormActions"><button class="button" type="submit">Save changes</button><span class="htmx-indicator adminInlineStatus" role="status">Saving…</span></div>
+        </form>
+      </section>
+      {% with ticket_id=ticket.id %}{% include "support_ui/admin/ai_panel.html" %}{% endwith %}
+      <section class="panel adminDangerZone" aria-labelledby="delete-title">
+        <h2 id="delete-title">Danger zone</h2><p>Deleting a ticket permanently removes its conversation.</p>
+        <button class="button button--danger adminFullButton" type="button"
+          hx-delete="/api/support/ui/admin/tickets/{{ ticket.id }}"
+          hx-confirm="Delete this ticket and its conversation? This cannot be undone."
+          hx-target="#ticket-detail-shell" hx-swap="outerHTML"
+          hx-disabled-elt="this">Delete ticket</button>
+      </section>
+    </aside>
+  </div>
+</main>

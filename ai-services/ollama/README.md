@@ -1,15 +1,17 @@
 # Ollama AI Service
 
-Release 0 uses the locally installed Ollama runtime with approved Qwen and
-Llama models. The Product Catalogue runtime feature currently uses
-`qwen2.5:0.5b`. The shared agentic loop can use either installed model for
-read-only software reviews and never modifies application data or code.
+Release 0 uses approved Qwen and Llama models through Ollama. Product Catalogue
+and Customer Support call the shared containerised Ollama service using
+`qwen2.5:0.5b`. Customer Support analysis is advisory and cannot directly
+modify tickets or send messages. Ethan Ting's Customer Accounts and Loyalty AI
+connects to Ollama on the host computer using `llama3.1:8b`. It prepares
+read-only insights and customer-change proposals; changes are saved only after
+an administrator reviews and confirms them through the protected API.
 
-Before starting the application, run Ollama on the host computer and confirm
-that the model is available:
+Before starting the application, make sure the host model used by Customer
+Accounts and Loyalty is available:
 
 ```bash
-ollama pull qwen2.5:0.5b
 ollama pull llama3.1:8b
 ollama list
 ```
@@ -20,15 +22,16 @@ Then start the application from the project root:
 docker compose up --build -d
 ```
 
-The backend container accesses the host Ollama service through
-`http://host.docker.internal:11434`. No Ollama Docker image or duplicate model
-volume is downloaded.
+The one-shot `ollama-init` service pulls the model into the persistent
+`ollama-models` volume and verifies it before dependent backends start. A fresh
+volume requires a one-time download; later starts reuse it.
 
 To verify that the Product Catalogue backend is running:
 
 ```bash
 docker compose ps
-docker compose logs shared-backend
+docker compose logs ollama-init ollama
+docker compose exec ollama ollama show qwen2.5:0.5b
 ```
 
 ## Shared Agentic Review Loop
@@ -111,3 +114,7 @@ generation.
 Endpoint review requires the Docker application to be running. Database and
 architecture collection are read-only. Review evidence is saved under
 `docs/evidence/agentic/` unless `--no-save` is supplied.
+
+CI uses mocked AI clients for inference behavior and starts the support service
+boundary without downloading the model on every workflow run. Local and
+demonstration evidence must use the real containerised model.

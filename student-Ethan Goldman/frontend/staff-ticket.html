@@ -1,51 +1,31 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Selected Customer Support staff ticket for ASD 2026.">
-  <title>Support Ticket | ASD 2026</title>
+  <meta name="description" content="Staff-only Customer Support ticket workspace for ASD 2026.">
+  <meta name="htmx-config" content='{"allowEval": false, "allowScriptTags": false}'>
+  <title>Ticket Workspace | Customer Support</title>
   <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
-  <link rel="stylesheet" href="css/support.css?v=4">
+  <link rel="stylesheet" href="css/support.css?v=6">
   <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
   <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
-  <script src="js/htmx.min.js" defer></script>
-  <script src="js/support.js?v=4" defer></script>
+  <script src="js/htmx.min.js?v=2.0.4" defer></script>
+  <script src="js/support.js?v=2" defer></script>
 </head>
-
 <body>
   <header class="navbar appleNav" data-site-header data-active="support">
     <div class="navContainer">
-      <div class="navLogo"><a href="http://localhost:8000" class="logoLink" aria-label="ASD 2026 home"><span
-            class="logoMain">ASD 2026</span></a></div>
-      <nav class="navLinks" aria-label="Main navigation"><a href="http://localhost:8001" class="navLink">Product
-          Catalogue</a><a href="http://localhost:8002" class="navLink">Inventory Management</a><a
-          href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8005"
-          class="navLink navLink--active" aria-current="page">Customer Support</a></nav>
+      <div class="navLogo"><a href="http://localhost:8000" class="logoLink" aria-label="ASD 2026 home"><span class="logoMain">ASD 2026</span></a></div>
+      <nav class="navLinks" aria-label="Main navigation"><a href="http://localhost:8001" class="navLink">Product Catalogue</a><a href="http://localhost:8002" class="navLink">Inventory Management</a><a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8005" class="navLink navLink--active" aria-current="page">Customer Support</a></nav>
     </div>
   </header>
-  <main class="supportPage">
-    <nav class="supportNav" aria-label="Customer Support"><a href="index.html">Overview</a><a
-        href="customer.html">Customer</a><a href="staff.html" aria-current="page">Staff</a></nav>
-    <section id="ticket-detail-region" class="panel ticketDetail" aria-live="polite">
-      <p class="loadingText">Loading ticket…</p>
-    </section>
-    <section class="panel aiPanel" aria-labelledby="ai-assistance-title">
-      <div class="sectionHeader">
-        <div>
-          <h2 id="ai-assistance-title">AI assistant</h2>
-          <p>Review AI suggestions before using them.</p>
-        </div><button id="analyse-ticket-button" class="button aiAnalyseButton" type="button"
-          hx-target="#ai-result-region" hx-swap="innerHTML" hx-indicator="#ai-analysis-loading">Analyse</button>
-      </div>
-      <div class="infoNotice" role="status">Staff review required · AI never changes tickets or contacts customers.</div>
-      <div class="aiStates" aria-live="polite"><p id="ai-analysis-loading"
-          class="aiState aiState--loading htmx-indicator">Analysing ticket…</p></div>
-      <div id="ai-result-region" aria-live="polite"></div>
+  <main id="ticket-detail-shell" class="supportPage adminWorkspace" data-admin-ticket-loader
+    hx-trigger="load" hx-swap="outerHTML" aria-live="polite">
+    <section class="adminState adminState--loading" role="status">
+      <strong>Loading ticket…</strong><p>Retrieving the selected conversation.</p>
     </section>
   </main>
   <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>
 </body>
-
 </html>
