@@ -201,7 +201,7 @@ def create_app(database_path=None):
         if "assigned_to" in payload:
             values["assigned_to"] = _assigned(payload)
         if "triage_applied_by" in payload:
-            values["triage_applied_by"] = None if payload["triage_applied_by"] is None else _string(payload, "triage_applied_by", 2, 100)
+            values["triage_applied_by"] = None if payload["triage_applied_by"] is None else _string(payload, "triage_applied_by", 1, 128)
         if not values:
             raise ApiError(400, "invalid_update", "At least one ticket field must be supplied.")
         ticket = database.update_ticket(ticket_id, values, _now(), path)

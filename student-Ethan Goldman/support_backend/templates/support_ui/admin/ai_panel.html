@@ -1,0 +1,31 @@
+<section id="ai-panel" class="panel adminAiPanel" aria-labelledby="ai-title">
+  <div class="sectionHeader sectionHeader--compact"><div><h2 id="ai-title">AI analysis</h2><p>Advisory only. Review every suggestion before applying it.</p></div></div>
+  <div class="adminReadOnlyNotice" role="note">The assistant cannot send replies or change tickets automatically.</div>
+  {% if error %}<div class="adminState adminState--error" role="alert"><strong>Analysis unavailable</strong><p>{{ error }}</p></div>{% endif %}
+  {% if result %}
+    {% set analysis = result.get('analysis', {}) %}
+    {% set workflow = result.get('workflow', {}) %}
+    <div class="adminAiResult">
+      <div class="adminAiResultHeader"><h3>Staff review</h3><span class="adminAiModel">{{ result.get('model', 'Local model') }}</span></div>
+      <dl class="adminAiFacts">
+        <div><dt>Category</dt><dd>{{ analysis.get('category', '')|title }}</dd></div>
+        <div><dt>Priority</dt><dd>{{ analysis.get('priority', '')|title }}</dd></div>
+        <div><dt>Sentiment</dt><dd>{{ analysis.get('sentiment', '')|title }}</dd></div>
+      </dl>
+      <section class="adminAiSection"><h4>Summary</h4><p>{{ analysis.get('summary', '') }}</p></section>
+      {% if analysis.get('evidence') %}<section class="adminAiSection"><h4>Evidence used</h4><p>{{ analysis.get('evidence')|join(', ') }}</p></section>{% endif %}
+      {% if result.get('suggested_steps') %}<section class="adminAiSection"><h4>Suggested next steps</h4><ol>{% for step in result.get('suggested_steps', []) %}<li>{{ step.get('label', '') }}</li>{% endfor %}</ol></section>{% endif %}
+      {% if workflow %}<ol class="adminWorkflow" aria-label="Application workflow">{% for stage in ('plan', 'act', 'observe', 'adapt') %}<li><strong>{{ stage|title }}</strong><span>{{ workflow.get(stage, '') }}</span></li>{% endfor %}</ol>{% endif %}
+    </div>
+    <form hx-put="/api/support/ui/admin/tickets/{{ ticket_id }}" hx-target="#ticket-detail-shell" hx-swap="outerHTML" hx-disabled-elt="find button">
+      <input type="hidden" name="apply_ai_suggestions" value="1">
+      <input type="hidden" name="category" value="{{ analysis.get('category', '') }}">
+      <input type="hidden" name="priority" value="{{ analysis.get('priority', '') }}">
+      <button class="button adminFullButton" type="submit">Apply category &amp; priority suggestions</button>
+    </form>
+  {% else %}
+    <button class="button button--secondary adminFullButton" type="button"
+      hx-post="/api/support/ui/admin/tickets/{{ ticket_id }}/ai-analysis"
+      hx-target="#ai-panel" hx-swap="outerHTML" hx-disabled-elt="this">Analyse ticket</button>
+  {% endif %}
+</section>

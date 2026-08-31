@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS support_tickets (
     priority TEXT NOT NULL CHECK (priority IN ('low', 'medium', 'high', 'urgent', 'unclassified')),
     status TEXT NOT NULL CHECK (status IN ('needs_triage', 'open', 'pending', 'solved')),
     assigned_to TEXT CHECK (assigned_to IS NULL OR LENGTH(TRIM(assigned_to)) BETWEEN 2 AND 100),
-    triage_applied_by TEXT CHECK (triage_applied_by IS NULL OR LENGTH(TRIM(triage_applied_by)) BETWEEN 2 AND 100),
+    triage_applied_by TEXT CHECK (triage_applied_by IS NULL OR LENGTH(TRIM(triage_applied_by)) BETWEEN 1 AND 128),
     created_at TEXT NOT NULL CHECK (LENGTH(TRIM(created_at)) > 0),
     updated_at TEXT NOT NULL CHECK (LENGTH(TRIM(updated_at)) > 0)
 );

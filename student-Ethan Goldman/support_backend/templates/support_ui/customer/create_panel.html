@@ -1,0 +1,36 @@
+<section id="new-ticket-panel" class="panel" aria-labelledby="create-ticket-title">
+  <div class="sectionHeader">
+    <div>
+      <h2 id="create-ticket-title">Start a new conversation</h2>
+      <p>Tell us what you need help with. Our team will take it from there.</p>
+    </div>
+  </div>
+  {% if notice %}<div class="customerFeedback customerFeedback--success" role="status"><strong>Sent</strong><span>{{ notice }}</span></div>{% endif %}
+  {% if error %}<div class="customerFeedback customerFeedback--validation" role="alert"><strong>Please check your details</strong><span>{{ error }}</span></div>{% endif %}
+  <form class="ticketForm" novalidate
+    hx-post="/api/support/ui/customer/tickets"
+    hx-target="#new-ticket-panel"
+    hx-swap="outerHTML"
+    hx-disabled-elt="find button">
+    <div class="formGrid">
+      <div class="formField formField--wide">
+        <label for="ticket-subject">Subject <span aria-hidden="true">*</span></label>
+        <input id="ticket-subject" name="subject" type="text" minlength="5" maxlength="160" required
+          value="{{ values.get('subject', '') if values else '' }}" autocomplete="off"
+          aria-describedby="ticket-subject-help">
+        <p id="ticket-subject-help" class="fieldHelp">Use a short summary, at least 5 characters.</p>
+      </div>
+      <div class="formField formField--wide">
+        <label for="ticket-message">Message <span aria-hidden="true">*</span></label>
+        <textarea id="ticket-message" name="message" rows="7" maxlength="2000" required
+          aria-describedby="ticket-message-help">{{ values.get('message', '') if values else '' }}</textarea>
+        <p id="ticket-message-help" class="fieldHelp">Enter 1 to 2000 characters with the details that will help us investigate.</p>
+      </div>
+    </div>
+    <div class="formActions">
+      <button class="button button--secondary" type="reset">Clear</button>
+      <button class="button" type="submit">Send to support</button>
+      <span class="htmx-indicator customerLoading" role="status">Sending…</span>
+    </div>
+  </form>
+</section>

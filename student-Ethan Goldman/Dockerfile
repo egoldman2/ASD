@@ -25,7 +25,9 @@ ENV APP_HOST=0.0.0.0 \
     SUPPORT_DATABASE_API_URL=http://customer-support-database:6006 \
     AUTH_SERVICE_URL=http://ethan-backend:6002 \
     OLLAMA_URL=http://ollama:11434 \
-    OLLAMA_MODEL=qwen2.5:0.5b
+    OLLAMA_MODEL=qwen2.5:0.5b \
+    OLLAMA_TIMEOUT_SECONDS=45 \
+    LOG_LEVEL=INFO
 
 EXPOSE 6005
 

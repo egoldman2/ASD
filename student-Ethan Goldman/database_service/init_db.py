@@ -59,7 +59,12 @@ def _needs_ticket_rebuild(connection):
         return True
     if any(columns[field] != 1 for field in REQUIRED_TICKETS - {"id", "assigned_to", "triage_applied_by"}):
         return True
-    return "unclassified" not in _sql(connection, "support_tickets") or "needs_triage" not in _sql(connection, "support_tickets")
+    table_sql = _sql(connection, "support_tickets")
+    return (
+        "unclassified" not in table_sql
+        or "needs_triage" not in table_sql
+        or "trim(triage_applied_by)) between 1 and 128" not in table_sql
+    )
 
 
 def _needs_message_rebuild(connection):
@@ -99,8 +104,21 @@ def _status(value):
 def _ticket_values(row):
     keys = set(row.keys())
     ticket_id = row["id"]
-    email = _text(row["customer_email"]) if "customer_email" in keys else ""
-    owner = f"legacy-email:{email.casefold()}" if email else f"legacy-ticket:{ticket_id}"
+    email_field = (
+        "customer_email_snapshot"
+        if "customer_email_snapshot" in keys
+        else "customer_email"
+    )
+    name_field = (
+        "customer_name_snapshot"
+        if "customer_name_snapshot" in keys
+        else "customer_name"
+    )
+    email = _text(row[email_field]) if email_field in keys else ""
+    owner = _text(row["customer_user_id"]) if "customer_user_id" in keys else ""
+    owner = owner or (
+        f"legacy-email:{email.casefold()}" if email else f"legacy-ticket:{ticket_id}"
+    )
     safe_email = _bounded(email, 3, 254, f"legacy-ticket-{ticket_id}@invalid.local")
     if "@" not in safe_email:
         safe_email = f"legacy-ticket-{ticket_id}@invalid.local"
@@ -109,14 +127,14 @@ def _ticket_values(row):
     return {
         "id": ticket_id,
         "customer_user_id": owner,
-        "customer_name_snapshot": _bounded(row["customer_name"] if "customer_name" in keys else "", 2, 100, f"Legacy customer {ticket_id}"),
+        "customer_name_snapshot": _bounded(row[name_field] if name_field in keys else "", 2, 100, f"Legacy customer {ticket_id}"),
         "customer_email_snapshot": safe_email,
         "subject": _bounded(row["subject"] if "subject" in keys else "", 5, 160, f"Legacy support request {ticket_id}"),
         "category": _category(row["category"] if "category" in keys else ""),
         "priority": _priority(row["priority"] if "priority" in keys else ""),
         "status": _status(row["status"] if "status" in keys else ""),
         "assigned_to": _text(row["assigned_to"]) if "assigned_to" in keys and 2 <= len(_text(row["assigned_to"])) <= 100 else None,
-        "triage_applied_by": _text(row["triage_applied_by"]) if "triage_applied_by" in keys and 2 <= len(_text(row["triage_applied_by"])) <= 100 else None,
+        "triage_applied_by": _text(row["triage_applied_by"]) if "triage_applied_by" in keys and 1 <= len(_text(row["triage_applied_by"])) <= 128 else None,
         "created_at": created,
         "updated_at": _text(row["updated_at"]) if "updated_at" in keys and _text(row["updated_at"]) else created,
     }
@@ -209,8 +227,19 @@ def _remap_legacy_seed_owners(connection):
             """UPDATE support_tickets
                SET customer_user_id = ?, customer_name_snapshot = ?,
                    customer_email_snapshot = ?
-               WHERE id = ? AND customer_user_id LIKE 'customer-%'""",
-            (owner_id, name, email, ticket_id),
+               WHERE id = ? AND (
+                   customer_user_id LIKE 'customer-%'
+                   OR customer_user_id = ?
+                   OR customer_user_id = ?
+               )""",
+            (
+                owner_id,
+                name,
+                email,
+                ticket_id,
+                f"legacy-ticket:{ticket_id}",
+                f"legacy-email:{email.casefold()}",
+            ),
         )
         if cursor.rowcount:
             connection.execute(

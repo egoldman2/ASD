@@ -188,6 +188,15 @@
   opacity: 0.55;
 }
 
+.htmx-indicator {
+  display: none;
+}
+
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+  display: inline;
+}
+
 .formGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -904,12 +913,6 @@
   overflow-wrap: anywhere;
 }
 
-.adminAiDraft {
-  padding: 0.8rem;
-  border-left: 3px solid var(--support-blue);
-  background: var(--support-soft);
-}
-
 .adminWorkflow {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1280,6 +1283,10 @@
   margin-top: 1.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--support-border);
+}
+
+#ticket-detail-region:empty {
+  display: none;
 }
 
 .customerTicketDetail__heading {

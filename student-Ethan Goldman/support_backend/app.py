@@ -19,18 +19,37 @@ from werkzeug.exceptions import RequestEntityTooLarge
 
 try:
     from . import ai, auth, db_client, validation
+    from .ui import create_ui_blueprint
 except ImportError:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import ai  # type: ignore
     import auth  # type: ignore
     import db_client  # type: ignore
     import validation  # type: ignore
+    from ui import create_ui_blueprint  # type: ignore
 
 
 LOGGER = logging.getLogger(__name__)
 FRONTEND_ORIGIN = "http://localhost:8005"
 MUTATIONS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 CORRELATION_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$")
+LOG_LEVELS = {
+    "CRITICAL": logging.CRITICAL,
+    "ERROR": logging.ERROR,
+    "WARNING": logging.WARNING,
+    "INFO": logging.INFO,
+    "DEBUG": logging.DEBUG,
+}
+
+
+def _configure_logging() -> None:
+    level = LOG_LEVELS.get(os.getenv("LOG_LEVEL", "INFO").strip().upper(), logging.INFO)
+    logging.basicConfig(level=level, format="%(message)s")
+    LOGGER.setLevel(level)
+    ai.LOGGER.setLevel(level)
+
+
+_configure_logging()
 
 
 def _float_env(name: str, default: float) -> float:
@@ -329,6 +348,14 @@ def create_app(config: Mapping[str, Any] | None = None, *, database: Any = None)
             LOGGER.error("support_ai_failed correlation_id=%s", g.correlation_id)
             return _error("The AI assistant is currently unavailable.", 503)
         return jsonify(result)
+
+    app.register_blueprint(
+        create_ui_blueprint(
+            principal=_principal,
+            database=_database,
+            db_error=_db_error,
+        )
+    )
 
     return app
 
