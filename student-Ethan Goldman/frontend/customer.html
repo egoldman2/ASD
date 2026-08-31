@@ -4,14 +4,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Create a Customer Support ticket for ASD 2026.">
-  <title>Create a Support Ticket | ASD 2026</title>
+  <meta name="description" content="Authenticated Customer Support dashboard for ASD 2026.">
+  <title>My Support | ASD 2026</title>
   <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
-  <link rel="stylesheet" href="css/support.css?v=4">
+  <link rel="stylesheet" href="css/support.css?v=5">
   <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
   <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
-  <script src="js/htmx.min.js" defer></script>
-  <script src="js/support.js?v=4" defer></script>
+  <script src="js/customer.js?v=1" defer></script>
 </head>
 
 <body>
@@ -21,76 +20,101 @@
             class="logoMain">ASD 2026</span></a></div>
       <nav class="navLinks" aria-label="Main navigation"><a href="http://localhost:8001" class="navLink">Product
           Catalogue</a><a href="http://localhost:8002" class="navLink">Inventory Management</a><a
-          href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8005"
-          class="navLink navLink--active" aria-current="page">Customer Support</a></nav>
+          href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8004"
+          class="navLink">Order &amp; Returns</a><a href="http://localhost:8005" class="navLink navLink--active"
+          aria-current="page">Customer Support</a></nav>
     </div>
   </header>
-  <main class="supportPage">
+
+  <main class="supportPage customerPage" data-customer-app>
     <nav class="supportNav" aria-label="Customer Support"><a href="index.html">Overview</a><a href="customer.html"
-        aria-current="page">Customer</a><a href="staff.html">Staff</a></nav>
+        aria-current="page">My support</a></nav>
+
     <header class="pageHeader">
-      <h1 id="page-title">Customer support</h1>
-      <p>Create a new ticket or continue an existing conversation.</p>
+      <p class="pageEyebrow">Customer Support</p>
+      <h1 id="page-title">How can we help?</h1>
+      <p>Contact our support team and keep your conversations in one secure place.</p>
     </header>
-    <section class="panel" aria-labelledby="create-ticket-title">
-      <div class="sectionHeader"><h2 id="create-ticket-title">New ticket</h2></div>
-      <div id="ticket-form-feedback" aria-live="polite"></div>
-      <form class="ticketForm" hx-post="http://localhost:5000/support-ui/customer/tickets"
-        hx-target="#ticket-form-feedback" hx-swap="innerHTML" hx-indicator="#ticket-create-loading">
-        <div class="formGrid">
-          <div class="formField"><label for="customer-name">Your name <span aria-hidden="true">*</span></label><input
-              id="customer-name" name="customer_name" type="text" autocomplete="name" minlength="2" maxlength="100"
-              required></div>
-          <div class="formField"><label for="customer-email">Your email <span aria-hidden="true">*</span></label><input
-              id="customer-email" name="customer_email" type="email" autocomplete="email" maxlength="254" required></div>
-          <div class="formField formField--wide"><label for="ticket-subject">Subject <span
-                aria-hidden="true">*</span></label><input id="ticket-subject" name="subject" type="text" minlength="5"
-              maxlength="160" required></div>
-          <div class="formField formField--wide"><label for="ticket-message">Message <span
-                aria-hidden="true">*</span></label><textarea id="ticket-message" name="message" rows="6" minlength="10"
-              maxlength="2000" required></textarea></div>
-          <div class="formField"><label for="ticket-category">Category <span aria-hidden="true">*</span></label><select
-              id="ticket-category" name="category" required>
-              <option value="" selected>Select a category</option>
-              <option value="order">Order</option>
-              <option value="return">Return</option>
-              <option value="payment">Payment</option>
-              <option value="product">Product</option>
-              <option value="delivery">Delivery</option>
-              <option value="account">Account</option>
-              <option value="other">Other</option>
-            </select></div>
-          <div class="formField"><label for="ticket-priority">Priority <span aria-hidden="true">*</span></label><select
-              id="ticket-priority" name="priority" required>
-              <option value="" selected>Select a priority</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select></div>
-        </div>
-        <div class="formActions"><button class="button button--secondary" type="reset">Reset</button><button
-            class="button" type="submit">Create ticket</button><span id="ticket-create-loading" class="htmx-indicator"
-              role="status">Creating ticket…</span>
-        </div>
-      </form>
+
+    <section id="session-region" class="customerState customerState--loading" aria-live="assertive" role="status">
+      <strong>Checking your sign-in…</strong>
+      <p>We are securely loading your support account.</p>
     </section>
-    <section class="panel customerLookup" aria-labelledby="existing-ticket-title">
-      <div class="sectionHeader"><h2 id="existing-ticket-title">Existing ticket</h2></div>
-      <form class="customerLookup__form" hx-get="http://localhost:5000/support-ui/customer/tickets"
-        hx-target="#customer-conversation-region" hx-swap="innerHTML" hx-indicator="#customer-ticket-loading">
-        <div class="formField"><label for="existing-ticket-id">Ticket ID</label><input id="existing-ticket-id"
-            name="ticket_id" type="number" min="1" inputmode="numeric" required></div>
-        <div class="formField"><label for="existing-ticket-email">Your email</label><input
-            id="existing-ticket-email" name="customer_email" type="email" autocomplete="email" maxlength="254"
-            required></div>
-        <div class="customerLookup__actions"><button class="button button--secondary" type="submit">Open
-            conversation</button><span id="customer-ticket-loading" class="htmx-indicator" role="status">Loading
-            conversation…</span></div>
-      </form>
-      <div id="customer-conversation-region" class="customerLookup__result" aria-live="polite"></div>
-    </section>
+
+    <div id="customer-dashboard" hidden>
+      <section class="panel customerIdentity" aria-labelledby="identity-title">
+        <div class="sectionHeader sectionHeader--compact">
+          <div>
+            <h2 id="identity-title">Signed-in account</h2>
+            <p>Your support requests are linked to this account.</p>
+          </div>
+          <span class="identityBadge">Authenticated</span>
+        </div>
+        <dl class="identityDetails">
+          <div>
+            <dt>Name</dt>
+            <dd id="current-user-name">Loading…</dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd id="current-user-email">Loading…</dd>
+          </div>
+        </dl>
+      </section>
+
+      <div class="customerColumns">
+        <section class="panel" aria-labelledby="create-ticket-title">
+          <div class="sectionHeader">
+            <div>
+              <h2 id="create-ticket-title">Start a new conversation</h2>
+              <p>Tell us what you need help with. Our team will take it from there.</p>
+            </div>
+          </div>
+          <div id="ticket-form-feedback" class="customerFeedback" aria-live="polite" aria-atomic="true" hidden></div>
+          <form id="new-ticket-form" class="ticketForm" novalidate>
+            <div class="formGrid">
+              <div class="formField formField--wide">
+                <label for="ticket-subject">Subject <span aria-hidden="true">*</span></label>
+                <input id="ticket-subject" name="subject" type="text" minlength="5" maxlength="160" required
+                  autocomplete="off" aria-describedby="ticket-subject-help">
+                <p id="ticket-subject-help" class="fieldHelp">Use a short summary, at least 5 characters.</p>
+              </div>
+              <div class="formField formField--wide">
+                <label for="ticket-message">Message <span aria-hidden="true">*</span></label>
+                <textarea id="ticket-message" name="message" rows="7" minlength="10" maxlength="2000" required
+                  aria-describedby="ticket-message-help"></textarea>
+                <p id="ticket-message-help" class="fieldHelp">Please include the details that will help us investigate.</p>
+              </div>
+            </div>
+            <div class="formActions">
+              <button class="button button--secondary" type="reset">Clear</button>
+              <button id="create-ticket-button" class="button" type="submit">Send to support</button>
+              <span id="ticket-create-loading" class="customerLoading" role="status" hidden>Sending…</span>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel customerTicketsPanel" aria-labelledby="my-tickets-title">
+          <div class="sectionHeader">
+            <div>
+              <h2 id="my-tickets-title">My conversations</h2>
+              <p>Only tickets belonging to your signed-in account appear here.</p>
+            </div>
+            <span id="ticket-count" class="ticketCount" aria-live="polite"></span>
+          </div>
+          <div id="ticket-list-region" aria-live="polite" aria-atomic="true">
+            <div class="customerState customerState--loading">
+              <strong>Loading your tickets…</strong>
+              <p>Your conversations will appear here.</p>
+            </div>
+          </div>
+          <section id="ticket-detail-region" class="customerTicketDetail" aria-live="polite" aria-atomic="true"
+            hidden></section>
+        </section>
+      </div>
+    </div>
   </main>
+
   <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>
 </body>
 

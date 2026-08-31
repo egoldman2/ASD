@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 
 import pytest
+from flask import Flask
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -23,7 +24,19 @@ def database_path(tmp_path, monkeypatch):
 
 @pytest.fixture
 def client(database_path):
-    application = import_module("app").app
+    application = Flask(__name__)
+    ticket_routes = import_module(
+        "student-Ethan Goldman.backend.routes.ticket_routes"
+    )
+    ticket_ui_routes = import_module(
+        "student-Ethan Goldman.backend.routes.ticket_ui_routes"
+    )
+    ai_routes = import_module("student-Ethan Goldman.backend.routes.ai_routes")
+    application.register_blueprint(ticket_routes.support_ticket_blueprint)
+    application.register_blueprint(ticket_ui_routes.support_ticket_ui_blueprint)
+    application.register_blueprint(ticket_ui_routes.support_customer_ui_blueprint)
+    application.register_blueprint(ai_routes.support_ai_blueprint)
+    application.register_blueprint(ai_routes.support_ai_ui_blueprint)
     application.config.update(TESTING=True)
 
     with application.test_client() as test_client:

@@ -4,17 +4,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Selected Customer Support staff ticket for ASD 2026.">
-  <title>Support Ticket | ASD 2026</title>
+  <meta name="description" content="Staff-only Customer Support ticket workspace for ASD 2026.">
+  <title>Ticket Workspace | Customer Support</title>
   <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
-  <link rel="stylesheet" href="css/support.css?v=4">
+  <link rel="stylesheet" href="css/support.css?v=5">
   <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
   <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
-  <script src="js/htmx.min.js" defer></script>
-  <script src="js/support.js?v=4" defer></script>
+  <script src="js/admin.js?v=1" defer></script>
 </head>
 
-<body>
+<body data-admin-page="detail">
   <header class="navbar appleNav" data-site-header data-active="support">
     <div class="navContainer">
       <div class="navLogo"><a href="http://localhost:8000" class="logoLink" aria-label="ASD 2026 home"><span
@@ -25,26 +24,140 @@
           class="navLink navLink--active" aria-current="page">Customer Support</a></nav>
     </div>
   </header>
-  <main class="supportPage">
+
+  <div id="admin-boot-state" class="adminState adminState--loading" role="status" aria-live="polite">
+    <strong>Checking staff access…</strong>
+    <p>Verifying your signed-in session.</p>
+  </div>
+
+  <main id="admin-workspace" class="supportPage adminWorkspace" hidden aria-labelledby="ticket-subject">
     <nav class="supportNav" aria-label="Customer Support"><a href="index.html">Overview</a><a
         href="customer.html">Customer</a><a href="staff.html" aria-current="page">Staff</a></nav>
-    <section id="ticket-detail-region" class="panel ticketDetail" aria-live="polite">
-      <p class="loadingText">Loading ticket…</p>
+
+    <div class="adminDetailTopbar"><a class="button button--secondary" href="staff.html">Back to queue</a><span
+        class="adminEyebrow">Staff-only ticket workspace</span></div>
+
+    <section id="ticket-detail-state" class="adminState adminState--loading" role="status" aria-live="polite">
+      <strong>Loading ticket…</strong>
+      <p>Retrieving the selected conversation.</p>
     </section>
-    <section class="panel aiPanel" aria-labelledby="ai-assistance-title">
-      <div class="sectionHeader">
-        <div>
-          <h2 id="ai-assistance-title">AI assistant</h2>
-          <p>Review AI suggestions before using them.</p>
-        </div><button id="analyse-ticket-button" class="button aiAnalyseButton" type="button"
-          hx-target="#ai-result-region" hx-swap="innerHTML" hx-indicator="#ai-analysis-loading">Analyse</button>
-      </div>
-      <div class="infoNotice" role="status">Staff review required · AI never changes tickets or contacts customers.</div>
-      <div class="aiStates" aria-live="polite"><p id="ai-analysis-loading"
-          class="aiState aiState--loading htmx-indicator">Analysing ticket…</p></div>
-      <div id="ai-result-region" aria-live="polite"></div>
-    </section>
+
+    <div id="ticket-detail-content" class="adminDetailLayout" hidden>
+      <section class="panel adminTicketPanel" aria-labelledby="ticket-subject">
+        <header class="adminTicketHeader">
+          <div>
+            <p id="ticket-number" class="adminEyebrow"></p>
+            <h1 id="ticket-subject"></h1>
+          </div>
+          <span id="ticket-status" class="adminStatusBadge"></span>
+        </header>
+
+        <div id="detail-feedback" class="adminFeedback" role="status" aria-live="polite" hidden></div>
+
+        <section class="adminCustomerCard" aria-labelledby="customer-title">
+          <h2 id="customer-title">Customer</h2>
+          <dl class="adminCustomerDetails">
+            <div><dt>Name</dt><dd id="ticket-customer-name"></dd></div>
+            <div><dt>Email</dt><dd id="ticket-customer-email"></dd></div>
+            <div><dt>Created</dt><dd id="ticket-created"></dd></div>
+            <div><dt>Last updated</dt><dd id="ticket-updated"></dd></div>
+          </dl>
+        </section>
+
+        <section class="adminConversation" aria-labelledby="conversation-title">
+          <div class="sectionHeader sectionHeader--compact">
+            <h2 id="conversation-title">Conversation</h2>
+            <span id="message-count"></span>
+          </div>
+          <ol id="message-thread" class="adminMessageThread"></ol>
+        </section>
+
+        <form id="reply-form" class="adminReplyForm" novalidate>
+          <label for="staff-reply">Reply to customer</label>
+          <textarea id="staff-reply" name="message" rows="5" maxlength="2000"
+            placeholder="Write a clear, helpful staff reply…" required></textarea>
+          <p class="adminFieldHint">Replies are sent as the signed-in staff member. Do not include internal notes.</p>
+          <div class="adminFormActions"><button id="reply-button" class="button" type="submit">Send reply</button>
+            <span id="reply-loading" class="adminInlineStatus" role="status" aria-live="polite" hidden>Sending
+              reply…</span></div>
+          <div id="reply-feedback" class="adminFeedback" role="status" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <aside class="adminSideColumn">
+        <section class="panel adminTriagePanel" aria-labelledby="triage-title">
+          <div class="sectionHeader sectionHeader--compact">
+            <div>
+              <h2 id="triage-title">Triage and assignment</h2>
+              <p>Changes are saved only after you submit.</p>
+            </div>
+          </div>
+          <form id="triage-form" novalidate>
+            <div class="adminFormStack">
+              <div class="adminFilterField"><label for="ticket-category">Category</label><select id="ticket-category"
+                  name="category" required>
+                  <option value="unclassified">Unclassified / Needs triage</option>
+                  <option value="order">Order</option>
+                  <option value="return">Return</option>
+                  <option value="payment">Payment</option>
+                  <option value="product">Product</option>
+                  <option value="delivery">Delivery</option>
+                  <option value="account">Account</option>
+                  <option value="other">Other</option>
+                </select></div>
+              <div class="adminFilterField"><label for="ticket-priority">Priority</label><select id="ticket-priority"
+                  name="priority" required>
+                  <option value="unclassified">Unclassified</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select></div>
+              <div class="adminFilterField"><label for="ticket-status-select">Status</label><select
+                id="ticket-status-select" name="status" required>
+                  <option value="needs_triage">Needs triage</option>
+                  <option value="open">Open</option>
+                  <option value="pending">Pending</option>
+                  <option value="solved">Solved</option>
+                </select></div>
+              <div class="adminFilterField"><label for="ticket-assignee">Assignee</label><input id="ticket-assignee"
+                  name="assigned_to" type="text" maxlength="100" placeholder="Leave blank if unassigned"></div>
+            </div>
+            <div class="adminFormActions"><button id="save-triage-button" class="button" type="submit">Save
+                changes</button><span id="triage-loading" class="adminInlineStatus" role="status" aria-live="polite"
+                hidden>Saving…</span></div>
+            <div id="triage-feedback" class="adminFeedback" role="status" aria-live="polite" hidden></div>
+          </form>
+        </section>
+
+        <section class="panel adminAiPanel" aria-labelledby="ai-title">
+          <div class="sectionHeader sectionHeader--compact">
+            <div>
+              <h2 id="ai-title">AI analysis</h2>
+              <p>Advisory only. Review every suggestion before applying it.</p>
+            </div>
+          </div>
+          <div class="adminReadOnlyNotice" role="note">The assistant cannot send replies or change tickets automatically.</div>
+          <button id="analyse-ticket-button" class="button button--secondary adminFullButton" type="button">Analyse
+            ticket</button>
+          <div id="ai-state" class="adminState" role="status" aria-live="polite" hidden></div>
+          <div id="ai-result" hidden></div>
+          <button id="apply-ai-suggestions" class="button adminFullButton" type="button" hidden>Apply category &amp;
+            priority suggestions</button>
+        </section>
+
+        <section class="panel adminDangerZone" aria-labelledby="delete-title">
+          <h2 id="delete-title">Danger zone</h2>
+          <p>Deleting a ticket permanently removes its conversation.</p>
+          <button id="delete-ticket-button" class="button button--danger adminFullButton" type="button">Delete
+            ticket</button>
+          <span id="delete-loading" class="adminInlineStatus" role="status" aria-live="polite" hidden>Deleting…</span>
+          <div id="delete-feedback" class="adminFeedback" role="alert" aria-live="assertive" hidden></div>
+        </section>
+      </aside>
+    </div>
   </main>
+
   <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>
 </body>
 

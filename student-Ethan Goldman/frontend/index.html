@@ -10,8 +10,7 @@
   <link rel="stylesheet" href="css/support.css?v=4">
   <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
   <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
-  <script src="js/htmx.min.js" defer></script>
-  <script src="js/support.js?v=4" defer></script>
+  <script src="js/landing.js?v=1" defer></script>
 </head>
 
 <body>
@@ -26,22 +25,20 @@
     </div>
   </header>
   <main class="supportPage">
-    <nav class="supportNav" aria-label="Customer Support"><a href="index.html" aria-current="page">Overview</a><a
-        href="customer.html">Customer</a><a href="staff.html">Staff</a></nav>
-    <header class="pageHeader">
+    <nav class="supportNav" aria-label="Customer Support"><a href="index.html" aria-current="page">Customer Support</a></nav>
+    <section id="support-entry-state" class="customerState customerState--loading" role="status" aria-live="polite">
+      <strong>Checking your support access…</strong>
+      <p>We will take you to the correct workspace for your account.</p>
+    </section>
+    <header class="pageHeader" id="support-entry-header" hidden>
       <h1 id="page-title">Customer support</h1>
       <p>Create a request or manage the support queue.</p>
     </header>
-    <section class="viewChooser" aria-label="Choose a Customer Support view">
+    <section class="viewChooser" id="support-entry-fallback" aria-label="Customer Support access" hidden>
       <article class="panel choiceCard">
         <h2>Customer</h2>
-        <p>Create a ticket or continue an existing conversation.</p><a class="button" href="customer.html">Open
-          customer support</a>
-      </article>
-      <article class="panel choiceCard">
-        <h2>Staff</h2>
-        <p>Review tickets, respond to customers, and manage the queue.</p><a class="button button--secondary"
-          href="staff.html">Open staff workspace</a>
+        <p>Sign in to open the workspace assigned to your account.</p><a class="button" id="support-login-link"
+          href="http://localhost:8003/index.html">Sign in</a>
       </article>
     </section>
   </main>

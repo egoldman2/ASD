@@ -18,10 +18,31 @@ const registerPasswordConfirmation = document.querySelector(
 );
 
 
+function supportReturnForRole(user) {
+  const rawReturnUrl = new URLSearchParams(window.location.search).get("return_url");
+  if (!rawReturnUrl) return null;
+
+  try {
+    const requested = new URL(rawReturnUrl);
+    const trustedHost = ["localhost", "127.0.0.1"].includes(requested.hostname);
+    const trustedPath = ["/", "/index.html", "/customer.html", "/staff.html"].includes(requested.pathname);
+    if (requested.protocol !== "http:" || requested.port !== "8005" || !trustedHost || !trustedPath) {
+      return null;
+    }
+    requested.pathname = user.role === "admin" ? "/staff.html" : "/customer.html";
+    requested.search = "";
+    requested.hash = "";
+    return requested.href;
+  } catch (error) {
+    return null;
+  }
+}
+
+
 function redirectForRole(user) {
-  const destination = user.role === "admin"
+  const destination = supportReturnForRole(user) || (user.role === "admin"
     ? "admin.html"
-    : "customer.html";
+    : "customer.html");
 
   window.location.replace(destination);
 }

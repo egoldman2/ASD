@@ -1,32 +1,26 @@
 # Ollama AI Service
 
-Release 0 uses the locally installed Ollama runtime with the `qwen2.5:0.5b`
-model. The model answers Product Catalogue questions in English and does not
-modify products, carts, application code, or database records.
+Release 0 uses the shared containerised Ollama runtime with the
+`qwen2.5:0.5b` model. Product Catalogue and Customer Support call the same
+internal service. Customer Support analysis is advisory and cannot directly
+modify tickets or send messages.
 
-Before starting the application, run Ollama on the host computer and confirm
-that the model is available:
-
-```bash
-ollama pull qwen2.5:0.5b
-ollama list
-```
-
-Then start the application from the project root:
+Start the application from the project root:
 
 ```bash
 docker compose up --build -d
 ```
 
-The backend container accesses the host Ollama service through
-`http://host.docker.internal:11434`. No Ollama Docker image or duplicate model
-volume is downloaded.
+The one-shot `ollama-init` service pulls the model into the persistent
+`ollama-models` volume and verifies it before dependent backends start. A fresh
+volume requires a one-time download; later starts reuse it.
 
 To verify that the Product Catalogue backend is running:
 
 ```bash
 docker compose ps
-docker compose logs shared-backend
+docker compose logs ollama-init ollama
+docker compose exec ollama ollama show qwen2.5:0.5b
 ```
 
 ## Shared Agentic Review Loop
@@ -60,3 +54,7 @@ python ai-services/agentic_loop.py --feature student-Chufeng --mode architecture
 Endpoint review requires the Docker application to be running. Database and
 architecture collection are read-only. Review evidence is saved under
 `docs/evidence/agentic/` unless `--no-save` is supplied.
+
+CI uses mocked AI clients for inference behavior and starts the support service
+boundary without downloading the model on every workflow run. Local and
+demonstration evidence must use the real containerised model.
