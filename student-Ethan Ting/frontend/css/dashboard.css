@@ -372,6 +372,242 @@
   color: #b42318;
 }
 
+.aiInsightPanel {
+  background: linear-gradient(145deg, #ffffff 0%, #f4f8fc 100%);
+}
+
+.aiInsightPanel .dashboardMessage:empty {
+  display: none;
+}
+
+.aiSafetyBadge {
+  flex: 0 0 auto;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #b8d6c6;
+  border-radius: 999px;
+  background: #e7f6ed;
+  color: #18794e;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.aiInsightForm {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.aiInsightForm > label {
+  color: #1e2f4d;
+  font-weight: 700;
+}
+
+.aiInsightForm textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 0.8rem 0.9rem;
+  resize: vertical;
+  border: 1px solid #afc6d9;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e2f4d;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.aiInsightForm textarea:focus {
+  border-color: #1d5b9e;
+  outline: 3px solid rgba(29, 91, 158, 0.16);
+}
+
+.aiPromptSuggestions {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.aiPromptButton {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #afc6d9;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1d5b9e;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.aiPromptButton:hover,
+.aiPromptButton:focus-visible {
+  background: #edf4f9;
+}
+
+.aiInsightForm .formActions {
+  margin-top: 0.2rem;
+}
+
+.aiInsightForm .primaryButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.aiInsightResult {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #c9ddec;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.aiInsightResult--proposal {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.aiInsightAnswer {
+  color: #1e2f4d;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.aiInsightMeta {
+  margin-top: 0.75rem;
+  color: #60758b;
+  font-size: 0.85rem;
+}
+
+.aiChangeProposal {
+  overflow: hidden;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px -16px rgba(9, 30, 66, 0.45);
+}
+
+.aiChangeProposalHeading {
+  padding: 1rem 1.15rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #d8dee4;
+}
+
+.aiChangeProposalHeading h3 {
+  color: #0b2545;
+  font-size: 1.15rem;
+}
+
+.aiChangeCustomer {
+  margin-top: 0.3rem;
+  color: #57606a;
+  overflow-wrap: anywhere;
+}
+
+.aiReviewBadge {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #b6d3ee;
+  border-radius: 999px;
+  background: #f1f8ff;
+  color: #0969da;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.aiChangeList {
+  padding: 0 1.15rem;
+}
+
+.aiChangeRow {
+  padding: 1rem 0;
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid #eaeef2;
+}
+
+.aiChangeRow[hidden] {
+  display: none;
+}
+
+.aiChangeLabel {
+  color: #57606a;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.aiChangeTransition {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.aiChangeCurrent,
+.aiChangeNew {
+  overflow-wrap: anywhere;
+}
+
+.aiChangeCurrent {
+  color: #57606a;
+  text-decoration: line-through;
+  text-decoration-color: #cf222e;
+}
+
+.aiChangeArrow {
+  color: #8c959f;
+  font-weight: 700;
+}
+
+.aiChangeNew {
+  color: #1f883d;
+}
+
+.aiChangeNotice {
+  margin: 1rem 1.15rem 0;
+  padding: 0.75rem 0.85rem;
+  border-left: 3px solid #54aeff;
+  background: #f1f8ff;
+  color: #24292f;
+  line-height: 1.5;
+}
+
+.aiTechnicalDetails {
+  margin: 0.85rem 1.15rem 0;
+  color: #57606a;
+  font-size: 0.85rem;
+}
+
+.aiTechnicalDetails summary {
+  color: #0969da;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.aiTechnicalDetails p {
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+.aiChangeActions {
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  border-top: 1px solid #d8dee4;
+  background: #f6f8fa;
+}
+
+.aiChangeActions .primaryButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .visuallyHidden {
   position: absolute;
   width: 1px;
@@ -410,6 +646,15 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+
+  .aiSafetyBadge {
+    align-self: flex-start;
+  }
+
+  .aiChangeRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
 }
 
 @media (max-width: 520px) {
@@ -420,6 +665,29 @@
 
   .dashboardPanel {
     padding: 1rem;
+  }
+
+  .aiChangeProposalHeading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .aiReviewBadge {
+    align-self: flex-start;
+  }
+
+  .aiChangeTransition {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .aiChangeArrow {
+    transform: rotate(90deg);
+    justify-self: start;
+  }
+
+  .aiChangeActions {
+    flex-direction: column-reverse;
   }
 
   .customerPage {

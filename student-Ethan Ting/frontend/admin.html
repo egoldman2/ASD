@@ -6,10 +6,10 @@
     <title>Admin Dashboard | ASD 2026</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
-    <link rel="stylesheet" href="css/dashboard.css?v=5">
+    <link rel="stylesheet" href="css/dashboard.css?v=8">
     <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
     <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
-    <script src="js/admin.js?v=7" defer></script>
+    <script src="js/admin.js?v=10" defer></script>
   </head>
 
   <body>
@@ -114,6 +114,118 @@
           <span class="summaryLabel">Total loyalty points</span>
           <strong id="totalLoyaltyPoints">0</strong>
         </article>
+      </section>
+
+      <section class="dashboardPanel aiInsightPanel" aria-labelledby="customerInsightTitle">
+        <div class="panelHeading panelHeading--responsive">
+          <div>
+            <p class="dashboardEyebrow">AI mode · Admin confirmation</p>
+            <h2 id="customerInsightTitle">Customer insight assistant</h2>
+            <p class="panelDescription">
+              Ask about customer accounts or loyalty activity. The assistant can also
+              prepare a name or email change for you to review before anything is saved.
+            </p>
+          </div>
+          <span class="aiSafetyBadge">Confirmation required</span>
+        </div>
+
+        <form id="customerInsightForm" class="aiInsightForm">
+          <label for="customerInsightQuestion">Question for the assistant</label>
+          <textarea
+            id="customerInsightQuestion"
+            name="question"
+            rows="3"
+            maxlength="400"
+            placeholder="For example: Which active customers are closest to their next loyalty tier?"
+            required
+          ></textarea>
+
+          <div class="aiPromptSuggestions" aria-label="Example questions">
+            <button
+              class="aiPromptButton"
+              type="button"
+              data-insight-question="Find the customer with email customer@asd.local and summarise their account status and loyalty."
+            >Find an email</button>
+            <button
+              class="aiPromptButton"
+              type="button"
+              data-insight-question="Which active customers are closest to their next loyalty tier?"
+            >Next loyalty tier</button>
+            <button
+              class="aiPromptButton"
+              type="button"
+              data-insight-question="Summarise the disabled customer accounts in the supplied records."
+            >Disabled accounts</button>
+            <button
+              class="aiPromptButton"
+              type="button"
+              data-insight-question="Change the full name for customer@asd.local to Jordan Lee."
+            >Prepare an edit</button>
+          </div>
+
+          <div class="formActions">
+            <button id="askCustomerInsightButton" class="primaryButton" type="submit">
+              Ask AI
+            </button>
+          </div>
+        </form>
+
+        <p id="customerInsightMessage" class="dashboardMessage" aria-live="polite"></p>
+
+        <div id="customerInsightResult" class="aiInsightResult" aria-live="polite" hidden>
+          <div id="customerInsightAnalysis">
+            <p class="dashboardEyebrow">Verified AI response</p>
+            <p id="customerInsightAnswer" class="aiInsightAnswer"></p>
+            <p id="customerInsightMeta" class="aiInsightMeta"></p>
+          </div>
+
+          <section id="customerChangeProposal" class="aiChangeProposal" aria-labelledby="customerChangeProposalTitle" hidden>
+            <div class="aiChangeProposalHeading">
+              <div>
+                <h3 id="customerChangeProposalTitle">Review customer changes</h3>
+                <p id="proposalCustomerSummary" class="aiChangeCustomer"></p>
+              </div>
+              <span class="aiReviewBadge">AI suggestion · Not saved</span>
+            </div>
+
+            <div class="aiChangeList" aria-label="Current and proposed customer details">
+              <div id="proposalNameRow" class="aiChangeRow">
+                <span class="aiChangeLabel">Full name</span>
+                <div class="aiChangeTransition">
+                  <span id="proposalCurrentName" class="aiChangeCurrent"></span>
+                  <span class="aiChangeArrow" aria-hidden="true">→</span>
+                  <strong id="proposalNewName" class="aiChangeNew"></strong>
+                </div>
+              </div>
+              <div id="proposalEmailRow" class="aiChangeRow">
+                <span class="aiChangeLabel">Email address</span>
+                <div class="aiChangeTransition">
+                  <span id="proposalCurrentEmail" class="aiChangeCurrent"></span>
+                  <span class="aiChangeArrow" aria-hidden="true">→</span>
+                  <strong id="proposalNewEmail" class="aiChangeNew"></strong>
+                </div>
+              </div>
+            </div>
+
+            <p class="aiChangeNotice">
+              Nothing changes until you select <strong>Save customer changes</strong>.
+            </p>
+
+            <details class="aiTechnicalDetails">
+              <summary>AI details</summary>
+              <p id="proposalAiMeta"></p>
+            </details>
+
+            <div class="aiChangeActions">
+              <button id="cancelCustomerChangeButton" class="secondaryButton" type="button">
+                Cancel
+              </button>
+              <button id="confirmCustomerChangeButton" class="primaryButton" type="button">
+                Save customer changes
+              </button>
+            </div>
+          </section>
+        </div>
       </section>
 
       <section id="loyaltyAdjustmentPanel" class="dashboardPanel" hidden>

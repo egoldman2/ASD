@@ -1,0 +1,14 @@
+Review only the supplied architecture file evidence.
+
+- Check separation between the customer frontend, authentication/loyalty backend API, and database API container.
+- Check that the backend reaches customer data through the database API rather than opening the SQLite file directly.
+- Check session-cookie settings, active-account validation, customer/admin role enforcement, data allow-lists, and CORS scope.
+- Check registration, profile, customer administration, loyalty balance, transaction-history, and soft-deactivation responsibilities.
+- Check Docker service ports, dependency health checks, persistent database storage, and startup ordering.
+- Check that customer and admin interfaces use the backend API and do not contain privileged database logic.
+- Check whether tests cover authentication, authorisation, validation, database constraints, concurrency, loyalty tiers, and failure handling.
+- If no Ethan frontend or backend file calls Ollama or an approved local LLM, report runtime AI integration as a Release 0 gap. Do not treat the shared code-review loop as an in-application Customer and Loyalty AI feature.
+- Do not claim automatic order-to-points integration unless the supplied files show it.
+- A truncated file excerpt is an evidence limitation; do not claim unobserved code is missing.
+- Do not review or recommend changes to another student's feature.
+- Do not make claims about live runtime behaviour unless it is explicitly present in the supplied evidence.

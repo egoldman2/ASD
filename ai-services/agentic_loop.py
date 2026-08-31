@@ -13,6 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
+SENSITIVE_COLUMN_TERMS = ("password", "secret", "token")
 
 SYSTEM_PROMPT = """You are the read-only software review agent for the ASD 2026 project.
 
@@ -118,6 +119,39 @@ def _quoted_identifier(identifier):
     return '"' + identifier.replace('"', '""') + '"'
 
 
+def _redacted_sample(config, table_name, record):
+    configured_columns = {
+        column.lower()
+        for column in config.get("database_rules", {})
+        .get("redacted_columns", {})
+        .get(table_name, [])
+    }
+    redacted = {}
+    for column, value in record.items():
+        column_lower = column.lower()
+        is_sensitive = (
+            column_lower in configured_columns
+            or any(term in column_lower for term in SENSITIVE_COLUMN_TERMS)
+        )
+        redacted[column] = "<redacted>" if is_sensitive else value
+    return redacted
+
+
+def _redact_source_excerpt(content):
+    """Remove credential-like string values from report-only source excerpts."""
+    excerpt = content[:MAX_ARCHITECTURE_FILE_CHARS]
+    sensitive_string = re.compile(
+        r"(?P<quote>['\"])(?P<value>[^'\"\n]*"
+        r"(?:password|pass!|secret|token)[^'\"\n]*)"
+        r"(?P=quote)",
+        re.IGNORECASE,
+    )
+    return sensitive_string.sub(
+        lambda match: f"{match.group('quote')}<redacted>{match.group('quote')}",
+        excerpt,
+    )
+
+
 def collect_database_evidence(config):
     database_path = _project_path(config["database"])
     if not database_path.is_file():
@@ -193,7 +227,7 @@ def collect_database_evidence(config):
                     (table_name,),
                 ).fetchone()[0]
                 samples = [
-                    dict(row)
+                    _redacted_sample(config, table_name, dict(row))
                     for row in connection.execute(
                         f"SELECT * FROM {quoted_table} LIMIT 3"
                     )
@@ -238,6 +272,8 @@ def collect_endpoint_evidence(config):
             "url": endpoint["url"],
             "method": "GET",
         }
+        if "expected_status" in endpoint:
+            endpoint_evidence["expected_status"] = endpoint["expected_status"]
         http_request = request.Request(
             endpoint["url"],
             headers={"Accept": "application/json", "User-Agent": "ASD-Agentic-Review/1.0"},
@@ -272,6 +308,7 @@ def collect_architecture_evidence(config):
         "project_root": str(PROJECT_ROOT),
         "files": [],
     }
+    source_by_path = {}
 
     for relative_path in config["architecture_files"]:
         file_path = _project_path(relative_path)
@@ -281,12 +318,137 @@ def collect_architecture_evidence(config):
         else:
             try:
                 content = file_path.read_text(encoding="utf-8", errors="replace")
+                source_by_path[relative_path] = content
                 file_evidence["characters"] = len(content)
                 file_evidence["truncated"] = len(content) > MAX_ARCHITECTURE_FILE_CHARS
-                file_evidence["content"] = content[:MAX_ARCHITECTURE_FILE_CHARS]
+                file_evidence["content"] = _redact_source_excerpt(content)
             except OSError as exc:
                 file_evidence["error"] = str(exc)
         evidence["files"].append(file_evidence)
+
+    compose_source = source_by_path.get("docker-compose.yml", "")
+    backend_source = source_by_path.get(
+        "student-Ethan Ting/backend/app.py",
+        "",
+    )
+    database_source = source_by_path.get(
+        "student-Ethan Ting/database/app.py",
+        "",
+    )
+    ethan_runtime_source = "\n".join(
+        content
+        for path, content in source_by_path.items()
+        if path.startswith("student-Ethan Ting/backend/")
+        or path.startswith("student-Ethan Ting/frontend/")
+    )
+    frontend_source = "\n".join(
+        content
+        for path, content in source_by_path.items()
+        if path.startswith("student-Ethan Ting/frontend/")
+    )
+    test_source = "\n".join(
+        content
+        for path, content in source_by_path.items()
+        if path.startswith("student-Ethan Ting/tests/")
+    )
+    runtime_source_lower = ethan_runtime_source.lower()
+    insight_prompt_source = source_by_path.get(
+        "student-Ethan Ting/agentic/customer_insight_prompt.txt",
+        "",
+    )
+    evidence["verified_checks"] = {
+        "configured_files": len(config["architecture_files"]),
+        "present_files": len(source_by_path),
+        "missing_files": [
+            item["path"] for item in evidence["files"] if "error" in item
+        ],
+        "truncated_files": [
+            item["path"] for item in evidence["files"] if item.get("truncated")
+        ],
+        "separate_docker_services": all(
+            f"  {service_name}:" in compose_source
+            for service_name in ("ethan-frontend", "ethan-backend", "ethan-database")
+        ),
+        "persistent_database_volume": (
+            "ethan-user-data:/data" in compose_source
+            and "ethan-user-data:" in compose_source
+        ),
+        "backend_uses_database_api": (
+            "DATABASE_API_URL" in backend_source
+            and "def database_request" in backend_source
+        ),
+        "backend_opens_sqlite_directly": (
+            "import sqlite3" in backend_source
+            or "users.db" in backend_source
+        ),
+        "database_container_owns_sqlite": (
+            "import sqlite3" in database_source
+            and "DATABASE_PATH" in database_source
+        ),
+        "http_only_session_cookie": (
+            'SESSION_COOKIE_HTTPONLY"] = True' in backend_source
+        ),
+        "same_site_session_cookie": (
+            'SESSION_COOKIE_SAMESITE"] = "Lax"' in backend_source
+        ),
+        "active_account_revalidated": (
+            "def validated_session_user" in backend_source
+            and 'stored_user.get("is_active") != 1' in backend_source
+        ),
+        "admin_role_guard": "def admin_required" in backend_source,
+        "cors_origin_allow_list": (
+            "ALLOWED_ORIGINS" in backend_source
+            and "if origin in ALLOWED_ORIGINS" in backend_source
+        ),
+        "frontend_uses_backend_api": (
+            "authRequest(" in frontend_source
+            and "/api/" in frontend_source
+        ),
+        "tier_boundary_tests_include_499_and_999": (
+            '(499, "Bronze"' in test_source
+            and '(999, "Silver"' in test_source
+        ),
+        "negative_balance_tests_present": (
+            "test_database_rejects_negative_loyalty_balance" in test_source
+            or "test_failed_redemption_does_not_create_history" in test_source
+        ),
+        "negative_balance_rejected_in_database": (
+            "if new_balance < 0" in database_source
+            and "Points balance cannot go below zero." in database_source
+        ),
+        "runtime_ai_in_ethan_frontend_or_backend": any(
+            marker in runtime_source_lower
+            for marker in ("ollama", "11434", "/api/chat", "llm")
+        ),
+        "customer_insight_route_is_admin_only": (
+            '@app.post("/api/admin/ai/customer-insight")\n@admin_required'
+            in backend_source
+        ),
+        "customer_insight_uses_allow_listed_records": (
+            "def customer_insight_records" in backend_source
+            and '"password_hash"' not in backend_source[
+                backend_source.find("def customer_insight_records"):
+                backend_source.find("def customer_insight_prompt")
+            ]
+        ),
+        "customer_insight_validates_model_output": (
+            "def customer_insight_issues" in backend_source
+            and "unknown_customer_ids" in backend_source
+        ),
+        "customer_insight_prompt_is_read_only": (
+            "You are read-only" in insight_prompt_source
+            and "Never claim that you changed" in insight_prompt_source
+        ),
+        "customer_insight_security_tests_present": (
+            "test_customer_insight_requires_an_administrator" in test_source
+            and "test_customer_insight_sends_only_allow_listed_fields" in test_source
+            and "test_customer_insight_adapts_an_unsafe_first_response" in test_source
+        ),
+        "automatic_order_to_points_integration": any(
+            marker in runtime_source_lower
+            for marker in ("order_id", "/api/orders", "/orders", "order-total")
+        ),
+    }
 
     return evidence
 
@@ -334,8 +496,18 @@ def _evidence_digest(mode, evidence):
             evidence, indent=2, ensure_ascii=False
         )
 
-    return "MODE: ARCHITECTURE\n" + json.dumps(
-        evidence, indent=2, ensure_ascii=False
+    architecture_checks = json.dumps(
+        evidence.get("verified_checks", {}),
+        indent=2,
+        ensure_ascii=False,
+    )
+    return (
+        "MODE: ARCHITECTURE\nVERIFIED ARCHITECTURE CHECKS\n"
+        + architecture_checks
+        + "\n\nCOLLECTED FILE EVIDENCE\n"
+        + json.dumps(evidence, indent=2, ensure_ascii=False)
+        + "\n\nVERIFIED ARCHITECTURE CHECKS REPEATED\n"
+        + architecture_checks
     )
 
 
@@ -396,6 +568,30 @@ Review only {feature_name}. Base every claim on the collected evidence.
 
 
 def _grounding_summary(mode, evidence):
+    if mode == "endpoints":
+        lines = ["Endpoint status allow-list:"]
+        for endpoint in evidence.get("endpoints", []):
+            lines.append(
+                f"- {endpoint['url']}: expected={endpoint.get('expected_status')}; "
+                f"observed={endpoint.get('status', 'unavailable')}"
+            )
+        lines.append(
+            "An observed 401 is a passing result when expected_status is 401. "
+            "This signed-out GET review does not prove authenticated or mutating behaviour."
+        )
+        return "\n".join(lines)
+
+    if mode == "architecture":
+        return (
+            "Verified architecture checks (true/false values are collected from the "
+            "configured source files):\n"
+            + json.dumps(
+                evidence.get("verified_checks", {}),
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
+
     if mode != "database" or "tables" not in evidence:
         return "Use only facts explicitly present in the collected evidence."
 
@@ -416,19 +612,167 @@ def _grounding_summary(mode, evidence):
 
 def _deterministic_issues(mode, evidence, candidate):
     issues = []
-    if mode != "database" or "tables" not in evidence:
-        return issues
+    candidate_lower = candidate.lower()
 
     if len(candidate.split()) < 30:
         issues.append("The model response is too short to contain a complete evidence review.")
+
+    if mode == "endpoints":
+        matching_unauthorised = [
+            endpoint
+            for endpoint in evidence.get("endpoints", [])
+            if endpoint.get("expected_status") == 401
+            and endpoint.get("status") == 401
+        ]
+        if matching_unauthorised and "not secure enough" in candidate_lower:
+            issues.append(
+                "Expected 401 responses prove the reviewed routes reject signed-out "
+                "requests; they are not evidence that the service is insecure."
+            )
+        if matching_unauthorised and re.search(
+            r"(?:api/session|api/profile|api/loyalty|api/admin/)[^\n]{0,160}"
+            r"(?:updated?|changed?) to return (?:a )?200",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response recommends changing protected signed-out routes to 200, "
+                "contradicting their configured 401 expectation."
+            )
+        if matching_unauthorised and re.search(
+            r"implement (?:session|profile|loyalty|loyalty history|customer-list) protection",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response recommends implementing protection that the observed 401 "
+                "responses already demonstrate for signed-out GET requests."
+            )
+        for endpoint in evidence.get("endpoints", []):
+            path = endpoint["url"].split("//", 1)[-1].partition("/")[2]
+            path = "/" + path if path else "/"
+            actual_status = endpoint.get("status")
+            if actual_status is None:
+                continue
+            contradictory_status = re.search(
+                rf"{re.escape(path)}[^\n]{{0,100}}returns? (?:a )?(\d{{3}})",
+                candidate_lower,
+            )
+            if contradictory_status and int(contradictory_status.group(1)) != actual_status:
+                issues.append(
+                    f"The observed status for {path} is {actual_status}, not "
+                    f"{contradictory_status.group(1)}."
+                )
+            proposed_status = re.search(
+                rf"{re.escape(path)}[^\n]{{0,100}}implement (?:a )?(\d{{3}}) status",
+                candidate_lower,
+            )
+            if proposed_status and int(proposed_status.group(1)) != endpoint.get(
+                "expected_status"
+            ):
+                issues.append(
+                    f"The recommendation for {path} contradicts its configured expected "
+                    f"status of {endpoint.get('expected_status')}."
+                )
+        if "ready for deployment" in candidate_lower:
+            issues.append(
+                "Health checks alone do not prove that the feature is ready for deployment."
+            )
+        if re.search(
+            r"(?:high|medium|high severity|medium severity)[^\n]{0,180}"
+            r"(?:correctly|pass(?:ed|ing)?|functioning as expected)",
+            candidate_lower,
+        ):
+            issues.append(
+                "A passing endpoint check should not be labelled as a High- or "
+                "Medium-severity finding."
+            )
+        return list(dict.fromkeys(issues))
+
+    if mode == "architecture":
+        checks = evidence.get("verified_checks", {})
+        configured_paths = [item["path"] for item in evidence.get("files", [])]
+        cited_paths = {
+            path for path in configured_paths if path.lower() in candidate_lower
+        }
+        if len(cited_paths) < 3:
+            issues.append(
+                "The architecture response cites fewer than three configured files and "
+                "is too narrow for a system-wide review."
+            )
+        if not checks.get("runtime_ai_in_ethan_frontend_or_backend") and not (
+            ("runtime ai" in candidate_lower or "ollama" in candidate_lower)
+            and any(term in candidate_lower for term in ("missing", "gap", "not present", "not implemented"))
+        ):
+            issues.append(
+                "The response omits the verified Release 0 gap: no runtime AI/Ollama "
+                "integration was found in Ethan's frontend or backend."
+            )
+        if checks.get("runtime_ai_in_ethan_frontend_or_backend") and not (
+            "customer insight" in candidate_lower or "ollama" in candidate_lower
+        ):
+            issues.append(
+                "The response omits the observed runtime Customer Insight/Ollama integration."
+            )
+        if checks.get("runtime_ai_in_ethan_frontend_or_backend") and re.search(
+            r"(?:no|without|does not have|not implemented)[^.\n]{0,100}"
+            r"(?:runtime ai|ollama|llm integration)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response says runtime AI is missing, but Customer Insight/Ollama "
+                "integration markers were observed."
+            )
+        if checks.get("tier_boundary_tests_include_499_and_999") and (
+            re.search(
+                r"(?:do not|does not|not) (?:include|test|testing|have)[^.\n]{0,100}499",
+                candidate_lower,
+            )
+        ):
+            issues.append(
+                "The response says intermediate tier values are untested, but the "
+                "collected tests explicitly include 499 and 999 points."
+            )
+        if checks.get("negative_balance_tests_present") and re.search(
+            r"add(?:ing)? (?:a |more )?test cases?[^.\n]{0,100}negative",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response recommends a negative-balance test that is already present."
+            )
+        if checks.get("negative_balance_rejected_in_database") and re.search(
+            r"(?:does not have|no) (?:a )?(?:clear )?mechanism[^.\n]{0,100}negative balance",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response says negative balances are not handled, but the database "
+                "explicitly rejects new_balance below zero."
+            )
+        if not checks.get("backend_opens_sqlite_directly") and re.search(
+            r"backend[^.\n]{0,100}(?:opens?|accesses?|connects? to)[^.\n]{0,60}sqlite",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response claims direct backend SQLite access, but the collected "
+                "backend uses DATABASE_API_URL and contains no SQLite import or users.db path."
+            )
+        if re.search(
+            r"(?:adaptation|changes?)[^.\n]{0,100}(?:has|have|was|were) (?:been )?applied "
+            r"to the codebase",
+            candidate_lower,
+        ):
+            issues.append(
+                "The loop is read-only, so the response cannot claim that adaptations "
+                "were applied to the codebase."
+            )
+        return list(dict.fromkeys(issues))
+
+    if mode != "database" or "tables" not in evidence:
+        return issues
 
     all_columns = {
         column["name"]
         for table in evidence["tables"].values()
         for column in table["columns"]
     }
-    candidate_lower = candidate.lower()
-
     for table_name, table in evidence["tables"].items():
         allowed_columns = {column["name"] for column in table["columns"]}
         table_labels = {table_name.lower()}
@@ -492,6 +836,30 @@ def _deterministic_issues(mode, evidence, candidate):
                 f"The absolute claim '{phrase}' is not proven by three sample records."
             )
 
+    sensitive_columns = {
+        column["name"].lower()
+        for table in evidence["tables"].values()
+        for column in table["columns"]
+        if any(term in column["name"].lower() for term in SENSITIVE_COLUMN_TERMS)
+    }
+    if sensitive_columns and re.search(
+        r"(?:does not contain|contains no|no) (?:any )?authentication fields?",
+        candidate_lower,
+    ):
+        issues.append(
+            "The response says there are no authentication fields even though the "
+            "schema contains: " + ", ".join(sorted(sensitive_columns)) + "."
+        )
+    for column_name in sensitive_columns:
+        unsupported_usage_claim = re.compile(
+            rf"{re.escape(column_name)}[^.\n]{{0,80}}not used for authentication"
+        )
+        if unsupported_usage_claim.search(candidate_lower):
+            issues.append(
+                f"Redaction protects the sampled value of {column_name}; it does not "
+                "prove that the application does not use that field for authentication."
+            )
+
     off_scope_terms = (
         "endpoint",
         "frontend",
@@ -512,13 +880,170 @@ def _deterministic_issues(mode, evidence, candidate):
     return list(dict.fromkeys(issues))
 
 
-def _grounded_fallback(mode, evidence, issues):
+def _grounded_fallback(mode, evidence, issues, config):
+    if mode == "endpoints":
+        observations = []
+        mismatches = []
+        unavailable = []
+        for endpoint in evidence.get("endpoints", []):
+            actual = endpoint.get("status")
+            expected = endpoint.get("expected_status")
+            path = endpoint["url"].split("//", 1)[-1].partition("/")[2]
+            path = "/" + path if path else "/"
+            if actual is None:
+                result = "UNAVAILABLE"
+                unavailable.append(path)
+            elif expected is not None and actual != expected:
+                result = "MISMATCH"
+                mismatches.append(f"{path}: expected {expected}, observed {actual}")
+            else:
+                result = "PASS"
+            observations.append(
+                f"- {result}: GET `{path}` expected {expected} and observed {actual}."
+            )
+
+        findings = []
+        if mismatches:
+            findings.extend(f"- High: {mismatch}." for mismatch in mismatches)
+        if unavailable:
+            findings.append(
+                "- High: No HTTP status was collected for: " + ", ".join(unavailable) + "."
+            )
+        if not mismatches and not unavailable:
+            findings.append(
+                "- All configured signed-out GET checks matched their expected statuses."
+            )
+        protected_passes = [
+            endpoint
+            for endpoint in evidence.get("endpoints", [])
+            if endpoint.get("expected_status") == 401
+            and endpoint.get("status") == 401
+        ]
+        if protected_passes:
+            findings.append(
+                f"- {len(protected_passes)} protected routes correctly rejected the "
+                "signed-out request with 401 Unauthorized."
+            )
+        findings.append(
+            "- Evidence limitation: this read-only run used signed-out GET requests only; "
+            "it did not exercise authenticated CRUD or role-specific mutation requests."
+        )
+
+        return (
+            "OBSERVATIONS\n"
+            + "\n".join(observations)
+            + "\n\nFINDINGS\n"
+            + "\n".join(findings)
+            + "\n\nRECOMMENDATIONS\n"
+            "- Keep the current signed-out protection and health-check expectations.\n"
+            "- Use the automated authenticated customer/admin tests as separate evidence "
+            "for CRUD and role authorisation.\n\n"
+            "ADAPTATION APPLIED\n"
+            "- Replaced status contradictions with a deterministic comparison of expected "
+            "and observed HTTP statuses.\n"
+            "- Grounding issues removed: "
+            + ("; ".join(issues) if issues else "none")
+        )
+
+    if mode == "architecture":
+        checks = evidence.get("verified_checks", {})
+        observations = [
+            f"- {checks.get('present_files', 0)} of "
+            f"{checks.get('configured_files', 0)} configured architecture files were present.",
+            "- Docker defines separate `ethan-frontend`, `ethan-backend`, and "
+            f"`ethan-database` services: {checks.get('separate_docker_services')}.",
+            "- The backend uses `DATABASE_API_URL`/`database_request` and opens SQLite "
+            f"directly: {checks.get('backend_opens_sqlite_directly')}.",
+            "- The database container owns SQLite access: "
+            f"{checks.get('database_container_owns_sqlite')}.",
+            "- HTTP-only cookie, SameSite=Lax, active-account revalidation, admin role "
+            "guard, and CORS origin allow-list checks were observed: "
+            f"{all(checks.get(name) for name in ('http_only_session_cookie', 'same_site_session_cookie', 'active_account_revalidated', 'admin_role_guard', 'cors_origin_allow_list'))}.",
+            "- Frontend API usage and the 499/999 tier boundary tests were observed: "
+            f"{checks.get('frontend_uses_backend_api')} and "
+            f"{checks.get('tier_boundary_tests_include_499_and_999')}.",
+            "- The database rejects a calculated balance below zero and matching tests "
+            f"were observed: {checks.get('negative_balance_rejected_in_database')} and "
+            f"{checks.get('negative_balance_tests_present')}.",
+            "- Runtime Customer Insight uses an administrator-only route, allow-listed "
+            "records, response validation, a read-only prompt, and security tests: "
+            f"{all(checks.get(name) for name in ('customer_insight_route_is_admin_only', 'customer_insight_uses_allow_listed_records', 'customer_insight_validates_model_output', 'customer_insight_prompt_is_read_only', 'customer_insight_security_tests_present'))}.",
+        ]
+        findings = []
+        if not checks.get("runtime_ai_in_ethan_frontend_or_backend"):
+            findings.append(
+                "- High Release 0 gap: no Ollama or approved runtime LLM call was found "
+                "in Ethan's frontend or backend. The shared review loop is development "
+                "evidence, not an in-application Customer and Loyalty AI feature."
+            )
+        else:
+            findings.append(
+                "- Runtime AI integration markers were observed in Ethan's application files."
+            )
+        if not checks.get("automatic_order_to_points_integration"):
+            findings.append(
+                "- Low scope limitation: automatic order-to-points integration was not "
+                "observed and must not be claimed in the demonstration."
+            )
+        truncated_files = checks.get("truncated_files", [])
+        if truncated_files:
+            findings.append(
+                f"- Evidence limitation: {len(truncated_files)} file excerpts were "
+                "truncated, so this static review cannot prove every unobserved branch."
+            )
+
+        if checks.get("runtime_ai_in_ethan_frontend_or_backend"):
+            recommendations = (
+                "- Keep Customer Insight administrator-only and read-only; continue "
+                "sending only the minimum non-sensitive customer fields.\n"
+                "- Demonstrate the prompt, model call, response validation, and visible "
+                "Plan -> Act -> Observe -> Adapt metadata.\n"
+                "- Never connect model output directly to customer or loyalty mutation "
+                "routes.\n"
+            )
+            adaptation_summary = (
+                "verified architecture-wide checks and the completed runtime AI controls."
+            )
+        else:
+            recommendations = (
+                "- Implement a read-only, administrator-only Customer Insight feature "
+                "that calls an approved Ollama model and sends only the minimum "
+                "non-sensitive data.\n"
+                "- Require the AI to explain its evidence and never let model output "
+                "directly change customer or loyalty data.\n"
+            )
+            adaptation_summary = (
+                "verified architecture-wide checks and the explicit runtime AI gap."
+            )
+
+        return (
+            "OBSERVATIONS\n"
+            + "\n".join(observations)
+            + "\n\nFINDINGS\n"
+            + "\n".join(findings)
+            + "\n\nRECOMMENDATIONS\n"
+            + recommendations
+            + "- Keep authenticated CRUD/role tests and Docker health checks as separate "
+            "runtime evidence.\n\n"
+            "ADAPTATION APPLIED\n"
+            "- Replaced the narrow model response with the "
+            + adaptation_summary
+            + "\n"
+            + "- Grounding issues removed: "
+            + ("; ".join(issues) if issues else "none")
+        )
+
     if mode != "database" or "tables" not in evidence:
         return None
 
     observations = []
     findings = []
-    required_tables = ("products", "cart_items")
+    database_rules = config.get("database_rules", {})
+    required_tables = database_rules.get(
+        "required_tables",
+        ["products", "cart_items"],
+    )
+    minimum_records = database_rules.get("minimum_records", {})
     for table_name in required_tables:
         table = evidence["tables"].get(table_name)
         if table is None:
@@ -528,19 +1053,59 @@ def _grounded_fallback(mode, evidence, issues):
         observations.append(
             f"- `{table_name}` has {table['record_count']} records and exact columns: {columns}."
         )
-        if table["record_count"] < 10:
+        required_count = minimum_records.get(table_name, 10)
+        if table["record_count"] < required_count:
             findings.append(
-                f"- Medium: `{table_name}` has fewer than the required ten records."
+                f"- Medium: `{table_name}` has {table['record_count']} records, "
+                f"below the configured minimum of {required_count}."
             )
 
-    cart_table = evidence["tables"].get("cart_items")
-    if cart_table:
+    foreign_key_tables = database_rules.get(
+        "foreign_key_tables",
+        ["cart_items"],
+    )
+    for table_name in foreign_key_tables:
+        table = evidence["tables"].get(table_name)
+        if not table:
+            continue
         foreign_key_summary = ", ".join(
             f"{item['from_column']} -> {item['referenced_table']}.{item['to_column']} "
             f"(ON DELETE {item['on_delete']})"
-            for item in cart_table["foreign_keys"]
+            for item in table["foreign_keys"]
         ) or "none"
-        observations.append(f"- `cart_items` foreign keys: {foreign_key_summary}.")
+        observations.append(f"- `{table_name}` foreign keys: {foreign_key_summary}.")
+
+    redacted_columns = database_rules.get("redacted_columns", {})
+    for table_name, column_names in redacted_columns.items():
+        table = evidence["tables"].get(table_name)
+        if not table:
+            continue
+        for column_name in column_names:
+            observed_samples = table.get("sample_records", [])
+            if observed_samples and all(
+                sample.get(column_name) == "<redacted>" for sample in observed_samples
+            ):
+                observations.append(
+                    f"- Sample values for `{table_name}.{column_name}` were redacted "
+                    "before being sent to the model or written to this report."
+                )
+
+    for table_name in required_tables:
+        table = evidence["tables"].get(table_name)
+        if not table:
+            continue
+        constraint_fragments = []
+        create_sql = table.get("create_sql") or ""
+        if " UNIQUE" in create_sql.upper():
+            constraint_fragments.append("UNIQUE")
+        if " CHECK " in create_sql.upper() or "CHECK (" in create_sql.upper():
+            constraint_fragments.append("CHECK")
+        if constraint_fragments:
+            observations.append(
+                f"- `{table_name}` declares "
+                + " and ".join(constraint_fragments)
+                + " constraints in its collected CREATE TABLE statement."
+            )
 
     if not findings:
         findings.append(
@@ -562,7 +1127,7 @@ def _grounded_fallback(mode, evidence, issues):
         "ADAPTATION APPLIED\n"
         "- Replaced unsupported model claims with a deterministic summary of the collected evidence.\n"
         "- Grounding issues removed: "
-        + "; ".join(issues)
+        + ("; ".join(issues) if issues else "none")
     )
 
 
@@ -766,7 +1331,12 @@ def run_agentic_loop(feature_directory, mode, ollama_call=None, save=True):
     all_grounding_issues = list(
         dict.fromkeys(deterministic_issues + final_issues)
     )
-    fallback_review = _grounded_fallback(mode, evidence, all_grounding_issues)
+    fallback_review = _grounded_fallback(
+        mode,
+        evidence,
+        all_grounding_issues,
+        config,
+    )
     if final_issues and fallback_review:
         _stage(
             "ADAPT",

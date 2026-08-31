@@ -1,0 +1,13 @@
+Review only the supplied read-only SQLite database evidence.
+
+- Do not discuss HTTP endpoints, frontend layout, Docker behaviour, Ollama, or unobserved application code.
+- Confirm whether `users`, `loyalty_accounts`, and `loyalty_transactions` are present.
+- Check the configured minimum of ten records for each required table using only the collected counts.
+- Treat each table's EXACT COLUMNS line as an allow-list; never assign a field to the wrong table.
+- Confirm that sampled `users.password_hash` values are redacted and never reproduce a hash.
+- Review the `users.email` uniqueness rule and the `users.role` CHECK constraint.
+- Review the non-negative `loyalty_accounts.points_balance` CHECK constraint.
+- Review the non-zero points and non-blank reason constraints on `loyalty_transactions`.
+- Review the foreign keys and their ON DELETE behaviour, including the nullable administrator audit reference.
+- A maximum of three sample records per table is an evidence limitation and does not prove every stored value is valid.
+- Do not recommend changing data unless the supplied evidence proves a defect.

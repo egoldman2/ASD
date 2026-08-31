@@ -16,9 +16,21 @@ const pointsReasonInput = document.querySelector("#pointsReason");
 const customerIdInput = document.querySelector("#customerId");
 const customerNameInput = document.querySelector("#customerName");
 const customerEmailInput = document.querySelector("#customerEmail");
+const customerInsightForm = document.querySelector("#customerInsightForm");
+const customerInsightQuestion = document.querySelector("#customerInsightQuestion");
+const askCustomerInsightButton = document.querySelector("#askCustomerInsightButton");
+const customerInsightMessage = document.querySelector("#customerInsightMessage");
+const customerInsightResult = document.querySelector("#customerInsightResult");
+const customerInsightAnalysis = document.querySelector("#customerInsightAnalysis");
+const customerInsightAnswer = document.querySelector("#customerInsightAnswer");
+const customerInsightMeta = document.querySelector("#customerInsightMeta");
+const customerChangeProposal = document.querySelector("#customerChangeProposal");
+const confirmCustomerChangeButton = document.querySelector("#confirmCustomerChangeButton");
+const cancelCustomerChangeButton = document.querySelector("#cancelCustomerChangeButton");
 
 let customers = [];
 let loyaltyAccounts = [];
+let pendingCustomerChange = null;
 
 
 async function authRequest(path, options = {}) {
@@ -45,6 +57,67 @@ async function authRequest(path, options = {}) {
 function showMessage(message, success = false) {
   adminMessage.textContent = message;
   adminMessage.classList.toggle("success", success);
+}
+
+
+function showCustomerInsightMessage(message, success = false) {
+  customerInsightMessage.textContent = message;
+  customerInsightMessage.classList.toggle("success", success);
+}
+
+
+function renderCustomerInsight(result) {
+  pendingCustomerChange = result.proposal || null;
+  customerInsightAnswer.textContent = result.answer;
+  customerInsightMeta.textContent = (
+    `${result.model} · ${result.customers_analyzed} customer records · Read-only analysis`
+  );
+  customerInsightAnalysis.hidden = Boolean(pendingCustomerChange);
+  customerInsightResult.classList.toggle(
+    "aiInsightResult--proposal",
+    Boolean(pendingCustomerChange)
+  );
+
+  if (pendingCustomerChange) {
+    const current = pendingCustomerChange.current;
+    const changes = pendingCustomerChange.changes;
+    document.querySelector("#proposalCustomerSummary").textContent = (
+      `${current.full_name} · ${current.email}`
+    );
+    const nameRow = document.querySelector("#proposalNameRow");
+    const emailRow = document.querySelector("#proposalEmailRow");
+
+    nameRow.hidden = !changes.full_name;
+    emailRow.hidden = !changes.email;
+
+    if (changes.full_name) {
+      document.querySelector("#proposalCurrentName").textContent = current.full_name;
+      document.querySelector("#proposalNewName").textContent = changes.full_name;
+    }
+    if (changes.email) {
+      document.querySelector("#proposalCurrentEmail").textContent = current.email;
+      document.querySelector("#proposalNewEmail").textContent = changes.email;
+    }
+
+    document.querySelector("#proposalAiMeta").textContent = (
+      `${result.model} analysed ${result.customers_analyzed} allow-listed customer records. `
+      + "The proposal endpoint did not write to the database."
+    );
+    customerChangeProposal.hidden = false;
+  } else {
+    customerChangeProposal.hidden = true;
+  }
+
+  customerInsightResult.hidden = false;
+}
+
+
+function cancelCustomerChangeProposal(message = "Change proposal cancelled. Nothing was saved.") {
+  pendingCustomerChange = null;
+  customerChangeProposal.hidden = true;
+  customerInsightResult.hidden = true;
+  customerInsightResult.classList.remove("aiInsightResult--proposal");
+  showCustomerInsightMessage(message, true);
 }
 
 
@@ -357,6 +430,96 @@ loyaltyAdjustmentForm.addEventListener("submit", async (event) => {
     showMessage(error.message);
   }
 });
+
+
+customerInsightForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const question = customerInsightQuestion.value.trim();
+  if (!question) {
+    customerInsightResult.hidden = true;
+    showCustomerInsightMessage("Enter a customer or loyalty question.");
+    return;
+  }
+
+  askCustomerInsightButton.disabled = true;
+  askCustomerInsightButton.textContent = "Analysing...";
+  pendingCustomerChange = null;
+  customerChangeProposal.hidden = true;
+  customerInsightResult.hidden = true;
+  showCustomerInsightMessage(
+    "Ollama is reviewing the allow-listed customer records...",
+    true
+  );
+
+  try {
+    const result = await authRequest("/api/admin/ai/customer-insight", {
+      method: "POST",
+      body: JSON.stringify({ question }),
+    });
+    renderCustomerInsight(result);
+    showCustomerInsightMessage(
+      result.proposal
+        ? ""
+        : "Analysis complete. Review the evidence before taking any action.",
+      true
+    );
+  } catch (error) {
+    customerInsightResult.hidden = true;
+    showCustomerInsightMessage(error.message);
+  } finally {
+    askCustomerInsightButton.disabled = false;
+    askCustomerInsightButton.textContent = "Ask AI";
+  }
+});
+
+
+confirmCustomerChangeButton.addEventListener("click", async () => {
+  if (!pendingCustomerChange) {
+    return;
+  }
+
+  confirmCustomerChangeButton.disabled = true;
+  confirmCustomerChangeButton.textContent = "Saving...";
+
+  try {
+    await authRequest(
+      `/api/admin/customers/${pendingCustomerChange.customer_id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(pendingCustomerChange.changes),
+      }
+    );
+    await loadCustomers();
+    pendingCustomerChange = null;
+    customerChangeProposal.hidden = true;
+    customerInsightResult.hidden = true;
+    customerInsightResult.classList.remove("aiInsightResult--proposal");
+    showCustomerInsightMessage(
+      "Customer changes saved.",
+      true
+    );
+    showMessage("Customer updated from an approved AI proposal.", true);
+  } catch (error) {
+    showCustomerInsightMessage(error.message);
+  } finally {
+    confirmCustomerChangeButton.disabled = false;
+    confirmCustomerChangeButton.textContent = "Save customer changes";
+  }
+});
+
+
+cancelCustomerChangeButton.addEventListener("click", () => {
+  cancelCustomerChangeProposal();
+});
+
+
+for (const promptButton of document.querySelectorAll("[data-insight-question]")) {
+  promptButton.addEventListener("click", () => {
+    customerInsightQuestion.value = promptButton.dataset.insightQuestion;
+    customerInsightQuestion.focus();
+  });
+}
 
 
 document.querySelector("#newCustomerButton").addEventListener("click", openCreateForm);
