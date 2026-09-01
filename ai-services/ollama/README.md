@@ -47,8 +47,8 @@ List the configured student features:
 python ai-services/agentic_loop.py --list-features
 ```
 
-Run a configured feature review and choose Database, Endpoints, or Architecture
-interactively:
+Run a configured feature review and choose Database, Endpoints, Architecture,
+Implementation, or DevOps interactively:
 
 ```bash
 python ai-services/agentic_loop.py --feature student-Chufeng
@@ -61,6 +61,36 @@ python ai-services/agentic_loop.py --feature student-Chufeng --mode database
 python ai-services/agentic_loop.py --feature student-Chufeng --mode endpoints
 python ai-services/agentic_loop.py --feature student-Chufeng --mode architecture
 ```
+
+## Ethan Goldman - Customer Support
+
+Ethan Goldman's configuration covers the four assessed review areas: database,
+implementation, microservices architecture, and DevOps. Prepare the ignored,
+local review database from the real schema and seed data:
+
+```bash
+python "student-Ethan Goldman/database_service/init_db.py" \
+  --database-path "student-Ethan Goldman/database_service/support_tickets.db" \
+  --reset
+```
+
+Run and retain all four reviews:
+
+```bash
+python ai-services/agentic_loop.py \
+  --feature "student-Ethan Goldman" --mode database
+python ai-services/agentic_loop.py \
+  --feature "student-Ethan Goldman" --mode implementation
+python ai-services/agentic_loop.py \
+  --feature "student-Ethan Goldman" --mode architecture
+python ai-services/agentic_loop.py \
+  --feature "student-Ethan Goldman" --mode devops
+```
+
+The source collectors are bounded, redacted, and read-only. The database
+collector opens SQLite in read-only mode. `EthanGoldman.yml` is the accepted
+project name for Ethan's assigned workflow; the DevOps review assesses its
+content and explicitly does not treat that filename as a defect.
 
 ## Ethan Ting - Customer Accounts and Loyalty
 

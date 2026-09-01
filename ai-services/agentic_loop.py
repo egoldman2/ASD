@@ -13,7 +13,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
+MAX_STATIC_REVIEW_FILE_CHARS = 400
 SENSITIVE_COLUMN_TERMS = ("password", "secret", "token")
+FILE_REVIEW_MODES = ("implementation", "devops")
 
 SYSTEM_PROMPT = """You are the read-only software review agent for the ASD 2026 project.
 
@@ -137,9 +139,9 @@ def _redacted_sample(config, table_name, record):
     return redacted
 
 
-def _redact_source_excerpt(content):
+def _redact_source_excerpt(content, limit=MAX_ARCHITECTURE_FILE_CHARS):
     """Remove credential-like string values from report-only source excerpts."""
-    excerpt = content[:MAX_ARCHITECTURE_FILE_CHARS]
+    excerpt = content[:limit]
     sensitive_string = re.compile(
         r"(?P<quote>['\"])(?P<value>[^'\"\n]*"
         r"(?:password|pass!|secret|token)[^'\"\n]*)"
@@ -150,6 +152,18 @@ def _redact_source_excerpt(content):
         lambda match: f"{match.group('quote')}<redacted>{match.group('quote')}",
         excerpt,
     )
+
+
+def _configured_source_checks(config, mode, source_by_path):
+    results = {}
+    for check in config.get("source_checks", {}).get(mode, []):
+        source = source_by_path.get(check["file"])
+        results[check["name"]] = bool(
+            source is not None
+            and all(marker in source for marker in check.get("contains", []))
+            and all(marker not in source for marker in check.get("excludes", []))
+        )
+    return results
 
 
 def collect_database_evidence(config):
@@ -309,6 +323,11 @@ def collect_architecture_evidence(config):
         "files": [],
     }
     source_by_path = {}
+    excerpt_limit = (
+        MAX_ARCHITECTURE_FILE_CHARS
+        if config.get("feature_directory") == "student-Ethan Ting"
+        else MAX_STATIC_REVIEW_FILE_CHARS
+    )
 
     for relative_path in config["architecture_files"]:
         file_path = _project_path(relative_path)
@@ -320,12 +339,31 @@ def collect_architecture_evidence(config):
                 content = file_path.read_text(encoding="utf-8", errors="replace")
                 source_by_path[relative_path] = content
                 file_evidence["characters"] = len(content)
-                file_evidence["truncated"] = len(content) > MAX_ARCHITECTURE_FILE_CHARS
-                file_evidence["content"] = _redact_source_excerpt(content)
+                file_evidence["truncated"] = len(content) > excerpt_limit
+                file_evidence["content"] = _redact_source_excerpt(content, excerpt_limit)
             except OSError as exc:
                 file_evidence["error"] = str(exc)
         evidence["files"].append(file_evidence)
 
+    evidence["verified_checks"] = {
+        "configured_files": len(config["architecture_files"]),
+        "present_files": len(source_by_path),
+        "missing_files": [
+            item["path"] for item in evidence["files"] if "error" in item
+        ],
+        "truncated_files": [
+            item["path"] for item in evidence["files"] if item.get("truncated")
+        ],
+        "source_checks": _configured_source_checks(
+            config,
+            "architecture",
+            source_by_path,
+        ),
+    }
+    if config.get("feature_directory") != "student-Ethan Ting":
+        return evidence
+
+    evidence["profile"] = "ethan-ting"
     compose_source = source_by_path.get("docker-compose.yml", "")
     backend_source = source_by_path.get(
         "student-Ethan Ting/backend/app.py",
@@ -356,15 +394,7 @@ def collect_architecture_evidence(config):
         "student-Ethan Ting/agentic/customer_insight_prompt.txt",
         "",
     )
-    evidence["verified_checks"] = {
-        "configured_files": len(config["architecture_files"]),
-        "present_files": len(source_by_path),
-        "missing_files": [
-            item["path"] for item in evidence["files"] if "error" in item
-        ],
-        "truncated_files": [
-            item["path"] for item in evidence["files"] if item.get("truncated")
-        ],
+    evidence["verified_checks"].update({
         "separate_docker_services": all(
             f"  {service_name}:" in compose_source
             for service_name in ("ethan-frontend", "ethan-backend", "ethan-database")
@@ -448,8 +478,59 @@ def collect_architecture_evidence(config):
             marker in runtime_source_lower
             for marker in ("order_id", "/api/orders", "/orders", "order-total")
         ),
-    }
+    })
 
+    return evidence
+
+
+def collect_file_evidence(config, mode):
+    """Collect bounded, redacted source excerpts for a read-only review mode."""
+    files_key = f"{mode}_files"
+    if files_key not in config:
+        raise AgenticLoopError(
+            f"Feature config does not define {files_key}."
+        )
+
+    evidence = {
+        "project_root": str(PROJECT_ROOT),
+        "read_only": True,
+        "files": [],
+    }
+    present = 0
+    source_by_path = {}
+    for relative_path in config[files_key]:
+        file_path = _project_path(relative_path)
+        file_evidence = {"path": relative_path}
+        if not file_path.is_file():
+            file_evidence["error"] = "File does not exist."
+        else:
+            try:
+                content = file_path.read_text(encoding="utf-8", errors="replace")
+                source_by_path[relative_path] = content
+                present += 1
+                file_evidence["characters"] = len(content)
+                file_evidence["truncated"] = (
+                    len(content) > MAX_STATIC_REVIEW_FILE_CHARS
+                )
+                file_evidence["content"] = _redact_source_excerpt(
+                    content,
+                    MAX_STATIC_REVIEW_FILE_CHARS,
+                )
+            except OSError as exc:
+                file_evidence["error"] = str(exc)
+        evidence["files"].append(file_evidence)
+
+    evidence["verified_checks"] = {
+        "configured_files": len(config[files_key]),
+        "present_files": present,
+        "missing_files": [
+            item["path"] for item in evidence["files"] if "error" in item
+        ],
+        "truncated_files": [
+            item["path"] for item in evidence["files"] if item.get("truncated")
+        ],
+        "source_checks": _configured_source_checks(config, mode, source_by_path),
+    }
     return evidence
 
 
@@ -459,6 +540,8 @@ def collect_evidence(mode, config):
         "endpoints": collect_endpoint_evidence,
         "architecture": collect_architecture_evidence,
     }
+    if mode in FILE_REVIEW_MODES:
+        return collect_file_evidence(config, mode)
     return collectors[mode](config)
 
 
@@ -496,18 +579,18 @@ def _evidence_digest(mode, evidence):
             evidence, indent=2, ensure_ascii=False
         )
 
-    architecture_checks = json.dumps(
+    file_checks = json.dumps(
         evidence.get("verified_checks", {}),
         indent=2,
         ensure_ascii=False,
     )
     return (
-        "MODE: ARCHITECTURE\nVERIFIED ARCHITECTURE CHECKS\n"
-        + architecture_checks
+        f"MODE: {mode.upper()}\nVERIFIED FILE CHECKS\n"
+        + file_checks
         + "\n\nCOLLECTED FILE EVIDENCE\n"
         + json.dumps(evidence, indent=2, ensure_ascii=False)
-        + "\n\nVERIFIED ARCHITECTURE CHECKS REPEATED\n"
-        + architecture_checks
+        + "\n\nVERIFIED FILE CHECKS REPEATED\n"
+        + file_checks
     )
 
 
@@ -520,7 +603,11 @@ def _call_ollama(prompt):
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
-            "options": {"temperature": 0.1},
+            "options": {
+                "temperature": 0.1,
+                "num_ctx": 4096,
+                "num_predict": 700,
+            },
         }
     ).encode("utf-8")
     ollama_request = request.Request(
@@ -581,10 +668,10 @@ def _grounding_summary(mode, evidence):
         )
         return "\n".join(lines)
 
-    if mode == "architecture":
+    if mode == "architecture" or mode in FILE_REVIEW_MODES:
         return (
-            "Verified architecture checks (true/false values are collected from the "
-            "configured source files):\n"
+            "Verified file checks (values are collected from the configured source "
+            "files):\n"
             + json.dumps(
                 evidence.get("verified_checks", {}),
                 indent=2,
@@ -616,6 +703,46 @@ def _deterministic_issues(mode, evidence, candidate):
 
     if len(candidate.split()) < 30:
         issues.append("The model response is too short to contain a complete evidence review.")
+
+    is_generic_file_review = mode in FILE_REVIEW_MODES or (
+        mode == "architecture" and evidence.get("profile") != "ethan-ting"
+    )
+    if is_generic_file_review:
+        configured_paths = [item["path"] for item in evidence.get("files", [])]
+        cited_paths = {
+            path for path in configured_paths if path.lower() in candidate_lower
+        }
+        if len(cited_paths) < min(3, len(configured_paths)):
+            issues.append(
+                f"The {mode} response cites fewer than three configured files and is "
+                "too narrow for the selected review."
+            )
+        if re.search(
+            r"truncated[^.\n]{0,140}(?:indicat\w*|suggest\w*|may mean)[^.\n]{0,100}"
+            r"(?:incomplete|not (?:fully )?(?:configured|implemented|specified))",
+            candidate_lower,
+        ):
+            issues.append(
+                "A bounded evidence excerpt does not imply that the source file itself "
+                "is incomplete."
+            )
+        if re.search(
+            r"(?:files?|workflow|configuration|suite)[^.\n]{0,100}"
+            r"(?:has|have|was|were) (?:been )?(?:reviewed and )?"
+            r"(?:updated|changed|modified)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The read-only review cannot claim that files or configuration were updated."
+            )
+        if re.search(
+            r"(?:verified|confirmed)[^.\n]{0,100}(?:fully functional|succeeded|passes)",
+            candidate_lower,
+        ):
+            issues.append(
+                "Static source evidence cannot verify runtime, test, or CI success."
+            )
+        return list(dict.fromkeys(issues))
 
     if mode == "endpoints":
         matching_unauthorised = [
@@ -763,6 +890,31 @@ def _deterministic_issues(mode, evidence, candidate):
                 "The loop is read-only, so the response cannot claim that adaptations "
                 "were applied to the codebase."
             )
+        if re.search(
+            r"truncated[^.\n]{0,140}(?:indicat\w*|suggest\w*|may mean)[^.\n]{0,100}"
+            r"(?:incomplete|not (?:fully )?(?:configured|implemented|specified))",
+            candidate_lower,
+        ):
+            issues.append(
+                "A bounded evidence excerpt does not imply that the source file itself "
+                "is incomplete."
+            )
+        if re.search(
+            r"(?:files?|workflow|configuration|suite)[^.\n]{0,100}"
+            r"(?:has|have|was|were) (?:been )?(?:reviewed and )?"
+            r"(?:updated|changed|modified)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The read-only review cannot claim that files or configuration were updated."
+            )
+        if re.search(
+            r"(?:verified|confirmed)[^.\n]{0,100}(?:fully functional|succeeded|passes)",
+            candidate_lower,
+        ):
+            issues.append(
+                "Static source evidence cannot verify runtime, test, or CI success."
+            )
         return list(dict.fromkeys(issues))
 
     if mode != "database" or "tables" not in evidence:
@@ -880,7 +1032,8 @@ def _deterministic_issues(mode, evidence, candidate):
     return list(dict.fromkeys(issues))
 
 
-def _grounded_fallback(mode, evidence, issues, config):
+def _grounded_fallback(mode, evidence, issues, config=None):
+    config = config or {}
     if mode == "endpoints":
         observations = []
         mismatches = []
@@ -941,6 +1094,61 @@ def _grounded_fallback(mode, evidence, issues, config):
             "ADAPTATION APPLIED\n"
             "- Replaced status contradictions with a deterministic comparison of expected "
             "and observed HTTP statuses.\n"
+            "- Grounding issues removed: "
+            + ("; ".join(issues) if issues else "none")
+        )
+
+    if mode in FILE_REVIEW_MODES or (
+        mode == "architecture" and evidence.get("profile") != "ethan-ting"
+    ):
+        checks = evidence.get("verified_checks", {})
+        present = checks.get("present_files", 0)
+        configured = checks.get("configured_files", 0)
+        missing = checks.get("missing_files", [])
+        truncated = checks.get("truncated_files", [])
+        source_checks = checks.get("source_checks", {})
+        observations = [
+            f"- {present} of {configured} configured {mode} files were present.",
+            "- The collector opened configured files read-only and retained bounded, "
+            "redacted excerpts.",
+        ]
+        findings = []
+        if missing:
+            findings.append(
+                "- High: Configured evidence files were missing: "
+                + ", ".join(missing)
+                + "."
+            )
+        else:
+            findings.append("- All configured evidence files were present.")
+        if truncated:
+            findings.append(
+                f"- Evidence limitation: {len(truncated)} file excerpts were truncated; "
+                "the static review cannot prove uncollected branches or runtime behaviour."
+            )
+        for check_name, passed in source_checks.items():
+            observations.append(
+                f"- Configured source check `{check_name}`: {str(passed).lower()}."
+            )
+            if not passed:
+                findings.append(
+                    f"- Medium: configured source check `{check_name}` did not pass."
+                )
+        findings.append(
+            "- Static file evidence does not prove that tests, containers, or a remote "
+            "CI run succeeded; retain those results separately."
+        )
+        return (
+            "OBSERVATIONS\n"
+            + "\n".join(observations)
+            + "\n\nFINDINGS\n"
+            + "\n".join(findings)
+            + "\n\nRECOMMENDATIONS\n"
+            "- Address any missing configured files and rerun the focused automated tests.\n"
+            "- Keep runtime, Docker Compose, and GitHub Actions results as separate evidence.\n\n"
+            "ADAPTATION APPLIED\n"
+            "- Replaced unsupported model claims with a deterministic summary of the "
+            "collected file evidence.\n"
             "- Grounding issues removed: "
             + ("; ".join(issues) if issues else "none")
         )
@@ -1222,6 +1430,7 @@ def save_evidence_report(config, mode, evidence, first_review, feedback, final_r
     report = f"""# Agentic Review Evidence
 
 - Feature: {config['feature_name']}
+- Contributor: {config.get('contributor', 'Not specified')}
 - Mode: {mode}
 - Model: {OLLAMA_MODEL}
 - Generated: {datetime.now().isoformat(timespec='seconds')}
@@ -1377,10 +1586,18 @@ def _choose_mode():
     print("1 = Database")
     print("2 = Endpoints")
     print("3 = Architecture")
-    choices = {"1": "database", "2": "endpoints", "3": "architecture"}
+    print("4 = Implementation")
+    print("5 = DevOps")
+    choices = {
+        "1": "database",
+        "2": "endpoints",
+        "3": "architecture",
+        "4": "implementation",
+        "5": "devops",
+    }
     selection = input("Selection: ").strip()
     if selection not in choices:
-        raise AgenticLoopError("Review mode must be 1, 2, or 3.")
+        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, or 5.")
     return choices[selection]
 
 
@@ -1394,7 +1611,7 @@ def build_parser():
     )
     parser.add_argument(
         "--mode",
-        choices=("database", "endpoints", "architecture"),
+        choices=("database", "endpoints", "architecture", *FILE_REVIEW_MODES),
         help="Review mode. Omit to choose interactively.",
     )
     parser.add_argument(
