@@ -217,7 +217,7 @@
           "before_ai_hash",
           "test \"$before_ai_hash\" = \"$after_ai_hash\"",
           "customer-support-backend test ! -e",
-          "customer-support-database test -f"
+          "customer-support-database sh -c 'test -f \"$DATABASE_PATH\"'"
         ]
       }
     ]
