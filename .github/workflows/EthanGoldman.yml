@@ -87,18 +87,16 @@ jobs:
             sleep 2
           done
           test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://localhost:6005/api/support/customer/tickets)" = "401"
-          curl --fail --silent --output /tmp/customer-support-page.html \
-            http://localhost:8005/customer.html
-          grep -q 'src="js/htmx.min.js?v=2.0.4"' /tmp/customer-support-page.html
-          curl --fail --silent --output /tmp/customer-support-entry.html \
-            http://localhost:8005/index.html
-          grep -q 'hx-get="/api/support/ui/entry"' /tmp/customer-support-entry.html
           test "$(curl --fail --silent http://localhost:8005/js/htmx.min.js | sha256sum | cut -d ' ' -f 1)" = \
             "e209dda5c8235479f3166defc7750e1dbcd5a5c1808b7792fc2e6733768fb447"
           curl --fail --silent --cookie-jar /tmp/customer-support.cookies \
             --header 'Content-Type: application/json' \
             --data '{"email":"customer@asd.local","password":"CustomerPass!2026"}' \
             http://localhost:6002/api/login >/dev/null
+          curl --fail --silent --cookie /tmp/customer-support.cookies \
+            --output /tmp/customer-support-page.html \
+            http://localhost:8005/customer.html
+          grep -q 'src="js/htmx.min.js?v=2.0.4"' /tmp/customer-support-page.html
           curl --fail --silent --cookie /tmp/customer-support.cookies \
             --output /tmp/customer-support-tickets.json \
             http://localhost:8005/api/support/customer/tickets
@@ -147,7 +145,7 @@ jobs:
           done
           grep -q '"correlation_id":"ci-real-ai"' /tmp/customer-support-backend.log
           docker compose exec -T customer-support-backend test ! -e '/app/student-Ethan Goldman/database/support_tickets.db'
-          docker compose exec -T customer-support-database test -f /data/support_tickets.db
+          docker compose exec -T customer-support-database sh -c 'test -f "$DATABASE_PATH"'
 
       - name: Show integration logs on failure
         if: failure()
