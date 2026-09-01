@@ -3,6 +3,23 @@ const SITE_NAVIGATION = [
   {key: "support", label: "Support", href: "http://localhost:8005"},
 ];
 
+const SITE_SECTION_BY_PORT = {
+  "8000": "",
+  "8001": "catalogue",
+  "8003": "account",
+  "8004": "",
+  "8005": "support",
+};
+
+
+function currentSiteSection(fallbackSection) {
+  if (Object.prototype.hasOwnProperty.call(SITE_SECTION_BY_PORT, window.location.port)) {
+    return SITE_SECTION_BY_PORT[window.location.port];
+  }
+
+  return fallbackSection;
+}
+
 
 function navigationLink(item, activeSection) {
   const activeClass = item.key === activeSection ? " active" : "";
@@ -87,5 +104,7 @@ function siteHeaderMarkup(activeSection) {
 
 
 for (const header of document.querySelectorAll("[data-site-header]")) {
-  header.innerHTML = siteHeaderMarkup(header.dataset.active || "");
+  const activeSection = currentSiteSection(header.dataset.active || "");
+  header.dataset.active = activeSection;
+  header.innerHTML = siteHeaderMarkup(activeSection);
 }
