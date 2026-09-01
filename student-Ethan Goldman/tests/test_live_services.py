@@ -223,6 +223,13 @@ def test_live_htmx_customer_workflow_and_escaped_fragments(support_stack):
     )
     assert entry.status_code == 200
     assert entry.headers["HX-Redirect"].startswith("http://localhost:8003/index.html?")
+    page_entry = requests.get(
+        support_url(support_stack, "/api/support/ui/entry"),
+        allow_redirects=False,
+        timeout=10,
+    )
+    assert page_entry.status_code == 302
+    assert page_entry.headers["Location"].startswith("http://localhost:8003/index.html?")
 
     anonymous = requests.get(
         support_url(support_stack, "/api/support/ui/customer/dashboard"),
@@ -240,6 +247,19 @@ def test_live_htmx_customer_workflow_and_escaped_fragments(support_stack):
     )
     assert customer_entry.status_code == 200
     assert customer_entry.headers["HX-Redirect"] == "/customer.html"
+    customer_page_entry = customer.get(
+        support_url(support_stack, "/api/support/ui/entry"),
+        allow_redirects=False,
+        timeout=10,
+    )
+    assert customer_page_entry.status_code == 302
+    assert customer_page_entry.headers["Location"] == "/customer.html"
+    assert customer.get(
+        support_url(support_stack, "/api/support/ui/access/customer"), timeout=10
+    ).status_code == 204
+    assert customer.get(
+        support_url(support_stack, "/api/support/ui/access/admin"), timeout=10
+    ).status_code == 403
     forbidden = customer.get(
         support_url(support_stack, "/api/support/ui/admin/tickets"),
         headers={"HX-Request": "true"},
@@ -362,6 +382,12 @@ def test_live_htmx_admin_workflow(support_stack):
     )
     assert admin_entry.status_code == 200
     assert admin_entry.headers["HX-Redirect"] == "/staff.html"
+    assert admin.get(
+        support_url(support_stack, "/api/support/ui/access/admin"), timeout=10
+    ).status_code == 204
+    assert admin.get(
+        support_url(support_stack, "/api/support/ui/access/customer"), timeout=10
+    ).status_code == 403
 
     queue = admin.get(
         support_url(

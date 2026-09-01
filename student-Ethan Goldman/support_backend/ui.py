@@ -6,7 +6,7 @@ from collections.abc import Callable, Mapping
 from typing import Any
 from urllib.parse import urlencode
 
-from flask import Blueprint, Response, g, make_response, render_template, request
+from flask import Blueprint, Response, g, make_response, redirect, render_template, request
 
 try:
     from . import ai, validation
@@ -100,15 +100,30 @@ def create_ui_blueprint(
                 login_url = "http://localhost:8003/index.html?" + urlencode(
                     {"return_url": "http://localhost:8005/"}
                 )
+                if request.headers.get("HX-Request") != "true":
+                    return redirect(login_url)
                 response = make_response("", 200)
                 response.headers["HX-Redirect"] = login_url
                 return response
             return error_fragment(failure)
         response = make_response("", 200)
-        response.headers["HX-Redirect"] = (
+        destination = (
             "/staff.html" if (user.role or "").casefold() == "admin" else "/customer.html"
         )
-        return response
+        if request.headers.get("HX-Request") == "true":
+            response.headers["HX-Redirect"] = destination
+            return response
+        return redirect(destination)
+
+    @blueprint.get("/api/support/ui/access/customer")
+    def customer_access():
+        _user, failure = principal("customer")
+        return failure or ("", 204)
+
+    @blueprint.get("/api/support/ui/access/admin")
+    def admin_access():
+        _user, failure = principal("admin")
+        return failure or ("", 204)
 
     @blueprint.get("/api/support/ui/customer/dashboard")
     def customer_dashboard():
