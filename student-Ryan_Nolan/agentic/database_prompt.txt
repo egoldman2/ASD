@@ -1,0 +1,6 @@
+Base your review strictly on the SQLite database evidence provided.
+- Treat each table's listed column set as the definitive allow-list — never attribute a field to the wrong table, and inspect the CREATE statements for primary keys, uniqueness constraints, CHECK conditions, and foreign-key deletion behaviour (e.g. products.supplier_id ON DELETE SET NULL).
+- Verify products and suppliers each hold at least ten rows, keeping in mind that a handful of sample rows does not guarantee every row is valid.
+- Stay off unrelated ground entirely — no commentary on endpoints, HTTP behaviour, the frontend, search, Docker, or general source code, and do not propose inserting, deleting, or modifying records unless the evidence clearly shows a defect.
+- Where schema and counts hold up, say so plainly, and flag only genuine gaps in what was supplied.
+- Distinguish structural issues (missing constraint, wrong type) from data issues (row count, malformed value) so a reader can tell which category each finding belongs to.

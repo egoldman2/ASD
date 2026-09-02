@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product Management | ASD 2026</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+<link rel="stylesheet" href="css/styles.css?v=9">
+<script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
+<script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+<script src="js/manage-products.js?v=1" defer></script>
+</head>
+<body>
+<header class="navbar appleNav" data-site-header data-active="inventory">
+<div class="navContainer">
+<div class="navLogo">
+<a href="http://localhost:8000" class="logoLink">
+<span class="logoMain">ASD 2026</span>
+</a>
+</div>
+
+<nav class="navLinks" aria-label="Main navigation">
+<a href="http://localhost:8000" class="navLink">Product Catalogue</a>
+<a href="index.html" class="navLink">Inventory Management</a>
+<a href="http://localhost:8003" class="navLink">Customer & Loyalty</a>
+<a href="http://localhost:8005" class="navLink">Customer Support</a>
+</nav>
+</div>
+</header>
+
+<main class="cataloguePage">
+<section class="catalogueHero">
+<div>
+<p class="sectionEyebrow">Inventory Management</p>
+<h1>Manage products</h1>
+</div>
+</section>
+
+<section class="productSection" aria-label="Product list">
+<div class="sectionHeader">
+<h2>Products</h2>
+<a class="cartLink" href="index.html">Back to Inventory</a>
+</div>
+
+<form id="searchForm" class="productSearch" role="search">
+<label for="searchInput" class="visuallyHidden">Search products by name</label>
+<input
+id="searchInput"
+class="searchInput"
+type="search"
+name="search"
+placeholder="Search by product name"
+autocomplete="off"
+>
+<button class="searchButton" type="submit">Search</button>
+</form>
+
+<div class="filterBar" role="group" aria-label="Stock filters">
+<button class="filterButton active" type="button" data-filter="all">All Products</button>
+<button class="filterButton" type="button" data-filter="low_stock">Low Stock</button>
+<button class="filterButton" type="button" data-filter="out_of_stock">Out of Stock</button>
+</div>
+
+<section class="aiMode" aria-labelledby="productFormTitle">
+<div class="aiModeHeader">
+<p class="sectionEyebrow">Add / Edit</p>
+<h3 id="productFormTitle">Product Details</h3>
+</div>
+<form id="productForm" class="aiForm">
+<input type="hidden" id="productId" name="id">
+<div class="aiField">
+<label for="productName">Product name</label>
+<input id="productName" name="name" type="text" required maxlength="150">
+</div>
+<div class="aiField">
+<label for="productCategory">Category</label>
+<input id="productCategory" name="category" type="text" required maxlength="80">
+</div>
+<div class="aiField">
+<label for="productDescription">Description</label>
+<textarea id="productDescription" name="description" rows="2" maxlength="500"></textarea>
+</div>
+<div class="aiField">
+<label for="productPrice">Price</label>
+<input id="productPrice" name="price" type="number" step="0.01" min="0" required>
+</div>
+<div class="aiField">
+<label for="productStock">Stock quantity</label>
+<input id="productStock" name="stock_quantity" type="number" step="1" min="0" required>
+</div>
+<div class="aiField">
+<label for="productSupplier">Supplier</label>
+<select id="productSupplier" name="supplier_id">
+<option value="">Unassigned</option>
+</select>
+</div>
+<div class="aiField">
+<label for="productReorderThreshold">Reorder threshold</label>
+<input id="productReorderThreshold" name="reorder_threshold" type="number" step="1" min="0" value="10">
+</div>
+<div class="aiField">
+<label for="productReorderQuantity">Reorder quantity</label>
+<input id="productReorderQuantity" name="reorder_quantity" type="number" step="1" min="0" value="50">
+</div>
+<div class="formActions">
+<button id="saveProductButton" class="askAiButton" type="submit">Save Product</button>
+<button id="cancelProductButton" class="filterButton" type="reset">Clear</button>
+</div>
+</form>
+</section>
+
+<p id="catalogueNotice" class="catalogueNotice" aria-live="polite" hidden></p>
+<div id="productGrid" class="productGrid" aria-live="polite">
+<p class="productMessage">Loading products...</p>
+</div>
+</section>
+</main>
+
+<footer class="footer">
+      asd(2026)-group7
+</footer>
+</body>
+</html>

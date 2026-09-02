@@ -5,14 +5,16 @@ import sqlite3
 
 
 PROJECT_DIRECTORY = Path(__file__).resolve().parents[2]
-DATABASE_DIRECTORY = PROJECT_DIRECTORY / "student-Chufeng" / "database"
-DATABASE_PATH = DATABASE_DIRECTORY / "products.db"
-SCHEMA_PATH = DATABASE_DIRECTORY / "schema.sql"
-SEED_PATH = DATABASE_DIRECTORY / "seed.sql"
-REQUIRED_TABLES = {"products", "suppliers", "cart_items"}
+OWN_DATABASE_DIRECTORY = PROJECT_DIRECTORY / "student-Ryan_Nolan" / "database"
+SHARED_SQL_DIRECTORY = PROJECT_DIRECTORY / "student-Chufeng" / "database"
+
+DATABASE_PATH = OWN_DATABASE_DIRECTORY / "products.db"
+SCHEMA_PATH = SHARED_SQL_DIRECTORY / "schema.sql"
+SEED_PATH = SHARED_SQL_DIRECTORY / "seed.sql"
+REQUIRED_TABLES = {"products", "suppliers"}
 
 
-def initialize_database(database_path=DATABASE_PATH, reset=False):
+def initialise_database(database_path=DATABASE_PATH, reset=False):
     database_path = Path(database_path)
     database_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -49,6 +51,19 @@ def initialize_database(database_path=DATABASE_PATH, reset=False):
         "suppliers": suppliers,
     }
 
+
+def get_connection():
+    """Returns a new sqlite3 connection to the shared database, with
+    foreign key enforcement on and row access by column name. Callers
+    are responsible for closing the connection (e.g. via `with closing(...)`
+    or a try/finally) since there's no per-request cache (no Flask `g`
+    dependency here — kept framework-agnostic)."""
+    connection = sqlite3.connect(DATABASE_PATH)
+    connection.row_factory = sqlite3.Row
+    connection.execute("PRAGMA foreign_keys = ON")
+    return connection
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Create or reset the Inventory SQLite database."
@@ -62,7 +77,7 @@ def main():
 
     arguments = parser.parse_args()
 
-    result = initialize_database(reset=arguments.reset)
+    result = initialise_database(reset=arguments.reset)
     action = "initialized" if result["initialized"] else "already initialized"
     print(
         f"Database {action}: {DATABASE_PATH} "

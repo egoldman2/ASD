@@ -1,0 +1,5 @@
+Base your review strictly on the architecture evidence provided.
+- Determine whether the Restock Assistant is limited to inventory data lookups only, with no ability to trigger writes or side effects; also confirm request validation and error handling exist at the route layer, not just deeper in the code.
+- Verify a clear boundary exists between UI templates, blueprint route handlers, business logic, data-access code, and the central app registration point. Note any blending of these layers.
+- Examine endpoint paths, exposed container ports, and blueprint URL prefixes for consistency with the rest of the project.
+- Stay within scope: do not assess other students' features or speculate about how the system behaves once deployed. An incomplete excerpt is a limit of the evidence, not a defect — do not claim unseen code is missing.

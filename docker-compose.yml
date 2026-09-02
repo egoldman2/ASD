@@ -198,6 +198,17 @@ services:
       start_period: 15s
       retries: 5
 
+  inventory-frontend:
+  build:
+    context: .
+    dockerfile: student-Ryan_Nolan/Dockerfile
+    target: frontend
+  ports:
+    - "8002:80"
+  depends_on:
+    shared-backend:
+      condition: service_healthy
+
 volumes:
   ethan-user-data:
   support-ticket-data:

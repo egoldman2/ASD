@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supplier Management | ASD 2026</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+<link rel="stylesheet" href="css/styles.css?v=9">
+<script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
+<script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+<script src="js/suppliers.js?v=1" defer></script>
+</head>
+<body>
+<header class="navbar appleNav" data-site-header data-active="inventory">
+<div class="navContainer">
+<div class="navLogo">
+<a href="http://localhost:8000" class="logoLink">
+<span class="logoMain">ASD 2026</span>
+</a>
+</div>
+
+<nav class="navLinks" aria-label="Main navigation">
+<a href="http://localhost:8000" class="navLink">Product Catalogue</a>
+<a href="index.html" class="navLink">Inventory Management</a>
+<a href="http://localhost:8003" class="navLink">Customer & Loyalty</a>
+<a href="http://localhost:8005" class="navLink">Customer Support</a>
+</nav>
+</div>
+</header>
+
+<main class="cataloguePage">
+<section class="catalogueHero">
+<div>
+<p class="sectionEyebrow">Inventory Management</p>
+<h1>Manage suppliers</h1>
+</div>
+</section>
+
+<section class="productSection" aria-label="Supplier list">
+<div class="sectionHeader">
+<h2>Suppliers</h2>
+<a class="cartLink" href="index.html">Back to Inventory</a>
+</div>
+
+<form id="searchForm" class="productSearch" role="search">
+<label for="searchInput" class="visuallyHidden">Search suppliers by name</label>
+<input
+id="searchInput"
+class="searchInput"
+type="search"
+name="search"
+placeholder="Search by supplier name"
+autocomplete="off"
+>
+<button class="searchButton" type="submit">Search</button>
+</form>
+
+<section class="aiMode" aria-labelledby="supplierFormTitle">
+<div class="aiModeHeader">
+<p class="sectionEyebrow">Add / Edit</p>
+<h3 id="supplierFormTitle">Supplier Details</h3>
+</div>
+<form id="supplierForm" class="aiForm">
+<input type="hidden" id="supplierId" name="id">
+<div class="aiField">
+<label for="supplierName">Supplier name</label>
+<input id="supplierName" name="name" type="text" required maxlength="120">
+</div>
+<div class="aiField">
+<label for="supplierContact">Contact name</label>
+<input id="supplierContact" name="contact_name" type="text" maxlength="120">
+</div>
+<div class="aiField">
+<label for="supplierEmail">Email</label>
+<input id="supplierEmail" name="email" type="email" maxlength="200">
+</div>
+<div class="aiField">
+<label for="supplierPhone">Phone</label>
+<input id="supplierPhone" name="phone" type="tel" maxlength="40">
+</div>
+<div class="aiField">
+<label for="supplierAddress">Address</label>
+<textarea id="supplierAddress" name="address" rows="2" maxlength="300"></textarea>
+</div>
+<div class="formActions">
+<button id="saveSupplierButton" class="askAiButton" type="submit">Save Supplier</button>
+<button id="cancelSupplierButton" class="filterButton" type="reset">Clear</button>
+</div>
+</form>
+</section>
+
+<p id="catalogueNotice" class="catalogueNotice" aria-live="polite" hidden></p>
+<div id="supplierGrid" class="productGrid" aria-live="polite">
+<p class="productMessage">Loading suppliers...</p>
+</div>
+</section>
+</main>
+
+<footer class="footer">
+      asd(2026)-group7
+</footer>
+</body>
+</html>

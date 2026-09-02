@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory Management | ASD 2026</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+<link rel="stylesheet" href="css/styles.css?v=9">
+<script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
+<script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+<script src="js/inventory.js?v=1" defer></script>
+</head>
+<body>
+<header class="navbar appleNav" data-site-header data-active="inventory">
+<div class="navContainer">
+<div class="navLogo">
+<a href="http://localhost:8000" class="logoLink">
+<span class="logoMain">ASD 2026</span>
+</a>
+</div>
+
+<nav class="navLinks" aria-label="Main navigation">
+<a href="http://localhost:8000" class="navLink">Product Catalogue</a>
+<a href="index.html" class="navLink active">Inventory Management</a>
+<a href="http://localhost:8003" class="navLink">Customer & Loyalty</a>
+<a href="http://localhost:8005" class="navLink">Customer Support</a>
+</nav>
+</div>
+</header>
+
+<main class="cataloguePage">
+<section class="catalogueHero">
+<div>
+<p class="sectionEyebrow">Inventory Management</p>
+<h1>Track stock levels and manage suppliers</h1>
+</div>
+</section>
+
+<section class="productSection" aria-label="Inventory overview">
+<div class="sectionHeader">
+<h2>Inventory Overview</h2>
+<a class="cartLink" href="suppliers.html">Manage Suppliers</a>
+</div>
+<form id="searchForm" class="productSearch" role="search">
+<label for="searchInput" class="visuallyHidden">Search products by name</label>
+<input
+id="searchInput"
+class="searchInput"
+type="search"
+name="search"
+placeholder="Search by product name"
+autocomplete="off"
+>
+<button class="searchButton" type="submit">Search</button>
+</form>
+
+<div class="filterBar" role="group" aria-label="Stock filters">
+<button class="filterButton active" type="button" data-filter="all">All Products</button>
+<button class="filterButton" type="button" data-filter="low_stock">Low Stock</button>
+<button class="filterButton" type="button" data-filter="out_of_stock">Out of Stock</button>
+</div>
+
+<section class="aiMode" aria-labelledby="aiModeTitle">
+<div class="aiModeHeader">
+<p class="sectionEyebrow">AI Mode</p>
+<h3 id="aiModeTitle">Restock Assistant</h3>
+</div>
+<form id="aiForm" class="aiForm">
+<div class="aiField">
+<label for="aiQuestion">Your inventory question</label>
+<textarea id="aiQuestion" name="message" rows="3" maxlength="500">Which products are below their reorder threshold and how much should I restock?</textarea>
+</div>
+<button id="askAiButton" class="askAiButton" type="submit">Ask AI</button>
+</form>
+<div class="aiField aiResponseField">
+<label for="aiOutput">AI response</label>
+<textarea
+id="aiOutput"
+rows="5"
+placeholder="The AI response will appear here."
+aria-live="polite"
+readonly
+></textarea>
+</div>
+</section>
+
+<p id="catalogueNotice" class="catalogueNotice" aria-live="polite" hidden></p>
+<div id="productGrid" class="productGrid" aria-live="polite">
+<p class="productMessage">Loading inventory...</p>
+</div>
+</section>
+</main>
+
+<footer class="footer">
+      asd(2026)-group7
+</footer>
+</body>
+</html>
