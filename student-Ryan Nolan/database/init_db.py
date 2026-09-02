@@ -3,11 +3,14 @@ from contextlib import closing
 from pathlib import Path
 import sqlite3
 
-DATABASE_DIRECTORY = Path(__file__).resolve().parent
+
+PROJECT_DIRECTORY = Path(__file__).resolve().parents[2]
+DATABASE_DIRECTORY = PROJECT_DIRECTORY / "student-Chufeng" / "database"
 DATABASE_PATH = DATABASE_DIRECTORY / "products.db"
-SCHEMA_PATH = DATABASE_DIRECTORY / "/student-Chufeng/database/schema.sql"
-SEED_PATH = DATABASE_DIRECTORY / "/student-Chufeng/database/seed.sql"
-REQUIRED_TABLES = {"products", "suppliers"}
+SCHEMA_PATH = DATABASE_DIRECTORY / "schema.sql"
+SEED_PATH = DATABASE_DIRECTORY / "seed.sql"
+REQUIRED_TABLES = {"products", "suppliers", "cart_items"}
+
 
 def initialize_database(database_path=DATABASE_PATH, reset=False):
     database_path = Path(database_path)
@@ -53,7 +56,7 @@ def main():
 
     parser.add_argument(
         "--reset",
-        action="inventory_true",
+        action="store_true",
         help="Replace existing data with the records from seed.sql.",
     )
 

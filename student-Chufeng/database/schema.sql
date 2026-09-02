@@ -35,5 +35,5 @@ CREATE TABLE IF NOT EXISTS cart_items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id INTEGER NOT NULL UNIQUE,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
-    FOREIGN KEY (product_id) REFERENCES products(id) ON
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
