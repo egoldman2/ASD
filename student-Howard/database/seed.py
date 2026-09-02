@@ -19,9 +19,12 @@ base = datetime(2026, 7, 1)
 
 # 12 orders
 for i in range (1, 13):
+  # Customer account IDs 2-11 are created by the shared login database.
+  # Reuse the first two customers for the final two sample orders.
+  customer_id = 2 + ((i - 1) % 10)
   cur.execute(
     "INSERT INTO orders (order_id, customer_id, order_date, status, total) VALUES (?,?,?,?,?)",
-    (i, 100 + i, (base + timedelta(days=i)).isoformat(), statuses[i % 4], round(20 + i * 7.5, 2))
+    (i, customer_id, (base + timedelta(days=i)).isoformat(), statuses[i % 4], round(20 + i * 7.5, 2))
   )
 
 # 12 order_items (at least one per order)

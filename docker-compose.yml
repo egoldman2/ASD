@@ -13,8 +13,12 @@ services:
       target: frontend
     ports:
       - "8001:80"
+    volumes:
+      - ./shared/nginx/product-catalogue.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       shared-backend:
+        condition: service_healthy
+      ethan-backend:
         condition: service_healthy
 
   ollama:
@@ -59,11 +63,17 @@ services:
     environment:
       OLLAMA_URL: http://ollama:11434
       OLLAMA_MODEL: qwen2.5:0.5b
+      AUTH_SERVICE_URL: http://ethan-backend:6002
+      AUTH_TIMEOUT_SECONDS: 5
+      CART_DATABASE_PATH: /data/customer_carts.db
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
+      - customer-cart-data:/data
     depends_on:
       ollama-init:
         condition: service_completed_successfully
+      ethan-backend:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 5000), 2).close()"]
       interval: 10s
@@ -129,6 +139,11 @@ services:
       target: frontend
     ports:
       - "8004:80"
+    volumes:
+      - ./shared/nginx/order-returns.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      ethan-backend:
+        condition: service_healthy
 
   customer-support:
     build:
@@ -202,3 +217,4 @@ volumes:
   ethan-user-data:
   support-ticket-data:
   ollama-models:
+  customer-cart-data:
