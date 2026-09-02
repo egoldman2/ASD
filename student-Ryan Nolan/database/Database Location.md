@@ -1,1 +1,1 @@
-# As my database is directly related to Chufeng's we have shared schema and seed files, with our seperate sections clearly labelled
+# As my database is directly related to Chufeng's we have a shared schema and seed files, with our seperate sections clearly labelled in his folder

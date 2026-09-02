@@ -14,7 +14,41 @@ services:
     ports:
       - "8001:80"
     depends_on:
-      - shared-backend
+      shared-backend:
+        condition: service_healthy
+
+  ollama:
+    image: ollama/ollama:latest
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MODEL: qwen2.5:0.5b
+    expose:
+      - "11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 10
+
+  ollama-init:
+    image: ollama/ollama:latest
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: qwen2.5:0.5b
+    volumes:
+      - ollama-models:/root/.ollama
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        ollama pull "$${OLLAMA_MODEL}" &&
+        ollama show "$${OLLAMA_MODEL}" >/dev/null
+    restart: "no"
 
   shared-backend:
     build:
@@ -23,10 +57,70 @@ services:
     ports:
       - "5000:5000"
     environment:
-      OLLAMA_URL: http://host.docker.internal:11434
+      OLLAMA_URL: http://ollama:11434
       OLLAMA_MODEL: qwen2.5:0.5b
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
+    depends_on:
+      ollama-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 5000), 2).close()"]
+      interval: 10s
+      timeout: 3s
+      start_period: 15s
+      retries: 5
+
+  ethan-frontend:
+    build:
+      context: .
+      dockerfile: student-Ethan Ting/Dockerfile
+      target: frontend
+    ports:
+      - "8003:80"
+    depends_on:
+      ethan-backend:
+        condition: service_healthy
+
+  ethan-backend:
+    build:
+      context: .
+      dockerfile: student-Ethan Ting/Dockerfile
+      target: backend
+    ports:
+      - "6002:6002"
+    environment:
+      DATABASE_API_URL: http://ethan-database:6003
+      SESSION_SECRET: ${ETHAN_SESSION_SECRET:-release-0-local-secret}
+      OLLAMA_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: llama3.1:8b
+    depends_on:
+      ethan-database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:6002/ready')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 2s
+
+  ethan-database:
+    build:
+      context: .
+      dockerfile: student-Ethan Ting/Dockerfile
+      target: database
+    expose:
+      - "6003"
+    environment:
+      DATABASE_PATH: /data/users.db
+    volumes:
+      - ethan-user-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:6003/health')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 2s
 
   order-returns-frontend:
     build:
@@ -35,3 +129,76 @@ services:
       target: frontend
     ports:
       - "8004:80"
+
+  customer-support:
+    build:
+      context: .
+      dockerfile: student-Ethan Goldman/Dockerfile
+      target: frontend
+    ports:
+      - "8005:80"
+    depends_on:
+      customer-support-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/health | grep -q customer-support-frontend"]
+      interval: 10s
+      timeout: 3s
+      start_period: 5s
+      retries: 5
+
+  customer-support-backend:
+    build:
+      context: .
+      dockerfile: student-Ethan Goldman/Dockerfile
+      target: backend
+    ports:
+      - "6005:6005"
+    environment:
+      APP_HOST: 0.0.0.0
+      APP_PORT: 6005
+      SUPPORT_DATABASE_API_URL: http://customer-support-database:6006
+      AUTH_SERVICE_URL: http://ethan-backend:6002
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: qwen2.5:0.5b
+      OLLAMA_TIMEOUT_SECONDS: 45
+      LOG_LEVEL: INFO
+      SUPPORT_FRONTEND_ORIGIN: http://localhost:8005
+    depends_on:
+      customer-support-database:
+        condition: service_healthy
+      ethan-backend:
+        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:6005/health', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      start_period: 15s
+      retries: 5
+
+  customer-support-database:
+    build:
+      context: .
+      dockerfile: student-Ethan Goldman/Dockerfile
+      target: database
+    expose:
+      - "6006"
+    environment:
+      APP_HOST: 0.0.0.0
+      APP_PORT: 6006
+      DATABASE_PATH: /data/support_tickets.db
+    volumes:
+      - support-ticket-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:6006/health', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      start_period: 15s
+      retries: 5
+
+volumes:
+  ethan-user-data:
+  support-ticket-data:
+  ollama-models:

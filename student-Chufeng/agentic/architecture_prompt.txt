@@ -1,0 +1,7 @@
+Review only the supplied architecture file evidence.
+
+- Check separation between frontend, routes, controllers, models, database, and shared app registration.
+- Check API URLs, Docker ports, route prefixes, error handling, validation, and testability.
+- Check whether the AI Product Assistant is constrained to catalogue data and read-only behaviour.
+- A truncated file excerpt is an evidence limitation; do not claim unobserved code is missing.
+- Do not review unrelated student features or make claims about live runtime behaviour.

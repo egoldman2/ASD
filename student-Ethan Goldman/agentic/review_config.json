@@ -1,0 +1,225 @@
+{
+  "feature_name": "Ethan Goldman - Customer Support",
+  "contributor": "Ethan Goldman",
+  "prompt_file": "review_prompt.txt",
+  "mode_prompt_files": {
+    "database": "database_prompt.txt",
+    "implementation": "implementation_prompt.txt",
+    "architecture": "architecture_prompt.txt",
+    "devops": "devops_prompt.txt"
+  },
+  "database": "student-Ethan Goldman/database_service/support_tickets.db",
+  "database_rules": {
+    "required_tables": [
+      "support_tickets",
+      "support_ticket_messages"
+    ],
+    "minimum_records": {
+      "support_tickets": 10,
+      "support_ticket_messages": 10
+    },
+    "foreign_key_tables": [
+      "support_ticket_messages"
+    ],
+    "redacted_columns": {
+      "support_tickets": [
+        "customer_user_id",
+        "customer_name_snapshot",
+        "customer_email_snapshot"
+      ],
+      "support_ticket_messages": [
+        "author_name",
+        "message"
+      ]
+    }
+  },
+  "endpoints": [],
+  "implementation_files": [
+    "student-Ethan Goldman/support_backend/app.py",
+    "student-Ethan Goldman/support_backend/ai.py",
+    "student-Ethan Goldman/support_backend/db_client.py",
+    "student-Ethan Goldman/support_backend/validation.py",
+    "student-Ethan Goldman/support_backend/prompts/system.txt",
+    "student-Ethan Goldman/support_backend/prompts/correction.txt",
+    "student-Ethan Goldman/tests/test_ai_policy.py",
+    "student-Ethan Goldman/tests/test_live_services.py"
+  ],
+  "architecture_files": [
+    "docker-compose.yml",
+    "docs/architecture/README.md",
+    "student-Ethan Goldman/Dockerfile",
+    "student-Ethan Goldman/support_frontend_nginx.conf",
+    "student-Ethan Goldman/support_backend/app.py",
+    "student-Ethan Goldman/support_backend/db_client.py",
+    "student-Ethan Goldman/database_service/app.py",
+    "student-Ethan Goldman/database_service/database.py",
+    "student-Ethan Goldman/database_service/schema.sql"
+  ],
+  "devops_files": [
+    ".github/workflows/EthanGoldman.yml",
+    "docker-compose.yml",
+    "student-Ethan Goldman/Dockerfile",
+    "student-Ethan Goldman/tests/test_live_services.py"
+  ],
+  "source_checks": {
+    "implementation": [
+      {
+        "name": "customer_and_admin_crud_routes",
+        "file": "student-Ethan Goldman/support_backend/app.py",
+        "contains": [
+          "@app.post(\"/api/support/customer/tickets\")",
+          "@app.put(\"/api/support/admin/tickets/<int:ticket_id>\")",
+          "@app.delete(\"/api/support/admin/tickets/<int:ticket_id>\")"
+        ]
+      },
+      {
+        "name": "system_and_correction_prompt_assets_loaded",
+        "file": "student-Ethan Goldman/support_backend/ai.py",
+        "contains": [
+          "SYSTEM_PROMPT = _load_prompt(\"system.txt\")",
+          "CORRECTION_PROMPT = _load_prompt(\"correction.txt\")"
+        ]
+      },
+      {
+        "name": "bounded_context_json_and_citations_validated",
+        "file": "student-Ethan Goldman/support_backend/ai.py",
+        "contains": [
+          "MAX_PROMPT_CHARS",
+          "def build_prompt",
+          "def validate_output",
+          "allowed_sources",
+          "result[\"evidence\"]"
+        ]
+      },
+      {
+        "name": "single_correction_retry_and_agentic_logs",
+        "file": "student-Ethan Goldman/support_backend/ai.py",
+        "contains": [
+          "for attempt in range(2)",
+          "_workflow_log(\"Plan\"",
+          "_workflow_log(\"Act\"",
+          "_workflow_log(\"Observe\"",
+          "_workflow_log(\"Adapt\""
+        ]
+      },
+      {
+        "name": "backend_database_access_is_http_only",
+        "file": "student-Ethan Goldman/support_backend/db_client.py",
+        "contains": [
+          "class SupportDatabaseClient",
+          "requests.request"
+        ],
+        "excludes": [
+          "import sqlite3"
+        ]
+      },
+      {
+        "name": "privacy_and_action_safety_tests_present",
+        "file": "student-Ethan Goldman/tests/test_ai_policy.py",
+        "contains": [
+          "test_prompt_redacts_identity_contact_data_and_delimiters",
+          "test_output_policy_rejects_action_claims_in_summary",
+          "test_real_ollama_network_outage_fails_closed_and_logs_no_ticket_text"
+        ]
+      }
+    ],
+    "architecture": [
+      {
+        "name": "compose_defines_separate_support_services",
+        "file": "docker-compose.yml",
+        "contains": [
+          "  customer-support:",
+          "  customer-support-backend:",
+          "  customer-support-database:"
+        ]
+      },
+      {
+        "name": "backend_uses_database_api_not_sqlite",
+        "file": "student-Ethan Goldman/support_backend/db_client.py",
+        "contains": [
+          "class SupportDatabaseClient",
+          "requests.request"
+        ],
+        "excludes": [
+          "import sqlite3"
+        ]
+      },
+      {
+        "name": "database_service_owns_sqlite",
+        "file": "student-Ethan Goldman/database_service/database.py",
+        "contains": [
+          "import sqlite3",
+          "DATABASE_PATH",
+          "sqlite3.connect"
+        ]
+      },
+      {
+        "name": "frontend_proxies_support_api",
+        "file": "student-Ethan Goldman/support_frontend_nginx.conf",
+        "contains": [
+          "proxy_pass http://customer-support-backend:6005",
+          "auth_request /api/support/ui/access/customer"
+        ]
+      },
+      {
+        "name": "compose_wires_database_volume_and_ollama",
+        "file": "docker-compose.yml",
+        "contains": [
+          "SUPPORT_DATABASE_API_URL: http://customer-support-database:6006",
+          "OLLAMA_URL: http://ollama:11434",
+          "support-ticket-data:/data"
+        ]
+      },
+      {
+        "name": "agentic_flow_is_documented",
+        "file": "docs/architecture/README.md",
+        "contains": [
+          "Plan: minimise and redact context",
+          "Act: request structured Ollama JSON",
+          "Observe: validate schema",
+          "Adapt: correction retry"
+        ]
+      }
+    ],
+    "devops": [
+      {
+        "name": "workflow_runs_tests_compile_build_and_compose_validation",
+        "file": ".github/workflows/EthanGoldman.yml",
+        "contains": [
+          "python -m pytest 'student-Ethan Goldman/tests' -q",
+          "python -m compileall -q 'student-Ethan Goldman'",
+          "docker build",
+          "docker compose config --quiet"
+        ]
+      },
+      {
+        "name": "workflow_starts_and_health_checks_support_stack",
+        "file": ".github/workflows/EthanGoldman.yml",
+        "contains": [
+          "docker compose up -d --build ethan-database ethan-backend customer-support-database ollama",
+          "http://localhost:6005/health",
+          "http://localhost:8005/health"
+        ]
+      },
+      {
+        "name": "workflow_checks_real_ai_agentic_logs",
+        "file": ".github/workflows/EthanGoldman.yml",
+        "contains": [
+          "for stage in Plan Act Observe Adapt",
+          "correlation_id",
+          "qwen2.5:0.5b"
+        ]
+      },
+      {
+        "name": "workflow_checks_ai_read_only_and_database_ownership",
+        "file": ".github/workflows/EthanGoldman.yml",
+        "contains": [
+          "before_ai_hash",
+          "test \"$before_ai_hash\" = \"$after_ai_hash\"",
+          "customer-support-backend test ! -e",
+          "customer-support-database sh -c 'test -f \"$DATABASE_PATH\"'"
+        ]
+      }
+    ]
+  }
+}

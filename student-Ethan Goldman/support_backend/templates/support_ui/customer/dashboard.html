@@ -1,0 +1,36 @@
+<section class="panel customerIdentity" aria-labelledby="identity-title">
+  <div class="sectionHeader sectionHeader--compact">
+    <div>
+      <h2 id="identity-title">Signed-in account</h2>
+      <p>Your support requests are linked to this account.</p>
+    </div>
+    <span class="identityBadge">Authenticated</span>
+  </div>
+  <dl class="identityDetails">
+    <div><dt>Name</dt><dd>{{ user.name or 'Customer' }}</dd></div>
+    <div><dt>Email</dt><dd>{{ user.email or 'Not available' }}</dd></div>
+  </dl>
+</section>
+
+<div class="customerColumns">
+  {% include "support_ui/customer/create_panel.html" %}
+  <section class="panel customerTicketsPanel" aria-labelledby="my-tickets-title">
+    <div class="sectionHeader">
+      <div>
+        <h2 id="my-tickets-title">My conversations</h2>
+        <p>Only tickets belonging to your signed-in account appear here.</p>
+      </div>
+    </div>
+    <div id="ticket-list-region"
+      hx-get="/api/support/ui/customer/tickets"
+      hx-trigger="load, supportTicketsChanged from:body"
+      hx-swap="outerHTML"
+      aria-live="polite">
+      <div class="customerState customerState--loading">
+        <strong>Loading your tickets…</strong>
+        <p>Your conversations will appear here.</p>
+      </div>
+    </div>
+    <section id="ticket-detail-region" class="customerTicketDetail" aria-live="polite"></section>
+  </section>
+</div>

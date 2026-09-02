@@ -16,14 +16,6 @@
   box-shadow: 0 20px 25px -10px rgba(0, 40, 70, 0.18);
 }
 
-.loginEyebrow {
-  margin-bottom: 0.75rem;
-  color: #1d5b9e;
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
 .loginCard h1 {
   margin-bottom: 0.75rem;
   color: #0b2545;
@@ -67,7 +59,11 @@
   outline: 3px solid rgba(29, 91, 158, 0.16);
 }
 
-#loginButton {
+.formField small {
+  color: #4a627a;
+}
+
+.authSubmitButton {
   min-height: 46px;
   padding: 0.7rem 1.25rem;
   border: 0;
@@ -79,12 +75,12 @@
   cursor: pointer;
 }
 
-#loginButton:hover,
-#loginButton:focus-visible {
+.authSubmitButton:hover,
+.authSubmitButton:focus-visible {
   background: #164777;
 }
 
-#loginButton:disabled {
+.authSubmitButton:disabled {
   cursor: wait;
   opacity: 0.65;
 }

@@ -1,0 +1,33 @@
+<div id="ticket-list-region"
+  hx-get="/api/support/ui/customer/tickets"
+  hx-trigger="supportTicketsChanged from:body"
+  hx-swap="outerHTML"
+  aria-live="polite">
+  <span class="ticketCount">{{ tickets|length }} {{ 'conversation' if tickets|length == 1 else 'conversations' }}</span>
+  {% if tickets %}
+  <ul class="customerTicketList" aria-label="Your support conversations">
+    {% for ticket in tickets %}
+    <li class="customerTicketList__item">
+      <button class="customerTicketCard" type="button"
+        hx-get="/api/support/ui/customer/tickets/{{ ticket.id }}"
+        hx-target="#ticket-detail-region"
+        hx-swap="outerHTML">
+        <span class="customerTicketCard__header">
+          <span class="customerTicketCard__number">Ticket #{{ ticket.id }}</span>
+          <span class="ticketStatus ticketStatus--{{ ticket.status if ticket.status in ('open', 'pending', 'solved') else 'open' }}">
+            {{ (ticket.status or 'In progress')|replace('_', ' ')|title }}
+          </span>
+        </span>
+        <strong class="customerTicketCard__subject">{{ ticket.subject or 'Support conversation' }}</strong>
+        <span class="customerTicketCard__updated">{{ ticket.updated_at or ticket.created_at or 'Recently updated' }}</span>
+      </button>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="customerState customerState--empty">
+    <strong>No support conversations yet</strong>
+    <p>When you need help, start a new conversation and it will appear here.</p>
+  </div>
+  {% endif %}
+</div>

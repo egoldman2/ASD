@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order &amp; Returns Management</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <link rel="stylesheet" href="http://localhost:8000/css/styles.css">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+    <script src="http://localhost:8000/js/site-header.js?v=4" defer></script>
+    <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
     <style>
         .featurePage {
             width: min(1200px, calc(100% - 4rem));
@@ -96,7 +98,7 @@
 </head>
 
 <body>
-    <header class="navbar">
+    <header class="navbar appleNav" data-site-header data-active="account">
         <div class="navContainer">
             <div class="navLogo">
                 <a href="http://localhost:8000" class="logoLink">
@@ -107,7 +109,6 @@
                 <a href="http://localhost:8001" class="navLink">Product Catalogue</a>
                 <a href="http://localhost:8002" class="navLink">Inventory Management</a>
                 <a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a>
-                <a href="http://localhost:8004" class="navLink">Order &amp; Returns</a>
                 <a href="http://localhost:8005" class="navLink">Customer Support</a>
             </nav>
         </div>

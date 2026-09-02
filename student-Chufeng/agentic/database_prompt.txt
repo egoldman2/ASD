@@ -1,0 +1,9 @@
+Review only the supplied SQLite database evidence.
+
+- Do not discuss endpoints, HTTP, frontend behaviour, search, Docker, or source-code functionality.
+- Confirm whether products and cart_items each contain at least ten records.
+- Treat each table's EXACT COLUMNS line as an allow-list. Never assign a column to the wrong table.
+- Review primary keys, uniqueness, CHECK constraints, and foreign-key delete behaviour from CREATE SQL.
+- Three sample records do not prove that every record is valid.
+- Do not recommend adding, deleting, or updating records unless the evidence proves a data defect.
+- If schema and counts pass, report that result and identify only genuine evidence limitations.

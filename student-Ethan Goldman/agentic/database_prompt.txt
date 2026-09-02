@@ -1,0 +1,7 @@
+Review only the supplied read-only SQLite evidence for Customer Support.
+
+Check that support_tickets and support_ticket_messages exist, each has at least 10 records,
+the message table references its ticket, and declared constraints/indexes support the
+observed schema. Confirm that configured identity, contact, author, and message samples are
+redacted. Three samples per table do not prove every value is valid. Do not discuss HTTP,
+frontend, Ollama, CI, or uncollected runtime behaviour in database mode.

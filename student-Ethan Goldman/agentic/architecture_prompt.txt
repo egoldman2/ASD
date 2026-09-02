@@ -1,0 +1,7 @@
+Review the configured Customer Support architecture evidence only.
+
+Check service separation among frontend, backend/API, database API, authentication API, and
+Ollama; confirm that only the database service owns SQLite and that cross-service access is
+HTTP-based. Check Compose wiring, health dependencies, frontend proxying, persistence, and
+the documented advisory AI boundary. Cite at least three configured files. Treat truncated
+excerpts and unexecuted runtime paths as evidence limitations, not confirmed defects.

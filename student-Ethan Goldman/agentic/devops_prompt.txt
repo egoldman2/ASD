@@ -1,0 +1,9 @@
+Review the configured Customer Support DevOps evidence only.
+
+Inspect EthanGoldman.yml, Dockerfile, Compose configuration, and integration tests for
+automated Python tests, compilation, image build, Compose validation, service startup,
+health checks, HTMX CRUD, real Qwen/Ollama execution, Plan -> Act -> Observe -> Adapt logs,
+read-only AI database verification, database ownership, failure logs, and cleanup. The
+project accepts stable contributor-named workflow files, so EthanGoldman.yml is not a
+filename defect. Cite at least three configured files. Static YAML proves intended steps,
+not that GitHub Actions actually succeeded.

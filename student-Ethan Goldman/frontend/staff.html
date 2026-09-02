@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Staff-only Customer Support ticket queue for ASD 2026.">
+  <meta name="htmx-config" content='{"allowEval": false, "allowScriptTags": false}'>
+  <title>Staff Queue | Customer Support</title>
+  <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+  <link rel="stylesheet" href="css/support.css?v=6">
+  <script src="http://localhost:8000/js/site-header.js?v=4" defer></script>
+  <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+  <script src="js/htmx.min.js?v=2.0.4" defer></script>
+  <script src="js/support.js?v=2" defer></script>
+</head>
+<body>
+  <header class="navbar appleNav" data-site-header data-active="support">
+    <div class="navContainer">
+      <div class="navLogo"><a href="http://localhost:8000" class="logoLink" aria-label="ASD 2026 home"><span class="logoMain">ASD 2026</span></a></div>
+      <nav class="navLinks" aria-label="Main navigation"><a href="http://localhost:8001" class="navLink">Product Catalogue</a><a href="http://localhost:8002" class="navLink">Inventory Management</a><a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a><a href="http://localhost:8005" class="navLink navLink--active" aria-current="page">Customer Support</a></nav>
+    </div>
+  </header>
+  <main id="admin-workspace" class="supportPage adminWorkspace"
+    hx-get="/api/support/ui/admin/tickets"
+    hx-trigger="load"
+    hx-swap="innerHTML"
+    aria-live="polite">
+    <section class="adminState adminState--loading" role="status">
+      <strong>Checking staff access…</strong><p>Verifying your signed-in session.</p>
+    </section>
+  </main>
+  <footer class="footer">ASD 2026 &mdash; Customer Support Ticket Management</footer>
+</body>
+</html>

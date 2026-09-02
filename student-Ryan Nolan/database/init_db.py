@@ -4,7 +4,7 @@ from pathlib import Path
 import sqlite3
 
 DATABASE_DIRECTORY = Path(__file__).resolve().parent
-DATABASE_PATH = DATABASE_DIRECTORY / "/student-Chufeng/database/products.db"
+DATABASE_PATH = DATABASE_DIRECTORY / "products.db"
 SCHEMA_PATH = DATABASE_DIRECTORY / "/student-Chufeng/database/schema.sql"
 SEED_PATH = DATABASE_DIRECTORY / "/student-Chufeng/database/seed.sql"
 REQUIRED_TABLES = {"products", "suppliers"}

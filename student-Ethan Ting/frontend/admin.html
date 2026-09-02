@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard | ASD 2026</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+    <link rel="stylesheet" href="css/dashboard.css?v=8">
+    <script src="http://localhost:8000/js/site-header.js?v=4" defer></script>
+    <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+    <script src="js/admin.js?v=10" defer></script>
+  </head>
+
+  <body>
+    <header class="navbar appleNav" data-site-header data-active="account"></header>
+
+    <main class="dashboardPage">
+      <section class="dashboardHero">
+        <div>
+          <p class="dashboardEyebrow">Administrator account</p>
+          <h1>Customer management</h1>
+          <p id="userGreeting" class="dashboardDescription">Checking your session...</p>
+        </div>
+      </section>
+
+      <section class="summaryGrid" aria-label="Customer summary">
+        <article class="summaryCard">
+          <span class="summaryLabel">Total customers</span>
+          <strong id="totalCustomers">0</strong>
+        </article>
+        <article class="summaryCard">
+          <span class="summaryLabel">Active accounts</span>
+          <strong id="activeCustomers">0</strong>
+        </article>
+        <article class="summaryCard">
+          <span class="summaryLabel">Disabled accounts</span>
+          <strong id="disabledCustomers">0</strong>
+        </article>
+        <article class="summaryCard">
+          <span class="summaryLabel">Total loyalty points</span>
+          <strong id="totalLoyaltyPoints">0</strong>
+        </article>
+      </section>
+
+      <section class="dashboardPanel aiInsightPanel" aria-labelledby="customerInsightTitle">
+        <div class="panelHeading panelHeading--responsive">
+          <div>
+            <p class="dashboardEyebrow">AI mode · Admin confirmation</p>
+            <h2 id="customerInsightTitle">Customer insight assistant</h2>
+            <p class="panelDescription">
+              Ask about customer accounts or loyalty activity. The assistant can also
+              prepare a name or email change for you to review before anything is saved.
+            </p>
+          </div>
+          <span class="aiSafetyBadge">Confirmation required</span>
+        </div>
+
+        <form id="customerInsightForm" class="aiInsightForm">
+          <label for="customerInsightQuestion">Question for the assistant</label>
+          <textarea
+            id="customerInsightQuestion"
+            name="question"
+            rows="3"
+            maxlength="400"
+            placeholder="For example: Which active customers are closest to their next loyalty tier?"
+            required
+          ></textarea>
+
+          <div class="aiPromptSuggestions" aria-label="Example questions">
+            <button
+              class="aiPromptButton"
+              type="button"
+              data-insight-question="Find the customer with email customer@asd.local and summarise their account status and loyalty."
+            >Find an email</button>
+            <button
+              class="aiPromptButton"
+              type="button"
+              data-insight-question="Which active customers are closest to their next loyalty tier?"
+            >Next loyalty tier</button>
+            <button
+              class="aiPromptButton"
+              type="button"
+              data-insight-question="Summarise the disabled customer accounts in the supplied records."
+            >Disabled accounts</button>
+            <button
+              class="aiPromptButton"
+              type="button"
+              data-insight-question="Change the full name for customer@asd.local to Jordan Lee."
+            >Prepare an edit</button>
+          </div>
+
+          <div class="formActions">
+            <button id="askCustomerInsightButton" class="primaryButton" type="submit">
+              Ask AI
+            </button>
+          </div>
+        </form>
+
+        <p id="customerInsightMessage" class="dashboardMessage" aria-live="polite"></p>
+
+        <div id="customerInsightResult" class="aiInsightResult" aria-live="polite" hidden>
+          <div id="customerInsightAnalysis">
+            <p class="dashboardEyebrow">Verified AI response</p>
+            <p id="customerInsightAnswer" class="aiInsightAnswer"></p>
+            <p id="customerInsightMeta" class="aiInsightMeta"></p>
+          </div>
+
+          <section id="customerChangeProposal" class="aiChangeProposal" aria-labelledby="customerChangeProposalTitle" hidden>
+            <div class="aiChangeProposalHeading">
+              <div>
+                <h3 id="customerChangeProposalTitle">Review customer changes</h3>
+                <p id="proposalCustomerSummary" class="aiChangeCustomer"></p>
+              </div>
+              <span class="aiReviewBadge">AI suggestion · Not saved</span>
+            </div>
+
+            <div class="aiChangeList" aria-label="Current and proposed customer details">
+              <div id="proposalNameRow" class="aiChangeRow">
+                <span class="aiChangeLabel">Full name</span>
+                <div class="aiChangeTransition">
+                  <span id="proposalCurrentName" class="aiChangeCurrent"></span>
+                  <span class="aiChangeArrow" aria-hidden="true">→</span>
+                  <strong id="proposalNewName" class="aiChangeNew"></strong>
+                </div>
+              </div>
+              <div id="proposalEmailRow" class="aiChangeRow">
+                <span class="aiChangeLabel">Email address</span>
+                <div class="aiChangeTransition">
+                  <span id="proposalCurrentEmail" class="aiChangeCurrent"></span>
+                  <span class="aiChangeArrow" aria-hidden="true">→</span>
+                  <strong id="proposalNewEmail" class="aiChangeNew"></strong>
+                </div>
+              </div>
+            </div>
+
+            <p class="aiChangeNotice">
+              Nothing changes until you select <strong>Save customer changes</strong>.
+            </p>
+
+            <details class="aiTechnicalDetails">
+              <summary>AI details</summary>
+              <p id="proposalAiMeta"></p>
+            </details>
+
+            <div class="aiChangeActions">
+              <button id="cancelCustomerChangeButton" class="secondaryButton" type="button">
+                Cancel
+              </button>
+              <button id="confirmCustomerChangeButton" class="primaryButton" type="button">
+                Save customer changes
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="loyaltyAdjustmentPanel" class="dashboardPanel" hidden>
+        <div class="panelHeading">
+          <div>
+            <p class="dashboardEyebrow">Loyalty account</p>
+            <h2>Adjust points</h2>
+            <p id="loyaltyCustomerName" class="panelDescription"></p>
+          </div>
+          <button id="cancelLoyaltyButton" class="secondaryButton" type="button">Cancel</button>
+        </div>
+
+        <form id="loyaltyAdjustmentForm" class="detailsForm">
+          <input id="loyaltyCustomerId" name="user_id" type="hidden">
+
+          <div class="formField">
+            <label for="pointsChange">Points adjustment</label>
+            <input
+              id="pointsChange"
+              name="points_change"
+              type="number"
+              min="-1000000"
+              max="1000000"
+              step="1"
+              required
+            >
+            <small>Use a positive number to add points or a negative number to remove them.</small>
+          </div>
+
+          <div class="formField">
+            <label for="pointsReason">Reason</label>
+            <input id="pointsReason" name="reason" type="text" maxlength="200" required>
+            <small>This reason will appear in the customer's points history.</small>
+          </div>
+
+          <div class="formActions">
+            <button class="primaryButton" type="submit">Save adjustment</button>
+          </div>
+        </form>
+
+        <h3 class="sectionHeading">Recent points activity</h3>
+        <div class="tableWrapper">
+          <table class="dataTable loyaltyHistoryTable">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Reason</th>
+                <th scope="col">Points</th>
+              </tr>
+            </thead>
+            <tbody id="adminLoyaltyHistoryBody">
+              <tr>
+                <td colspan="3">Select a customer to see their points activity.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="customerFormPanel" class="dashboardPanel" hidden>
+        <div class="panelHeading">
+          <div>
+            <p class="dashboardEyebrow">Account details</p>
+            <h2 id="customerFormTitle">Create customer</h2>
+          </div>
+          <button id="cancelCustomerButton" class="secondaryButton" type="button">Cancel</button>
+        </div>
+
+        <form id="customerForm" class="detailsForm">
+          <input id="customerId" name="customerId" type="hidden">
+
+          <div class="formField">
+            <label for="customerName">Full name</label>
+            <input id="customerName" name="full_name" type="text" maxlength="100" required>
+          </div>
+
+          <div class="formField">
+            <label for="customerEmail">Email address</label>
+            <input id="customerEmail" name="email" type="email" maxlength="254" required>
+          </div>
+
+          <div id="customerPasswordField" class="formField">
+            <label for="customerPassword">Temporary password</label>
+            <input
+              id="customerPassword"
+              name="password"
+              type="password"
+              minlength="8"
+              autocomplete="new-password"
+            >
+            <small>Use at least 8 characters.</small>
+          </div>
+
+          <div class="formActions">
+            <button id="saveCustomerButton" class="primaryButton" type="submit">
+              Save customer
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="dashboardPanel" aria-labelledby="customersTitle">
+        <div class="panelHeading panelHeading--responsive">
+          <div>
+            <h2 id="customersTitle">Customer accounts</h2>
+          </div>
+
+          <div class="panelTools">
+            <label class="visuallyHidden" for="customerSearch">Search customers</label>
+            <input
+              id="customerSearch"
+              class="searchField"
+              type="search"
+              placeholder="Search name or email"
+            >
+            <button id="newCustomerButton" class="primaryButton" type="button">
+              Add customer
+            </button>
+          </div>
+        </div>
+
+        <p id="adminMessage" class="dashboardMessage" aria-live="polite"></p>
+
+        <div class="tableWrapper">
+          <table class="dataTable">
+            <thead>
+              <tr>
+                <th scope="col">Customer</th>
+                <th scope="col">Email</th>
+                <th scope="col">Tier</th>
+                <th scope="col">Points</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody">
+              <tr>
+                <td colspan="6">Loading customers...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">asd(2026)-group7</footer>
+  </body>
+</html>
