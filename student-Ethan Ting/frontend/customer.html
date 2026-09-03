@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/dashboard.css?v=9">
     <script src="http://localhost:8000/js/site-header.js?v=10" defer></script>
     <script src="http://localhost:8000/js/account-menu.js?v=12" defer></script>
-    <script src="js/customer.js?v=6" defer></script>
+    <script src="js/customer.js?v=7" defer></script>
   </head>
 
   <body>
@@ -48,6 +48,40 @@
           </form>
 
           <p id="profileMessage" class="dashboardMessage" aria-live="polite"></p>
+        </article>
+
+        <article class="dashboardPanel" aria-labelledby="passwordTitle">
+          <div class="panelHeading">
+            <div>
+              <p class="dashboardEyebrow">Account security</p>
+              <h2 id="passwordTitle">Change password</h2>
+            </div>
+          </div>
+
+          <form id="passwordForm" class="detailsForm">
+            <div class="formField formField--wide">
+              <label for="currentPassword">Current password</label>
+              <input id="currentPassword" name="current_password" type="password" autocomplete="current-password" required>
+            </div>
+
+            <div class="formField">
+              <label for="newPassword">New password</label>
+              <input id="newPassword" name="new_password" type="password" minlength="8" autocomplete="new-password" aria-describedby="passwordHelp" required>
+            </div>
+
+            <div class="formField">
+              <label for="confirmPassword">Confirm new password</label>
+              <input id="confirmPassword" name="password_confirmation" type="password" minlength="8" autocomplete="new-password" required>
+            </div>
+
+            <p id="passwordHelp" class="formHelp formField--wide">Use at least 8 characters.</p>
+
+            <div class="formActions">
+              <button class="primaryButton" type="submit">Change password</button>
+            </div>
+          </form>
+
+          <p id="passwordMessage" class="dashboardMessage" aria-live="polite"></p>
         </article>
 
         <article class="dashboardPanel" aria-labelledby="loyaltyTitle">

@@ -909,6 +909,61 @@ def update_profile():
     return jsonify({"user": session["user"]})
 
 
+@app.put("/api/profile/password")
+@login_required
+def update_profile_password():
+    data = request.get_json(silent=True) or {}
+    current_password = data.get("current_password")
+    new_password = data.get("new_password")
+    password_confirmation = data.get("password_confirmation")
+
+    if not all(isinstance(value, str) for value in (
+        current_password,
+        new_password,
+        password_confirmation,
+    )):
+        return jsonify({"error": "All password fields are required."}), 400
+
+    if not current_password or not new_password or not password_confirmation:
+        return jsonify({"error": "All password fields are required."}), 400
+
+    if len(new_password) < 8:
+        return jsonify({
+            "error": "New password must contain at least 8 characters."
+        }), 400
+
+    if new_password != password_confirmation:
+        return jsonify({"error": "New passwords do not match."}), 400
+
+    user_id = session["user"]["id"]
+
+    try:
+        stored_result = database_request(f"/internal/users/{user_id}")
+        stored_user = stored_result.get("user", {})
+        password_hash = stored_user.get("password_hash", "")
+
+        if not password_hash or not check_password_hash(
+            password_hash,
+            current_password,
+        ):
+            return jsonify({"error": "Current password is incorrect."}), 400
+
+        if check_password_hash(password_hash, new_password):
+            return jsonify({
+                "error": "New password must be different from the current password."
+            }), 400
+
+        database_request(
+            f"/internal/users/{user_id}",
+            method="PUT",
+            payload={"password": new_password},
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify({"message": "Password updated successfully."})
+
+
 @app.get("/api/loyalty")
 @login_required
 def get_own_loyalty():

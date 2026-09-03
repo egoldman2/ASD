@@ -456,6 +456,16 @@ def update_user(user_id):
         updates.append("is_active = ?")
         parameters.append(is_active)
 
+    if "password" in data:
+        supplied_password = data["password"]
+        password = supplied_password if isinstance(supplied_password, str) else ""
+        if len(password) < 8:
+            return jsonify({
+                "error": "Password must contain at least 8 characters."
+            }), 400
+        updates.append("password_hash = ?")
+        parameters.append(generate_password_hash(password))
+
     if not updates:
         return jsonify({"error": "No valid changes were supplied."}), 400
 

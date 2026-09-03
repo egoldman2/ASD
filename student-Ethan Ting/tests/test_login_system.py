@@ -169,6 +169,117 @@ def test_customer_is_forbidden_from_admin_api(auth_module):
     assert response.get_json()["error"] == "Administrator access required."
 
 
+def test_customer_can_change_password(auth_module, monkeypatch):
+    old_password = "CustomerPass!2026"
+    captured_update = {}
+    stored_user = {
+        "id": 2,
+        "email": "customer@asd.local",
+        "full_name": "Demo Customer",
+        "role": "customer",
+        "is_active": 1,
+        "password_hash": generate_password_hash(old_password),
+    }
+
+    def password_request(path, method="GET", payload=None):
+        if method == "PUT":
+            captured_update.update({
+                "path": path,
+                "method": method,
+                "payload": payload,
+            })
+            return {"user": {key: value for key, value in stored_user.items()
+                             if key != "password_hash"}}
+        return {"user": stored_user}
+
+    monkeypatch.setattr(auth_module, "database_request", password_request)
+
+    with auth_module.app.test_client() as client:
+        with client.session_transaction() as login_session:
+            login_session["user"] = {
+                "id": 2,
+                "email": "customer@asd.local",
+                "full_name": "Demo Customer",
+                "role": "customer",
+            }
+
+        response = client.put("/api/profile/password", json={
+            "current_password": old_password,
+            "new_password": "NewCustomerPass!2026",
+            "password_confirmation": "NewCustomerPass!2026",
+        })
+
+    assert response.status_code == 200
+    assert response.get_json()["message"] == "Password updated successfully."
+    assert captured_update == {
+        "path": "/internal/users/2",
+        "method": "PUT",
+        "payload": {"password": "NewCustomerPass!2026"},
+    }
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected_error"),
+    [
+        ({
+            "current_password": "WrongPassword!2026",
+            "new_password": "NewCustomerPass!2026",
+            "password_confirmation": "NewCustomerPass!2026",
+        }, "Current password is incorrect."),
+        ({
+            "current_password": "CustomerPass!2026",
+            "new_password": "short",
+            "password_confirmation": "short",
+        }, "New password must contain at least 8 characters."),
+        ({
+            "current_password": "CustomerPass!2026",
+            "new_password": "NewCustomerPass!2026",
+            "password_confirmation": "DifferentPass!2026",
+        }, "New passwords do not match."),
+        ({
+            "current_password": "CustomerPass!2026",
+            "new_password": "CustomerPass!2026",
+            "password_confirmation": "CustomerPass!2026",
+        }, "New password must be different from the current password."),
+    ],
+)
+def test_customer_password_change_rejects_invalid_input(
+    auth_module,
+    monkeypatch,
+    payload,
+    expected_error,
+):
+    stored_user = {
+        "id": 2,
+        "email": "customer@asd.local",
+        "full_name": "Demo Customer",
+        "role": "customer",
+        "is_active": 1,
+        "password_hash": generate_password_hash("CustomerPass!2026"),
+    }
+
+    def password_request(path, method="GET", payload=None):
+        if method == "PUT":
+            pytest.fail("An invalid password change must not be saved.")
+        return {"user": stored_user}
+
+    monkeypatch.setattr(auth_module, "database_request", password_request)
+
+    with auth_module.app.test_client() as client:
+        with client.session_transaction() as login_session:
+            login_session["user"] = {
+                "id": 2,
+                "email": "customer@asd.local",
+                "full_name": "Demo Customer",
+                "role": "customer",
+            }
+
+        response = client.put("/api/profile/password", json=payload)
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == expected_error
+
+
 def test_admin_can_read_customer_list(auth_module, monkeypatch):
     def customer_list(path, method="GET", payload=None):
         if path == "/internal/users/1":
@@ -463,6 +574,22 @@ def test_database_customer_crud_uses_soft_delete(database_module):
         assert update_response.get_json()["user"]["full_name"] == (
             "Updated Customer"
         )
+
+        password_response = client.put(
+            f"/internal/users/{customer_id}",
+            json={"password": "UpdatedPassword!2026"},
+        )
+        assert password_response.status_code == 200
+        assert "password_hash" not in password_response.get_json()["user"]
+
+        updated_stored_response = client.get(
+            "/internal/users/by-email?email=new.customer@example.test"
+        )
+        updated_hash = updated_stored_response.get_json()["user"][
+            "password_hash"
+        ]
+        assert check_password_hash(updated_hash, "UpdatedPassword!2026")
+        assert not check_password_hash(updated_hash, "TemporaryPass!2026")
 
         delete_response = client.delete(f"/internal/users/{customer_id}")
         assert delete_response.status_code == 200

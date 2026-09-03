@@ -232,6 +232,16 @@
   align-items: flex-start;
 }
 
+.formField--wide {
+  grid-column: 1 / -1;
+}
+
+.formHelp {
+  margin: -0.65rem 0 0;
+  color: #4a627a;
+  font-size: 0.9rem;
+}
+
 .secondaryButton,
 .actionButton {
   border: 1px solid #afc6d9;
