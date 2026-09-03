@@ -428,10 +428,45 @@ body {
   width: 1px;
   height: 1px;
   padding: 0;
+  margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+.formField {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.formField[hidden] {
+  display: none;
+}
+
+.formField label {
+  color: #1e2f4d;
+  font-weight: 700;
+}
+
+.formField input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #afc6d9;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e2f4d;
+  font: inherit;
+}
+
+.formField input:focus {
+  border-color: #1d5b9e;
+  outline: 3px solid rgba(29, 91, 158, 0.16);
+}
+
+.formField small {
+  color: #4a627a;
 }
 
 .homePage {

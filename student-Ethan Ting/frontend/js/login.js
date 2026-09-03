@@ -18,20 +18,31 @@ const registerPasswordConfirmation = document.querySelector(
 );
 
 
-function supportReturnForRole(user) {
+function safeReturnForRole(user) {
   const rawReturnUrl = new URLSearchParams(window.location.search).get("return_url");
   if (!rawReturnUrl) return null;
 
   try {
     const requested = new URL(rawReturnUrl);
     const trustedHost = ["localhost", "127.0.0.1"].includes(requested.hostname);
-    const trustedPath = ["/", "/index.html", "/customer.html", "/staff.html"].includes(requested.pathname);
-    if (requested.protocol !== "http:" || requested.port !== "8005" || !trustedHost || !trustedPath) {
+    if (requested.protocol !== "http:" || !trustedHost) {
       return null;
     }
-    requested.pathname = user.role === "admin" ? "/staff.html" : "/customer.html";
-    requested.search = "";
-    requested.hash = "";
+
+    const allowedPaths = {
+      "8001": ["/", "/index.html", "/cart.html"],
+      "8004": ["/", "/index.html"],
+      "8005": ["/", "/index.html", "/customer.html", "/staff.html"],
+    };
+    if (!allowedPaths[requested.port]?.includes(requested.pathname)) {
+      return null;
+    }
+
+    if (requested.port === "8005") {
+      requested.pathname = user.role === "admin" ? "/staff.html" : "/customer.html";
+      requested.search = "";
+      requested.hash = "";
+    }
     return requested.href;
   } catch (error) {
     return null;
@@ -40,7 +51,7 @@ function supportReturnForRole(user) {
 
 
 function redirectForRole(user) {
-  const destination = supportReturnForRole(user) || (user.role === "admin"
+  const destination = safeReturnForRole(user) || (user.role === "admin"
     ? "admin.html"
     : "customer.html");
 

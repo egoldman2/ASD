@@ -16,6 +16,9 @@ async function configureAccountMenu(menu) {
   const primaryAction = menu.querySelector("[data-account-primary]");
   const profileAction = menu.querySelector("[data-account-profile]");
   const logoutAction = menu.querySelector("[data-account-logout]");
+  const authenticatedLinks = menu.querySelectorAll(
+    "[data-account-authenticated-link]",
+  );
 
   function setOpen(open) {
     if (open) {
@@ -65,14 +68,20 @@ async function configureAccountMenu(menu) {
     primaryAction.hidden = false;
     primaryAction.href = accountUrl;
     profileAction.hidden = true;
+    for (const link of authenticatedLinks) {
+      link.hidden = link === profileAction;
+    }
     logoutAction.hidden = false;
   } catch (error) {
     welcomeMessage.textContent = "Welcome to ASD 2026";
     signInAction.hidden = false;
     registerAction.hidden = false;
     primaryAction.hidden = true;
-    profileAction.hidden = false;
+    profileAction.hidden = true;
     profileAction.href = "http://localhost:8003";
+    for (const link of authenticatedLinks) {
+      link.hidden = true;
+    }
     logoutAction.hidden = true;
   }
 

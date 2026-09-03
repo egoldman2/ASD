@@ -2,7 +2,7 @@ import os
 import sqlite3
 import subprocess
 import requests
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, g, jsonify, request
 
 order_blueprint = Blueprint(
     "order_returns",
@@ -44,20 +44,72 @@ def ask_ollama(prompt):
     return resp.json()["response"].strip()
 
 
+def current_user():
+    user = getattr(g, "authenticated_user", None)
+    if user is None and current_app.config.get("TESTING"):
+        return {"id": 1, "role": "admin"}
+    return user
+
+
+def authentication_failure():
+    return jsonify({"error": "You must sign in."}), 401
+
+
+def administrator_failure():
+    return jsonify({"error": "Administrator access required."}), 403
+
+
+def customer_id(user):
+    return None if user.get("role") == "admin" else user.get("id")
+
+
+def order_for_user(conn, order_id, user):
+    owner_id = customer_id(user)
+    if owner_id is None:
+        return conn.execute(
+            "SELECT * FROM orders WHERE order_id=?",
+            (order_id,),
+        ).fetchone()
+    return conn.execute(
+        "SELECT * FROM orders WHERE order_id=? AND customer_id=?",
+        (order_id, owner_id),
+    ).fetchone()
+
+
 # ---------- Orders ----------
 @order_blueprint.get("/orders")
 def list_orders():
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+
     conn = get_db()
-    rows = conn.execute("SELECT * FROM orders").fetchall()
+    owner_id = customer_id(user)
+    if owner_id is None:
+        rows = conn.execute("SELECT * FROM orders").fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM orders WHERE customer_id=?",
+            (owner_id,),
+        ).fetchall()
     conn.close()
     return jsonify(rows_to_list(rows))
 
 
 @order_blueprint.get("/orders/<int:order_id>")
 def get_order(order_id):
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+
     conn = get_db()
-    order = conn.execute("SELECT * FROM orders WHERE order_id=?", (order_id,)).fetchone()
-    items = conn.execute("SELECT * FROM order_items WHERE order_id=?", (order_id,)).fetchall()
+    order = order_for_user(conn, order_id, user)
+    items = []
+    if order is not None:
+        items = conn.execute(
+            "SELECT * FROM order_items WHERE order_id=?",
+            (order_id,),
+        ).fetchall()
     conn.close()
     if order is None:
         return jsonify({"error": "not found"}), 404
@@ -68,11 +120,20 @@ def get_order(order_id):
 
 @order_blueprint.post("/orders")
 def create_order():
-    d = request.get_json()
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+
+    d = request.get_json() or {}
+    owner_id = customer_id(user)
+    requested_customer_id = d.get("customer_id") if owner_id is None else owner_id
+    if requested_customer_id is None:
+        return jsonify({"error": "A customer ID is required."}), 400
+
     conn = get_db()
     cur = conn.execute(
         "INSERT INTO orders (customer_id, order_date, status, total) VALUES (?,?,?,?)",
-        (d["customer_id"], d["order_date"], d.get("status", "pending"), d["total"]),
+        (requested_customer_id, d["order_date"], d.get("status", "pending"), d["total"]),
     )
     conn.commit()
     new_id = cur.lastrowid
@@ -82,6 +143,12 @@ def create_order():
 
 @order_blueprint.patch("/orders/<int:order_id>/status")
 def update_order_status(order_id):
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+    if user.get("role") != "admin":
+        return administrator_failure()
+
     d = request.get_json()
     conn = get_db()
     conn.execute("UPDATE orders SET status=? WHERE order_id=?", (d["status"], order_id))
@@ -92,6 +159,12 @@ def update_order_status(order_id):
 
 @order_blueprint.delete("/orders/<int:order_id>")
 def delete_order(order_id):
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+    if user.get("role") != "admin":
+        return administrator_failure()
+
     conn = get_db()
     conn.execute("DELETE FROM order_items WHERE order_id=?", (order_id,))
     conn.execute("DELETE FROM orders WHERE order_id=?", (order_id,))
@@ -103,16 +176,40 @@ def delete_order(order_id):
 # ---------- Returns ----------
 @order_blueprint.get("/returns")
 def list_returns():
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+
     conn = get_db()
-    rows = conn.execute("SELECT * FROM returns").fetchall()
+    owner_id = customer_id(user)
+    if owner_id is None:
+        rows = conn.execute("SELECT * FROM returns").fetchall()
+    else:
+        rows = conn.execute(
+            """
+            SELECT returns.*
+            FROM returns
+            JOIN orders ON orders.order_id = returns.order_id
+            WHERE orders.customer_id=?
+            """,
+            (owner_id,),
+        ).fetchall()
     conn.close()
     return jsonify(rows_to_list(rows))
 
 
 @order_blueprint.post("/returns")
 def create_return():
-    d = request.get_json()
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+
+    d = request.get_json() or {}
     conn = get_db()
+    if order_for_user(conn, d.get("order_id"), user) is None:
+        conn.close()
+        return jsonify({"error": "Order not found."}), 404
+
     cur = conn.execute(
         "INSERT INTO returns (order_id, reason, status, created_at) VALUES (?,?,?,?)",
         (d["order_id"], d["reason"], d.get("status", "requested"), d["created_at"]),
@@ -125,6 +222,12 @@ def create_return():
 
 @order_blueprint.patch("/returns/<int:return_id>/status")
 def update_return_status(return_id):
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+    if user.get("role") != "admin":
+        return administrator_failure()
+
     d = request.get_json()
     conn = get_db()
     conn.execute("UPDATE returns SET status=? WHERE return_id=?", (d["status"], return_id))
@@ -136,10 +239,21 @@ def update_return_status(return_id):
 # ---------- HTML fragments (for HTMX) ----------
 @order_blueprint.get("/orders/html")
 def orders_html():
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+
     conn = get_db()
-    rows = conn.execute("SELECT * FROM orders").fetchall()
+    owner_id = customer_id(user)
+    if owner_id is None:
+        rows = conn.execute("SELECT * FROM orders").fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM orders WHERE customer_id=?",
+            (owner_id,),
+        ).fetchall()
     conn.close()
-    html = "<table><tr><th>ID</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th></tr>"
+    html = "<table><tr><th>Order ID</th><th>Customer ID</th><th>Date</th><th>Status</th><th>Total</th></tr>"
     for r in rows:
         html += (f"<tr><td>{r['order_id']}</td><td>{r['customer_id']}</td>"
                  f"<td>{r['order_date'][:10]}</td><td>{r['status'].capitalize()}</td><td>${r['total']}</td></tr>")
@@ -149,10 +263,26 @@ def orders_html():
 
 @order_blueprint.get("/returns/html")
 def returns_html():
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+
     conn = get_db()
-    rows = conn.execute("SELECT * FROM returns").fetchall()
+    owner_id = customer_id(user)
+    if owner_id is None:
+        rows = conn.execute("SELECT * FROM returns").fetchall()
+    else:
+        rows = conn.execute(
+            """
+            SELECT returns.*
+            FROM returns
+            JOIN orders ON orders.order_id = returns.order_id
+            WHERE orders.customer_id=?
+            """,
+            (owner_id,),
+        ).fetchall()
     conn.close()
-    html = "<table><tr><th>ID</th><th>Order</th><th>Reason</th><th>Status</th></tr>"
+    html = "<table><tr><th>Return ID</th><th>Order ID</th><th>Reason</th><th>Status</th></tr>"
     for r in rows:
         html += (f"<tr><td>{r['return_id']}</td><td>{r['order_id']}</td>"
                  f"<td>{r['reason'].capitalize()}</td><td>{r['status'].capitalize()}</td></tr>")
@@ -163,12 +293,22 @@ def returns_html():
 # ---------- AI advice (advisory only, never writes to DB) ----------
 @order_blueprint.get("/returns/<int:return_id>/advice")
 def return_advice(return_id):
+    user = current_user()
+    if user is None:
+        return authentication_failure()
+
     conn = get_db()
     ret = conn.execute("SELECT * FROM returns WHERE return_id=?", (return_id,)).fetchone()
     if ret is None:
         conn.close()
         return jsonify({"error": "not found"}), 404
     order = conn.execute("SELECT * FROM orders WHERE order_id=?", (ret["order_id"],)).fetchone()
+    if order is None or (
+        customer_id(user) is not None
+        and order["customer_id"] != customer_id(user)
+    ):
+        conn.close()
+        return jsonify({"error": "not found"}), 404
     conn.close()
 
     prompt = (

@@ -11,6 +11,51 @@ const SITE_SECTION_BY_PORT = {
   "8005": "support",
 };
 
+const PRIVATE_SHARED_API_PREFIXES = [
+  "/api/cart-items",
+  "/api/order-returns",
+];
+
+
+function installAuthenticatedSharedFetch() {
+  if (window.__asdAuthenticatedFetchInstalled) {
+    return;
+  }
+
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = async (resource, options = {}) => {
+    const resourceUrl = resource instanceof URL
+      ? resource.href
+      : typeof resource === "string"
+        ? resource
+        : resource.url;
+    const url = new URL(resourceUrl, window.location.href);
+    const isPrivateSharedApi = (
+      url.origin === "http://localhost:5000"
+      && PRIVATE_SHARED_API_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))
+    );
+
+    const response = await originalFetch(
+      resource,
+      isPrivateSharedApi
+        ? {...options, credentials: "include"}
+        : options,
+    );
+
+    if (isPrivateSharedApi && response.status === 401) {
+      const loginUrl = new URL("http://localhost:8003/index.html");
+      loginUrl.searchParams.set("return_url", window.location.href);
+      window.location.replace(loginUrl);
+    }
+
+    return response;
+  };
+  window.__asdAuthenticatedFetchInstalled = true;
+}
+
+
+installAuthenticatedSharedFetch();
+
 
 function currentSiteSection(fallbackSection) {
   if (Object.prototype.hasOwnProperty.call(SITE_SECTION_BY_PORT, window.location.port)) {
@@ -72,21 +117,21 @@ function siteHeaderMarkup(activeSection) {
               </div>
             </div>
             <div class="accountMenuLinks">
-              <a class="accountMenuItem" href="http://localhost:8003" data-account-profile>
+              <a class="accountMenuItem" href="http://localhost:8003" data-account-profile data-account-authenticated-link hidden>
                 <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
                   <circle cx="12" cy="7" r="4"></circle>
                   <path d="M4.5 21c.8-5 3.3-7 7.5-7s6.7 2 7.5 7"></path>
                 </svg>
                 <span>My account</span>
               </a>
-              <a class="accountMenuItem" href="http://localhost:8004">
+              <a class="accountMenuItem" href="http://localhost:8004" data-account-authenticated-link hidden>
                 <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M4 7h16v14H4z"></path>
                   <path d="M7 3h10l3 4H4z"></path>
                 </svg>
                 <span>My orders</span>
               </a>
-              <a class="accountMenuItem" href="http://localhost:8004">
+              <a class="accountMenuItem" href="http://localhost:8004" data-account-authenticated-link hidden>
                 <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M4 7h16v14H4z"></path>
                   <path d="M7 3h10l3 4H4z"></path>

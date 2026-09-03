@@ -1,15 +1,6 @@
-.navLink.active {
-  color: #1d5b9e;
-}
-
-.navLink.active::after {
-  width: 100%;
-}
-
 .primaryButton,
 .secondaryButton,
-.actionButton,
-.primaryLink {
+.actionButton {
   min-height: 42px;
   padding: 0.65rem 1rem;
   display: inline-flex;
@@ -22,17 +13,14 @@
   cursor: pointer;
 }
 
-.primaryButton,
-.primaryLink {
+.primaryButton {
   border: 1px solid #1d5b9e;
   background: #1d5b9e;
   color: #ffffff;
 }
 
 .primaryButton:hover,
-.primaryButton:focus-visible,
-.primaryLink:hover,
-.primaryLink:focus-visible {
+.primaryButton:focus-visible {
   background: #164777;
 }
 
@@ -156,8 +144,7 @@
   color: #4a627a;
 }
 
-.searchField,
-.formField input {
+.searchField {
   min-height: 44px;
   padding: 0.7rem 0.85rem;
   border: 1px solid #afc6d9;
@@ -167,8 +154,7 @@
   font: inherit;
 }
 
-.searchField:focus,
-.formField input:focus {
+.searchField:focus {
   border-color: #1d5b9e;
   outline: 3px solid rgba(29, 91, 158, 0.16);
 }
@@ -177,24 +163,6 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
-}
-
-.formField {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.formField[hidden] {
-  display: none;
-}
-
-.formField label {
-  color: #1e2f4d;
-  font-weight: 700;
-}
-
-.formField small {
-  color: #4a627a;
 }
 
 .formActions {
@@ -606,18 +574,6 @@
 .aiChangeActions .primaryButton:disabled {
   opacity: 0.65;
   cursor: wait;
-}
-
-.visuallyHidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }
 
 @media (max-width: 900px) {
