@@ -1,18 +1,19 @@
 const AUTH_API_URL = "http://localhost:6002";
 
 const customerTableBody = document.querySelector("#customerTableBody");
+const administratorTableBody = document.querySelector("#administratorTableBody");
 const customerFormPanel = document.querySelector("#customerFormPanel");
 const customerForm = document.querySelector("#customerForm");
+const accountRoleInput = document.querySelector("#accountRole");
 const customerPasswordField = document.querySelector("#customerPasswordField");
 const customerPassword = document.querySelector("#customerPassword");
 const customerSearch = document.querySelector("#customerSearch");
+const administratorSearch = document.querySelector("#administratorSearch");
+const customerAccountsPanel = document.querySelector("#customerAccountsPanel");
+const administratorAccountsPanel = document.querySelector("#administratorAccountsPanel");
+const viewCustomersButton = document.querySelector("#viewCustomersButton");
+const viewAdministratorsButton = document.querySelector("#viewAdministratorsButton");
 const adminMessage = document.querySelector("#adminMessage");
-const loyaltyAdjustmentPanel = document.querySelector("#loyaltyAdjustmentPanel");
-const loyaltyAdjustmentForm = document.querySelector("#loyaltyAdjustmentForm");
-const adminLoyaltyHistoryBody = document.querySelector("#adminLoyaltyHistoryBody");
-const loyaltyCustomerId = document.querySelector("#loyaltyCustomerId");
-const pointsChangeInput = document.querySelector("#pointsChange");
-const pointsReasonInput = document.querySelector("#pointsReason");
 const customerIdInput = document.querySelector("#customerId");
 const customerNameInput = document.querySelector("#customerName");
 const customerEmailInput = document.querySelector("#customerEmail");
@@ -29,7 +30,7 @@ const confirmCustomerChangeButton = document.querySelector("#confirmCustomerChan
 const cancelCustomerChangeButton = document.querySelector("#cancelCustomerChangeButton");
 
 let customers = [];
-let loyaltyAccounts = [];
+let administrators = [];
 let pendingCustomerChange = null;
 
 
@@ -129,53 +130,7 @@ function updateSummary() {
   document.querySelector("#disabledCustomers").textContent = customers.filter(
     (customer) => customer.is_active === 0
   ).length;
-  document.querySelector("#totalLoyaltyPoints").textContent = loyaltyAccounts.reduce(
-    (total, loyalty) => total + loyalty.points_balance,
-    0
-  ).toLocaleString("en-AU");
-}
-
-
-function formatDate(dateValue) {
-  return new Intl.DateTimeFormat("en-AU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(`${dateValue.replace(" ", "T")}Z`));
-}
-
-
-function renderLoyaltyHistory(transactions) {
-  adminLoyaltyHistoryBody.replaceChildren();
-
-  if (transactions.length === 0) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 3;
-    cell.textContent = "No points activity yet.";
-    row.append(cell);
-    adminLoyaltyHistoryBody.append(row);
-    return;
-  }
-
-  for (const transaction of transactions) {
-    const row = document.createElement("tr");
-    const dateCell = document.createElement("td");
-    const reasonCell = document.createElement("td");
-    const pointsCell = document.createElement("td");
-
-    dateCell.textContent = formatDate(transaction.created_at);
-    reasonCell.textContent = transaction.reason;
-    pointsCell.className = transaction.points_change > 0
-      ? "pointsChange pointsChange--positive"
-      : "pointsChange pointsChange--negative";
-    pointsCell.textContent = transaction.points_change > 0
-      ? `+${transaction.points_change}`
-      : String(transaction.points_change);
-
-    row.append(dateCell, reasonCell, pointsCell);
-    adminLoyaltyHistoryBody.append(row);
-  }
+  document.querySelector("#totalAdministrators").textContent = administrators.length;
 }
 
 
@@ -201,7 +156,7 @@ function renderCustomers() {
   if (matchingCustomers.length === 0) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 6;
+    cell.colSpan = 4;
     cell.textContent = "No customers match your search.";
     row.append(cell);
     customerTableBody.append(row);
@@ -212,8 +167,6 @@ function renderCustomers() {
     const row = document.createElement("tr");
     const nameCell = document.createElement("td");
     const emailCell = document.createElement("td");
-    const tierCell = document.createElement("td");
-    const pointsCell = document.createElement("td");
     const statusCell = document.createElement("td");
     const actionCell = document.createElement("td");
     const statusBadge = document.createElement("span");
@@ -221,8 +174,10 @@ function renderCustomers() {
 
     nameCell.textContent = customer.full_name;
     emailCell.textContent = customer.email;
-    tierCell.textContent = customer.loyalty?.tier || "Bronze";
-    pointsCell.textContent = (customer.loyalty?.points_balance || 0).toLocaleString("en-AU");
+    nameCell.dataset.label = "Customer";
+    emailCell.dataset.label = "Email";
+    statusCell.dataset.label = "Status";
+    actionCell.dataset.label = "Actions";
 
     statusBadge.className = customer.is_active === 1
       ? "statusBadge statusBadge--active"
@@ -231,11 +186,6 @@ function renderCustomers() {
     statusCell.append(statusBadge);
 
     actions.className = "tableActions";
-    actions.append(createActionButton(
-      "Adjust points",
-      "actionButton",
-      () => openLoyaltyForm(customer)
-    ));
     actions.append(createActionButton(
       "Edit",
       "actionButton",
@@ -257,51 +207,92 @@ function renderCustomers() {
     }
 
     actionCell.append(actions);
-    row.append(nameCell, emailCell, tierCell, pointsCell, statusCell, actionCell);
+    row.append(nameCell, emailCell, statusCell, actionCell);
     customerTableBody.append(row);
   }
 }
 
 
-async function openLoyaltyForm(customer) {
-  loyaltyAdjustmentForm.reset();
-  loyaltyCustomerId.value = customer.id;
-  document.querySelector("#loyaltyCustomerName").textContent = (
-    `${customer.full_name} currently has ${customer.loyalty?.points_balance || 0} points.`
-  );
-  loyaltyAdjustmentPanel.hidden = false;
-  loyaltyAdjustmentPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+function renderAdministrators() {
+  const searchTerm = administratorSearch.value.trim().toLowerCase();
+  const matchingAdministrators = administrators.filter((administrator) => (
+    administrator.full_name.toLowerCase().includes(searchTerm)
+    || administrator.email.toLowerCase().includes(searchTerm)
+  ));
 
-  try {
-    const result = await authRequest(
-      `/api/admin/loyalty/${customer.id}/history`
-    );
-    renderLoyaltyHistory(result.transactions);
-    document.querySelector("#pointsChange").focus();
-  } catch (error) {
-    showMessage(error.message);
+  administratorTableBody.replaceChildren();
+
+  if (matchingAdministrators.length === 0) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 4;
+    cell.textContent = "No administrators match your search.";
+    row.append(cell);
+    administratorTableBody.append(row);
+    return;
+  }
+
+  for (const administrator of matchingAdministrators) {
+    const row = document.createElement("tr");
+    const nameCell = document.createElement("td");
+    const emailCell = document.createElement("td");
+    const statusCell = document.createElement("td");
+    const actionCell = document.createElement("td");
+    const statusBadge = document.createElement("span");
+    const actions = document.createElement("div");
+
+    nameCell.textContent = administrator.full_name;
+    emailCell.textContent = administrator.email;
+    nameCell.dataset.label = "Administrator";
+    emailCell.dataset.label = "Email";
+    statusCell.dataset.label = "Status";
+    actionCell.dataset.label = "Actions";
+    statusBadge.className = administrator.is_active === 1
+      ? "statusBadge statusBadge--active"
+      : "statusBadge statusBadge--disabled";
+    statusBadge.textContent = administrator.is_active === 1 ? "Active" : "Disabled";
+    statusCell.append(statusBadge);
+
+    actions.className = "tableActions";
+    actions.append(createActionButton(
+      "Edit",
+      "actionButton",
+      () => openEditForm(administrator, "admin")
+    ));
+
+    actionCell.append(actions);
+    row.append(nameCell, emailCell, statusCell, actionCell);
+    administratorTableBody.append(row);
   }
 }
 
 
-function openCreateForm() {
+function openCreateForm(role = "customer") {
   customerForm.reset();
   customerIdInput.value = "";
+  accountRoleInput.value = role;
   customerPasswordField.hidden = false;
   customerPassword.required = true;
-  document.querySelector("#customerFormTitle").textContent = "Create customer";
+  const accountType = role === "admin" ? "administrator" : "customer";
+  document.querySelector("#accountFormEyebrow").textContent = `${accountType} details`;
+  document.querySelector("#customerFormTitle").textContent = `Create ${accountType}`;
+  document.querySelector("#saveCustomerButton").textContent = `Save ${accountType}`;
   customerFormPanel.hidden = false;
   document.querySelector("#customerName").focus();
 }
 
 
-function openEditForm(customer) {
+function openEditForm(customer, role = "customer") {
   customerForm.reset();
   customerIdInput.value = customer.id;
+  accountRoleInput.value = role;
   customerPassword.value = "";
   customerPassword.required = false;
   customerPasswordField.hidden = true;
-  document.querySelector("#customerFormTitle").textContent = "Edit customer";
+  const accountType = role === "admin" ? "administrator" : "customer";
+  document.querySelector("#accountFormEyebrow").textContent = `${accountType} details`;
+  document.querySelector("#customerFormTitle").textContent = `Edit ${accountType}`;
+  document.querySelector("#saveCustomerButton").textContent = `Save ${accountType}`;
   customerFormPanel.hidden = false;
   customerNameInput.value = customer.full_name;
   customerEmailInput.value = customer.email;
@@ -310,20 +301,29 @@ function openEditForm(customer) {
 
 
 async function loadCustomers() {
-  const [customerResult, loyaltyResult] = await Promise.all([
+  const [customerResult, administratorResult] = await Promise.all([
     authRequest("/api/admin/customers"),
-    authRequest("/api/admin/loyalty"),
+    authRequest("/api/admin/administrators"),
   ]);
-  loyaltyAccounts = loyaltyResult.loyalty_accounts;
-  const loyaltyByUserId = new Map(
-    loyaltyAccounts.map((loyalty) => [loyalty.user_id, loyalty])
-  );
-  customers = customerResult.users.map((customer) => ({
-    ...customer,
-    loyalty: loyaltyByUserId.get(customer.id),
-  }));
+  customers = customerResult.users;
+  administrators = administratorResult.users;
   updateSummary();
   renderCustomers();
+  renderAdministrators();
+}
+
+
+function showAccountView(role) {
+  const showingAdministrators = role === "admin";
+
+  customerAccountsPanel.hidden = showingAdministrators;
+  administratorAccountsPanel.hidden = !showingAdministrators;
+  viewCustomersButton.classList.toggle("active", !showingAdministrators);
+  viewAdministratorsButton.classList.toggle("active", showingAdministrators);
+  viewCustomersButton.setAttribute("aria-selected", String(!showingAdministrators));
+  viewAdministratorsButton.setAttribute("aria-selected", String(showingAdministrators));
+  customerFormPanel.hidden = true;
+  showMessage("");
 }
 
 
@@ -366,6 +366,9 @@ customerForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const customerId = customerIdInput.value;
+  const role = accountRoleInput.value === "admin" ? "admin" : "customer";
+  const accountType = role === "admin" ? "Administrator" : "Customer";
+  const endpoint = role === "admin" ? "administrators" : "customers";
   const payload = {
     full_name: customerNameInput.value,
     email: customerEmailInput.value,
@@ -378,8 +381,8 @@ customerForm.addEventListener("submit", async (event) => {
   try {
     await authRequest(
       customerId
-        ? `/api/admin/customers/${customerId}`
-        : "/api/admin/customers",
+        ? `/api/admin/${endpoint}/${customerId}`
+        : `/api/admin/${endpoint}`,
       {
         method: customerId ? "PUT" : "POST",
         body: JSON.stringify(payload),
@@ -387,45 +390,10 @@ customerForm.addEventListener("submit", async (event) => {
     );
     customerFormPanel.hidden = true;
     await loadCustomers();
-    showMessage(customerId ? "Customer updated." : "Customer created.", true);
-  } catch (error) {
-    showMessage(error.message);
-  }
-});
-
-
-loyaltyAdjustmentForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const customerId = loyaltyCustomerId.value;
-  const pointsChange = Number(pointsChangeInput.value);
-  const reason = pointsReasonInput.value.trim();
-  const customer = customers.find((item) => String(item.id) === customerId);
-
-  if (!Number.isInteger(pointsChange) || pointsChange === 0) {
-    showMessage("Enter a whole number other than zero.");
-    return;
-  }
-
-  const actionText = pointsChange > 0
-    ? `Add ${pointsChange} points to ${customer.full_name}?`
-    : `Remove ${Math.abs(pointsChange)} points from ${customer.full_name}?`;
-
-  if (!window.confirm(actionText)) {
-    return;
-  }
-
-  try {
-    await authRequest(`/api/admin/loyalty/${customerId}/adjustments`, {
-      method: "POST",
-      body: JSON.stringify({
-        points_change: pointsChange,
-        reason,
-      }),
-    });
-    loyaltyAdjustmentPanel.hidden = true;
-    await loadCustomers();
-    showMessage("Loyalty points updated.", true);
+    showMessage(
+      customerId ? `${accountType} updated.` : `${accountType} created.`,
+      true
+    );
   } catch (error) {
     showMessage(error.message);
   }
@@ -522,14 +490,19 @@ for (const promptButton of document.querySelectorAll("[data-insight-question]"))
 }
 
 
-document.querySelector("#newCustomerButton").addEventListener("click", openCreateForm);
+document.querySelector("#newCustomerButton").addEventListener("click", () => {
+  openCreateForm("customer");
+});
+document.querySelector("#newAdministratorButton").addEventListener("click", () => {
+  openCreateForm("admin");
+});
+viewCustomersButton.addEventListener("click", () => showAccountView("customer"));
+viewAdministratorsButton.addEventListener("click", () => showAccountView("admin"));
 document.querySelector("#cancelCustomerButton").addEventListener("click", () => {
   customerFormPanel.hidden = true;
 });
-document.querySelector("#cancelLoyaltyButton").addEventListener("click", () => {
-  loyaltyAdjustmentPanel.hidden = true;
-});
 customerSearch.addEventListener("input", renderCustomers);
+administratorSearch.addEventListener("input", renderAdministrators);
 async function startAdminPage() {
   try {
     const sessionResult = await authRequest("/api/session");

@@ -948,6 +948,17 @@ def get_customers():
     return jsonify(result)
 
 
+@app.get("/api/admin/administrators")
+@admin_required
+def get_administrators():
+    try:
+        result = database_request("/internal/users?role=admin")
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result)
+
+
 @app.get("/api/admin/loyalty")
 @admin_required
 def get_all_loyalty_accounts():
@@ -1107,7 +1118,34 @@ def create_customer():
         result = database_request(
             "/internal/users",
             method="POST",
-            payload=data,
+            payload={
+                "full_name": data.get("full_name"),
+                "email": data.get("email"),
+                "password": data.get("password"),
+                "role": "customer",
+            },
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result), 201
+
+
+@app.post("/api/admin/administrators")
+@admin_required
+def create_administrator():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        result = database_request(
+            "/internal/users",
+            method="POST",
+            payload={
+                "full_name": data.get("full_name"),
+                "email": data.get("email"),
+                "password": data.get("password"),
+                "role": "admin",
+            },
         )
     except (HTTPError, URLError) as error:
         return database_error_response(error)
@@ -1137,6 +1175,41 @@ def update_customer(user_id):
         )
     except (HTTPError, URLError) as error:
         return database_error_response(error)
+
+    return jsonify(result)
+
+
+@app.put("/api/admin/administrators/<int:user_id>")
+@admin_required
+def update_administrator(user_id):
+    data = request.get_json(silent=True) or {}
+    allowed_changes = {
+        key: data[key]
+        for key in ("full_name", "email")
+        if key in data
+    }
+
+    try:
+        target_result = database_request(f"/internal/users/{user_id}")
+        if target_result["user"].get("role") != "admin":
+            return jsonify({"error": "Administrator not found."}), 404
+
+        result = database_request(
+            f"/internal/users/{user_id}",
+            method="PUT",
+            payload=allowed_changes,
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    if user_id == session["user"]["id"]:
+        updated_user = result["user"]
+        session["user"] = {
+            "id": updated_user["id"],
+            "email": updated_user["email"],
+            "full_name": updated_user["full_name"],
+            "role": updated_user["role"],
+        }
 
     return jsonify(result)
 

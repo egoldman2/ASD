@@ -207,6 +207,107 @@ def test_admin_can_read_customer_list(auth_module, monkeypatch):
     assert response.get_json()["count"] == 1
 
 
+def test_admin_can_read_and_create_administrators(auth_module, monkeypatch):
+    captured_create = {}
+
+    def administrator_request(path, method="GET", payload=None):
+        if path == "/internal/users/1":
+            return {"user": {
+                "id": 1,
+                "email": "admin@asd.local",
+                "full_name": "Marketplace Administrator",
+                "role": "admin",
+                "is_active": 1,
+            }}
+        if path == "/internal/users?role=admin":
+            return {
+                "count": 1,
+                "users": [{
+                    "id": 1,
+                    "email": "admin@asd.local",
+                    "full_name": "Marketplace Administrator",
+                    "role": "admin",
+                    "is_active": 1,
+                }],
+            }
+
+        captured_create.update({
+            "path": path,
+            "method": method,
+            "payload": payload,
+        })
+        return {"user": {
+            "id": 12,
+            "email": payload["email"],
+            "full_name": payload["full_name"],
+            "role": payload["role"],
+            "is_active": 1,
+        }}
+
+    monkeypatch.setattr(
+        auth_module,
+        "database_request",
+        administrator_request,
+    )
+
+    with auth_module.app.test_client() as client:
+        with client.session_transaction() as login_session:
+            login_session["user"] = {
+                "id": 1,
+                "email": "admin@asd.local",
+                "full_name": "Marketplace Administrator",
+                "role": "admin",
+            }
+
+        list_response = client.get("/api/admin/administrators")
+        create_response = client.post(
+            "/api/admin/administrators",
+            json={
+                "full_name": "Second Administrator",
+                "email": "second.admin@example.test",
+                "password": "AdminPassword!2026",
+                "role": "customer",
+            },
+        )
+
+    assert list_response.status_code == 200
+    assert list_response.get_json()["count"] == 1
+    assert create_response.status_code == 201
+    assert captured_create == {
+        "path": "/internal/users",
+        "method": "POST",
+        "payload": {
+            "full_name": "Second Administrator",
+            "email": "second.admin@example.test",
+            "password": "AdminPassword!2026",
+            "role": "admin",
+        },
+    }
+
+
+def test_customer_cannot_create_administrator(auth_module):
+    with auth_module.app.test_client() as client:
+        with client.session_transaction() as login_session:
+            login_session["user"] = {
+                "id": 2,
+                "email": "customer@asd.local",
+                "full_name": "Demo Customer",
+                "role": "customer",
+            }
+
+        response = client.post(
+            "/api/admin/administrators",
+            json={
+                "full_name": "Not Allowed",
+                "email": "not.allowed@example.test",
+                "password": "Password!2026",
+            },
+        )
+
+    assert response.status_code == 403
+    assert response.get_json()["error"] == "Administrator access required."
+
+
 def test_customer_can_only_request_own_loyalty_account(
     auth_module,
     monkeypatch,
@@ -366,6 +467,40 @@ def test_database_customer_crud_uses_soft_delete(database_module):
         delete_response = client.delete(f"/internal/users/{customer_id}")
         assert delete_response.status_code == 200
         assert delete_response.get_json()["user"]["is_active"] == 0
+
+
+def test_database_admin_creation_does_not_create_loyalty_account(database_module):
+    with database_module.app.test_client() as client:
+        create_response = client.post("/internal/users", json={
+            "email": "new.admin@example.test",
+            "full_name": "New Administrator",
+            "password": "AdminPassword!2026",
+            "role": "admin",
+        })
+
+        assert create_response.status_code == 201
+        administrator = create_response.get_json()["user"]
+        assert administrator["role"] == "admin"
+
+        loyalty_response = client.get(
+            f"/internal/loyalty/{administrator['id']}"
+        )
+        assert loyalty_response.status_code == 404
+
+
+def test_database_rejects_unknown_account_role(database_module):
+    with database_module.app.test_client() as client:
+        response = client.post("/internal/users", json={
+            "email": "unknown.role@example.test",
+            "full_name": "Unknown Role",
+            "password": "Password!2026",
+            "role": "superuser",
+        })
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == (
+        "Account role must be admin or customer."
+    )
 
 
 def test_database_seeds_ten_loyalty_accounts_and_transactions(database_module):

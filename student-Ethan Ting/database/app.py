@@ -190,8 +190,12 @@ def create_user():
     data = request.get_json(silent=True) or {}
     email = clean_text(data.get("email")).lower()
     full_name = clean_text(data.get("full_name"))
+    role = clean_text(data.get("role") or "customer").lower()
     supplied_password = data.get("password")
     password = supplied_password if isinstance(supplied_password, str) else ""
+
+    if role not in {"admin", "customer"}:
+        return jsonify({"error": "Account role must be admin or customer."}), 400
 
     if not valid_email(email):
         return jsonify({"error": "A valid email is required."}), 400
@@ -216,22 +220,24 @@ def create_user():
                 """
                 INSERT INTO users
                     (email, password_hash, full_name, role, is_active)
-                VALUES (?, ?, ?, 'customer', 1)
+                VALUES (?, ?, ?, ?, 1)
                 """,
                 (
                     email,
                     generate_password_hash(password),
                     full_name,
+                    role,
                 ),
             )
             user_id = cursor.lastrowid
-            connection.execute(
-                """
-                INSERT INTO loyalty_accounts (user_id, points_balance)
-                VALUES (?, 0)
-                """,
-                (user_id,),
-            )
+            if role == "customer":
+                connection.execute(
+                    """
+                    INSERT INTO loyalty_accounts (user_id, points_balance)
+                    VALUES (?, 0)
+                    """,
+                    (user_id,),
+                )
     except sqlite3.IntegrityError:
         return jsonify({"error": "That email is already in use."}), 409
 

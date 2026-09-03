@@ -1,13 +1,38 @@
 const SITE_NAVIGATION = [
   {key: "catalogue", label: "Catalogue", href: "http://localhost:8001"},
+  {
+    key: "inventory",
+    label: "Inventory",
+    href: "http://localhost:8002",
+    adminOnly: true,
+  },
+  {
+    key: "account-management",
+    label: "Accounts",
+    href: "http://localhost:8003/admin.html",
+    adminOnly: true,
+  },
+  {
+    key: "loyalty",
+    label: "Loyalty",
+    href: "http://localhost:8003/admin-loyalty.html",
+    adminOnly: true,
+  },
+  {
+    key: "order-returns",
+    label: "Orders & Returns",
+    href: "http://localhost:8004",
+    adminOnly: true,
+  },
   {key: "support", label: "Support", href: "http://localhost:8005"},
 ];
 
 const SITE_SECTION_BY_PORT = {
   "8000": "",
   "8001": "catalogue",
+  "8002": "inventory",
   "8003": "account",
-  "8004": "",
+  "8004": "order-returns",
   "8005": "support",
 };
 
@@ -58,6 +83,15 @@ installAuthenticatedSharedFetch();
 
 
 function currentSiteSection(fallbackSection) {
+  if (window.location.port === "8003") {
+    if (window.location.pathname.endsWith("/admin-loyalty.html")) {
+      return "loyalty";
+    }
+    if (window.location.pathname.endsWith("/admin.html")) {
+      return "account-management";
+    }
+  }
+
   if (Object.prototype.hasOwnProperty.call(SITE_SECTION_BY_PORT, window.location.port)) {
     return SITE_SECTION_BY_PORT[window.location.port];
   }
@@ -69,8 +103,11 @@ function currentSiteSection(fallbackSection) {
 function navigationLink(item, activeSection) {
   const activeClass = item.key === activeSection ? " active" : "";
   const currentPage = item.key === activeSection ? ' aria-current="page"' : "";
+  const adminOnlyAttributes = item.adminOnly
+    ? " data-admin-navigation hidden"
+    : "";
 
-  return `<a href="${item.href}" class="navLink${activeClass}"${currentPage}>${item.label}</a>`;
+  return `<a href="${item.href}" class="navLink${activeClass}"${currentPage}${adminOnlyAttributes}>${item.label}</a>`;
 }
 
 
@@ -104,19 +141,19 @@ function siteHeaderMarkup(activeSection) {
         <div class="accountMenu" data-account-menu>
           <button class="navLink accountMenuButton${accountActiveClass}" type="button" aria-expanded="false" aria-haspopup="true" data-account-trigger>
             <span class="accountMenuIcon" aria-hidden="true"></span>
-            <span>Account</span>
+            <span data-account-label>Account</span>
           </button>
           <div class="accountMenuPanel" aria-label="Account options">
             <div class="accountMenuHeader">
               <p class="accountMenuWelcome" data-account-welcome>Welcome to ASD 2026</p>
-              <div class="accountMenuActions">
+            <div class="accountMenuActions" data-account-actions>
                 <a class="accountMenuAction accountMenuActionPrimary" href="http://localhost:8003" data-account-sign-in>Sign in</a>
                 <a class="accountMenuAction accountMenuActionSecondary" href="http://localhost:8003/?view=register" data-account-register>Create account</a>
                 <a class="accountMenuAction accountMenuActionPrimary" href="http://localhost:8003/customer.html" data-account-primary hidden>My account</a>
                 <button class="accountMenuAction accountMenuActionSecondary" type="button" data-account-logout hidden>Log out</button>
               </div>
             </div>
-            <div class="accountMenuLinks">
+            <div class="accountMenuLinks" data-account-links>
               <a class="accountMenuItem" href="http://localhost:8003" data-account-profile data-account-authenticated-link hidden>
                 <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
                   <circle cx="12" cy="7" r="4"></circle>
@@ -124,14 +161,20 @@ function siteHeaderMarkup(activeSection) {
                 </svg>
                 <span>My account</span>
               </a>
-              <a class="accountMenuItem" href="http://localhost:8004" data-account-authenticated-link hidden>
+              <a class="accountMenuItem" href="http://localhost:8003/admin-loyalty.html" data-account-loyalty data-account-authenticated-link hidden>
+                <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3 15 9l6 .9-4.5 4.4 1.1 6.2L12 17.6l-5.6 2.9 1.1-6.2L3 9.9 9 9z"></path>
+                </svg>
+                <span>Loyalty management</span>
+              </a>
+              <a class="accountMenuItem" href="http://localhost:8004" data-account-orders data-account-authenticated-link hidden>
                 <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M4 7h16v14H4z"></path>
                   <path d="M7 3h10l3 4H4z"></path>
                 </svg>
                 <span>My orders</span>
               </a>
-              <a class="accountMenuItem" href="http://localhost:8004" data-account-authenticated-link hidden>
+              <a class="accountMenuItem" href="http://localhost:8004" data-account-returns data-account-authenticated-link hidden>
                 <svg class="accountMenuItemIcon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M4 7h16v14H4z"></path>
                   <path d="M7 3h10l3 4H4z"></path>
