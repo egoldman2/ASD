@@ -12,10 +12,28 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
   const searchInput = document.getElementById("searchInput");
   const filterBar = document.querySelector(".filterBar");
 
+  const productForm = document.getElementById("productForm");
+  const productIdField = document.getElementById("productId");
+  const nameField = document.getElementById("productName");
+  const categoryField = document.getElementById("productCategory");
+  const descriptionField = document.getElementById("productDescription");
+  const priceField = document.getElementById("productPrice");
+  const unitCostField = document.getElementById("productUnitCost");
+  const stockField = document.getElementById("productStock");
+  const supplierField = document.getElementById("productSupplier");
+  const reorderThresholdField = document.getElementById("productReorderThreshold");
+  const reorderQuantityField = document.getElementById("productReorderQuantity");
+  const cancelButton = document.getElementById("cancelProductButton");
+
   const aiForm = document.getElementById("aiForm");
   const aiQuestion = document.getElementById("aiQuestion");
   const aiOutput = document.getElementById("aiOutput");
   const askAiButton = document.getElementById("askAiButton");
+
+  const reorderForm = document.getElementById("reorderForm");
+  const reorderProductIdField = document.getElementById("reorderProductId");
+  const reorderProductNameDisplay = document.getElementById("reorderProductName");
+  const reorderQuantityInput = document.getElementById("reorderQuantityInput");
 
   let products = [];
   let suppliers = [];
@@ -80,6 +98,29 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     return response.json();
   }
 
+  async function saveProduct(payload, id) {
+    const url = id ? `${PRODUCTS_API}/${id}` : PRODUCTS_API;
+    const method = id ? "PUT" : "POST";
+
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to save product (${response.status})`);
+    }
+    return response.json();
+  }
+
+  async function deleteProduct(id) {
+    const response = await fetch(`${PRODUCTS_API}/${id}`, { method: "DELETE" });
+    if (!response.ok) {
+      throw new Error(`Failed to delete product (${response.status})`);
+    }
+  }
+
   async function askAssistant(message) {
     const response = await fetch(ASSISTANT_API, {
       method: "POST",
@@ -115,6 +156,11 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
 
     grid.innerHTML = list
       .map((product) => {
+        const belowThreshold = product.stock_quantity <= product.reorder_threshold;
+        const outOfStock = product.stock_quantity <= 0;
+        const suggestedReorder = product.reorder_quantity - product.stock_quantity;
+        const bufferRemaining = product.stock_quantity - product.reorder_threshold;
+
         return `
         <article class="productCard" data-id="${product.id}">
           <div class="productCardBody">
@@ -123,14 +169,97 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
               ${stockBadge(product)}
             </div>
             <p class="productMeta">${escapeHtml(product.category)} &middot; ${formatCurrency(product.price)}</p>
-            <p class="productMeta">Stock: ${escapeHtml(product.stock_quantity)} (reorder at ${escapeHtml(product.reorder_threshold)}, qty ${escapeHtml(product.reorder_quantity)})</p>
+            <p class="productMeta">Unit Cost: ${formatCurrency(product.unit_cost)}</p>
             <p class="productMeta">Supplier: ${escapeHtml(supplierName(product.supplier_id))}</p>
-            <p class="productMeta">${escapeHtml(formatDate(product.last_restocked_at))}</p>
+            <p class="productMeta">${escapeHtml(formatDate(product.last_restocked_at))}<br></p>
+
+            ${product.description ? `<p class="productDescription">${escapeHtml(product.description)}</p>` : ""}
+
+            <table class="stockTable">
+              <thead>
+                <tr>
+                  <th>Current</th>
+                  <th>Reorder At</th>
+                  <th>Target</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${escapeHtml(product.stock_quantity)}</td>
+                  <td>${escapeHtml(product.reorder_threshold)}</td>
+                  <td>${escapeHtml(product.reorder_quantity)}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            ${outOfStock
+              ? `<p class="productMeta priorityReorderNotice">Priority Reorder: ${escapeHtml(suggestedReorder)} units (${formatCurrency(suggestedReorder * product.unit_cost)})</p>`
+              : belowThreshold
+                ? `<p class="productMeta reorderNotice">Suggested reorder: ${escapeHtml(suggestedReorder)} units (${formatCurrency(suggestedReorder * product.unit_cost)})</p>`
+                : `<p class="productMeta inStockNotice">Reorder In: ${escapeHtml(bufferRemaining)} units</p>`}
+
+          </div>
+          <div class="productCardActions">
+            <button type="button" class="filterButton reorderProductButton${outOfStock ? " reorderProductButton--urgent" : belowThreshold ? " reorderProductButton--due" : ""}" data-id="${product.id}">Reorder</button>
+            <button type="button" class="filterButton editProductButton" data-id="${product.id}">Edit</button>
+            <button type="button" class="filterButton deleteProductButton" data-id="${product.id}">Delete</button>
           </div>
         </article>
       `;
       })
       .join("");
+  }
+
+  function populateSupplierSelect() {
+    if (!supplierField) return;
+
+    const current = supplierField.value;
+    supplierField.innerHTML =
+      '<option value="">Unassigned</option>' +
+      suppliers.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
+    supplierField.value = current;
+  }
+
+  function fillReorderForm(product) {
+    if (!reorderForm) return;
+    reorderProductIdField.value = product.id;
+    reorderProductNameDisplay.textContent = product.name;
+
+    const suggested = Math.max(product.reorder_quantity - product.stock_quantity, 1);
+    reorderQuantityInput.value = suggested;
+    reorderUnitCost = product.unit_cost || 0;
+    updateReorderCostDisplay();
+
+    const detailsEl = reorderForm.closest("details");
+    if (detailsEl) detailsEl.open = true;
+  }
+
+  function fillForm(product) {
+    if (!productForm) return;
+
+    productIdField.value = product.id;
+    nameField.value = product.name || "";
+    categoryField.value = product.category || "";
+    descriptionField.value = product.description || "";
+    priceField.value = product.price ?? "";
+
+    if (unitCostField) unitCostField.value = product.unit_cost ?? "";
+
+    stockField.value = product.stock_quantity ?? "";
+    supplierField.value = product.supplier_id || "";
+    reorderThresholdField.value = product.reorder_threshold ?? 10;
+    reorderQuantityField.value = product.reorder_quantity ?? 50;
+
+    const detailsEl = productForm.closest("details");
+    if (detailsEl) detailsEl.open = true;
+  }
+
+  function resetForm() {
+    if (!productForm) return;
+      productForm.reset();
+      productIdField.value = "";
+      reorderThresholdField.value = 10;
+      reorderQuantityField.value = 50;
   }
 
   async function loadProducts(search, filter) {
@@ -146,13 +275,14 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     }
   }
 
-  async function loadSuppliers() {
+  async function loadSuppliersForSelect() {
     try {
       const data = await fetchSuppliers();
       suppliers = Array.isArray(data) ? data : data.suppliers || [];
+      populateSupplierSelect();
     } catch (err) {
-      // Non-fatal: product cards just show "Unassigned" if this fails
-      console.error("Could not load suppliers:", err);
+      // Non-fatal: product list/cards still work without the dropdown populated
+      console.error("Could not load suppliers for dropdown:", err);
     }
   }
 
@@ -171,6 +301,92 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
 
     currentFilter = button.dataset.filter;
     loadProducts(currentSearch, currentFilter);
+  });
+
+  productForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearNotice();
+
+    const payload = {
+      name: nameField.value.trim(),
+      category: categoryField.value.trim(),
+      description: descriptionField.value.trim() || null,
+      price: Number(priceField.value),
+      unit_cost: unitCostField ? Number(unitCostField.value) || 0 : 0,
+      stock_quantity: Number(stockField.value),
+      supplier_id: supplierField.value || null,
+      reorder_threshold: Number(reorderThresholdField.value) || 0,
+      reorder_quantity: Number(reorderQuantityField.value) || 0,
+    };
+
+    if (!payload.name || !payload.category) {
+      showNotice("Product name and category are required.", true);
+      return;
+    }
+    if (!Number.isFinite(payload.price) || payload.price < 0) {
+      showNotice("Enter a valid, non-negative price.", true);
+      return;
+    }
+    if (!Number.isFinite(payload.stock_quantity) || payload.stock_quantity < 0) {
+      showNotice("Enter a valid, non-negative stock quantity.", true);
+      return;
+    }
+
+    const id = productIdField.value || null;
+
+    try {
+      await saveProduct(payload, id);
+      showNotice(id ? "Product updated." : "Product added.", false);
+      resetForm();
+      loadProducts(currentSearch, currentFilter);
+    } catch (err) {
+      showNotice(err.message || "Could not save product.", true);
+    }
+  });
+
+  cancelButton?.addEventListener("click", () => {
+    resetForm();
+    clearNotice();
+  });
+
+  grid?.addEventListener("click", async (event) => {
+    const editBtn = event.target.closest(".editProductButton");
+    const deleteBtn = event.target.closest(".deleteProductButton");
+    const reorderBtn = event.target.closest(".reorderProductButton");
+
+    if (reorderBtn) {
+      const id = reorderBtn.dataset.id;
+      const product = products.find((p) => String(p.id) === String(id));
+      if (product) {
+        fillReorderForm(product);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (editBtn) {
+      const id = editBtn.dataset.id;
+      const product = products.find((p) => String(p.id) === String(id));
+      if (product) {
+        fillForm(product);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (deleteBtn) {
+      const id = deleteBtn.dataset.id;
+      const confirmed = window.confirm("Delete this product?");
+      if (!confirmed) return;
+
+      try {
+        await deleteProduct(id);
+        showNotice("Product deleted.", false);
+        loadProducts(currentSearch, currentFilter);
+      } catch (err) {
+        showNotice(err.message || "Could not delete product.", true);
+      }
+    }
   });
 
   aiForm?.addEventListener("submit", async (event) => {
@@ -195,8 +411,61 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     }
   });
 
+  reorderForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearNotice();
+
+    const id = reorderProductIdField.value;
+    const product = products.find((p) => String(p.id) === String(id));
+    if (!product) {
+      showNotice("Could not find that product.", true);
+      return;
+    }
+
+    const amount = Number(reorderQuantityInput.value);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      showNotice("Enter a valid quantity greater than zero.", true);
+      return;
+    }
+
+    const payload = {
+      name: product.name,
+      category: product.category,
+      description: product.description,
+      price: product.price,
+      unit_cost: product.unit_cost,
+      stock_quantity: product.stock_quantity + amount,
+      supplier_id: product.supplier_id,
+      reorder_threshold: product.reorder_threshold,
+      reorder_quantity: product.reorder_quantity,
+    };
+
+  try {
+    await saveProduct(payload, id);
+    showNotice(`${product.name} restocked (+${amount} units).`, false);
+    reorderForm.reset();
+    reorderProductNameDisplay.textContent = "";
+    reorderCostDisplay.textContent = "";
+    reorderUnitCost = 0;
+    loadProducts(currentSearch, currentFilter);
+  } catch (err) {
+    showNotice(err.message || "Could not process reorder.", true);
+  }
+  });
+
+  let reorderUnitCost = 0;
+
+  function updateReorderCostDisplay() {
+    if (!reorderCostDisplay) return;
+    const qty = Number(reorderQuantityInput.value) || 0;
+    reorderCostDisplay.textContent = formatCurrency(qty * reorderUnitCost);
+  }
+
+  const reorderCostDisplay = document.getElementById("reorderCostDisplay");
+  reorderQuantityInput?.addEventListener("input", updateReorderCostDisplay);
+
   document.addEventListener("DOMContentLoaded", async () => {
-    await loadSuppliers();
+    await loadSuppliersForSelect();
     loadProducts("", "all");
   });
 })();

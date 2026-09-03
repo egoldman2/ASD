@@ -24,6 +24,7 @@ def _row_to_dict(row):
         "category": row["category"],
         "description": row["description"],
         "price": row["price"],
+        "unit_cost": row["unit_cost"],
         "stock_quantity": row["stock_quantity"],
         "status": row["status"],
         "supplier_id": row["supplier_id"],
@@ -46,6 +47,11 @@ def _validate_payload(payload, partial=False):
         price = payload.get("price")
         if not isinstance(price, (int, float)) or price < 0:
             abort(400, description="Price must be a non-negative number")
+
+    if "unit_cost" in payload and payload["unit_cost"] is not None:
+        unit_cost = payload["unit_cost"]
+        if not isinstance(unit_cost, (int, float)) or unit_cost < 0:
+            abort(400, description="Unit cost must be a non-negative number")
 
     if not partial or "stock_quantity" in payload:
         stock = payload.get("stock_quantity")
@@ -74,7 +80,9 @@ def list_products():
         conditions.append("LOWER(p.name) LIKE LOWER(?)")
         params.append(f"%{search}%")
 
-    if stock_filter == "low_stock":
+    if stock_filter == "in_stock":
+        conditions.append("p.stock_quantity > p.reorder_threshold")
+    elif stock_filter == "low_stock":
         conditions.append("p.stock_quantity > 0 AND p.stock_quantity <= p.reorder_threshold")
     elif stock_filter == "out_of_stock":
         conditions.append("p.stock_quantity <= 0")
@@ -84,9 +92,9 @@ def list_products():
     with closing(get_connection()) as db:
         rows = db.execute(
             f"""
-            SELECT p.id, p.name, p.category, p.description, p.price, p.stock_quantity,
-                   p.status, p.supplier_id, p.reorder_threshold, p.reorder_quantity,
-                   p.last_restocked_at
+            SELECT p.id, p.name, p.category, p.description, p.price, p.unit_cost,
+                   p.stock_quantity, p.status, p.supplier_id, p.reorder_threshold,
+                   p.reorder_quantity, p.last_restocked_at
             FROM products p
             {where_clause}
             ORDER BY p.name ASC
@@ -103,7 +111,7 @@ def get_product(product_id):
     with closing(get_connection()) as db:
         row = db.execute(
             """
-            SELECT id, name, category, description, price, stock_quantity,
+            SELECT id, name, category, description, price, unit_cost, stock_quantity,
                    status, supplier_id, reorder_threshold, reorder_quantity, last_restocked_at
             FROM products WHERE id = ?
             """,
@@ -119,7 +127,7 @@ def get_product(product_id):
 @products_blueprint.post("")
 def create_product():
     """POST /api/inventory/products
-    Body: { name, category, description?, price, stock_quantity,
+    Body: { name, category, description?, price, unit_cost?, stock_quantity,
             supplier_id?, reorder_threshold?, reorder_quantity? }
     status is derived server-side from stock_quantity.
     last_restocked_at is left NULL on creation.
@@ -134,16 +142,17 @@ def create_product():
             cursor = db.execute(
                 """
                 INSERT INTO products (
-                    name, category, description, price, stock_quantity, status,
+                    name, category, description, price, unit_cost, stock_quantity, status,
                     supplier_id, reorder_threshold, reorder_quantity, last_restocked_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)
                 """,
                 (
                     payload["name"].strip(),
                     payload["category"].strip(),
                     payload.get("description"),
                     payload["price"],
+                    payload.get("unit_cost", 0),
                     payload["stock_quantity"],
                     status,
                     payload.get("supplier_id"),
@@ -158,7 +167,7 @@ def create_product():
 
         row = db.execute(
             """
-            SELECT id, name, category, description, price, stock_quantity,
+            SELECT id, name, category, description, price, unit_cost, stock_quantity,
                    status, supplier_id, reorder_threshold, reorder_quantity, last_restocked_at
             FROM products WHERE id = ?
             """,
@@ -194,7 +203,7 @@ def update_product(product_id):
                 db.execute(
                     """
                     UPDATE products
-                    SET name = ?, category = ?, description = ?, price = ?,
+                    SET name = ?, category = ?, description = ?, price = ?, unit_cost = ?,
                         stock_quantity = ?, status = ?, supplier_id = ?,
                         reorder_threshold = ?, reorder_quantity = ?,
                         last_restocked_at = datetime('now')
@@ -205,6 +214,7 @@ def update_product(product_id):
                         payload["category"].strip(),
                         payload.get("description"),
                         payload["price"],
+                        payload.get("unit_cost", 0),
                         payload["stock_quantity"],
                         status,
                         payload.get("supplier_id"),
@@ -217,7 +227,7 @@ def update_product(product_id):
                 db.execute(
                     """
                     UPDATE products
-                    SET name = ?, category = ?, description = ?, price = ?,
+                    SET name = ?, category = ?, description = ?, price = ?, unit_cost = ?,
                         stock_quantity = ?, status = ?, supplier_id = ?,
                         reorder_threshold = ?, reorder_quantity = ?
                     WHERE id = ?
@@ -227,6 +237,7 @@ def update_product(product_id):
                         payload["category"].strip(),
                         payload.get("description"),
                         payload["price"],
+                        payload.get("unit_cost", 0),
                         payload["stock_quantity"],
                         status,
                         payload.get("supplier_id"),
@@ -242,7 +253,7 @@ def update_product(product_id):
 
         row = db.execute(
             """
-            SELECT id, name, category, description, price, stock_quantity,
+            SELECT id, name, category, description, price, unit_cost, stock_quantity,
                    status, supplier_id, reorder_threshold, reorder_quantity, last_restocked_at
             FROM products WHERE id = ?
             """,

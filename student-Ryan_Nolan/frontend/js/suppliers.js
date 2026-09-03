@@ -121,6 +121,9 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     emailField.value = supplier.email || "";
     phoneField.value = supplier.phone || "";
     addressField.value = supplier.address || "";
+
+    const detailsEl = supplierForm.closest("details");
+    if (detailsEl) detailsEl.open = true;
   }
 
   function resetForm() {

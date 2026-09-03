@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 from contextlib import closing
@@ -10,9 +11,8 @@ from ryan_init_db import get_connection
 
 assistant_blueprint = Blueprint("assistant_blueprint", __name__, url_prefix="/api/inventory/assistant")
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "llama3.1:8b" 
-
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434") + "/api/generate"
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:0.5b") # "llama3.1:8b" 
 
 def _build_low_stock_context():
     """Pulls current low-stock / out-of-stock products to ground the
@@ -74,9 +74,15 @@ def ask_assistant():
 
     prompt = (
         "You are a restocking assistant for an inventory management system.\n"
-        "Use ONLY the data below to answer. Be concise and specific about "
-        "product names and quantities. If the question can't be answered "
-        "from this data, say so.\n\n"
+        "Do NOT add an introduction or outro - reply straight to the point.\n"
+        "Use ONLY the data below to answer. Do not repeat yourself or add any "
+        "labels, headings, or explanations — output ONLY the list below, "
+        "nothing before or after it.\n"
+        "One line per relevant product, exactly like this example "
+        "(replace the values, keep the format identical):\n"
+        "- Product Name: 12 -> 50 (+38)\n"
+        "If the question can't be answered from this data, reply with a "
+        "single sentence and no list.\n\n"
         f"Current low/out-of-stock products:\n{context}\n\n"
         f"Question: {message}\n"
     )
@@ -88,5 +94,7 @@ def ask_assistant():
 
     if not reply:
         reply = "The assistant didn't return a response. Please try again."
+    else:
+        reply = reply.replace("**", "")
 
     return jsonify({"reply": reply})
