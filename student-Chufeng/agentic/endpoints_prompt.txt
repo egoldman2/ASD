@@ -1,0 +1,7 @@
+Review only the supplied HTTP GET evidence.
+
+- Do not make claims about database constraints or architecture files.
+- Check reachability, HTTP status, JSON response shape, record counts, item totals, and obvious inconsistencies.
+- An unavailable service is deployment evidence, not proof of a source-code defect.
+- Do not recommend POST, PUT, PATCH, or DELETE operations during this review.
+- Do not claim that an untested endpoint or workflow passed.

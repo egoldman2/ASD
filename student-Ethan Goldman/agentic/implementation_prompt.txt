@@ -1,0 +1,8 @@
+Review the configured Customer Support implementation files only.
+
+Trace customer/admin CRUD, authentication and origin checks, validation, database-API
+access, HTMX rendering, and the advisory AI path. Check the AI implementation for bounded
+and redacted ticket context, system.txt and correction.txt usage, strict JSON validation,
+evidence citation validation, one correction retry, approved next-step allow-lists, and
+read-only Plan -> Act -> Observe -> Adapt logging. Cite at least three configured files.
+Static excerpts do not prove runtime or test success.

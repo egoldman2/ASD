@@ -1,0 +1,11 @@
+Review only the supplied read-only HTTP GET evidence.
+
+- Do not make claims about database constraints, frontend appearance, POST/PUT/DELETE behaviour, or source files.
+- Compare every observed status with its configured `expected_status`.
+- Treat HTTP 200 as expected for `/health` and `/ready` when the service and database are available.
+- Treat HTTP 401 as expected for signed-out access to `/api/session`, `/api/profile`, `/api/loyalty`, `/api/loyalty/history`, `/api/admin/customers`, and `/api/admin/loyalty`.
+- An expected 401 is evidence that a route rejected an unauthenticated request; it is not an endpoint failure.
+- A 401 check does not prove that a correctly authenticated customer or administrator can complete the workflow.
+- An unavailable service is deployment evidence, not proof of a source-code defect.
+- Do not recommend or perform POST, PUT, PATCH, or DELETE requests during this review.
+- Do not claim that untested CRUD, role-based access, profile updates, or points adjustments passed.

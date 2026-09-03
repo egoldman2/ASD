@@ -1,0 +1,36 @@
+{
+  "feature_name": "Chufeng - Product Catalogue and Shopping Cart",
+  "prompt_file": "review_prompt.txt",
+  "mode_prompt_files": {
+    "database": "database_prompt.txt",
+    "endpoints": "endpoints_prompt.txt",
+    "architecture": "architecture_prompt.txt"
+  },
+  "database": "student-Chufeng/database/products.db",
+  "endpoints": [
+    {
+      "name": "Product Catalogue API",
+      "url": "http://localhost:5000/api/products"
+    },
+    {
+      "name": "Shopping Cart API",
+      "url": "http://localhost:5000/api/cart-items"
+    }
+  ],
+  "architecture_files": [
+    "app.py",
+    "docker-compose.yml",
+    "student-Chufeng/Dockerfile",
+    "student-Chufeng/database/schema.sql",
+    "student-Chufeng/frontend/index.html",
+    "student-Chufeng/frontend/js/products.js",
+    "student-Chufeng/backend/routes/product_routes.py",
+    "student-Chufeng/backend/routes/cart_routes.py",
+    "student-Chufeng/backend/routes/ai_routes.py",
+    "student-Chufeng/backend/controllers/product_controller.py",
+    "student-Chufeng/backend/controllers/cart_controller.py",
+    "student-Chufeng/backend/controllers/ai_controller.py",
+    "student-Chufeng/backend/models/product_model.py",
+    "student-Chufeng/backend/models/cart_model.py"
+  ]
+}

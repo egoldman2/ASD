@@ -1,0 +1,51 @@
+<section id="ticket-detail-region" class="customerTicketDetail" aria-live="polite" aria-labelledby="customer-ticket-subject">
+  <div class="customerTicketDetail__heading">
+    <div>
+      <p class="customerTicketDetail__eyebrow">Ticket #{{ ticket.id }}</p>
+      <h3 id="customer-ticket-subject" class="customerTicketDetail__subject">{{ ticket.subject or 'Support conversation' }}</h3>
+    </div>
+    <a class="button button--secondary customerTicketDetail__close" href="#my-tickets-title"
+      hx-get="/api/support/ui/customer/ticket-detail"
+      hx-target="#ticket-detail-region"
+      hx-swap="outerHTML">Back to list</a>
+  </div>
+  <p class="customerTicketDetail__status ticketStatus ticketStatus--{{ ticket.status if ticket.status in ('open', 'pending', 'solved') else 'open' }}">
+    {{ (ticket.status or 'In progress')|replace('_', ' ')|title }}
+  </p>
+  <dl class="customerTicketDetail__metadata">
+    <div><dt>Created</dt><dd>{{ ticket.created_at or 'Not available' }}</dd></div>
+    <div><dt>Last updated</dt><dd>{{ ticket.updated_at or ticket.created_at or 'Not available' }}</dd></div>
+  </dl>
+  <section class="customerConversation" aria-labelledby="customer-conversation-title">
+    <h4 id="customer-conversation-title" class="customerConversation__title">Conversation</h4>
+    <ol class="messageThread">
+      {% for message in ticket.messages or [] %}
+      {% set sender = 'customer' if message.sender_role == 'customer' else 'staff' %}
+      <li class="messageThread__item messageThread__item--{{ sender }}">
+        <div class="messageThread__meta">
+          <strong>{{ 'You' if sender == 'customer' else 'Support team' }}</strong>
+          <span>{{ 'Your message' if sender == 'customer' else 'Support reply' }}</span>
+          {% if message.created_at %}<time datetime="{{ message.created_at }}">{{ message.created_at }}</time>{% endif %}
+        </div>
+        <p>{{ message.message or '' }}</p>
+      </li>
+      {% else %}
+      <li class="messageThread__empty">No messages in this conversation yet.</li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% if notice %}<div class="customerFeedback customerFeedback--success" role="status"><strong>Reply sent</strong><span>{{ notice }}</span></div>{% endif %}
+  {% if error %}<div class="customerFeedback customerFeedback--validation" role="alert"><strong>Reply needs attention</strong><span>{{ error }}</span></div>{% endif %}
+  <form class="messageComposer customerReplyForm" novalidate
+    hx-post="/api/support/ui/customer/tickets/{{ ticket.id }}/messages"
+    hx-target="#ticket-detail-region"
+    hx-swap="outerHTML"
+    hx-disabled-elt="find button">
+    <label for="customer-reply-{{ ticket.id }}">Reply to support</label>
+    <textarea id="customer-reply-{{ ticket.id }}" name="message" rows="4" maxlength="2000" required></textarea>
+    <div class="messageComposer__actions">
+      <button class="button" type="submit">Send reply</button>
+      <span class="htmx-indicator customerLoading" role="status">Sending…</span>
+    </div>
+  </form>
+</section>

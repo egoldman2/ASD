@@ -1,0 +1,93 @@
+{
+  "feature_name": "Ethan Ting - Customer Accounts and Loyalty",
+  "prompt_file": "review_prompt.txt",
+  "mode_prompt_files": {
+    "database": "database_prompt.txt",
+    "endpoints": "endpoints_prompt.txt",
+    "architecture": "architecture_prompt.txt"
+  },
+  "database": "student-Ethan Ting/database/users.db",
+  "database_rules": {
+    "required_tables": [
+      "users",
+      "loyalty_accounts",
+      "loyalty_transactions"
+    ],
+    "minimum_records": {
+      "users": 10,
+      "loyalty_accounts": 10,
+      "loyalty_transactions": 10
+    },
+    "foreign_key_tables": [
+      "loyalty_accounts",
+      "loyalty_transactions"
+    ],
+    "redacted_columns": {
+      "users": [
+        "password_hash"
+      ]
+    }
+  },
+  "endpoints": [
+    {
+      "name": "Customer service health",
+      "url": "http://localhost:6002/health",
+      "expected_status": 200
+    },
+    {
+      "name": "Customer service readiness",
+      "url": "http://localhost:6002/ready",
+      "expected_status": 200
+    },
+    {
+      "name": "Signed-out session protection",
+      "url": "http://localhost:6002/api/session",
+      "expected_status": 401
+    },
+    {
+      "name": "Customer profile protection",
+      "url": "http://localhost:6002/api/profile",
+      "expected_status": 401
+    },
+    {
+      "name": "Customer loyalty protection",
+      "url": "http://localhost:6002/api/loyalty",
+      "expected_status": 401
+    },
+    {
+      "name": "Customer loyalty history protection",
+      "url": "http://localhost:6002/api/loyalty/history",
+      "expected_status": 401
+    },
+    {
+      "name": "Administrator customer-list protection",
+      "url": "http://localhost:6002/api/admin/customers",
+      "expected_status": 401
+    },
+    {
+      "name": "Administrator loyalty-list protection",
+      "url": "http://localhost:6002/api/admin/loyalty",
+      "expected_status": 401
+    }
+  ],
+  "architecture_files": [
+    "docker-compose.yml",
+    "student-Ethan Ting/Dockerfile",
+    "student-Ethan Ting/backend/app.py",
+    "student-Ethan Ting/database/app.py",
+    "student-Ethan Ting/database/init_db.py",
+    "student-Ethan Ting/database/schema.sql",
+    "student-Ethan Ting/frontend/index.html",
+    "student-Ethan Ting/frontend/customer.html",
+    "student-Ethan Ting/frontend/admin.html",
+    "student-Ethan Ting/frontend/js/login.js",
+    "student-Ethan Ting/frontend/js/customer.js",
+    "student-Ethan Ting/frontend/js/admin.js",
+    "student-Ethan Ting/tests/test_login_system.py",
+    "student-Ethan Ting/tests/test_loyalty_edge_cases.py",
+    "student-Ethan Ting/tests/test_customer_insight_ai.py",
+    "student-Ethan Ting/agentic/customer_insight_prompt.txt",
+    "ai-services/agentic_loop.py",
+    "ai-services/ollama/README.md"
+  ]
+}

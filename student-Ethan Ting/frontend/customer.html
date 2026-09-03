@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Account | ASD 2026</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+    <link rel="stylesheet" href="css/dashboard.css?v=5">
+    <script src="http://localhost:8000/js/site-header.js?v=5" defer></script>
+    <script src="http://localhost:8000/js/account-menu.js?v=7" defer></script>
+    <script src="js/customer.js?v=6" defer></script>
+  </head>
+
+  <body>
+    <header class="navbar appleNav" data-site-header data-active="account"></header>
+
+    <main class="dashboardPage customerPage">
+      <section class="dashboardHero">
+        <div>
+          <h1 id="customerGreeting">Welcome</h1>
+          <p class="dashboardDescription">
+            Manage your profile and continue shopping from one simple account page.
+          </p>
+        </div>
+      </section>
+
+      <section class="dashboardGrid">
+        <article class="dashboardPanel" aria-labelledby="profileTitle">
+          <div class="panelHeading">
+            <h2 id="profileTitle">Profile</h2>
+          </div>
+
+          <form id="profileForm" class="detailsForm">
+            <div class="formField">
+              <label for="profileName">Full name</label>
+              <input id="profileName" name="full_name" type="text" maxlength="100" required>
+            </div>
+
+            <div class="formField">
+              <label for="profileEmail">Email address</label>
+              <input id="profileEmail" name="email" type="email" maxlength="254" required>
+            </div>
+
+            <div class="formActions">
+              <button class="primaryButton" type="submit">Save changes</button>
+            </div>
+          </form>
+
+          <p id="profileMessage" class="dashboardMessage" aria-live="polite"></p>
+        </article>
+
+        <article class="dashboardPanel" aria-labelledby="loyaltyTitle">
+          <div class="panelHeading">
+            <div>
+              <p class="dashboardEyebrow">Loyalty rewards</p>
+              <h2 id="loyaltyTitle">Your membership</h2>
+            </div>
+            <span id="loyaltyTierBadge" class="loyaltyTierBadge">Loading</span>
+          </div>
+
+          <div class="loyaltyOverview">
+            <div class="loyaltyStat">
+              <span class="summaryLabel">Available points</span>
+              <strong id="loyaltyPoints">0</strong>
+            </div>
+            <div class="loyaltyProgressArea">
+              <div class="loyaltyProgressText">
+                <span id="loyaltyProgressMessage">Loading your loyalty details...</span>
+                <span id="loyaltyProgressCount"></span>
+              </div>
+              <progress id="loyaltyProgress" class="loyaltyProgress" value="0" max="500"></progress>
+            </div>
+          </div>
+
+          <h3 class="sectionHeading">Recent points activity</h3>
+          <div class="tableWrapper">
+            <table class="dataTable loyaltyHistoryTable">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Reason</th>
+                  <th scope="col">Points</th>
+                </tr>
+              </thead>
+              <tbody id="loyaltyHistoryBody">
+                <tr>
+                  <td colspan="3">Loading points activity...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p id="loyaltyMessage" class="dashboardMessage" aria-live="polite"></p>
+        </article>
+
+      </section>
+    </main>
+
+    <footer class="footer">asd(2026)-group7</footer>
+  </body>
+</html>
