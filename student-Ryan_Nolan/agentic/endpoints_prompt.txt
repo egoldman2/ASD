@@ -1,0 +1,4 @@
+Base your review strictly on the HTTP GET evidence provided, and never report an endpoint or flow as passing if it was not actually exercised.
+- Assess reachability and status codes first, then move to JSON structure, returned record counts, stock figures, and any visible inconsistencies such as low-stock filter results.
+- A service that cannot be reached is a deployment issue, not proof of a source-code bug — say so explicitly rather than implying the code itself is broken.
+- Do not draw conclusions about database constraints or architecture files, and do not suggest running POST, PUT, PATCH, or DELETE requests as part of this review.

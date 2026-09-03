@@ -1,0 +1,34 @@
+{
+  "feature_name": "Ryan_Nolan - Inventory Management and Suppliers",
+  "prompt_file": "review_prompt.txt",
+  "mode_prompt_files": {
+    "database": "database_prompt.txt",
+    "endpoints": "endpoints_prompt.txt",
+    "architecture": "architecture_prompt.txt"
+  },
+  "database": "student-Ryan_Nolan/database/products.db",
+  "endpoints": [
+    {
+      "name": "Inventory Products API",
+      "url": "http://localhost:8002/api/inventory/products"
+    },
+    {
+      "name": "Suppliers API",
+      "url": "http://localhost:8002/api/inventory/suppliers"
+    }
+  ],
+  "architecture_files": [
+    "app.py",
+    "docker-compose.yml",
+    "student-Ryan_Nolan/Dockerfile",
+    "student-Ryan_Nolan/app.py",
+    "student-Ryan_Nolan/database/ryan_init_db.py",
+    "student-Ryan_Nolan/database/schema.sql",
+    "student-Ryan_Nolan/frontend/index.html",
+    "student-Ryan_Nolan/frontend/suppliers.html",
+    "student-Ryan_Nolan/frontend/js/inventory.js",
+    "student-Ryan_Nolan/backend/products.py",
+    "student-Ryan_Nolan/backend/suppliers.py",
+    "student-Ryan_Nolan/backend/assistant.py"
+  ]
+}
