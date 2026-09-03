@@ -253,7 +253,7 @@ def orders_html():
             (owner_id,),
         ).fetchall()
     conn.close()
-    html = "<table><tr><th>ID</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th></tr>"
+    html = "<table><tr><th>Order ID</th><th>Customer ID</th><th>Date</th><th>Status</th><th>Total</th></tr>"
     for r in rows:
         html += (f"<tr><td>{r['order_id']}</td><td>{r['customer_id']}</td>"
                  f"<td>{r['order_date'][:10]}</td><td>{r['status'].capitalize()}</td><td>${r['total']}</td></tr>")
@@ -282,7 +282,7 @@ def returns_html():
             (owner_id,),
         ).fetchall()
     conn.close()
-    html = "<table><tr><th>ID</th><th>Order</th><th>Reason</th><th>Status</th></tr>"
+    html = "<table><tr><th>Return ID</th><th>Order ID</th><th>Reason</th><th>Status</th></tr>"
     for r in rows:
         html += (f"<tr><td>{r['return_id']}</td><td>{r['order_id']}</td>"
                  f"<td>{r['reason'].capitalize()}</td><td>{r['status'].capitalize()}</td></tr>")
