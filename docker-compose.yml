@@ -68,6 +68,7 @@ services:
       CART_DATABASE_PATH: /data/customer_carts.db
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
+      - ./student-Ryan_Nolan/database:/app/student-Ryan_Nolan/database
       - customer-cart-data:/data
     depends_on:
       ollama-init:
@@ -212,6 +213,17 @@ services:
       timeout: 3s
       start_period: 15s
       retries: 5
+
+  inventory-frontend:
+    build:
+      context: .
+      dockerfile: student-Ryan_Nolan/Dockerfile
+      target: frontend
+    ports:
+      - "8002:80"
+    depends_on:
+      shared-backend:
+        condition: service_healthy
 
 volumes:
   ethan-user-data:

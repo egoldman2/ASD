@@ -97,10 +97,29 @@ def create_app():
     order_routes = import_module(
         "student-Howard.backend.routes.order_routes"
     )
+
+
+    inventory_routes = import_module(
+        "student-Ryan_Nolan.backend.routes.products"
+    )
+    supplier_routes = import_module(
+        "student-Ryan_Nolan.backend.routes.suppliers"
+    )
+    assistant_routes = import_module(
+        "student-Ryan_Nolan.backend.routes.assistant"
+    )
+
+    app.register_blueprint(inventory_routes.products_blueprint)
+    app.register_blueprint(supplier_routes.suppliers_blueprint)
+    app.register_blueprint(assistant_routes.assistant_blueprint)
+
+
     app.register_blueprint(product_routes.product_blueprint)
     app.register_blueprint(customer_cart.cart_blueprint)
     app.register_blueprint(ai_routes.ai_blueprint)
     app.register_blueprint(order_routes.order_blueprint)
+
+
 
     @app.before_request
     def protect_private_apis():

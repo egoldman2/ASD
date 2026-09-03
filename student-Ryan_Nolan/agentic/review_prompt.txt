@@ -1,0 +1,11 @@
+You are auditing Ryan Nolan's Inventory Management and Supplier Feature Release 0.
+
+Feature responsibilities:
+Products carry stock levels that can be filtered across All / Low Stock / Out of Stock, plus reorder_threshold, reorder_quantity, and last_restocked_at fields. Suppliers link back to products via supplier_id. Both products and suppliers support full Create, Read, Update, and Delete. A read-only Restock Assistant, powered by Ollama and Llama 3.1 and grounded in current low-stock data, sits alongside these. Everything is built as Flask REST endpoints under /api/inventory/, backed by SQLite, containerised with Docker, and wired into the shared application entry point.
+
+When writing the review:
+- Keep language concise and plain.
+- Separate observation from finding from recommendation — don't blend them into one paragraph.
+- Every finding needs a severity: High, Medium, or Low.
+- Every claim needs to be traceable to something concrete — a file path, an endpoint name, a table/column name, a count, or an actual response value.
+- Do not alter code, files, HTTP data, containers, or the database at any point, and if no defect can be shown, say the evidence passed and name any gap that remains.
