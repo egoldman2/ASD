@@ -41,6 +41,29 @@ const PRIVATE_SHARED_API_PREFIXES = [
   "/api/order-returns",
 ];
 
+const SHARED_SITE_STYLES_URL = "http://localhost:8000/css/styles.css?v=15";
+
+
+function ensureSharedSiteStyles() {
+  const hasSharedStyles = [...document.querySelectorAll('link[rel="stylesheet"]')]
+    .some((link) => {
+      const url = new URL(link.href, window.location.href);
+      return url.origin === "http://localhost:8000"
+        && url.pathname === "/css/styles.css";
+    });
+
+  if (hasSharedStyles) {
+    return;
+  }
+
+  const sharedStyles = document.createElement("link");
+  sharedStyles.rel = "stylesheet";
+  sharedStyles.href = SHARED_SITE_STYLES_URL;
+  sharedStyles.dataset.sharedSiteStyles = "";
+  const firstStylesheet = document.querySelector('link[rel="stylesheet"]');
+  document.head.insertBefore(sharedStyles, firstStylesheet);
+}
+
 
 function installAuthenticatedSharedFetch() {
   if (window.__asdAuthenticatedFetchInstalled) {
@@ -79,6 +102,7 @@ function installAuthenticatedSharedFetch() {
 }
 
 
+ensureSharedSiteStyles();
 installAuthenticatedSharedFetch();
 
 
