@@ -1,4 +1,4 @@
-const API_ORIGIN = "http://127.0.0.1:5000";
+const API_ORIGIN = "http://localhost:5000";
 const PRODUCTS_API = `${API_ORIGIN}/api/inventory/products`;
 const SUPPLIERS_API = `${API_ORIGIN}/api/inventory/suppliers`;
 const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
@@ -51,6 +51,7 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     const response = await fetch(url.toString(), {
       method: "GET",
       headers: { Accept: "application/json" },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -66,6 +67,7 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(payload),
     });
 
@@ -76,7 +78,10 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
   }
 
   async function deleteSupplier(id) {
-    const response = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+    const response = await fetch(`${API_BASE}/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`Failed to delete supplier (${response.status})`);
     }

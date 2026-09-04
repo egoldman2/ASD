@@ -22,6 +22,7 @@ AUTH_COOKIE_NAME = "ethan_session"
 PROTECTED_API_PREFIXES = (
     "/api/cart-items",
     "/api/order-returns",
+    "/api/inventory",
 )
 MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 

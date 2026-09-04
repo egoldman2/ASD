@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from contextlib import closing
 
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, g, request, jsonify, abort
 import sqlite3
 
 sys.path.append(str(Path(__file__).resolve().parents[2] / "database"))
@@ -10,6 +10,11 @@ from ryan_init_db import get_connection
 
 suppliers_blueprint = Blueprint("suppliers_blueprint", __name__, url_prefix="/api/inventory/suppliers")
 
+def _require_admin():
+    if g.authenticated_user.get("role") != "admin":
+        return jsonify({"error": "Administrator access required."}), 403
+
+    return None
 
 def _row_to_dict(row):
     return {
@@ -26,6 +31,9 @@ def _row_to_dict(row):
 @suppliers_blueprint.get("")
 def list_suppliers():
     """GET /api/inventory/suppliers?search=<name>"""
+    if (err := _require_admin()) is not None:
+        return err
+
     search = request.args.get("search", "").strip()
 
     with closing(get_connection()) as db:
@@ -54,6 +62,9 @@ def list_suppliers():
 @suppliers_blueprint.get("/<int:supplier_id>")
 def get_supplier(supplier_id):
     """GET /api/inventory/suppliers/<id>"""
+    if (err := _require_admin()) is not None:
+        return err
+
     with closing(get_connection()) as db:
         row = db.execute(
             """
@@ -74,6 +85,9 @@ def create_supplier():
     """POST /api/inventory/suppliers
     Body: { name, contact_name?, email?, phone?, address? }
     """
+    if (err := _require_admin()) is not None:
+        return err
+
     payload = request.get_json(silent=True) or {}
     name = (payload.get("name") or "").strip()
 
@@ -116,6 +130,9 @@ def update_supplier(supplier_id):
     """PUT /api/inventory/suppliers/<id>
     Body: { name, contact_name?, email?, phone?, address? }
     """
+    if (err := _require_admin()) is not None:
+        return err
+
     payload = request.get_json(silent=True) or {}
     name = (payload.get("name") or "").strip()
 
@@ -165,6 +182,9 @@ def delete_supplier(supplier_id):
     Products referencing this supplier have supplier_id set to NULL
     automatically via ON DELETE SET NULL in the schema.
     """
+    if (err := _require_admin()) is not None:
+        return err
+
     with closing(get_connection()) as db:
         existing = db.execute("SELECT id FROM suppliers WHERE id = ?", (supplier_id,)).fetchone()
         if existing is None:
