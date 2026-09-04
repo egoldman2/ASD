@@ -4,7 +4,7 @@ from pathlib import Path
 from contextlib import closing
 
 import requests
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, g, jsonify, abort
 
 sys.path.append(str(Path(__file__).resolve().parents[2] / "database"))
 from ryan_init_db import get_connection  
@@ -13,6 +13,12 @@ assistant_blueprint = Blueprint("assistant_blueprint", __name__, url_prefix="/ap
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434") + "/api/generate"
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:0.5b") # "llama3.1:8b" 
+
+def _require_admin():
+    if g.authenticated_user.get("role") != "admin":
+        return jsonify({"error": "Administrator access required."}), 403
+
+    return None
 
 def _build_low_stock_context():
     """Pulls current low-stock / out-of-stock products to ground the
@@ -64,6 +70,9 @@ def ask_assistant():
     Grounds the LLM's answer in the current low-stock product list pulled
     straight from the products table.
     """
+    if (err := _require_admin()) is not None:
+        return err
+
     payload = request.get_json(silent=True) or {}
     message = (payload.get("message") or "").strip()
 

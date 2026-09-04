@@ -1,4 +1,4 @@
-const API_ORIGIN = "http://127.0.0.1:5000";
+const API_ORIGIN = "http://localhost:5000";
 const PRODUCTS_API = `${API_ORIGIN}/api/inventory/products`;
 const SUPPLIERS_API = `${API_ORIGIN}/api/inventory/suppliers`;
 const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
@@ -79,6 +79,7 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     const response = await fetch(url.toString(), {
       method: "GET",
       headers: { Accept: "application/json" },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -91,6 +92,7 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     const response = await fetch(SUPPLIERS_API, {
       method: "GET",
       headers: { Accept: "application/json" },
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`Failed to load suppliers (${response.status})`);
@@ -105,6 +107,7 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(payload),
     });
 
@@ -115,7 +118,10 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
   }
 
   async function deleteProduct(id) {
-    const response = await fetch(`${PRODUCTS_API}/${id}`, { method: "DELETE" });
+    const response = await fetch(`${PRODUCTS_API}/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`Failed to delete product (${response.status})`);
     }
@@ -125,6 +131,7 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     const response = await fetch(ASSISTANT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ message }),
     });
 
@@ -200,7 +207,7 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
 
           </div>
           <div class="productCardActions">
-            <button type="button" class="filterButton reorderProductButton${outOfStock ? " reorderProductButton--urgent" : belowThreshold ? " reorderProductButton--due" : ""}" data-id="${product.id}">Reorder</button>
+            <button type="button" class="filterButton reorderProductButton${outOfStock ? " reorderProductButton--urgent" : belowThreshold ? " reorderProductButton--due" : ""}${!product.supplier_id ? " reorderProductButton--disabled" : ""}" data-id="${product.id}" ${!product.supplier_id ? "disabled title=\"Assign a supplier to enable reordering\"" : ""}>Reorder</button>
             <button type="button" class="filterButton editProductButton" data-id="${product.id}">Edit</button>
             <button type="button" class="filterButton deleteProductButton" data-id="${product.id}">Delete</button>
           </div>
@@ -222,6 +229,12 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
 
   function fillReorderForm(product) {
     if (!reorderForm) return;
+
+    if (!product.supplier_id) {
+      showNotice(`Cannot reorder "${product.name}" — assign a supplier before restocking.`, true);
+      return;
+    }
+
     reorderProductIdField.value = product.id;
     reorderProductNameDisplay.textContent = product.name;
 
@@ -419,6 +432,11 @@ const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;
     const product = products.find((p) => String(p.id) === String(id));
     if (!product) {
       showNotice("Could not find that product.", true);
+      return;
+    }
+
+    if (!product.supplier_id) {
+      showNotice(`Cannot reorder "${product.name}" — assign a supplier before restocking.`, true);
       return;
     }
 

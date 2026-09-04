@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from contextlib import closing
 
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, g, request, jsonify, abort
 import sqlite3
 
 sys.path.append(str(Path(__file__).resolve().parents[2] / "database"))
@@ -10,6 +10,11 @@ from ryan_init_db import get_connection
 
 products_blueprint = Blueprint("products_blueprint", __name__, url_prefix="/api/inventory/products")
 
+def _require_admin():
+    if g.authenticated_user.get("role") != "admin":
+        return jsonify({"error": "Administrator access required."}), 403
+
+    return None
 
 def _derive_status(stock_quantity: int) -> str:
     """status is derived from stock_quantity rather than user-set,
@@ -70,6 +75,9 @@ def _validate_payload(payload, partial=False):
 @products_blueprint.get("")
 def list_products():
     """GET /api/inventory/products?search=<name>&filter=low_stock|out_of_stock"""
+    if (err := _require_admin()) is not None:
+        return err
+
     search = request.args.get("search", "").strip()
     stock_filter = request.args.get("filter", "all")
 
@@ -108,6 +116,9 @@ def list_products():
 @products_blueprint.get("/<int:product_id>")
 def get_product(product_id):
     """GET /api/inventory/products/<id>"""
+    if (err := _require_admin()) is not None:
+        return err
+
     with closing(get_connection()) as db:
         row = db.execute(
             """
@@ -132,6 +143,9 @@ def create_product():
     status is derived server-side from stock_quantity.
     last_restocked_at is left NULL on creation.
     """
+    if (err := _require_admin()) is not None:
+        return err
+
     payload = request.get_json(silent=True) or {}
     _validate_payload(payload)
 
@@ -185,6 +199,9 @@ def update_product(product_id):
     team prefers an explicit action instead, replace this with a dedicated
     POST /<id>/restock endpoint.
     """
+    if (err := _require_admin()) is not None:
+        return err
+
     payload = request.get_json(silent=True) or {}
     _validate_payload(payload)
 
@@ -266,6 +283,9 @@ def update_product(product_id):
 @products_blueprint.delete("/<int:product_id>")
 def delete_product(product_id):
     """DELETE /api/inventory/products/<id>"""
+    if (err := _require_admin()) is not None:
+        return err
+
     with closing(get_connection()) as db:
         existing = db.execute("SELECT id FROM products WHERE id = ?", (product_id,)).fetchone()
         if existing is None:
