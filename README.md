@@ -74,7 +74,9 @@ The Chufeng GitHub Actions workflow:
 
 
 ### 4. Order and Returns Management
+
 **Student:** Howard
+
 **Directory:** `student-Howard/`
 
 The Order and Returns Management feature allows customers and administrators to manage orders and returns through a role-aware dashboard. Administrators can view all orders and returns, and approve or reject return requests. 
@@ -84,6 +86,7 @@ Customers can view only their own orders and submit new return requests. The bac
 The feature also includes an advisory AI capability powered by Ollama and qwen2.5:0.5b. For a selected return, it generates a summary of the problem and a recommended customer-service action. The AI is advisory only and never modifies any database record, all status changes are performed by application logic through dedicated endpoints.
 
 The frontend is available through Docker on: http://localhost:8004
+
 The shared Flask backend is available on: http://localhost:5000
 
 #### Main Functions
