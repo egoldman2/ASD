@@ -57,6 +57,7 @@ Controllers
 Models / Data-Access Layer
     ↓
 SQLite Database
+```
 
 #### Testing and CI/CD
 Automated tests are implemented using Pytest. The tests cover product retrieval, product search, shopping cart CRUD operations, validation, database initialisation, totals, and the Agentic review loop.
