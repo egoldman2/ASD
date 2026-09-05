@@ -1,4 +1,4 @@
-# ASD 2026 Group 7 - Online Marketplace
+# ASD 2026 Group 33 - Online Marketplace
 
 ## Project Overview
 
