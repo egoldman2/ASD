@@ -74,6 +74,50 @@ The Chufeng GitHub Actions workflow:
 
 
 ### 4. Order and Returns Management
+**Student:** Howard
+**Directory:** `student-Howard/`
+
+The Order and Returns Management feature allows customers and administrators to manage orders and returns through a role-aware dashboard. Administrators can view all orders and returns, and approve or reject return requests. 
+
+Customers can view only their own orders and submit new return requests. The backend enforces this access control by checking the signed-in user's role and filtering data by their user ID.
+
+The feature also includes an advisory AI capability powered by Ollama and qwen2.5:0.5b. For a selected return, it generates a summary of the problem and a recommended customer-service action. The AI is advisory only and never modifies any database record, all status changes are performed by application logic through dedicated endpoints.
+
+The frontend is available through Docker on: http://localhost:8004
+The shared Flask backend is available on: http://localhost:5000
+
+#### Main Functions
+- Create, view, update, and delete orders
+- Store order line items linked to parent orders
+- Create and process return requests linked to existing orders
+- Approve or reject return requests (administrators)
+- Submit new return requests (customers)
+- Enforce role-based access for administrators and customers
+- Display orders and returns with summary statistics and colour-coded status badges
+- Generate advisory AI return advice without modifying data
+
+#### Architecture
+
+The feature follows a layered architecture:
+```text
+Frontend (HTMX / JavaScript)
+    ↓ HTTP / REST API (with authentication)
+Flask Blueprint Routes
+    ↓
+Application Logic (role-based access, status changes)
+    ↓
+SQLite Database
+    ↓ (advisory only)
+Ollama / Qwen AI Service
+```
+
+#### Testing and CI/CD
+Automated tests are implemented using Pytest. The tests cover order and return retrieval, creation, status changes, not-found handling, and database initialisation.
+Howard GitHub Actions workflow:
+- Installs Python dependencies
+- Seeds the database and verifies at least ten records per table
+- Runs the Order and Returns tests
+- Builds the Order and Returns frontend image
 
 
 ### 5. Customer Support
