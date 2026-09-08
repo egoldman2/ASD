@@ -1,8 +1,11 @@
 import os
-from importlib import import_module
 
 import requests
 from flask import Flask, g, jsonify, request
+
+from routes.products import products_blueprint
+from routes.suppliers import suppliers_blueprint
+from routes.assistant import assistant_blueprint
 
 ALLOWED_ORIGINS = {
     "http://localhost:8000",
@@ -19,11 +22,7 @@ AUTH_SERVICE_URL = os.environ.get(
 ).rstrip("/")
 AUTH_TIMEOUT_SECONDS = float(os.environ.get("AUTH_TIMEOUT_SECONDS", "5"))
 AUTH_COOKIE_NAME = "ethan_session"
-PROTECTED_API_PREFIXES = (
-    "/api/cart-items",
-    "/api/order-returns",
-    "/api/inventory", # can remove >
-)
+PROTECTED_API_PREFIX = "/api/inventory"
 MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
 
@@ -45,16 +44,14 @@ def _authenticated_user():
         )
     except requests.RequestException:
         return None, _authentication_error(
-            "The authentication service is unavailable.",
-            503,
+            "The authentication service is unavailable.", 503,
         )
 
     if response.status_code == 401:
         return None, _authentication_error("You must sign in.", 401)
     if response.status_code != 200:
         return None, _authentication_error(
-            "The authentication service is unavailable.",
-            503,
+            "The authentication service is unavailable.", 503,
         )
 
     try:
@@ -66,19 +63,16 @@ def _authenticated_user():
     role = user.get("role") if isinstance(user, dict) else None
     user_id = user.get("id") if isinstance(user, dict) else None
     authenticated = (
-        payload.get("authenticated")
-        if isinstance(payload, dict)
-        else False
+        payload.get("authenticated") if isinstance(payload, dict) else False
     )
     if (
         authenticated is not True
-        or role not in {"admin", "customer"}
+        or role != "admin"
         or isinstance(user_id, bool)
         or not isinstance(user_id, int)
     ):
         return None, _authentication_error(
-            "The authentication service returned an invalid session.",
-            503,
+            "The authentication service returned an invalid session.", 503,
         )
 
     return user, None
@@ -86,38 +80,23 @@ def _authenticated_user():
 
 def create_app():
     app = Flask(__name__)
-    product_routes = import_module(
-        "student-Chufeng.backend.routes.product_routes"
-    )
-    customer_cart = import_module(
-        "shared.customer_cart"
-    )
-    ai_routes = import_module(
-        "student-Chufeng.backend.routes.ai_routes"
-    )
-    order_routes = import_module(
-        "student-Howard.backend.routes.order_routes"
-    )
 
+    app.register_blueprint(products_blueprint)
+    app.register_blueprint(suppliers_blueprint)
+    app.register_blueprint(assistant_blueprint)
 
-    app.register_blueprint(product_routes.product_blueprint)
-    app.register_blueprint(customer_cart.cart_blueprint)
-    app.register_blueprint(ai_routes.ai_blueprint)
-    app.register_blueprint(order_routes.order_blueprint)
-
-
+    @app.route("/health")
+    def health():
+        return {"status": "ok"}, 200
 
     @app.before_request
-    def protect_private_apis():
+    def protect_inventory_apis():
         if request.method == "OPTIONS":
             return "", 204
 
-        if not request.path.startswith(PROTECTED_API_PREFIXES):
+        if not request.path.startswith(PROTECTED_API_PREFIX):
             return None
 
-        # The original feature tests exercise their blueprints without the
-        # integrated authentication service. Live and production requests do
-        # not use this testing-only principal.
         if app.config.get("TESTING"):
             g.authenticated_user = {
                 "id": 1,
@@ -132,8 +111,7 @@ def create_app():
             and request.headers.get("Origin") not in ALLOWED_ORIGINS
         ):
             return _authentication_error(
-                "A trusted website origin is required.",
-                403,
+                "A trusted website origin is required.", 403,
             )
 
         user, failure = _authenticated_user()
@@ -150,10 +128,7 @@ def create_app():
             response.headers["Access-Control-Allow-Origin"] = origin
             response.headers["Access-Control-Allow-Credentials"] = "true"
             response.headers.add("Vary", "Origin")
-        response.headers["Access-Control-Allow-Headers"] = (
-            "Content-Type, HX-Request, HX-Target, HX-Current-URL, "
-            "HX-Trigger, HX-Trigger-Name, HX-Boosted"
-        )
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
         response.headers["Access-Control-Allow-Methods"] = (
             "GET, POST, PUT, PATCH, DELETE, OPTIONS"
         )
@@ -165,8 +140,8 @@ def create_app():
 app = create_app()
 if __name__ == "__main__":
     app.run(
-        host=os.getenv("APP_HOST", "127.0.0.1"),
-        port=int(os.getenv("APP_PORT", "5000")),
-        debug=os.getenv("APP_DEBUG", "true").lower() == "true",
+        host=os.getenv("APP_HOST", "0.0.0.0"),
+        port=int(os.getenv("APP_PORT", "8102")),
+        debug=os.getenv("APP_DEBUG", "false").lower() == "true",
         use_reloader=False,
     )
