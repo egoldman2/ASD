@@ -4,6 +4,8 @@ const profileForm = document.querySelector("#profileForm");
 const profileMessage = document.querySelector("#profileMessage");
 const profileName = document.querySelector("#profileName");
 const profileEmail = document.querySelector("#profileEmail");
+const passwordForm = document.querySelector("#passwordForm");
+const passwordMessage = document.querySelector("#passwordMessage");
 const loyaltyMessage = document.querySelector("#loyaltyMessage");
 const loyaltyHistoryBody = document.querySelector("#loyaltyHistoryBody");
 
@@ -118,6 +120,12 @@ function showProfileMessage(message, success = false) {
 }
 
 
+function showPasswordMessage(message, success = false) {
+  passwordMessage.textContent = message;
+  passwordMessage.classList.toggle("success", success);
+}
+
+
 async function loadProfile() {
   const result = await authRequest("/api/profile");
   const user = result.user;
@@ -147,6 +155,34 @@ profileForm.addEventListener("submit", async (event) => {
     showProfileMessage("Your profile was updated.", true);
   } catch (error) {
     showProfileMessage(error.message);
+  }
+});
+
+
+passwordForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const formData = new FormData(passwordForm);
+  const newPassword = formData.get("new_password");
+  const confirmation = formData.get("password_confirmation");
+
+  if (newPassword !== confirmation) {
+    showPasswordMessage("New passwords do not match.");
+    return;
+  }
+
+  try {
+    const result = await authRequest("/api/profile/password", {
+      method: "PUT",
+      body: JSON.stringify({
+        current_password: formData.get("current_password"),
+        new_password: newPassword,
+        password_confirmation: confirmation,
+      }),
+    });
+    passwordForm.reset();
+    showPasswordMessage(result.message, true);
+  } catch (error) {
+    showPasswordMessage(error.message);
   }
 });
 

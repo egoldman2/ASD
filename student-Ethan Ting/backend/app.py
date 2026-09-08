@@ -909,6 +909,61 @@ def update_profile():
     return jsonify({"user": session["user"]})
 
 
+@app.put("/api/profile/password")
+@login_required
+def update_profile_password():
+    data = request.get_json(silent=True) or {}
+    current_password = data.get("current_password")
+    new_password = data.get("new_password")
+    password_confirmation = data.get("password_confirmation")
+
+    if not all(isinstance(value, str) for value in (
+        current_password,
+        new_password,
+        password_confirmation,
+    )):
+        return jsonify({"error": "All password fields are required."}), 400
+
+    if not current_password or not new_password or not password_confirmation:
+        return jsonify({"error": "All password fields are required."}), 400
+
+    if len(new_password) < 8:
+        return jsonify({
+            "error": "New password must contain at least 8 characters."
+        }), 400
+
+    if new_password != password_confirmation:
+        return jsonify({"error": "New passwords do not match."}), 400
+
+    user_id = session["user"]["id"]
+
+    try:
+        stored_result = database_request(f"/internal/users/{user_id}")
+        stored_user = stored_result.get("user", {})
+        password_hash = stored_user.get("password_hash", "")
+
+        if not password_hash or not check_password_hash(
+            password_hash,
+            current_password,
+        ):
+            return jsonify({"error": "Current password is incorrect."}), 400
+
+        if check_password_hash(password_hash, new_password):
+            return jsonify({
+                "error": "New password must be different from the current password."
+            }), 400
+
+        database_request(
+            f"/internal/users/{user_id}",
+            method="PUT",
+            payload={"password": new_password},
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify({"message": "Password updated successfully."})
+
+
 @app.get("/api/loyalty")
 @login_required
 def get_own_loyalty():
@@ -942,6 +997,17 @@ def get_own_loyalty_history():
 def get_customers():
     try:
         result = database_request("/internal/users?role=customer")
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result)
+
+
+@app.get("/api/admin/administrators")
+@admin_required
+def get_administrators():
+    try:
+        result = database_request("/internal/users?role=admin")
     except (HTTPError, URLError) as error:
         return database_error_response(error)
 
@@ -1107,7 +1173,34 @@ def create_customer():
         result = database_request(
             "/internal/users",
             method="POST",
-            payload=data,
+            payload={
+                "full_name": data.get("full_name"),
+                "email": data.get("email"),
+                "password": data.get("password"),
+                "role": "customer",
+            },
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    return jsonify(result), 201
+
+
+@app.post("/api/admin/administrators")
+@admin_required
+def create_administrator():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        result = database_request(
+            "/internal/users",
+            method="POST",
+            payload={
+                "full_name": data.get("full_name"),
+                "email": data.get("email"),
+                "password": data.get("password"),
+                "role": "admin",
+            },
         )
     except (HTTPError, URLError) as error:
         return database_error_response(error)
@@ -1137,6 +1230,41 @@ def update_customer(user_id):
         )
     except (HTTPError, URLError) as error:
         return database_error_response(error)
+
+    return jsonify(result)
+
+
+@app.put("/api/admin/administrators/<int:user_id>")
+@admin_required
+def update_administrator(user_id):
+    data = request.get_json(silent=True) or {}
+    allowed_changes = {
+        key: data[key]
+        for key in ("full_name", "email")
+        if key in data
+    }
+
+    try:
+        target_result = database_request(f"/internal/users/{user_id}")
+        if target_result["user"].get("role") != "admin":
+            return jsonify({"error": "Administrator not found."}), 404
+
+        result = database_request(
+            f"/internal/users/{user_id}",
+            method="PUT",
+            payload=allowed_changes,
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    if user_id == session["user"]["id"]:
+        updated_user = result["user"]
+        session["user"] = {
+            "id": updated_user["id"],
+            "email": updated_user["email"],
+            "full_name": updated_user["full_name"],
+            "role": updated_user["role"],
+        }
 
     return jsonify(result)
 
