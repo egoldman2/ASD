@@ -1,4 +1,4 @@
-const API_ORIGIN = "http://localhost:5000";
+const API_ORIGIN = "http://localhost:8102";
 const PRODUCTS_API = `${API_ORIGIN}/api/inventory/products`;
 const SUPPLIERS_API = `${API_ORIGIN}/api/inventory/suppliers`;
 const ASSISTANT_API = `${API_ORIGIN}/api/inventory/assistant`;

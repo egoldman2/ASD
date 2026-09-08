@@ -75,6 +75,7 @@ services:
         python /app/student-Chufeng/database/init_db.py
         exec python app.py
     volumes:
+      - ./student-Chufeng/database:/app/student-Chufeng/database
       - customer-cart-data:/data
       - product-database-data:/inventory-data
     depends_on:
@@ -222,22 +223,68 @@ services:
       retries: 5
 
   inventory-frontend:
+      build:
+        context: .
+        dockerfile: student-Ryan_Nolan/Dockerfile
+        target: frontend
+      ports:
+        - "8002:80"
+      depends_on:
+        inventory-backend:
+          condition: service_healthy
+
+  inventory-backend:
     build:
       context: .
       dockerfile: student-Ryan_Nolan/Dockerfile
-      target: frontend
+      target: backend
     ports:
-      - "8002:80"
-    volumes:
-      - ./shared/js/site-header.js:/usr/share/nginx/html/js/site-header.js:ro
-      - ./shared/js/account-menu.js:/usr/share/nginx/html/js/account-menu.js:ro
+      - "8102:8102"
+    environment:
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: qwen2.5:0.5b
+      AUTH_SERVICE_URL: http://ethan-backend:6002
     depends_on:
-      shared-backend:
+      ethan-backend:
         condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/health', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      start_period: 15s
+      retries: 5
+
+  inventory-database:
+    build:
+      context: .
+      dockerfile: student-Ryan_Nolan/Dockerfile
+      target: backend
+    ports:
+      - "8112:8102"
+    environment:
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: qwen2.5:0.5b
+      AUTH_SERVICE_URL: http://ethan-backend:6002
+    volumes:
+      - ryan-own-inventory-data:/app/student-Ryan_Nolan/database
+    depends_on:
+      ethan-backend:
+        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/health', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      start_period: 15s
+      retries: 5
 
 volumes:
   ethan-user-data:
   support-ticket-data:
   ollama-models:
   customer-cart-data:
+  ryan-own-inventory-data:
   product-database-data:

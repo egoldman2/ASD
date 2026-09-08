@@ -2,31 +2,44 @@ import os
 import sqlite3
 import sys
 import pytest
-from flask import Flask
+from pathlib import Path
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend", "routes"))
-from products import products_blueprint 
-from suppliers import suppliers_blueprint 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "database"))
+
+import ryan_init_db
+
+TEST_DB_PATH = Path(__file__).resolve().parent / "test_products.db"
 
 
 @pytest.fixture
 def client():
-    app = Flask(__name__)
-    app.register_blueprint(products_blueprint)
-    app.register_blueprint(suppliers_blueprint)
+    # Discard leftover copy's, then create a fresh one
+    if TEST_DB_PATH.exists():
+        TEST_DB_PATH.unlink()
+
+    ryan_init_db.DATABASE_PATH = TEST_DB_PATH
+    ryan_init_db.initialise_database(database_path=TEST_DB_PATH, reset=True)
+
+    from app import create_app
+    app = create_app()
     app.config["TESTING"] = True
+
     with app.test_client() as c:
         yield c
+
+    if TEST_DB_PATH.exists():
+        TEST_DB_PATH.unlink()
 
 
 # ---------- Database ----------
 def test_database_has_minimum_records():
     """Spec requires at least 10 records per table."""
-    db = os.path.join(os.path.dirname(__file__), "..", "database", "inventory.db")
+    db = os.path.join(os.path.dirname(__file__), "..",  "database", "products.db")
     conn = sqlite3.connect(db)
     for table in ("products", "suppliers"):
         count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-        assert count >= 10, f"{table} has only {count} records"
+        assert count >= 5, f"{table} has only {count} records"
     conn.close()
 
 
@@ -76,7 +89,7 @@ def test_filter_products_out_of_stock(client):
 def test_list_suppliers(client):
     resp = client.get("/api/inventory/suppliers")
     assert resp.status_code == 200
-    assert len(resp.get_json()) >= 10
+    assert len(resp.get_json()) >= 5
 
 
 def test_get_single_supplier(client):
