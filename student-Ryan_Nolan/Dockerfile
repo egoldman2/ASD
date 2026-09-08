@@ -41,4 +41,6 @@ FROM python-base AS test
 
 COPY . .
 
+RUN python student-Ryan_Nolan/database/ryan_init_db.py
+
 CMD ["python", "-m", "pytest", "student-Ryan_Nolan/tests/inventory_tests.py", "-q"]
