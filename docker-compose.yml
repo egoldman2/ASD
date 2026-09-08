@@ -66,9 +66,18 @@ services:
       AUTH_SERVICE_URL: http://ethan-backend:6002
       AUTH_TIMEOUT_SECONDS: 5
       CART_DATABASE_PATH: /data/customer_carts.db
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        ln -sf /inventory-data/products.db /app/student-Chufeng/database/products.db
+        ln -sf /inventory-data/products.db /app/student-Ryan_Nolan/database/products.db
+        python /app/student-Chufeng/database/init_db.py
+        exec python app.py
     volumes:
       - ./student-Chufeng/database:/app/student-Chufeng/database
       - customer-cart-data:/data
+      - product-database-data:/inventory-data
     depends_on:
       ollama-init:
         condition: service_completed_successfully
@@ -278,3 +287,4 @@ volumes:
   ollama-models:
   customer-cart-data:
   ryan-own-inventory-data:
+  product-database-data:

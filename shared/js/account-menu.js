@@ -8,13 +8,28 @@ function accountPageUrl(role) {
 }
 
 
+function configureRoleNavigation(role) {
+  const isAdmin = role === "admin";
+
+  for (const link of document.querySelectorAll("[data-admin-navigation]")) {
+    link.hidden = !isAdmin;
+  }
+}
+
+
 async function configureAccountMenu(menu) {
   const trigger = menu.querySelector("[data-account-trigger]");
+  const triggerLabel = menu.querySelector("[data-account-label]");
   const welcomeMessage = menu.querySelector("[data-account-welcome]");
   const signInAction = menu.querySelector("[data-account-sign-in]");
   const registerAction = menu.querySelector("[data-account-register]");
+  const accountActions = menu.querySelector("[data-account-actions]");
+  const accountLinks = menu.querySelector("[data-account-links]");
   const primaryAction = menu.querySelector("[data-account-primary]");
   const profileAction = menu.querySelector("[data-account-profile]");
+  const loyaltyAction = menu.querySelector("[data-account-loyalty]");
+  const ordersAction = menu.querySelector("[data-account-orders]");
+  const returnsAction = menu.querySelector("[data-account-returns]");
   const logoutAction = menu.querySelector("[data-account-logout]");
   const authenticatedLinks = menu.querySelectorAll(
     "[data-account-authenticated-link]",
@@ -61,22 +76,34 @@ async function configureAccountMenu(menu) {
 
     const result = await response.json();
     const accountUrl = accountPageUrl(result.user.role);
+    const isAdmin = result.user.role === "admin";
+    configureRoleNavigation(result.user.role);
 
+    triggerLabel.textContent = isAdmin ? "Admin" : "Account";
     welcomeMessage.textContent = `Welcome, ${result.user.full_name}`;
     signInAction.hidden = true;
     registerAction.hidden = true;
-    primaryAction.hidden = false;
+    primaryAction.hidden = isAdmin;
     primaryAction.href = accountUrl;
+    primaryAction.textContent = isAdmin ? "Account management" : "My account";
     profileAction.hidden = true;
-    for (const link of authenticatedLinks) {
-      link.hidden = link === profileAction;
-    }
+    loyaltyAction.hidden = true;
+    ordersAction.hidden = isAdmin;
+    ordersAction.querySelector("span").textContent = "My orders";
+    returnsAction.hidden = isAdmin;
+    accountLinks.hidden = isAdmin;
+    accountActions.classList.toggle("accountMenuActions--single", isAdmin);
     logoutAction.hidden = false;
   } catch (error) {
+    configureRoleNavigation(null);
+    triggerLabel.textContent = "Account";
     welcomeMessage.textContent = "Welcome to ASD 2026";
     signInAction.hidden = false;
     registerAction.hidden = false;
     primaryAction.hidden = true;
+    primaryAction.textContent = "My account";
+    accountLinks.hidden = true;
+    accountActions.classList.remove("accountMenuActions--single");
     profileAction.hidden = true;
     profileAction.href = "http://localhost:8003";
     for (const link of authenticatedLinks) {

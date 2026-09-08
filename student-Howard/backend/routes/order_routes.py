@@ -242,10 +242,10 @@ def orders_html():
     user = current_user()
     if user is None:
         return authentication_failure()
-
     conn = get_db()
     owner_id = customer_id(user)
-    if owner_id is None:
+    is_admin = owner_id is None
+    if is_admin:
         rows = conn.execute("SELECT * FROM orders").fetchall()
     else:
         rows = conn.execute(
@@ -253,10 +253,16 @@ def orders_html():
             (owner_id,),
         ).fetchall()
     conn.close()
-    html = "<table><tr><th>Order ID</th><th>Customer ID</th><th>Date</th><th>Status</th><th>Total</th></tr>"
-    for r in rows:
-        html += (f"<tr><td>{r['order_id']}</td><td>{r['customer_id']}</td>"
-                 f"<td>{r['order_date'][:10]}</td><td>{r['status'].capitalize()}</td><td>${r['total']}</td></tr>")
+    if is_admin:
+        html = "<table><tr><th>Order ID</th><th>Customer ID</th><th>Date</th><th>Status</th><th>Total</th></tr>"
+        for r in rows:
+            html += (f"<tr><td>{r['order_id']}</td><td>{r['customer_id']}</td>"
+                     f"<td>{r['order_date'][:10]}</td><td>{r['status'].capitalize()}</td><td>${r['total']}</td></tr>")
+    else:
+        html = "<table><tr><th>Order ID</th><th>Date</th><th>Status</th><th>Total</th></tr>"
+        for r in rows:
+            html += (f"<tr><td>{r['order_id']}</td>"
+                     f"<td>{r['order_date'][:10]}</td><td>{r['status'].capitalize()}</td><td>${r['total']}</td></tr>")
     html += "</table>"
     return html
 

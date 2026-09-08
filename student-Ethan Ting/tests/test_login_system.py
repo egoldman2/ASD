@@ -169,6 +169,117 @@ def test_customer_is_forbidden_from_admin_api(auth_module):
     assert response.get_json()["error"] == "Administrator access required."
 
 
+def test_customer_can_change_password(auth_module, monkeypatch):
+    old_password = "CustomerPass!2026"
+    captured_update = {}
+    stored_user = {
+        "id": 2,
+        "email": "customer@asd.local",
+        "full_name": "Demo Customer",
+        "role": "customer",
+        "is_active": 1,
+        "password_hash": generate_password_hash(old_password),
+    }
+
+    def password_request(path, method="GET", payload=None):
+        if method == "PUT":
+            captured_update.update({
+                "path": path,
+                "method": method,
+                "payload": payload,
+            })
+            return {"user": {key: value for key, value in stored_user.items()
+                             if key != "password_hash"}}
+        return {"user": stored_user}
+
+    monkeypatch.setattr(auth_module, "database_request", password_request)
+
+    with auth_module.app.test_client() as client:
+        with client.session_transaction() as login_session:
+            login_session["user"] = {
+                "id": 2,
+                "email": "customer@asd.local",
+                "full_name": "Demo Customer",
+                "role": "customer",
+            }
+
+        response = client.put("/api/profile/password", json={
+            "current_password": old_password,
+            "new_password": "NewCustomerPass!2026",
+            "password_confirmation": "NewCustomerPass!2026",
+        })
+
+    assert response.status_code == 200
+    assert response.get_json()["message"] == "Password updated successfully."
+    assert captured_update == {
+        "path": "/internal/users/2",
+        "method": "PUT",
+        "payload": {"password": "NewCustomerPass!2026"},
+    }
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected_error"),
+    [
+        ({
+            "current_password": "WrongPassword!2026",
+            "new_password": "NewCustomerPass!2026",
+            "password_confirmation": "NewCustomerPass!2026",
+        }, "Current password is incorrect."),
+        ({
+            "current_password": "CustomerPass!2026",
+            "new_password": "short",
+            "password_confirmation": "short",
+        }, "New password must contain at least 8 characters."),
+        ({
+            "current_password": "CustomerPass!2026",
+            "new_password": "NewCustomerPass!2026",
+            "password_confirmation": "DifferentPass!2026",
+        }, "New passwords do not match."),
+        ({
+            "current_password": "CustomerPass!2026",
+            "new_password": "CustomerPass!2026",
+            "password_confirmation": "CustomerPass!2026",
+        }, "New password must be different from the current password."),
+    ],
+)
+def test_customer_password_change_rejects_invalid_input(
+    auth_module,
+    monkeypatch,
+    payload,
+    expected_error,
+):
+    stored_user = {
+        "id": 2,
+        "email": "customer@asd.local",
+        "full_name": "Demo Customer",
+        "role": "customer",
+        "is_active": 1,
+        "password_hash": generate_password_hash("CustomerPass!2026"),
+    }
+
+    def password_request(path, method="GET", payload=None):
+        if method == "PUT":
+            pytest.fail("An invalid password change must not be saved.")
+        return {"user": stored_user}
+
+    monkeypatch.setattr(auth_module, "database_request", password_request)
+
+    with auth_module.app.test_client() as client:
+        with client.session_transaction() as login_session:
+            login_session["user"] = {
+                "id": 2,
+                "email": "customer@asd.local",
+                "full_name": "Demo Customer",
+                "role": "customer",
+            }
+
+        response = client.put("/api/profile/password", json=payload)
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == expected_error
+
+
 def test_admin_can_read_customer_list(auth_module, monkeypatch):
     def customer_list(path, method="GET", payload=None):
         if path == "/internal/users/1":
@@ -205,6 +316,107 @@ def test_admin_can_read_customer_list(auth_module, monkeypatch):
 
     assert response.status_code == 200
     assert response.get_json()["count"] == 1
+
+
+def test_admin_can_read_and_create_administrators(auth_module, monkeypatch):
+    captured_create = {}
+
+    def administrator_request(path, method="GET", payload=None):
+        if path == "/internal/users/1":
+            return {"user": {
+                "id": 1,
+                "email": "admin@asd.local",
+                "full_name": "Marketplace Administrator",
+                "role": "admin",
+                "is_active": 1,
+            }}
+        if path == "/internal/users?role=admin":
+            return {
+                "count": 1,
+                "users": [{
+                    "id": 1,
+                    "email": "admin@asd.local",
+                    "full_name": "Marketplace Administrator",
+                    "role": "admin",
+                    "is_active": 1,
+                }],
+            }
+
+        captured_create.update({
+            "path": path,
+            "method": method,
+            "payload": payload,
+        })
+        return {"user": {
+            "id": 12,
+            "email": payload["email"],
+            "full_name": payload["full_name"],
+            "role": payload["role"],
+            "is_active": 1,
+        }}
+
+    monkeypatch.setattr(
+        auth_module,
+        "database_request",
+        administrator_request,
+    )
+
+    with auth_module.app.test_client() as client:
+        with client.session_transaction() as login_session:
+            login_session["user"] = {
+                "id": 1,
+                "email": "admin@asd.local",
+                "full_name": "Marketplace Administrator",
+                "role": "admin",
+            }
+
+        list_response = client.get("/api/admin/administrators")
+        create_response = client.post(
+            "/api/admin/administrators",
+            json={
+                "full_name": "Second Administrator",
+                "email": "second.admin@example.test",
+                "password": "AdminPassword!2026",
+                "role": "customer",
+            },
+        )
+
+    assert list_response.status_code == 200
+    assert list_response.get_json()["count"] == 1
+    assert create_response.status_code == 201
+    assert captured_create == {
+        "path": "/internal/users",
+        "method": "POST",
+        "payload": {
+            "full_name": "Second Administrator",
+            "email": "second.admin@example.test",
+            "password": "AdminPassword!2026",
+            "role": "admin",
+        },
+    }
+
+
+def test_customer_cannot_create_administrator(auth_module):
+    with auth_module.app.test_client() as client:
+        with client.session_transaction() as login_session:
+            login_session["user"] = {
+                "id": 2,
+                "email": "customer@asd.local",
+                "full_name": "Demo Customer",
+                "role": "customer",
+            }
+
+        response = client.post(
+            "/api/admin/administrators",
+            json={
+                "full_name": "Not Allowed",
+                "email": "not.allowed@example.test",
+                "password": "Password!2026",
+            },
+        )
+
+    assert response.status_code == 403
+    assert response.get_json()["error"] == "Administrator access required."
 
 
 def test_customer_can_only_request_own_loyalty_account(
@@ -363,9 +575,59 @@ def test_database_customer_crud_uses_soft_delete(database_module):
             "Updated Customer"
         )
 
+        password_response = client.put(
+            f"/internal/users/{customer_id}",
+            json={"password": "UpdatedPassword!2026"},
+        )
+        assert password_response.status_code == 200
+        assert "password_hash" not in password_response.get_json()["user"]
+
+        updated_stored_response = client.get(
+            "/internal/users/by-email?email=new.customer@example.test"
+        )
+        updated_hash = updated_stored_response.get_json()["user"][
+            "password_hash"
+        ]
+        assert check_password_hash(updated_hash, "UpdatedPassword!2026")
+        assert not check_password_hash(updated_hash, "TemporaryPass!2026")
+
         delete_response = client.delete(f"/internal/users/{customer_id}")
         assert delete_response.status_code == 200
         assert delete_response.get_json()["user"]["is_active"] == 0
+
+
+def test_database_admin_creation_does_not_create_loyalty_account(database_module):
+    with database_module.app.test_client() as client:
+        create_response = client.post("/internal/users", json={
+            "email": "new.admin@example.test",
+            "full_name": "New Administrator",
+            "password": "AdminPassword!2026",
+            "role": "admin",
+        })
+
+        assert create_response.status_code == 201
+        administrator = create_response.get_json()["user"]
+        assert administrator["role"] == "admin"
+
+        loyalty_response = client.get(
+            f"/internal/loyalty/{administrator['id']}"
+        )
+        assert loyalty_response.status_code == 404
+
+
+def test_database_rejects_unknown_account_role(database_module):
+    with database_module.app.test_client() as client:
+        response = client.post("/internal/users", json={
+            "email": "unknown.role@example.test",
+            "full_name": "Unknown Role",
+            "password": "Password!2026",
+            "role": "superuser",
+        })
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == (
+        "Account role must be admin or customer."
+    )
 
 
 def test_database_seeds_ten_loyalty_accounts_and_transactions(database_module):

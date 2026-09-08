@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="htmx-config" content='{"withCredentials": true}'>
     <title>Order &amp; Returns Management</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
@@ -17,24 +18,79 @@
             padding: 2.5rem 0;
         }
 
-        .featurePage h1 {
-            color: #0b2545;
-            font-size: clamp(2rem, 4vw, 3rem);
+        .hero {
+            margin-bottom: 2rem;
+        }
+
+        .hero .eyebrow {
+            color: #1d5b9e;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
             margin-bottom: 0.5rem;
         }
 
-        .featurePage h2 {
+        .hero h1 {
             color: #0b2545;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin: 0 0 0.5rem;
+        }
+
+        .hero p {
+            color: #5a6b82;
+            font-size: 1.05rem;
+            max-width: 42rem;
+        }
+
+        .statGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .statCard {
+            background: #fff;
+            border: 1px solid #eef2f6;
+            border-radius: 14px;
+            padding: 1.2rem 1.3rem;
+            box-shadow: 0 20px 25px -12px rgba(0, 40, 70, 0.08);
+        }
+
+        .statCard .label {
+            color: #5a6b82;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .statCard .value {
+            color: #0b2545;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .sectionHead {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin: 2rem 0 1rem;
+        }
+
+        .sectionHead h2 {
+            color: #0b2545;
             font-size: 1.4rem;
+            margin: 0;
         }
 
         .card {
             padding: 1.2rem;
             border: 1px solid #eef2f6;
-            border-radius: 12px;
+            border-radius: 14px;
             background: #fff;
-            box-shadow: 0 20px 25px -10px rgba(0, 40, 70, 0.10);
+            box-shadow: 0 20px 25px -12px rgba(0, 40, 70, 0.08);
             margin-bottom: 1.5rem;
         }
 
@@ -45,20 +101,62 @@
 
         th,
         td {
-            padding: 0.6rem 0.8rem;
+            padding: 0.7rem 0.9rem;
             text-align: left;
             border-bottom: 1px solid #eef2f6;
         }
 
         th {
             color: #1d5b9e;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.04em;
         }
 
         td {
             color: #2c3e5c;
+        }
+
+        tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background: #f5f9ff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .badge-green {
+            background: #e6f6ec;
+            color: #1a7f43;
+        }
+
+        .badge-blue {
+            background: #e7f0fb;
+            color: #1d5b9e;
+        }
+
+        .badge-amber {
+            background: #fdf2dc;
+            color: #a86b12;
+        }
+
+        .badge-red {
+            background: #fdeaea;
+            color: #c0392b;
+        }
+
+        .badge-grey {
+            background: #eef2f6;
+            color: #5a6b82;
         }
 
         .actionBtn {
@@ -68,16 +166,31 @@
             border-radius: 8px;
             background: linear-gradient(135deg, #0a2a44, #1d5b9e);
             color: #fff;
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .actionBtn:hover {
-            opacity: 0.85;
+            opacity: 0.9;
+        }
+
+        .refreshBtn {
+            cursor: pointer;
+            padding: 0.4rem 0.9rem;
+            border: 1px solid #d7e4ef;
+            border-radius: 8px;
+            background: #fff;
+            color: #1d5b9e;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .refreshBtn:hover {
+            background: #f5f9ff;
         }
 
         input {
-            padding: 0.5rem 0.7rem;
+            padding: 0.55rem 0.75rem;
             border: 1px solid #d7e4ef;
             border-radius: 8px;
             font-size: 0.95rem;
@@ -93,7 +206,66 @@
             color: #2c3e5c;
             line-height: 1.6;
             margin-top: 1rem;
+            min-height: 3rem;
         }
+
+        .aiRow {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #d7e4ef;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: #fff;
+            color: #2c3e5c;
+            cursor: pointer;
+            min-width: 200px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231d5b9e' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            padding-right: 2rem;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #1d5b9e;
+            box-shadow: 0 0 0 3px rgba(29, 91, 158, 0.12);
+        }
+
+        .formMsg {
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .formMsg.success {
+            color: #1a7f43;
+        }
+
+        .formMsg.error {
+            color: #c0392b;
+        }
+
+        .miniBtn {
+            cursor: pointer;
+            padding: 0.3rem 0.7rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+        }
+
+        .miniBtn.approve { background: #e6f6ec; color: #1a7f43; }
+        .miniBtn.approve:hover { background: #d0eeda; }
+        .miniBtn.reject { background: #fdeaea; color: #c0392b; }
+        .miniBtn.reject:hover { background: #f9d5d5; }
     </style>
 </head>
 
@@ -115,29 +287,84 @@
     </header>
 
     <main class="featurePage">
-        <h1>Order &amp; Returns Management</h1>
-
-        <h2 id="orders">Orders</h2>
-        <div class="card">
-            <button class="actionBtn" hx-get="http://localhost:5000/api/order-returns/orders/html"
-                hx-request='{"credentials":true}'
-                hx-target="#orders-table">Load Orders</button>
-            <div id="orders-table" style="margin-top:1rem;"></div>
+        <div class="hero">
+            <div class="eyebrow">Order &amp; Returns</div>
+            <h1 id="hero-title">Manage orders and returns</h1>
+            <p id="hero-sub">View customer orders, track return requests, and get AI-assisted advice on how to resolve each return.
+            </p>
         </div>
 
-        <h2 id="returns">Returns</h2>
-        <div class="card">
-            <button class="actionBtn" hx-get="http://localhost:5000/api/order-returns/returns/html"
-                hx-request='{"credentials":true}'
-                hx-target="#returns-table">Load Returns</button>
-            <div id="returns-table" style="margin-top:1rem;"></div>
+        <div class="statGrid" id="stat-grid">
+            <div class="statCard">
+                <div class="label">Total Orders</div>
+                <div class="value" id="stat-orders">&ndash;</div>
+            </div>
+            <div class="statCard">
+                <div class="label">Pending</div>
+                <div class="value" id="stat-pending">&ndash;</div>
+            </div>
+            <div class="statCard">
+                <div class="label">Shipped</div>
+                <div class="value" id="stat-shipped">&ndash;</div>
+            </div>
+            <div class="statCard">
+                <div class="label">Delivered</div>
+                <div class="value" id="stat-delivered">&ndash;</div>
+            </div>
+            <div class="statCard">
+                <div class="label">Total Returns</div>
+                <div class="value" id="stat-returns">&ndash;</div>
+            </div>
         </div>
 
-        <h2>AI Return Advice</h2>
+        <div class="sectionHead">
+            <h2 id="orders">Orders</h2>
+            <button class="refreshBtn" onclick="loadOrders()">Refresh</button>
+        </div>
         <div class="card">
-            <input type="number" id="ret-id" placeholder="Return ID" min="1">
-            <button class="actionBtn" onclick="getAdvice()">Ask AI</button>
-            <div id="advice" class="ai-box"></div>
+            <div id="orders-table"></div>
+        </div>
+
+        <div class="sectionHead">
+            <h2 id="returns">Returns</h2>
+            <button class="refreshBtn" onclick="loadReturns()">Refresh</button>
+        </div>
+        <div class="card">
+            <div id="returns-table"></div>
+        </div>
+
+        <div id="create-return-section">
+        <div class="sectionHead">
+            <h2>Create a Return</h2>
+        </div>
+        <div class="card">
+            <div class="aiRow">
+                <input type="number" id="new-return-order" placeholder="Order ID" min="1">
+                <select id="new-return-reason">
+                    <option value="wrong size">Wrong size</option>
+                    <option value="damaged on arrival">Damaged on arrival</option>
+                    <option value="wrong colour">Wrong colour</option>
+                    <option value="changed mind">Changed mind</option>
+                    <option value="faulty item">Faulty item</option>
+                    <option value="not as described">Not as described</option>
+                    <option value="wrong item sent">Wrong item sent</option>
+                    <option value="quality issue">Quality issue</option>
+                </select>
+                <button class="actionBtn" onclick="createReturn()">Submit Return</button>
+            </div>
+            <div id="create-return-msg" class="formMsg"></div>
+        </div>
+        </div>
+
+        <div class="sectionHead">
+            <h2>AI Return Advice</h2>
+        </div>
+        <div class="card">
+            <div class="aiRow">
+                <input type="number" id="ret-id" placeholder="Return ID" min="1">
+                <button class="actionBtn" onclick="getAdvice()">Ask AI</button>
+            </div>
+            <div id="advice" class="ai-box">Enter a return ID and ask the AI for advice.</div>
         </div>
     </main>
 
@@ -146,17 +373,252 @@
     </footer>
 
     <script>
+        const API = "http://localhost:5000/api/order-returns";
+
+        function badgeClass(status) {
+            const s = (status || "").toLowerCase();
+            if (["delivered", "approved", "completed"].includes(s)) return "badge-green";
+            if (["shipped", "processing"].includes(s)) return "badge-blue";
+            if (["pending", "requested", "processing"].includes(s)) return "badge-amber";
+            if (["cancelled", "canceled", "rejected", "denied"].includes(s)) return "badge-red";
+            return "badge-grey";
+        }
+
+        // Find and colour the STATUS cell in each row, wherever that column sits.
+        const STATUSES = ["pending","shipped","delivered","cancelled","canceled",
+                          "approved","requested","rejected","denied","completed","processing"];
+        function badgeify(container) {
+            const rows = container.querySelectorAll("tr");
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td");
+                if (!cells.length) return; // header row
+                cells.forEach(cell => {
+                    if (cell.querySelector(".badge")) return;
+                    const text = cell.textContent.trim();
+                    if (STATUSES.includes(text.toLowerCase())) {
+                        cell.innerHTML = '<span class="badge ' + badgeClass(text) + '">' + text + '</span>';
+                    }
+                });
+            });
+        }
+
+        async function loadOrders() {
+            const target = document.getElementById("orders-table");
+            target.innerHTML = "Loading&#8230;";
+            try {
+                const res = await fetch(API + "/orders/html", { credentials: "include" });
+                if (!res.ok) {
+                    target.innerHTML = "Please sign in to view orders.";
+                    return;
+                }
+                target.innerHTML = await res.text();
+                badgeify(target);
+                updateStats();
+                applyRoleView(target);
+            } catch (e) {
+                target.innerHTML = "Could not load orders.";
+            }
+        }
+
+        async function loadReturns() {
+            const target = document.getElementById("returns-table");
+            target.innerHTML = "Loading&#8230;";
+            try {
+                const res = await fetch(API + "/returns/html", { credentials: "include" });
+                if (!res.ok) {
+                    target.innerHTML = "Please sign in to view returns.";
+                    return;
+                }
+                target.innerHTML = await res.text();
+                badgeify(target);
+                addReturnActions(target);
+                updateStats();
+            } catch (e) {
+                target.innerHTML = "Could not load returns.";
+            }
+        }
+
+        // Compute the stat cards from the loaded tables (JSON endpoints for accuracy).
+        async function updateStats() {
+            try {
+                const [ordersRes, returnsRes] = await Promise.all([
+                    fetch(API + "/orders", { credentials: "include" }),
+                    fetch(API + "/returns", { credentials: "include" })
+                ]);
+                if (ordersRes.ok) {
+                    const orders = await ordersRes.json();
+                    document.getElementById("stat-orders").textContent = orders.length;
+                    const count = s => orders.filter(o => (o.status || "").toLowerCase() === s).length;
+                    document.getElementById("stat-pending").textContent = count("pending");
+                    document.getElementById("stat-shipped").textContent = count("shipped");
+                    document.getElementById("stat-delivered").textContent = count("delivered");
+                }
+                if (returnsRes.ok) {
+                    const returns = await returnsRes.json();
+                    document.getElementById("stat-returns").textContent = returns.length;
+                }
+            } catch (e) {
+                // leave dashes if not signed in
+            }
+        }
+
         function getAdvice() {
-            const id = document.getElementById('ret-id').value;
-            fetch(`http://localhost:5000/api/order-returns/returns/${id}/advice`, {
-                credentials: 'include'
-            })
-                .then(r => r.json())
+            const id = document.getElementById("ret-id").value;
+            const box = document.getElementById("advice");
+            if (!id) {
+                box.textContent = "Please enter a return ID first.";
+                return;
+            }
+            box.textContent = "Thinking… (the AI can take up to a minute on the first request)";
+            fetch(API + "/returns/" + id + "/advice", { credentials: "include" })
+                .then(r => {
+                    if (!r.ok) {
+                        return r.json().then(d => { throw new Error(d.error || ("HTTP " + r.status)); });
+                    }
+                    return r.json();
+                })
                 .then(d => {
-                    document.getElementById('advice').textContent =
-                        d.ai_summary || d.error || 'No response';
+                    const text = d.ai_summary || d.error || "No response";
+                    const esc = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    let out = esc.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+                    out = out.replace(/^([A-Z][A-Za-z ]{2,30}:)/gm, "<strong>$1</strong>");
+                    box.innerHTML = out;
+                })
+                .catch(err => {
+                    box.textContent = "Could not get AI advice: " + err.message;
                 });
         }
+
+        // Create a new return via the existing POST /returns endpoint.
+        async function createReturn() {
+            const orderId = document.getElementById("new-return-order").value;
+            const reason = document.getElementById("new-return-reason").value;
+            const msg = document.getElementById("create-return-msg");
+            if (!orderId) {
+                msg.textContent = "Please enter an order ID.";
+                return;
+            }
+            msg.textContent = "Submitting\u2026";
+            try {
+                const res = await fetch(API + "/returns", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        order_id: Number(orderId),
+                        reason: reason,
+                        created_at: new Date().toISOString().slice(0, 10)
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    msg.className = "formMsg error"; msg.textContent = "Could not create return: " + (data.error || res.status);
+                    return;
+                }
+                msg.className = "formMsg success"; msg.textContent = "Return #" + data.return_id + " created for order " + orderId + ".";
+                document.getElementById("new-return-order").value = "";
+                loadReturns(); // refresh the table so the new return appears
+            } catch (e) {
+                msg.textContent = "Could not reach the server.";
+            }
+        }
+
+        // Detect admin (Customer ID column is admin-only) and hide the
+        // customer-facing "Create a Return" form for admins.
+        function applyRoleView(ordersTable) {
+            const headerText = ordersTable.querySelector("th")
+                ? ordersTable.querySelector("tr").textContent : "";
+            const isAdmin = headerText.includes("Customer ID");
+            const createSection = document.getElementById("create-return-section");
+            if (createSection) {
+                createSection.style.display = isAdmin ? "none" : "";
+            }
+        }
+
+        // Admin-only: add Approve/Reject buttons to each return row.
+        async function addReturnActions(returnsTable) {
+            let isAdmin = false;
+            try {
+                const res = await fetch(API + "/orders", { credentials: "include" });
+                if (res.ok) {
+                    const orders = await res.json();
+                    const distinct = new Set(orders.map(o => o.customer_id));
+                    isAdmin = distinct.size > 1; // only admins see multiple customers
+                }
+            } catch (e) { isAdmin = false; }
+            if (!isAdmin) return;
+            const rows = returnsTable.querySelectorAll("tr");
+            rows.forEach((row, i) => {
+                if (i === 0) {
+                    if (row.querySelector("th.actions-col")) return;
+                    const th = document.createElement("th");
+                    th.textContent = "Actions";
+                    th.className = "actions-col";
+                    row.appendChild(th);
+                } else {
+                    const firstCell = row.querySelector("td");
+                    if (!firstCell) return;
+                    const returnId = firstCell.textContent.trim();
+                    const td = document.createElement("td");
+                    td.innerHTML =
+                        '<button class="miniBtn approve" onclick="setReturnStatus(' + returnId + ', \'approved\')">Approve</button>' +
+                        '<button class="miniBtn reject" onclick="setReturnStatus(' + returnId + ', \'rejected\')">Reject</button>';
+                    row.appendChild(td);
+                }
+            });
+        }
+
+        async function setReturnStatus(id, status) {
+            try {
+                const res = await fetch(API + "/returns/" + id + "/status", {
+                    method: "PATCH",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: status })
+                });
+                if (!res.ok) {
+                    const d = await res.json();
+                    alert("Could not update: " + (d.error || res.status));
+                    return;
+                }
+                loadReturns();
+            } catch (e) {
+                alert("Could not reach the server.");
+            }
+        }
+
+        // Set the hero heading based on the signed-in role.
+        async function setHeroForRole() {
+            const title = document.getElementById("hero-title");
+            const sub = document.getElementById("hero-sub");
+            try {
+                const res = await fetch(API + "/orders", { credentials: "include" });
+                if (!res.ok) {
+                    title.textContent = "Order & Returns";
+                    sub.textContent = "Please sign in to view your orders and returns.";
+                    return;
+                }
+                const orders = await res.json();
+                const isAdmin = new Set(orders.map(o => o.customer_id)).size > 1;
+                if (isAdmin) {
+                    title.textContent = "Manage orders and returns";
+                    sub.textContent = "View all customer orders, track return requests, and approve or reject returns with AI-assisted advice.";
+                } else {
+                    title.textContent = "My orders and returns";
+                    sub.textContent = "View your orders, request a return, and get AI-assisted advice on your returns.";
+                }
+            } catch (e) {
+                title.textContent = "Order & Returns";
+                sub.textContent = "";
+            }
+        }
+
+        // Auto-load on page open.
+        document.addEventListener("DOMContentLoaded", () => {
+            setHeroForRole();
+            loadOrders();
+            loadReturns();
+        });
     </script>
 </body>
 
