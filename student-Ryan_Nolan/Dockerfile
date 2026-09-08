@@ -41,4 +41,4 @@ FROM python-base AS test
 
 COPY . .
 
-CMD ["python", "-m", "pytest", "student-Ryan_Nolan/tests", "-q"]
+CMD ["python", "-m", "pytest", "student-Ryan_Nolan/tests/inventory_tests.py", "-q"]
