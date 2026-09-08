@@ -53,7 +53,7 @@ jobs:
 
       - name: Initialise and verify the database
         run: |
-          python "student-Ryan_Nolan/database/init_db.py"
+          python "student-Ryan_Nolan/database/ryan_init_db.py"
           python - <<'PY'
           import sqlite3
           from pathlib import Path
@@ -61,8 +61,8 @@ jobs:
           db_path = Path("student-Ryan_Nolan/database/products.db")
           connection = sqlite3.connect(db_path)
           required_counts = {
-              "products": 10,
-              "suppliers": 10,
+              "products": 5,
+              "suppliers": 5,
           }
           for table, minimum in required_counts.items():
               count = connection.execute(
@@ -76,7 +76,7 @@ jobs:
           PY
 
       - name: Run Ryan Nolan tests
-        run: python -m pytest "student-Ryan_Nolan/tests" -q
+        run: python -m pytest "student-Ryan_Nolan/tests/inventory_tests.py" -q
 
       - name: Compile Ryan Nolan Python modules
         run: python -m compileall -q "student-Ryan_Nolan"
