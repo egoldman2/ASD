@@ -4,7 +4,9 @@
   "mode_prompt_files": {
     "database": "database_prompt.txt",
     "endpoints": "endpoints_prompt.txt",
-    "architecture": "architecture_prompt.txt"
+    "architecture": "architecture_prompt.txt",
+    "implementation": "implementation_prompt.txt",
+    "devops": "devops_prompt.txt"
   },
   "database": "student-Chufeng/database/products.db",
   "endpoints": [
@@ -32,5 +34,28 @@
     "student-Chufeng/backend/controllers/ai_controller.py",
     "student-Chufeng/backend/models/product_model.py",
     "student-Chufeng/backend/models/cart_model.py"
+  ],
+  "implementation_files": [
+    "student-Chufeng/frontend/js/products.js",
+    "student-Chufeng/frontend/js/cart.js",
+    "student-Chufeng/backend/routes/product_routes.py",
+    "student-Chufeng/backend/routes/cart_routes.py",
+    "student-Chufeng/backend/routes/ai_routes.py",
+    "student-Chufeng/backend/controllers/product_controller.py",
+    "student-Chufeng/backend/controllers/cart_controller.py",
+    "student-Chufeng/backend/controllers/ai_controller.py",
+    "student-Chufeng/backend/models/database.py",
+    "student-Chufeng/backend/models/product_model.py",
+    "student-Chufeng/backend/models/cart_model.py",
+    "student-Chufeng/tests/test_catalogue.py"
+  ],
+  "devops_files": [
+    ".github/workflows/Chufeng.yml",
+    "docker-compose.yml",
+    "student-Chufeng/Dockerfile",
+    "shared/Dockerfile.backend",
+    "shared/nginx/product-catalogue.conf",
+    "student-Chufeng/tests/test_catalogue.py",
+    "student-Chufeng/tests/test_agentic_loop.py"
   ]
 }

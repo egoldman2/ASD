@@ -1,0 +1,11 @@
+Review only the configured Product Catalogue and Shopping Cart DevOps evidence.
+
+Inspect Chufeng.yml, the Product Catalogue Dockerfile, Docker Compose configuration, Nginx
+proxy configuration, and automated tests. Check whether CI installs dependencies, runs the
+Chufeng test suite, and builds the required frontend and shared-backend images. Review the
+separation and wiring of the frontend, shared backend, Product Database API, persistent SQLite
+volume, authentication service, health checks, ports, and Ollama URL. The local assessment
+copy may use host.docker.internal to reuse an Ollama model already installed on the host; do
+not report this temporary local setting as a production defect. Static configuration proves
+intended automation only, not successful GitHub Actions or runtime execution. Cite at least
+three configured files and do not review unrelated student services.

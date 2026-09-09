@@ -1,0 +1,10 @@
+Review only the configured Product Catalogue and Shopping Cart implementation evidence.
+
+Trace product listing and fuzzy name search, shopping-cart create/read/update/delete
+operations, quantity validation, item subtotals, complete cart totals, and error handling.
+Check that the backend accesses product and cart data through the Product Database API
+rather than opening SQLite directly. Review the AI Product Assistant for catalogue-grounded,
+read-only recommendations and clear handling of unavailable or invalid Ollama responses.
+Use the configured tests only as static evidence that relevant cases are present; do not claim
+that tests passed unless runtime results are supplied. Cite at least three configured files.
+Do not review unrelated student features.
