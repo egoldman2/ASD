@@ -124,3 +124,69 @@ Howard GitHub Actions workflow:
 
 
 ### 5. Customer Support
+
+**Student:** Ethan Goldman
+
+**Directory:** `student-Ethan Goldman/`
+
+The Customer Support feature allows authenticated customers to create support tickets, view their own tickets and continue conversations with staff. Administrators can search and filter the ticket queue, reply to customers, update ticket category, priority, status and assignment, and delete tickets.
+
+The frontend uses HTMX to update ticket lists, conversations and analysis panels without full page reloads. The backend verifies sessions through the shared Customer and Loyalty authentication API, enforces administrator permissions and checks ticket ownership. Submitted values and request origins are validated, and customer messages are escaped when rendered as HTML.
+
+An advisory AI assistant uses Ollama and `qwen2.5:0.5b` to generate a ticket summary, category, priority, sentiment, suggested next steps and supporting source references. The Plan, Act, Observe and Adapt workflow prepares bounded, redacted context, requests structured JSON, validates the response and allows one correction retry. Staff explicitly apply triage changes or send replies; AI analysis does not modify ticket records.
+
+The frontend is available through Docker on: http://localhost:8005
+
+The independent Flask backend is available on: http://localhost:6005
+
+The database API is available internally through Docker Compose at `customer-support-database:6006`.
+
+#### Main Functions
+
+- Create support tickets with an opening message
+- View owned tickets and chronological conversations
+- Add customer and staff replies with verified authorship
+- Search and filter tickets by category, priority, status and assignment
+- Update ticket triage and staff assignment
+- Delete tickets and their associated messages
+- Enforce session authentication, administrator roles and customer ownership
+- Generate validated AI analysis for staff review
+- Review database, implementation, architecture and DevOps evidence using feature-specific agentic prompts
+
+#### Architecture
+
+The feature runs as three independent services, with shared authentication and AI dependencies:
+
+```text
+Nginx Frontend (HTMX)
+    ↓ HTTP / JSON and HTML fragments
+Flask Customer Support API
+    ├── HTTP → Shared Authentication API (sessions and roles)
+    ├── HTTP → Ollama / Qwen (advisory analysis)
+    └── HTTP → Flask Support Database API
+                   ↓
+               SQLite Database
+```
+
+Only the database service accesses SQLite. The `support_tickets` and `support_ticket_messages` tables contain 12 seeded tickets and 20 messages, with foreign keys and cascading message deletion. The `support-ticket-data` Docker volume persists the database. Docker Compose connects the services and uses health checks and startup dependencies to prepare the database, authentication and Ollama services before the support backend starts.
+
+#### Testing and CI/CD
+
+Automated tests use Pytest and temporary Flask services. They cover ticket CRUD, conversations, authentication, ownership, HTMX responses, input and origin validation, database seeding and migration, dependency failures, AI output policy and agentic review evidence collection.
+
+Run the Customer Support tests from the repository root using a Python 3.11 environment with `requirements.txt` installed:
+
+```bash
+python -m pytest "student-Ethan Goldman/tests" -v
+```
+
+The live inference test is enabled with `RUN_LIVE_AI=1` and requires a reachable Ollama service containing `qwen2.5:0.5b`. Local tests default to `http://127.0.0.1:11434`; set `OLLAMA_URL` to use another accessible runtime.
+
+The Ethan Goldman GitHub Actions workflow:
+
+- Installs Python 3.11 dependencies, runs the support tests and checks Python compilation
+- Builds and runs the Customer Support Docker test target
+- Validates Docker Compose and starts support, authentication and Ollama services
+- Checks service health, access control, HTMX responses and real AI analysis
+- Verifies agentic workflow logs and that AI analysis leaves the database unchanged
+- Displays service logs on failure and removes CI containers and volumes after execution
