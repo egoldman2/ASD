@@ -5,6 +5,7 @@ services:
       - "8000:80"
     volumes:
       - ./shared:/usr/share/nginx/html:ro
+      - ./shared/nginx/home.conf:/etc/nginx/conf.d/default.conf:ro
 
   product-catalogue:
     build:
