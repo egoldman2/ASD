@@ -6,6 +6,5 @@ venv/
 .vscode/
 .DS_Store
 
-# Ignore local SQLite databases except the seeded Release 0 catalogue.
+# Ignore local SQLite databases. Schema and seed files recreate them.
 *.db
-!student-Chufeng/database/products.db
