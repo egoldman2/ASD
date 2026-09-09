@@ -3,10 +3,10 @@ from itertools import combinations
 import logging
 import os
 import re
-import sqlite3
 from urllib import error, request
 
 from ..models import product_model
+from ..models.database import DatabaseAPIError
 
 
 LOGGER = logging.getLogger(__name__)
@@ -193,7 +193,7 @@ def ask_product_assistant(data):
             for product in product_model.get_products()
             if product["status"] == "active" and product["stock_quantity"] > 0
         ]
-    except sqlite3.Error:
+    except DatabaseAPIError:
         LOGGER.exception("Unable to retrieve products for AI assistant")
         return {"error": "Unable to retrieve products for the AI assistant."}, 500
 

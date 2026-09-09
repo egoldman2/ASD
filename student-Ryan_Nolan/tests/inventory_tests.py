@@ -1,25 +1,41 @@
 import os
-import sqlite3
 import sys
+from importlib import import_module
+from threading import Thread
 import pytest
 from pathlib import Path
+from werkzeug.serving import make_server
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "database"))
-
-import ryan_init_db
 
 TEST_DB_PATH = Path(__file__).resolve().parent / "test_products.db"
 
 
 @pytest.fixture
-def client():
+def database_api(monkeypatch):
     # Discard leftover copy's, then create a fresh one
     if TEST_DB_PATH.exists():
         TEST_DB_PATH.unlink()
 
-    ryan_init_db.DATABASE_PATH = TEST_DB_PATH
-    ryan_init_db.initialise_database(database_path=TEST_DB_PATH, reset=True)
+    database_app = import_module("student-Chufeng.database.api").create_app(TEST_DB_PATH)
+    server = make_server("127.0.0.1", 0, database_app)
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    monkeypatch.setenv(
+        "PRODUCT_DATABASE_API_URL",
+        f"http://127.0.0.1:{server.server_port}/api/database",
+    )
+    yield TEST_DB_PATH
+    server.shutdown()
+    thread.join(timeout=5)
+
+    if TEST_DB_PATH.exists():
+        TEST_DB_PATH.unlink()
+
+
+@pytest.fixture
+def client(database_api):
 
     from app import create_app
     app = create_app()
@@ -28,19 +44,19 @@ def client():
     with app.test_client() as c:
         yield c
 
-    if TEST_DB_PATH.exists():
-        TEST_DB_PATH.unlink()
-
-
 # ---------- Database ----------
-def test_database_has_minimum_records():
+def test_database_has_minimum_records(database_api):
     """Spec requires at least 10 records per table."""
-    db = os.path.join(os.path.dirname(__file__), "..",  "database", "products.db")
-    conn = sqlite3.connect(db)
-    for table in ("products", "suppliers"):
-        count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-        assert count >= 5, f"{table} has only {count} records"
-    conn.close()
+    import requests
+
+    products = requests.get(
+        os.environ["PRODUCT_DATABASE_API_URL"] + "/products", timeout=5
+    ).json()
+    suppliers = requests.get(
+        os.environ["PRODUCT_DATABASE_API_URL"] + "/suppliers", timeout=5
+    ).json()
+    assert len(products) >= 10
+    assert len(suppliers) >= 5
 
 
 # ---------- Read: Products ----------

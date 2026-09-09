@@ -262,7 +262,13 @@ def test_agentic_loop_accepts_passing_review(agentic_loop, monkeypatch):
     )
     responses = iter(
         [
-            "PLAN REVIEWED\nEvidence-based review",
+            (
+                "PLAN REVIEWED\nOBSERVATIONS\nThe supplied architecture evidence is available "
+                "for review.\nFINDINGS\nNo unsupported defect is proven by this evidence. "
+                "The review remains read only and evidence based.\nRECOMMENDATIONS\n"
+                "Preserve the current structure and continue collecting test evidence. "
+                "No adaptation is required."
+            ),
             "DECISION: PASS\nThe review is supported by the evidence.",
         ]
     )

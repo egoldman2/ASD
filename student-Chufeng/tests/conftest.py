@@ -1,8 +1,10 @@
 from importlib import import_module
 from pathlib import Path
 import sys
+from threading import Thread
 
 import pytest
+from werkzeug.serving import make_server
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -19,9 +21,21 @@ def database_path(tmp_path):
 
 
 @pytest.fixture
-def client(database_path, monkeypatch):
-    database = import_module("student-Chufeng.backend.models.database")
-    monkeypatch.setattr(database, "DATABASE_PATH", database_path)
+def database_api_url(database_path):
+    database_api = import_module("student-Chufeng.database.api")
+    server = make_server("127.0.0.1", 0, database_api.create_app(database_path))
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}/api/database"
+    finally:
+        server.shutdown()
+        thread.join(timeout=5)
+
+
+@pytest.fixture
+def client(database_api_url, monkeypatch):
+    monkeypatch.setenv("PRODUCT_DATABASE_API_URL", database_api_url)
 
     application = import_module("app").app
     application.config.update(TESTING=True)

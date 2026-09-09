@@ -1,103 +1,49 @@
-from contextlib import closing
-
-from .database import get_database_connection
+from .database import DatabaseAPIError, database_request
 
 
-CART_ITEM_COLUMNS = """
-    ci.id,
-    ci.product_id,
-    ci.quantity,
-    p.name,
-    p.category,
-    p.description,
-    p.price,
-    p.stock_quantity,
-    p.status,
-    ROUND(p.price * ci.quantity, 2) AS subtotal
-"""
+def _optional_get(path):
+    try:
+        return database_request("GET", path)
+    except DatabaseAPIError as exc:
+        if exc.status_code == 404:
+            return None
+        raise
 
 
 def get_cart_items():
-    with closing(get_database_connection()) as connection:
-        rows = connection.execute(
-            f"""
-            SELECT {CART_ITEM_COLUMNS}
-            FROM cart_items AS ci
-            JOIN products AS p ON p.id = ci.product_id
-            ORDER BY ci.id
-            """
-        ).fetchall()
-
-    return [dict(row) for row in rows]
+    return database_request("GET", "cart-items")
 
 
 def get_cart_item(cart_item_id):
-    with closing(get_database_connection()) as connection:
-        row = connection.execute(
-            f"""
-            SELECT {CART_ITEM_COLUMNS}
-            FROM cart_items AS ci
-            JOIN products AS p ON p.id = ci.product_id
-            WHERE ci.id = ?
-            """,
-            (cart_item_id,),
-        ).fetchone()
-
-    return dict(row) if row is not None else None
+    return _optional_get(f"cart-items/{cart_item_id}")
 
 
 def get_cart_item_by_product(product_id):
-    with closing(get_database_connection()) as connection:
-        row = connection.execute(
-            f"""
-            SELECT {CART_ITEM_COLUMNS}
-            FROM cart_items AS ci
-            JOIN products AS p ON p.id = ci.product_id
-            WHERE ci.product_id = ?
-            """,
-            (product_id,),
-        ).fetchone()
-
-    return dict(row) if row is not None else None
+    return _optional_get(f"cart-items/by-product/{product_id}")
 
 
 def create_cart_item(product_id, quantity):
-    with closing(get_database_connection()) as connection:
-        cursor = connection.execute(
-            "INSERT INTO cart_items (product_id, quantity) VALUES (?, ?)",
-            (product_id, quantity),
-        )
-        cart_item_id = cursor.lastrowid
-        connection.commit()
-
-    return get_cart_item(cart_item_id)
+    return database_request(
+        "POST", "cart-items", json={"product_id": product_id, "quantity": quantity}
+    )
 
 
 def update_cart_item(cart_item_id, quantity):
-    with closing(get_database_connection()) as connection:
-        cursor = connection.execute(
-            "UPDATE cart_items SET quantity = ? WHERE id = ?",
-            (quantity, cart_item_id),
+    try:
+        return database_request(
+            "PUT", f"cart-items/{cart_item_id}", json={"quantity": quantity}
         )
-
-        if cursor.rowcount == 0:
+    except DatabaseAPIError as exc:
+        if exc.status_code == 404:
             return None
-
-        connection.commit()
-
-    return get_cart_item(cart_item_id)
+        raise
 
 
 def delete_cart_item(cart_item_id):
-    with closing(get_database_connection()) as connection:
-        cursor = connection.execute(
-            "DELETE FROM cart_items WHERE id = ?",
-            (cart_item_id,),
-        )
-
-        if cursor.rowcount == 0:
+    try:
+        database_request("DELETE", f"cart-items/{cart_item_id}")
+        return True
+    except DatabaseAPIError as exc:
+        if exc.status_code == 404:
             return False
-
-        connection.commit()
-
-    return True
+        raise

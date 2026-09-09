@@ -3,7 +3,7 @@ import os
 import requests
 
 
-class DatabaseAPIError(Exception):
+class DatabaseServiceError(Exception):
     def __init__(self, message, status_code=503, payload=None):
         super().__init__(message)
         self.status_code = status_code
@@ -19,16 +19,16 @@ def database_request(method, path, **kwargs):
             method, f"{base_url}/{path.lstrip('/')}", timeout=5, **kwargs
         )
     except requests.RequestException as exc:
-        raise DatabaseAPIError("Product database service is unavailable.") from exc
+        raise DatabaseServiceError("Product database service is unavailable.") from exc
 
     if response.status_code == 204:
         return None
     try:
         payload = response.json()
     except ValueError as exc:
-        raise DatabaseAPIError("Product database returned an invalid response.", 502) from exc
+        raise DatabaseServiceError("Product database returned an invalid response.", 502) from exc
     if not response.ok:
-        raise DatabaseAPIError(
+        raise DatabaseServiceError(
             payload.get("error", "Product database request failed."),
             response.status_code,
             payload,

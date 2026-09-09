@@ -1,5 +1,7 @@
 from importlib import import_module
 
+import requests
+
 # python -m pytest student-Chufeng/tests -q
 
 def test_initialize_database(tmp_path):
@@ -10,7 +12,7 @@ def test_initialize_database(tmp_path):
 
     assert result == {
         "initialized": True,
-        "products": 12,
+        "products": 13,
         "cart_items": 10,
     }
 
@@ -20,7 +22,7 @@ def test_get_and_search_products(client):
     search_result = client.get("/api/products?search=reader")
 
     assert all_products.status_code == 200
-    assert all_products.json["count"] == 12
+    assert all_products.json["count"] == 13
     assert search_result.status_code == 200
     assert search_result.json["count"] == 1
     assert search_result.json["products"][0]["name"] == "E-Reader"
@@ -34,6 +36,24 @@ def test_get_cart_and_total(client):
     assert response.json["total_quantity"] == 21
     assert response.json["total"] == 1928.94
     assert response.json["items"][0]["subtotal"] == 258.0
+
+
+def test_customer_cart_is_owned_by_database_api(database_api_url):
+    created = requests.post(
+        f"{database_api_url}/customer-cart-items",
+        json={"user_id": 42, "product_id": 1, "quantity": 2},
+        timeout=5,
+    )
+    listed = requests.get(
+        f"{database_api_url}/customer-cart-items",
+        params={"user_id": 42},
+        timeout=5,
+    )
+
+    assert created.status_code == 201
+    assert listed.status_code == 200
+    assert listed.json()[0]["user_id"] == 42
+    assert listed.json()[0]["quantity"] == 2
 
 
 def test_add_cart_item(client):

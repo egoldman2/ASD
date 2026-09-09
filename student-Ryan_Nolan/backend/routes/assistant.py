@@ -1,13 +1,8 @@
 import os
-import sys
-from pathlib import Path
-from contextlib import closing
-
 import requests
 from flask import Blueprint, request, g, jsonify, abort
 
-sys.path.append(str(Path(__file__).resolve().parents[2] / "database"))
-from ryan_init_db import get_connection  
+from database_client import DatabaseServiceError, database_request
 
 assistant_blueprint = Blueprint("assistant_blueprint", __name__, url_prefix="/api/inventory/assistant")
 
@@ -24,24 +19,14 @@ def _build_low_stock_context():
     """Pulls current low-stock / out-of-stock products to ground the
     assistant's answer in real inventory data rather than letting it
     hallucinate product names or quantities."""
-    with closing(get_connection()) as db:
-        rows = db.execute(
-            """
-            SELECT p.name, p.stock_quantity, p.reorder_threshold, p.reorder_quantity,
-                   s.name AS supplier_name
-            FROM products p
-            LEFT JOIN suppliers s ON s.id = p.supplier_id
-            WHERE p.stock_quantity <= p.reorder_threshold
-            ORDER BY p.stock_quantity ASC
-            """
-        ).fetchall()
+    rows = database_request("GET", "products", params={"filter": "needs_reorder"})
 
     if not rows:
         return "All products are currently above their reorder threshold."
 
     lines = []
     for row in rows:
-        supplier = row["supplier_name"] or "no assigned supplier"
+        supplier = row.get("supplier_name") or "no assigned supplier"
         lines.append(
             f"- {row['name']}: {row['stock_quantity']} in stock "
             f"(reorder threshold {row['reorder_threshold']}, "
@@ -79,7 +64,10 @@ def ask_assistant():
     if not message:
         abort(400, description="A message is required")
 
-    context = _build_low_stock_context()
+    try:
+        context = _build_low_stock_context()
+    except DatabaseServiceError as exc:
+        return jsonify(exc.payload), exc.status_code
 
     prompt = (
         "You are a restocking assistant for an inventory management system.\n"

@@ -8,7 +8,7 @@ DATABASE_DIRECTORY = Path(__file__).resolve().parent
 DATABASE_PATH = DATABASE_DIRECTORY / "products.db"
 SCHEMA_PATH = DATABASE_DIRECTORY / "schema.sql"
 SEED_PATH = DATABASE_DIRECTORY / "seed.sql"
-REQUIRED_TABLES = {"products", "cart_items"}
+REQUIRED_TABLES = {"suppliers", "products", "cart_items"}
 
 
 def initialize_database(database_path=DATABASE_PATH, reset=False):

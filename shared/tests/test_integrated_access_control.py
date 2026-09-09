@@ -1,5 +1,8 @@
 import importlib
 import sqlite3
+from threading import Thread
+
+from werkzeug.serving import make_server
 
 
 def create_orders_database(path):
@@ -124,11 +127,17 @@ def test_admin_receives_all_orders_and_returns(monkeypatch, tmp_path):
 
 def test_each_customer_has_an_independent_cart(monkeypatch, tmp_path):
     application_module = importlib.import_module("app")
-    customer_cart = importlib.import_module("shared.customer_cart")
-    monkeypatch.setattr(
-        customer_cart,
-        "CART_DATABASE_PATH",
-        tmp_path / "customer_carts.db",
+    database_api = importlib.import_module("student-Chufeng.database.api")
+    server = make_server(
+        "127.0.0.1",
+        0,
+        database_api.create_app(tmp_path / "products.db"),
+    )
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    monkeypatch.setenv(
+        "PRODUCT_DATABASE_API_URL",
+        f"http://127.0.0.1:{server.server_port}/api/database",
     )
     active_user = {"id": 2, "role": "customer"}
     monkeypatch.setattr(
@@ -139,22 +148,26 @@ def test_each_customer_has_an_independent_cart(monkeypatch, tmp_path):
     client = application_module.create_app().test_client()
     add_session_cookie(client)
 
-    added = client.post(
-        "/api/cart-items",
-        json={"product_id": 1, "quantity": 2},
-        headers={"Origin": "http://localhost:8001"},
-    )
-    assert added.status_code == 201
-    assert client.get("/api/cart-items").get_json()["count"] == 1
+    try:
+        added = client.post(
+            "/api/cart-items",
+            json={"product_id": 1, "quantity": 2},
+            headers={"Origin": "http://localhost:8001"},
+        )
+        assert added.status_code == 201
+        assert client.get("/api/cart-items").get_json()["count"] == 1
 
-    active_user["id"] = 3
-    other_customer_cart = client.get("/api/cart-items").get_json()
-    assert other_customer_cart == {
-        "count": 0,
-        "items": [],
-        "total": 0,
-        "total_quantity": 0,
-    }
+        active_user["id"] = 3
+        other_customer_cart = client.get("/api/cart-items").get_json()
+        assert other_customer_cart == {
+            "count": 0,
+            "items": [],
+            "total": 0,
+            "total_quantity": 0,
+        }
 
-    active_user["id"] = 2
-    assert client.get("/api/cart-items").get_json()["items"][0]["quantity"] == 2
+        active_user["id"] = 2
+        assert client.get("/api/cart-items").get_json()["items"][0]["quantity"] == 2
+    finally:
+        server.shutdown()
+        thread.join(timeout=5)

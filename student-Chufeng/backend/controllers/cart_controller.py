@@ -1,7 +1,6 @@
 import logging
-import sqlite3
-
 from ..models import cart_model, product_model
+from ..models.database import DatabaseAPIError
 
 
 LOGGER = logging.getLogger(__name__)
@@ -30,7 +29,7 @@ def _cart_response(items):
 def get_cart_items():
     try:
         return _cart_response(cart_model.get_cart_items()), 200
-    except sqlite3.Error:
+    except DatabaseAPIError:
         LOGGER.exception("Unable to retrieve cart items")
         return {"error": "Unable to retrieve cart items."}, 500
 
@@ -68,7 +67,7 @@ def create_cart_item(data):
             }, 200
 
         item = cart_model.create_cart_item(product_id, quantity)
-    except sqlite3.Error:
+    except DatabaseAPIError:
         LOGGER.exception("Unable to add product to cart")
         return {"error": "Unable to add product to cart."}, 500
 
@@ -89,7 +88,7 @@ def update_cart_item(cart_item_id, data):
             return {"error": "The requested quantity exceeds available stock."}, 409
 
         item = cart_model.update_cart_item(cart_item_id, quantity)
-    except sqlite3.Error:
+    except DatabaseAPIError:
         LOGGER.exception("Unable to update cart item")
         return {"error": "Unable to update cart item."}, 500
 
@@ -103,7 +102,7 @@ def delete_cart_item(cart_item_id):
             return {"error": "Cart item not found."}, 404
 
         cart_model.delete_cart_item(cart_item_id)
-    except sqlite3.Error:
+    except DatabaseAPIError:
         LOGGER.exception("Unable to remove cart item")
         return {"error": "Unable to remove cart item."}, 500
 
