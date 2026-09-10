@@ -72,6 +72,71 @@ The Chufeng GitHub Actions workflow:
 
 ### 3. Customer and Loyalty Management
 
+**Student:** Ethan Ting
+
+**Directory:** `student-Ethan Ting/`
+
+The Customer Accounts and Loyalty feature provides customer registration, login, session management, profile editing and password changes. Customers can view their loyalty points balance, membership tier and points transaction history. Administrators can manage customer and administrator accounts, disable customer accounts and adjust loyalty points through protected role-based endpoints.
+
+The feature also includes the Customer Insight AI assistant powered by Ollama and `llama3.1:8b`. An administrator can ask questions about customer accounts and loyalty information, find the customer linked to an email address and prepare changes to a customer's name or email. Proposed account changes are not saved automatically. The administrator must review the current and proposed values and explicitly confirm the update.
+
+The frontend is available through Docker on: http://localhost:8003
+
+The Customer Accounts backend API is available on: http://localhost:6002
+
+The database API is available internally through Docker Compose at `ethan-database:6003`.
+
+#### Main Functions
+
+- Register a new customer account
+- Sign in and sign out using server-managed sessions
+- View and update the signed-in customer's name and email address
+- Change a customer's password after verifying the current password
+- Display loyalty points, membership tier and points history
+- Create and manage customer and administrator accounts
+- Disable and reactivate customer accounts
+- Add or deduct loyalty points with a recorded reason
+- Enforce customer and administrator role permissions in the backend
+- Find and summarise customer information using the administrator AI assistant
+- Prepare AI-assisted account changes for human review and confirmation
+- Demonstrate the Plan, Act, Observe and Adapt review workflow
+
+#### Architecture
+
+The feature runs as three separate services and uses the shared Ollama runtime:
+
+```text
+Nginx Frontend
+    ↓ HTTP / JSON
+Flask Customer Accounts API
+    ├── HTTP → Flask Database API → SQLite users and loyalty data
+    └── HTTP → Ollama / Llama 3.1 8B
+```
+
+Only the database API directly accesses the customer SQLite database. The frontend communicates with the backend API, while the backend applies validation, session checks and role-based access control before requesting data or saving changes.
+
+#### Testing and CI/CD
+
+Automated tests use Pytest and cover registration, login, logout, sessions, customer profile and password updates, administrator permissions, account management, loyalty calculations, transaction history, database validation, Customer Insight AI safeguards and agentic review evidence.
+
+Run the Customer Accounts and Loyalty tests from the repository root:
+
+```bash
+python -m pytest "student-Ethan Ting/tests" -q
+```
+
+The Ethan Ting GitHub Actions workflow:
+
+- Sets up Python 3.11 and installs the project dependencies
+- Initialises and verifies the customer database
+- Runs the automated tests and checks Python compilation
+- Validates the shared Docker Compose configuration
+- Builds the customer frontend, backend and database targets
+- Starts the services and checks authentication, loyalty and role protection
+- Displays service logs when a smoke test fails and stops the services after execution
+
+
+
 
 ### 4. Order and Returns Management
 
