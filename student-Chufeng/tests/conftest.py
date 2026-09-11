@@ -8,8 +8,11 @@ from werkzeug.serving import make_server
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+AI_SERVICES_ROOT = PROJECT_ROOT / "ai-services"
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+if str(AI_SERVICES_ROOT) not in sys.path:
+    sys.path.insert(0, str(AI_SERVICES_ROOT))
 
 
 @pytest.fixture
