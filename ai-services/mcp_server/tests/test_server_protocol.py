@@ -13,7 +13,12 @@ from mcp_server.server import (
 )
 
 
-def test_streamable_http_initialise_list_and_call():
+def test_streamable_http_initialise_list_and_call(
+    live_product_database_api,
+    monkeypatch,
+):
+    monkeypatch.setenv("PRODUCT_DATABASE_API_URL", live_product_database_api)
+
     async def exercise_protocol():
         server = create_server()
         app = server.streamable_http_app()
@@ -53,6 +58,22 @@ def test_streamable_http_initialise_list_and_call():
                             called.structuredContent["error"]["code"]
                             == "INVALID_ARGUMENT"
                         )
+
+                        successful = await session.call_tool(
+                            "chufeng_search_products",
+                            {
+                                "query": "Keyboard",
+                                "category": "Electronics",
+                                "max_price": 120,
+                            },
+                        )
+                        assert successful.isError is False
+                        assert successful.structuredContent["success"] is True
+                        products = successful.structuredContent["result"]["products"]
+                        assert [product["name"] for product in products] == [
+                            "Mechanical Keyboard"
+                        ]
+                        assert "unit_cost" not in products[0]
 
     asyncio.run(exercise_protocol())
 

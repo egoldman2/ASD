@@ -1,5 +1,7 @@
 """Focused tests for Chufeng's read-only catalogue tool logic."""
 
+import sqlite3
+
 import requests
 
 from mcp_server.tools import chufeng_catalogue as catalogue
@@ -140,3 +142,101 @@ def test_product_service_timeout_is_safe(monkeypatch):
     assert response["success"] is False
     assert response["error"]["code"] == "UPSTREAM_UNAVAILABLE"
     assert "private network detail" not in str(response)
+
+
+def test_live_product_api_supports_all_four_tools(
+    live_product_database_api,
+    product_database_path,
+    monkeypatch,
+):
+    monkeypatch.setenv("PRODUCT_DATABASE_API_URL", live_product_database_api)
+
+    with sqlite3.connect(product_database_path) as connection:
+        products_before = connection.execute(
+            "SELECT * FROM products ORDER BY id"
+        ).fetchall()
+        carts_before = connection.execute(
+            "SELECT * FROM cart_items ORDER BY id"
+        ).fetchall()
+
+    searched = catalogue.search_products(
+        query="Keyboard",
+        category="Electronics",
+        max_price=120,
+    )
+    detailed = catalogue.get_product_details(11)
+    stock = catalogue.check_product_stock(13, quantity=1)
+    cart = catalogue.calculate_cart_summary(
+        [
+            {"product_id": 1, "quantity": 2},
+            {"product_id": 5, "quantity": 1},
+        ]
+    )
+
+    assert searched["success"] is True
+    assert searched["result"]["products"][0]["name"] == "Mechanical Keyboard"
+    assert detailed["result"]["product"]["price"] == 109.0
+    assert stock["result"] == {
+        "product_id": 13,
+        "product_name": "Smart Glasses",
+        "requested_quantity": 1,
+        "available_quantity": 0,
+        "available": False,
+        "shortfall": 1,
+    }
+    assert cart["result"]["total"] == 307.99
+    assert cart["result"]["all_items_available"] is True
+
+    with sqlite3.connect(product_database_path) as connection:
+        products_after = connection.execute(
+            "SELECT * FROM products ORDER BY id"
+        ).fetchall()
+        carts_after = connection.execute(
+            "SELECT * FROM cart_items ORDER BY id"
+        ).fetchall()
+
+    assert products_after == products_before
+    assert carts_after == carts_before
+
+
+def test_cart_summary_rejects_invalid_and_excessive_quantities(monkeypatch):
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("The product API must not be called for invalid input")
+
+    monkeypatch.setattr(catalogue.requests, "get", fail_if_called)
+
+    invalid_boolean = catalogue.calculate_cart_summary(
+        [{"product_id": True, "quantity": 1}]
+    )
+    excessive_duplicate = catalogue.calculate_cart_summary(
+        [
+            {"product_id": 1, "quantity": 60},
+            {"product_id": 1, "quantity": 40},
+        ]
+    )
+
+    assert invalid_boolean["error"]["code"] == "INVALID_ARGUMENT"
+    assert excessive_duplicate["error"]["code"] == "INVALID_ARGUMENT"
+
+
+def test_upstream_http_and_schema_errors_are_structured(monkeypatch):
+    monkeypatch.setattr(
+        catalogue.requests,
+        "get",
+        lambda *args, **kwargs: FakeResponse({"error": "broken"}, 503),
+    )
+    service_error = catalogue.get_product_details(1)
+
+    monkeypatch.setattr(
+        catalogue.requests,
+        "get",
+        lambda *args, **kwargs: FakeResponse({"unexpected": "object"}),
+    )
+    schema_error = catalogue.search_products()
+
+    assert service_error["error"] == {
+        "code": "UPSTREAM_ERROR",
+        "message": "The product service returned an error.",
+        "details": {"status_code": 503},
+    }
+    assert schema_error["error"]["code"] == "UPSTREAM_ERROR"

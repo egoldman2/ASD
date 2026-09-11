@@ -12,6 +12,7 @@ DEFAULT_MCP_PATH = "/mcp"
 DEFAULT_PRODUCT_DATABASE_API_URL = "http://127.0.0.1:6001/api/database"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 10.0
 DEFAULT_LOG_LEVEL = "INFO"
+VALID_LOG_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
 
 
 class ConfigurationError(ValueError):
@@ -60,6 +61,14 @@ def _normalise_path(value: str) -> str:
     return path
 
 
+def _log_level_from_environment(value: str) -> str:
+    log_level = _required_text(value, "MCP_LOG_LEVEL").upper()
+    if log_level not in VALID_LOG_LEVELS:
+        allowed = ", ".join(sorted(VALID_LOG_LEVELS))
+        raise ConfigurationError(f"MCP_LOG_LEVEL must be one of: {allowed}.")
+    return log_level
+
+
 @dataclass(frozen=True, slots=True)
 class MCPSettings:
     """Configuration shared by the MCP server and its tool adapters."""
@@ -103,10 +112,9 @@ class MCPSettings:
                 str(DEFAULT_REQUEST_TIMEOUT_SECONDS),
             )
         )
-        log_level = _required_text(
-            os.getenv("MCP_LOG_LEVEL", DEFAULT_LOG_LEVEL),
-            "MCP_LOG_LEVEL",
-        ).upper()
+        log_level = _log_level_from_environment(
+            os.getenv("MCP_LOG_LEVEL", DEFAULT_LOG_LEVEL)
+        )
 
         return cls(
             host=host,
