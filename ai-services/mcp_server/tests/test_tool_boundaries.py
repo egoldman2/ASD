@@ -58,3 +58,20 @@ def test_compose_bridges_to_host_mcp_without_containerising_it():
     assert "http://host.docker.internal:8765/mcp" in backend
     assert "host.docker.internal:host-gateway" in backend
     assert '"${PRODUCT_DATABASE_HOST_PORT:-6001}:6001"' in product_database
+
+
+def test_chufeng_ci_validates_mcp_without_starting_local_ai_services():
+    workflow = (
+        PROJECT_ROOT / ".github" / "workflows" / "Chufeng.yml"
+    ).read_text(encoding="utf-8")
+
+    assert 'MCP_ENABLED: "false"' in workflow
+    assert 'RAG_ENABLED: "false"' in workflow
+    assert 'AI_MODE_ENABLED: "false"' in workflow
+    assert "student-Chufeng/tests" in workflow
+    assert "ai-services/mcp_server/tests" in workflow
+    assert "docker compose config --quiet" in workflow
+    assert "--target database" in workflow
+    assert "docker compose up" not in workflow
+    assert "ollama pull" not in workflow
+    assert "ollama-init" not in workflow
