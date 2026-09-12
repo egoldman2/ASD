@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MCP Product Assistant | ASD 2026</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+    <link rel="stylesheet" href="css/styles.css?v=10">
+    <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
+    <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+    <script src="js/mcp-tools.js?v=1" defer></script>
+  </head>
+  <body>
+    <header class="navbar appleNav" data-site-header data-active="catalogue">
+      <div class="navContainer">
+        <div class="navLogo">
+          <a href="http://localhost:8000" class="logoLink">
+            <span class="logoMain">ASD 2026</span>
+          </a>
+        </div>
+
+        <nav class="navLinks" aria-label="Main navigation">
+          <a href="index.html" class="navLink active">Product Catalogue</a>
+          <a href="http://localhost:8002" class="navLink">Inventory Management</a>
+          <a href="http://localhost:8003" class="navLink">Customer & Loyalty</a>
+          <a href="http://localhost:8005" class="navLink">Customer Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="cataloguePage mcpPage">
+      <section class="catalogueHero catalogueHero--compact mcpHero">
+        <div>
+          <p class="sectionEyebrow">Live MCP Integration</p>
+          <h1>MCP Product Assistant</h1>
+          <p class="heroDescription">
+            Query live catalogue data through the Chufeng backend and the shared
+            Model Context Protocol server. All tools on this page are read-only.
+          </p>
+        </div>
+        <a class="cartLink cartLink--secondary" href="index.html">Back to Catalogue</a>
+      </section>
+
+      <section class="mcpStatusPanel" aria-labelledby="mcpStatusTitle">
+        <div class="mcpStatusIdentity">
+          <span id="mcpStatusDot" class="mcpStatusDot" aria-hidden="true"></span>
+          <div>
+            <p class="sectionEyebrow">Connection</p>
+            <h2 id="mcpStatusTitle">Checking MCP status...</h2>
+            <p id="mcpStatusMessage" class="mcpStatusMessage" aria-live="polite">
+              Contacting the Chufeng backend.
+            </p>
+          </div>
+        </div>
+        <div class="mcpStatusActions">
+          <span id="mcpToolCount" class="mcpToolCount">0 tools</span>
+          <button id="refreshMcpButton" class="mcpSecondaryButton" type="button">
+            Refresh status
+          </button>
+        </div>
+      </section>
+
+      <section class="mcpWorkspace" aria-label="MCP product tools">
+        <aside class="mcpToolMenu" aria-labelledby="mcpToolsTitle">
+          <p class="sectionEyebrow">Available Tools</p>
+          <h2 id="mcpToolsTitle">Choose a task</h2>
+          <p class="mcpMenuDescription">
+            Each request travels through the frontend, Flask backend, MCP client,
+            shared MCP server, and Product Database API.
+          </p>
+          <div class="mcpToolButtons" role="tablist" aria-label="MCP tools">
+            <button class="mcpToolButton active" type="button" role="tab" aria-selected="true" data-tool-panel="searchPanel">
+              <span>Search Products</span>
+              <small>Filter the live catalogue</small>
+            </button>
+            <button class="mcpToolButton" type="button" role="tab" aria-selected="false" data-tool-panel="detailsPanel">
+              <span>Product Details</span>
+              <small>Inspect one product</small>
+            </button>
+            <button class="mcpToolButton" type="button" role="tab" aria-selected="false" data-tool-panel="stockPanel">
+              <span>Check Stock</span>
+              <small>Verify a requested quantity</small>
+            </button>
+            <button class="mcpToolButton" type="button" role="tab" aria-selected="false" data-tool-panel="cartPanel">
+              <span>Cart Summary</span>
+              <small>Calculate a proposed cart</small>
+            </button>
+          </div>
+        </aside>
+
+        <div class="mcpToolStage">
+          <section id="searchPanel" class="mcpToolPanel" role="tabpanel">
+            <div class="mcpPanelHeading">
+              <p class="sectionEyebrow">chufeng_search_products</p>
+              <h2>Search the live catalogue</h2>
+              <p>All filters are optional. Results never expose internal cost fields.</p>
+            </div>
+            <form id="searchToolForm" class="mcpForm" data-mcp-tool="chufeng_search_products">
+              <label class="mcpField mcpField--wide">
+                <span>Product name</span>
+                <input name="query" type="search" maxlength="100" placeholder="e.g. keyboard">
+              </label>
+              <label class="mcpField">
+                <span>Exact category</span>
+                <input name="category" type="text" maxlength="100" placeholder="e.g. Electronics">
+              </label>
+              <label class="mcpField">
+                <span>Maximum price (AUD)</span>
+                <input name="max_price" type="number" min="0" step="0.01" placeholder="150.00">
+              </label>
+              <label class="mcpField">
+                <span>Maximum results</span>
+                <input name="limit" type="number" min="1" max="100" step="1" value="20" required>
+              </label>
+              <button class="mcpPrimaryButton" type="submit">Run product search</button>
+            </form>
+          </section>
+
+          <section id="detailsPanel" class="mcpToolPanel" role="tabpanel" hidden>
+            <div class="mcpPanelHeading">
+              <p class="sectionEyebrow">chufeng_get_product_details</p>
+              <h2>Get product details</h2>
+              <p>Retrieve customer-safe information for one product ID.</p>
+            </div>
+            <form id="detailsToolForm" class="mcpForm" data-mcp-tool="chufeng_get_product_details">
+              <label class="mcpField">
+                <span>Product ID</span>
+                <input name="product_id" type="number" min="1" step="1" value="11" required>
+              </label>
+              <button class="mcpPrimaryButton" type="submit">Get product details</button>
+            </form>
+          </section>
+
+          <section id="stockPanel" class="mcpToolPanel" role="tabpanel" hidden>
+            <div class="mcpPanelHeading">
+              <p class="sectionEyebrow">chufeng_check_product_stock</p>
+              <h2>Check product stock</h2>
+              <p>Verify availability without reserving or changing inventory.</p>
+            </div>
+            <form id="stockToolForm" class="mcpForm" data-mcp-tool="chufeng_check_product_stock">
+              <label class="mcpField">
+                <span>Product ID</span>
+                <input name="product_id" type="number" min="1" step="1" value="11" required>
+              </label>
+              <label class="mcpField">
+                <span>Requested quantity</span>
+                <input name="quantity" type="number" min="1" max="99" step="1" value="2" required>
+              </label>
+              <button class="mcpPrimaryButton" type="submit">Check availability</button>
+            </form>
+          </section>
+
+          <section id="cartPanel" class="mcpToolPanel" role="tabpanel" hidden>
+            <div class="mcpPanelHeading">
+              <p class="sectionEyebrow">chufeng_calculate_cart_summary</p>
+              <h2>Calculate a proposed cart</h2>
+              <p>Combine live prices and stock checks without saving a shopping cart.</p>
+            </div>
+            <form id="cartToolForm" class="mcpForm" data-mcp-tool="chufeng_calculate_cart_summary">
+              <div class="mcpField mcpField--wide">
+                <span>Cart items</span>
+                <div id="mcpCartItems" class="mcpCartItems"></div>
+                <button id="addMcpCartItem" class="mcpSecondaryButton" type="button">Add another item</button>
+              </div>
+              <button class="mcpPrimaryButton" type="submit">Calculate summary</button>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section id="mcpResultSection" class="mcpResultSection" aria-labelledby="mcpResultTitle" hidden>
+        <div class="mcpResultHeader">
+          <div>
+            <p class="sectionEyebrow">Grounding Evidence</p>
+            <h2 id="mcpResultTitle">MCP tool result</h2>
+          </div>
+          <span id="mcpResultStatus" class="mcpResultStatus"></span>
+        </div>
+        <div id="mcpFriendlyResult" class="mcpFriendlyResult" aria-live="polite"></div>
+        <dl class="mcpEvidenceSummary">
+          <div>
+            <dt>Tool used</dt>
+            <dd id="mcpEvidenceTool">-</dd>
+          </div>
+          <div>
+            <dt>Data path</dt>
+            <dd>Frontend → Backend → MCP → Product Database API</dd>
+          </div>
+          <div>
+            <dt>Access</dt>
+            <dd>Read-only</dd>
+          </div>
+        </dl>
+        <details class="mcpRawEvidence">
+          <summary>View MCP request and response</summary>
+          <div class="mcpRawGrid">
+            <div>
+              <h3>Request</h3>
+              <pre id="mcpRequestOutput"></pre>
+            </div>
+            <div>
+              <h3>Response</h3>
+              <pre id="mcpResponseOutput"></pre>
+            </div>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <footer class="footer">asd(2026)-group7</footer>
+  </body>
+</html>
