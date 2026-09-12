@@ -14,6 +14,22 @@ Set-Location ai-services
 python -m mcp_server.server
 ```
 
+When the application microservices run through Docker Compose, publish the
+Product Database API and bind the host-side MCP server to all local interfaces:
+
+```powershell
+docker compose up --build -d
+$env:MCP_HOST = "0.0.0.0"
+$env:PRODUCT_DATABASE_API_URL = "http://127.0.0.1:6001/api/database"
+Set-Location ai-services
+python -m mcp_server.server
+```
+
+The MCP process still runs directly on the host. It is intentionally not a
+Docker Compose service. The containerised shared backend reaches it through
+`http://host.docker.internal:8765/mcp`. DNS rebinding protection remains
+enabled and permits only the configured local/Docker host names.
+
 The service can be configured with these environment variables:
 
 | Variable | Default |
