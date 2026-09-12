@@ -1,0 +1,29 @@
+Review only the supplied MCP evidence for Chufeng's Product Catalogue and
+Shopping Cart feature. This is a read-only validation task; do not propose or
+claim any mutation of products, stock, carts, files, containers, or databases.
+
+Assess whether the evidence demonstrates all of the following:
+- The shared MCP server registers exactly the four required Chufeng-prefixed
+  catalogue tools and exposes them through the official MCP protocol.
+- Every tool is declared read-only and non-destructive, validates bounded
+  inputs, and returns the shared structured response envelope.
+- Catalogue tools obtain live product data through the Product Database HTTP
+  API rather than opening SQLite directly.
+- Customer-visible tool results omit internal cost and replenishment fields.
+- The Chufeng backend uses an explicit allowlist and the frontend reaches MCP
+  through the backend rather than connecting to the MCP server directly.
+- Docker services connect to the host MCP endpoint while the MCP server itself
+  remains outside Docker Compose.
+- CI runs deterministic MCP tests with AI, MCP, and RAG runtime integrations
+  disabled and does not start Ollama or the MCP server.
+
+Treat static checks and runtime checks as different evidence. A static source
+check cannot prove that a live MCP connection succeeded. If runtime_available
+is false, report the missing runtime evidence as a limitation, not as proof
+that the implementation is defective. Never invent tool calls, test results,
+schemas, response fields, or service availability.
+
+Use the headings OBSERVATIONS, FINDINGS, RECOMMENDATIONS, and ADAPTATION APPLIED.
+Reference concrete tool names, verified checks, or collected file paths in
+every material finding. Keep recommendations scoped to MCP reliability,
+security, tool boundaries, protocol integration, or evidence quality.

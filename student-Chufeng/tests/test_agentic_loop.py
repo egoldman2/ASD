@@ -287,3 +287,146 @@ def test_agentic_loop_accepts_passing_review(agentic_loop, monkeypatch):
 
     assert len(prompts) == 2
     assert result["final_review"] == result["first_review"]
+
+
+def test_loads_chufeng_mcp_prompt_and_rules(agentic_loop):
+    config, _ = agentic_loop.load_feature("student-Chufeng")
+
+    assert "mcp" in config["mode_prompts"]
+    assert "official MCP protocol" in config["mode_prompts"]["mcp"]
+    assert config["mcp_rules"]["required_tools"] == [
+        "chufeng_search_products",
+        "chufeng_get_product_details",
+        "chufeng_check_product_stock",
+        "chufeng_calculate_cart_summary",
+    ]
+
+
+def test_mcp_evidence_keeps_static_checks_when_runtime_is_disabled(
+    agentic_loop,
+    monkeypatch,
+):
+    monkeypatch.setenv("MCP_ENABLED", "false")
+    config, _ = agentic_loop.load_feature("student-Chufeng")
+
+    evidence = agentic_loop.collect_mcp_evidence(config)
+
+    checks = evidence["verified_checks"]
+    assert checks["configured_files"] == 10
+    assert checks["present_files"] == 10
+    assert checks["all_required_tools_registered"] is True
+    assert checks["all_required_tools_allowlisted"] is True
+    assert checks["read_only_annotations_present"] is True
+    assert checks["mcp_server_not_in_compose"] is True
+    assert checks["frontend_uses_backend_mcp_routes"] is True
+    assert all(checks["source_checks"].values())
+    assert evidence["runtime"] == {
+        "attempted": False,
+        "available": False,
+        "server_url": "http://127.0.0.1:8765/mcp",
+        "skip_reason": "MCP_ENABLED disables live validation.",
+        "required_tools_discovered": False,
+    }
+
+
+def test_mcp_evidence_accepts_live_tool_discovery(agentic_loop, monkeypatch):
+    monkeypatch.setenv("MCP_ENABLED", "true")
+    config, _ = agentic_loop.load_feature("student-Chufeng")
+    required_tools = config["mcp_rules"]["required_tools"]
+
+    def fake_probe(_config):
+        return {
+            "available": True,
+            "tools": [{"name": name} for name in required_tools],
+            "tool_names": list(reversed(required_tools)),
+            "probe": {
+                "tool": "chufeng_search_products",
+                "success": True,
+                "response_tool": "chufeng_search_products",
+                "read_only": True,
+            },
+        }
+
+    evidence = agentic_loop.collect_mcp_evidence(
+        config,
+        runtime_probe=fake_probe,
+    )
+
+    assert evidence["runtime"]["attempted"] is True
+    assert evidence["runtime"]["available"] is True
+    assert evidence["runtime"]["required_tools_discovered"] is True
+    assert evidence["runtime"]["probe"]["read_only"] is True
+
+
+def test_mcp_grounding_rejects_invented_live_success(agentic_loop):
+    evidence = {
+        "files": [
+            {"path": "ai-services/mcp_server/server.py"},
+            {"path": "ai-services/mcp_server/tools/chufeng_catalogue.py"},
+            {"path": "student-Chufeng/backend/services/mcp_client.py"},
+        ],
+        "verified_checks": {
+            "required_tools": [
+                "chufeng_search_products",
+                "chufeng_get_product_details",
+            ]
+        },
+        "runtime": {"attempted": True, "available": False},
+    }
+    candidate = """OBSERVATIONS
+The live MCP protocol succeeded for chufeng_search_products and
+chufeng_get_product_details. ai-services/mcp_server/server.py,
+ai-services/mcp_server/tools/chufeng_catalogue.py, and
+student-Chufeng/backend/services/mcp_client.py confirm the integration.
+FINDINGS
+The runtime is available and all calls passed without any limitations.
+RECOMMENDATIONS
+Keep the current read-only tool boundaries and repeat deterministic tests.
+ADAPTATION APPLIED
+The response now cites the supplied evidence and required tools.
+"""
+
+    issues = agentic_loop._deterministic_issues("mcp", evidence, candidate)
+
+    assert any("did not connect" in issue for issue in issues)
+
+
+def test_mcp_fallback_separates_static_and_runtime_evidence(agentic_loop):
+    evidence = {
+        "verified_checks": {
+            "configured_files": 2,
+            "present_files": 2,
+            "missing_files": [],
+            "required_tools": ["chufeng_search_products"],
+            "all_required_tools_registered": True,
+            "all_required_tools_allowlisted": True,
+            "read_only_annotations_present": True,
+            "mcp_server_not_in_compose": True,
+            "frontend_uses_backend_mcp_routes": True,
+            "source_checks": {"server_is_read_only": True},
+        },
+        "runtime": {
+            "attempted": False,
+            "available": False,
+            "required_tools_discovered": False,
+        },
+    }
+
+    review = agentic_loop._grounded_fallback(
+        "mcp",
+        evidence,
+        ["Invented live success."],
+    )
+
+    assert "Live MCP validation available: False" in review
+    assert "static checks do not prove runtime availability" in review
+    assert "Start the host MCP server" in review
+    assert "Invented live success" in review
+
+
+def test_parser_accepts_mcp_mode(agentic_loop):
+    arguments = agentic_loop.build_parser().parse_args(
+        ["--feature", "student-Chufeng", "--mode", "mcp", "--no-save"]
+    )
+
+    assert arguments.mode == "mcp"

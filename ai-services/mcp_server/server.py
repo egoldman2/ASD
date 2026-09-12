@@ -6,6 +6,7 @@ import logging
 from typing import Any, cast
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import ToolAnnotations
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -48,6 +49,23 @@ REGISTERED_CHUFENG_TOOLS = (
 )
 
 
+def _transport_security(settings: MCPSettings) -> TransportSecuritySettings:
+    """Allow local-host and Docker-to-host MCP traffic, but no arbitrary hosts."""
+
+    allowed_hosts = {
+        f"127.0.0.1:{settings.port}",
+        f"localhost:{settings.port}",
+        f"[::1]:{settings.port}",
+        f"host.docker.internal:{settings.port}",
+        f"{settings.host}:{settings.port}",
+    }
+    return TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=sorted(allowed_hosts),
+        allowed_origins=[],
+    )
+
+
 def create_server(settings: MCPSettings | None = None) -> FastMCP:
     """Create and configure the shared MCP server.
 
@@ -65,6 +83,7 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
         log_level=cast(Any, resolved.log_level),
         json_response=True,
         stateless_http=True,
+        transport_security=_transport_security(resolved),
     )
 
     server.tool(

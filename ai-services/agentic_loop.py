@@ -1,5 +1,6 @@
 import argparse
 from datetime import datetime
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -15,7 +16,7 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
 MAX_STATIC_REVIEW_FILE_CHARS = 400
 SENSITIVE_COLUMN_TERMS = ("password", "secret", "token")
-FILE_REVIEW_MODES = ("implementation", "devops")
+FILE_REVIEW_MODES = ("implementation", "devops", "mcp")
 
 SYSTEM_PROMPT = """You are the read-only software review agent for the ASD 2026 project.
 
@@ -534,12 +535,171 @@ def collect_file_evidence(config, mode):
     return evidence
 
 
+def _mcp_runtime_enabled():
+    """Respect the same runtime switch used by CI and the Chufeng backend."""
+    value = os.getenv("MCP_ENABLED", "true").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+def _probe_mcp_runtime(config):
+    """Discover tools and run one bounded, read-only call over the MCP protocol."""
+    module_path = _project_path(
+        "student-Chufeng/backend/services/mcp_client.py"
+    )
+    module_name = "chufeng_agentic_mcp_client"
+    specification = importlib.util.spec_from_file_location(module_name, module_path)
+    if specification is None or specification.loader is None:
+        raise AgenticLoopError("Unable to load the Chufeng MCP client.")
+
+    module = importlib.util.module_from_spec(specification)
+    sys.modules[module_name] = module
+    try:
+        specification.loader.exec_module(module)
+    finally:
+        sys.modules.pop(module_name, None)
+
+    settings = module.MCPClientSettings(
+        enabled=True,
+        server_url=config.get(
+            "mcp_server_url",
+            "http://127.0.0.1:8765/mcp",
+        ),
+        timeout_seconds=2.0,
+    )
+    client = module.ChufengMCPClient(settings=settings)
+    tools = client.list_tools()
+    runtime = {
+        "available": True,
+        "tools": tools,
+        "tool_names": sorted(tool["name"] for tool in tools),
+    }
+
+    rules = config.get("mcp_rules", {})
+    probe_tool = rules.get("probe_tool")
+    if probe_tool:
+        try:
+            payload = client.call_tool(
+                probe_tool,
+                rules.get("probe_arguments", {}),
+            )
+            runtime["probe"] = {
+                "tool": probe_tool,
+                "success": bool(payload.get("success")),
+                "response_tool": payload.get("tool"),
+                "read_only": payload.get("metadata", {}).get("read_only"),
+            }
+        except Exception as exc:
+            runtime["probe"] = {
+                "tool": probe_tool,
+                "success": False,
+                "error": f"{type(exc).__name__}: {exc}"[:300],
+            }
+    return runtime
+
+
+def collect_mcp_evidence(config, runtime_probe=None):
+    """Collect static MCP boundaries plus optional live protocol evidence."""
+    evidence = collect_file_evidence(config, "mcp")
+    rules = config.get("mcp_rules", {})
+    required_tools = rules.get("required_tools", [])
+    source_by_path = {}
+    for relative_path in config.get("mcp_files", []):
+        file_path = _project_path(relative_path)
+        if file_path.is_file():
+            source_by_path[relative_path] = file_path.read_text(
+                encoding="utf-8",
+                errors="replace",
+            )
+
+    server_source = source_by_path.get("ai-services/mcp_server/server.py", "")
+    tools_source = source_by_path.get(
+        "ai-services/mcp_server/tools/chufeng_catalogue.py",
+        "",
+    )
+    client_source = source_by_path.get(
+        "student-Chufeng/backend/services/mcp_client.py",
+        "",
+    )
+    compose_source = source_by_path.get("docker-compose.yml", "")
+    frontend_source = source_by_path.get(
+        "student-Chufeng/frontend/js/mcp-tools.js",
+        "",
+    )
+    routes_source = source_by_path.get(
+        "student-Chufeng/backend/routes/mcp_routes.py",
+        "",
+    )
+    controller_source = source_by_path.get(
+        "student-Chufeng/backend/controllers/mcp_controller.py",
+        "",
+    )
+    checks = evidence["verified_checks"]
+    checks.update(
+        {
+            "required_tools": required_tools,
+            "required_tool_count": len(required_tools),
+            "all_required_tools_registered": bool(required_tools)
+            and all(tool in tools_source for tool in required_tools)
+            and server_source.count("server.tool(") >= len(required_tools),
+            "all_required_tools_allowlisted": bool(required_tools)
+            and all(tool in client_source for tool in required_tools),
+            "read_only_annotations_present": all(
+                marker in server_source
+                for marker in (
+                    "readOnlyHint=True",
+                    "destructiveHint=False",
+                    "structured_output=True",
+                )
+            ),
+            "mcp_server_not_in_compose": not bool(
+                re.search(
+                    r"(?m)^\s{2}(?:mcp|mcp-server|mcp_server):\s*$",
+                    compose_source,
+                )
+            ),
+            "frontend_uses_backend_mcp_routes": (
+                "/api/chufeng/mcp/" in frontend_source
+                and "X-MCP-Mode" in frontend_source
+                and "mcp_controller" in routes_source
+                and "ChufengMCPClient" in controller_source
+            ),
+        }
+    )
+
+    runtime = {
+        "attempted": False,
+        "available": False,
+        "server_url": config.get(
+            "mcp_server_url",
+            "http://127.0.0.1:8765/mcp",
+        ),
+    }
+    if not _mcp_runtime_enabled():
+        runtime["skip_reason"] = "MCP_ENABLED disables live validation."
+    else:
+        runtime["attempted"] = True
+        probe = runtime_probe or _probe_mcp_runtime
+        try:
+            runtime.update(probe(config))
+        except Exception as exc:
+            runtime["error"] = f"{type(exc).__name__}: {exc}"[:300]
+
+    observed_tools = set(runtime.get("tool_names", []))
+    runtime["required_tools_discovered"] = bool(runtime.get("available")) and set(
+        required_tools
+    ).issubset(observed_tools)
+    evidence["runtime"] = runtime
+    return evidence
+
+
 def collect_evidence(mode, config):
     collectors = {
         "database": collect_database_evidence,
         "endpoints": collect_endpoint_evidence,
         "architecture": collect_architecture_evidence,
     }
+    if mode == "mcp":
+        return collect_mcp_evidence(config)
     if mode in FILE_REVIEW_MODES:
         return collect_file_evidence(config, mode)
     return collectors[mode](config)
@@ -703,6 +863,34 @@ def _deterministic_issues(mode, evidence, candidate):
 
     if len(candidate.split()) < 30:
         issues.append("The model response is too short to contain a complete evidence review.")
+
+    if mode == "mcp":
+        checks = evidence.get("verified_checks", {})
+        runtime = evidence.get("runtime", {})
+        required_tools = checks.get("required_tools", [])
+        mentioned_tools = [
+            tool for tool in required_tools if tool.lower() in candidate_lower
+        ]
+        if len(mentioned_tools) < min(2, len(required_tools)):
+            issues.append(
+                "The MCP response names fewer than two required Chufeng tools and is "
+                "too vague to validate their boundaries."
+            )
+        if not runtime.get("available") and re.search(
+            r"(?:live|runtime|protocol)[^.\n]{0,120}"
+            r"(?:succeed(?:ed|s)?|pass(?:ed|es)?|available|confirmed)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response claims successful live MCP evidence, but the runtime "
+                "collector did not connect to the server."
+            )
+        if runtime.get("available") and not runtime.get(
+            "required_tools_discovered"
+        ):
+            issues.append(
+                "The live MCP server did not expose every configured required tool."
+            )
 
     is_generic_file_review = mode in FILE_REVIEW_MODES or (
         mode == "architecture" and evidence.get("profile") != "ethan-ting"
@@ -1094,6 +1282,100 @@ def _grounded_fallback(mode, evidence, issues, config=None):
             "ADAPTATION APPLIED\n"
             "- Replaced status contradictions with a deterministic comparison of expected "
             "and observed HTTP statuses.\n"
+            "- Grounding issues removed: "
+            + ("; ".join(issues) if issues else "none")
+        )
+
+    if mode == "mcp":
+        checks = evidence.get("verified_checks", {})
+        runtime = evidence.get("runtime", {})
+        source_checks = checks.get("source_checks", {})
+        observations = [
+            f"- {checks.get('present_files', 0)} of "
+            f"{checks.get('configured_files', 0)} configured MCP files were present.",
+            f"- Required tools configured: {', '.join(checks.get('required_tools', []))}.",
+            "- All required tools appear in the shared server registration: "
+            f"{checks.get('all_required_tools_registered')}.",
+            "- All required tools appear in the Chufeng backend allowlist: "
+            f"{checks.get('all_required_tools_allowlisted')}.",
+            "- Read-only, non-destructive, structured-output annotations are present: "
+            f"{checks.get('read_only_annotations_present')}.",
+            "- No MCP server service is defined in Docker Compose: "
+            f"{checks.get('mcp_server_not_in_compose')}.",
+            "- The frontend-to-backend MCP route markers are present: "
+            f"{checks.get('frontend_uses_backend_mcp_routes')}.",
+            "- Live MCP validation available: "
+            f"{runtime.get('available', False)}; attempted: "
+            f"{runtime.get('attempted', False)}.",
+        ]
+        observations.extend(
+            f"- Configured source check `{name}`: {str(passed).lower()}."
+            for name, passed in source_checks.items()
+        )
+        if runtime.get("available"):
+            observations.append(
+                "- Tools discovered through MCP: "
+                + ", ".join(runtime.get("tool_names", []))
+                + "."
+            )
+            if runtime.get("probe"):
+                observations.append(
+                    "- Read-only probe result: "
+                    + json.dumps(runtime["probe"], ensure_ascii=False)
+                    + "."
+                )
+
+        findings = []
+        missing = checks.get("missing_files", [])
+        if missing:
+            findings.append(
+                "- High: Configured MCP evidence files were missing: "
+                + ", ".join(missing)
+                + "."
+            )
+        failed_checks = [
+            name for name, passed in source_checks.items() if not passed
+        ]
+        if failed_checks:
+            findings.append(
+                "- Medium: Static MCP checks did not pass: "
+                + ", ".join(failed_checks)
+                + "."
+            )
+        if runtime.get("available") and not runtime.get(
+            "required_tools_discovered"
+        ):
+            findings.append(
+                "- High: The live MCP server did not expose every required Chufeng tool."
+            )
+        if not runtime.get("available"):
+            findings.append(
+                "- Evidence limitation: no successful live MCP connection was collected; "
+                "static checks do not prove runtime availability."
+            )
+        if not findings:
+            findings.append(
+                "- The collected static and live MCP checks did not prove a boundary defect."
+            )
+
+        recommendations = [
+            "- Keep the MCP tools read-only, structured, student-prefixed, and backend allowlisted.",
+            "- Retain focused protocol and tool-boundary tests as separate deterministic evidence.",
+        ]
+        if not runtime.get("available"):
+            recommendations.append(
+                "- Start the host MCP server and Product Database API, then rerun MCP mode "
+                "to collect live tool-discovery and read-only probe evidence."
+            )
+        return (
+            "OBSERVATIONS\n"
+            + "\n".join(observations)
+            + "\n\nFINDINGS\n"
+            + "\n".join(findings)
+            + "\n\nRECOMMENDATIONS\n"
+            + "\n".join(recommendations)
+            + "\n\nADAPTATION APPLIED\n"
+            "- Replaced unsupported model claims with a deterministic MCP evidence summary.\n"
             "- Grounding issues removed: "
             + ("; ".join(issues) if issues else "none")
         )
@@ -1588,16 +1870,18 @@ def _choose_mode():
     print("3 = Architecture")
     print("4 = Implementation")
     print("5 = DevOps")
+    print("6 = MCP")
     choices = {
         "1": "database",
         "2": "endpoints",
         "3": "architecture",
         "4": "implementation",
         "5": "devops",
+        "6": "mcp",
     }
     selection = input("Selection: ").strip()
     if selection not in choices:
-        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, or 5.")
+        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, 5, or 6.")
     return choices[selection]
 
 

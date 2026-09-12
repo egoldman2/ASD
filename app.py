@@ -95,6 +95,9 @@ def create_app():
     ai_routes = import_module(
         "student-Chufeng.backend.routes.ai_routes"
     )
+    mcp_routes = import_module(
+        "student-Chufeng.backend.routes.mcp_routes"
+    )
     order_routes = import_module(
         "student-Howard.backend.routes.order_routes"
     )
@@ -103,6 +106,7 @@ def create_app():
     app.register_blueprint(product_routes.product_blueprint)
     app.register_blueprint(customer_cart.cart_blueprint)
     app.register_blueprint(ai_routes.ai_blueprint)
+    app.register_blueprint(mcp_routes.mcp_blueprint)
     app.register_blueprint(order_routes.order_blueprint)
 
 
@@ -152,7 +156,7 @@ def create_app():
             response.headers.add("Vary", "Origin")
         response.headers["Access-Control-Allow-Headers"] = (
             "Content-Type, HX-Request, HX-Target, HX-Current-URL, "
-            "HX-Trigger, HX-Trigger-Name, HX-Boosted"
+            "HX-Trigger, HX-Trigger-Name, HX-Boosted, X-MCP-Mode"
         )
         response.headers["Access-Control-Allow-Methods"] = (
             "GET, POST, PUT, PATCH, DELETE, OPTIONS"

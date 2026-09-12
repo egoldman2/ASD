@@ -99,3 +99,29 @@ def test_health_route_reports_transport_and_tool_count():
         }
 
     asyncio.run(request_health())
+
+
+def test_streamable_http_accepts_docker_host_name(monkeypatch):
+    monkeypatch.setenv("MCP_HOST", "0.0.0.0")
+
+    async def initialise_from_backend_container_address():
+        server = create_server()
+        app = server.streamable_http_app()
+        base_url = "http://host.docker.internal:8765"
+
+        async with app.router.lifespan_context(app):
+            transport = httpx.ASGITransport(app=app)
+            async with httpx.AsyncClient(
+                transport=transport,
+                base_url=base_url,
+            ) as http_client:
+                async with streamable_http_client(
+                    f"{base_url}/mcp",
+                    http_client=http_client,
+                ) as (read_stream, write_stream, _):
+                    async with ClientSession(read_stream, write_stream) as session:
+                        initialised = await session.initialize()
+
+        assert initialised.serverInfo.name == SERVER_NAME
+
+    asyncio.run(initialise_from_backend_container_address())
