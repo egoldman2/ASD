@@ -6,7 +6,8 @@
     "endpoints": "endpoints_prompt.txt",
     "architecture": "architecture_prompt.txt",
     "implementation": "implementation_prompt.txt",
-    "devops": "devops_prompt.txt"
+    "devops": "devops_prompt.txt",
+    "mcp": "mcp_prompt.txt"
   },
   "database": "student-Chufeng/database/products.db",
   "endpoints": [
@@ -57,5 +58,95 @@
     "shared/nginx/product-catalogue.conf",
     "student-Chufeng/tests/test_catalogue.py",
     "student-Chufeng/tests/test_agentic_loop.py"
-  ]
+  ],
+  "mcp_files": [
+    "ai-services/mcp_server/server.py",
+    "ai-services/mcp_server/tools/chufeng_catalogue.py",
+    "ai-services/mcp_server/response.py",
+    "student-Chufeng/backend/services/mcp_client.py",
+    "student-Chufeng/backend/controllers/mcp_controller.py",
+    "student-Chufeng/backend/routes/mcp_routes.py",
+    "student-Chufeng/frontend/mcp-assistant.html",
+    "student-Chufeng/frontend/js/mcp-tools.js",
+    "docker-compose.yml",
+    ".github/workflows/Chufeng.yml"
+  ],
+  "mcp_server_url": "http://127.0.0.1:8765/mcp",
+  "mcp_rules": {
+    "required_tools": [
+      "chufeng_search_products",
+      "chufeng_get_product_details",
+      "chufeng_check_product_stock",
+      "chufeng_calculate_cart_summary"
+    ],
+    "probe_tool": "chufeng_search_products",
+    "probe_arguments": {
+      "query": "",
+      "limit": 1
+    }
+  },
+  "source_checks": {
+    "mcp": [
+      {
+        "name": "server_uses_read_only_annotations",
+        "file": "ai-services/mcp_server/server.py",
+        "contains": [
+          "readOnlyHint=True",
+          "destructiveHint=False",
+          "structured_output=True"
+        ]
+      },
+      {
+        "name": "tools_use_database_api_without_sqlite",
+        "file": "ai-services/mcp_server/tools/chufeng_catalogue.py",
+        "contains": [
+          "requests.get",
+          "metadata={\"read_only\": True}"
+        ],
+        "excludes": [
+          "import sqlite3"
+        ]
+      },
+      {
+        "name": "backend_enforces_tool_allowlist",
+        "file": "student-Chufeng/backend/services/mcp_client.py",
+        "contains": [
+          "CHUFENG_ALLOWED_TOOLS",
+          "MCPToolNotAllowedError"
+        ]
+      },
+      {
+        "name": "frontend_calls_backend_mcp_routes",
+        "file": "student-Chufeng/frontend/js/mcp-tools.js",
+        "contains": [
+          "/api/chufeng/mcp/",
+          "X-MCP-Mode"
+        ],
+        "excludes": [
+          "127.0.0.1:8765",
+          "localhost:8765"
+        ]
+      },
+      {
+        "name": "docker_calls_host_mcp_server",
+        "file": "docker-compose.yml",
+        "contains": [
+          "host.docker.internal:8765/mcp",
+          "host.docker.internal:host-gateway"
+        ]
+      },
+      {
+        "name": "ci_disables_live_mcp",
+        "file": ".github/workflows/Chufeng.yml",
+        "contains": [
+          "MCP_ENABLED: \"false\"",
+          "ai-services/mcp_server/tests"
+        ],
+        "excludes": [
+          "docker compose up",
+          "ollama pull"
+        ]
+      }
+    ]
+  }
 }
