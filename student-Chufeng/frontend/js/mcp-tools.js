@@ -18,8 +18,22 @@ const requestOutput = document.querySelector("#mcpRequestOutput");
 const responseOutput = document.querySelector("#mcpResponseOutput");
 const cartItems = document.querySelector("#mcpCartItems");
 const addCartItemButton = document.querySelector("#addMcpCartItem");
+const mcpModeToggle = document.querySelector("#mcpModeToggle");
+const mcpModeState = document.querySelector("#mcpModeState");
+const mcpWorkspace = document.querySelector(".mcpWorkspace");
 
+const MCP_MODE_STORAGE_KEY = "chufeng_mcp_mode_enabled";
 let cartRowSequence = 0;
+
+function isMcpModeEnabled() {
+  return mcpModeToggle.checked;
+}
+
+function requestHeaders(includeJson = false) {
+  const headers = { "X-MCP-Mode": isMcpModeEnabled() ? "on" : "off" };
+  if (includeJson) headers["Content-Type"] = "application/json";
+  return headers;
+}
 
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-AU", {
@@ -44,12 +58,23 @@ function setConnectionState(state, title, message, count = 0) {
 }
 
 async function loadMcpStatus() {
+  if (!isMcpModeEnabled()) {
+    setConnectionState(
+      "offline",
+      "MCP mode disabled",
+      "Enable MCP mode to check the connection and run tools.",
+    );
+    return;
+  }
+
   refreshButton.disabled = true;
   refreshButton.textContent = "Checking...";
   setConnectionState("checking", "Checking MCP status...", "Contacting the Chufeng backend.");
 
   try {
-    const statusResponse = await fetch(MCP_STATUS_URL);
+    const statusResponse = await fetch(MCP_STATUS_URL, {
+      headers: requestHeaders(),
+    });
     const status = await readJson(statusResponse);
     if (!statusResponse.ok || status.success !== true) {
       throw new Error(status.error?.message || "Unable to check MCP status.");
@@ -72,7 +97,9 @@ async function loadMcpStatus() {
       return;
     }
 
-    const toolsResponse = await fetch(MCP_TOOLS_URL);
+    const toolsResponse = await fetch(MCP_TOOLS_URL, {
+      headers: requestHeaders(),
+    });
     const tools = await readJson(toolsResponse);
     if (!toolsResponse.ok || tools.success !== true) {
       throw new Error(tools.error?.message || "Unable to load MCP tools.");
@@ -111,25 +138,15 @@ function integerValue(formData, name) {
   return value;
 }
 
-function optionalNumber(formData, name) {
-  const rawValue = String(formData.get(name) || "").trim();
-  return rawValue ? Number(rawValue) : undefined;
-}
-
 function argumentsForForm(form) {
   const formData = new FormData(form);
   const tool = form.dataset.mcpTool;
 
   if (tool === "chufeng_search_products") {
-    const argumentsObject = {
+    return {
       query: String(formData.get("query") || "").trim(),
       limit: integerValue(formData, "limit"),
     };
-    const category = String(formData.get("category") || "").trim();
-    const maximumPrice = optionalNumber(formData, "max_price");
-    if (category) argumentsObject.category = category;
-    if (maximumPrice !== undefined) argumentsObject.max_price = maximumPrice;
-    return argumentsObject;
   }
 
   if (tool === "chufeng_get_product_details") {
@@ -229,6 +246,21 @@ async function callMcpTool(form) {
   const submitButton = form.querySelector("button[type='submit']");
   let argumentsObject;
 
+  if (!isMcpModeEnabled()) {
+    showToolResult(
+      tool,
+      {},
+      {
+        error: {
+          code: "MCP_DISABLED",
+          message: "Enable MCP mode before running a tool.",
+        },
+      },
+      false,
+    );
+    return;
+  }
+
   try {
     argumentsObject = argumentsForForm(form);
   } catch (error) {
@@ -243,7 +275,7 @@ async function callMcpTool(form) {
   try {
     const response = await fetch(MCP_CALL_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: requestHeaders(true),
       body: JSON.stringify({ tool, arguments: argumentsObject }),
     });
     const payload = await readJson(response);
@@ -252,9 +284,42 @@ async function callMcpTool(form) {
     console.error("Unable to call MCP tool:", error);
     showToolResult(tool, argumentsObject, { error: { message: error.message } }, false);
   } finally {
-    submitButton.disabled = false;
+    submitButton.disabled = !isMcpModeEnabled();
     submitButton.textContent = originalText;
   }
+}
+
+function renderMcpMode() {
+  const enabled = isMcpModeEnabled();
+  mcpModeState.textContent = enabled ? "ON" : "OFF";
+  mcpModeState.classList.toggle("mcpModeState--on", enabled);
+  mcpModeState.classList.toggle("mcpModeState--off", !enabled);
+  mcpWorkspace.classList.toggle("mcpWorkspace--disabled", !enabled);
+  mcpWorkspace.setAttribute("aria-disabled", String(!enabled));
+
+  toolButtons.forEach((button) => {
+    button.disabled = !enabled;
+  });
+  toolForms.forEach((form) => {
+    form.querySelectorAll("input, button").forEach((control) => {
+      control.disabled = !enabled;
+    });
+  });
+  refreshButton.disabled = !enabled;
+
+  if (!enabled) {
+    setConnectionState(
+      "offline",
+      "MCP mode disabled",
+      "Enable MCP mode to check the connection and run tools.",
+    );
+  }
+}
+
+function loadMcpMode() {
+  const savedMode = localStorage.getItem(MCP_MODE_STORAGE_KEY);
+  mcpModeToggle.checked = savedMode === null ? true : savedMode === "true";
+  renderMcpMode();
 }
 
 function addCartRow(productId = "", quantity = "1") {
@@ -312,7 +377,13 @@ toolForms.forEach((form) => {
 });
 refreshButton.addEventListener("click", loadMcpStatus);
 addCartItemButton.addEventListener("click", () => addCartRow());
+mcpModeToggle.addEventListener("change", () => {
+  localStorage.setItem(MCP_MODE_STORAGE_KEY, String(isMcpModeEnabled()));
+  renderMcpMode();
+  if (isMcpModeEnabled()) loadMcpStatus();
+});
 
 addCartRow("1", "2");
 addCartRow("5", "1");
-loadMcpStatus();
+loadMcpMode();
+if (isMcpModeEnabled()) loadMcpStatus();

@@ -41,8 +41,10 @@ def test_mcp_page_has_unique_ids_and_expected_assets():
 
     assert len(page.ids) == len(set(page.ids))
     assert "index.html" in page.links
-    assert "js/mcp-tools.js?v=1" in page.scripts
+    assert "js/mcp-tools.js?v=2" in page.scripts
     for required_id in {
+        "mcpModeToggle",
+        "mcpModeState",
         "mcpStatusTitle",
         "searchToolForm",
         "detailsToolForm",
@@ -77,3 +79,24 @@ def test_frontend_exposes_every_chufeng_tool():
         "chufeng_calculate_cart_summary",
     }:
         assert f'data-mcp-tool="{tool_name}"' in page
+
+
+def test_search_form_only_exposes_name_and_result_limit():
+    page = (FRONTEND_ROOT / "mcp-assistant.html").read_text(encoding="utf-8")
+    search_form = page.split('id="searchToolForm"', 1)[1].split("</form>", 1)[0]
+
+    assert 'name="query"' in search_form
+    assert 'name="limit"' in search_form
+    assert 'name="category"' not in search_form
+    assert 'name="max_price"' not in search_form
+
+
+def test_mcp_mode_is_persisted_and_sent_to_backend():
+    script = (FRONTEND_ROOT / "js" / "mcp-tools.js").read_text(
+        encoding="utf-8"
+    )
+
+    assert "chufeng_mcp_mode_enabled" in script
+    assert '"X-MCP-Mode"' in script
+    assert "localStorage.setItem" in script
+    assert "localStorage.getItem" in script

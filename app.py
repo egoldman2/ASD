@@ -156,7 +156,7 @@ def create_app():
             response.headers.add("Vary", "Origin")
         response.headers["Access-Control-Allow-Headers"] = (
             "Content-Type, HX-Request, HX-Target, HX-Current-URL, "
-            "HX-Trigger, HX-Trigger-Name, HX-Boosted"
+            "HX-Trigger, HX-Trigger-Name, HX-Boosted, X-MCP-Mode"
         )
         response.headers["Access-Control-Allow-Methods"] = (
             "GET, POST, PUT, PATCH, DELETE, OPTIONS"

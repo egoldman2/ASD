@@ -143,6 +143,33 @@ def test_call_route_passes_valid_request_to_mcp_client(client, monkeypatch):
     ]
 
 
+def test_call_route_rejects_request_when_page_mcp_mode_is_off(
+    client, monkeypatch
+):
+    monkeypatch.setattr(
+        mcp_controller,
+        "_create_client",
+        lambda: pytest.fail("disabled request must not create an MCP client"),
+    )
+
+    response = client.post(
+        "/api/chufeng/mcp/tools/call",
+        json={
+            "tool": "chufeng_get_product_details",
+            "arguments": {"product_id": 11},
+        },
+        headers={"X-MCP-Mode": "off"},
+    )
+
+    assert response.status_code == 403
+    assert response.get_json() == {
+        "error": {
+            "code": "MCP_DISABLED",
+            "message": "MCP mode is disabled for this request.",
+        }
+    }
+
+
 @pytest.mark.parametrize(
     ("request_kwargs", "expected_message"),
     [
@@ -250,4 +277,5 @@ def test_mcp_routes_support_trusted_frontend_cors(client, monkeypatch):
     assert response.headers["Access-Control-Allow-Origin"] == (
         "http://localhost:8001"
     )
+    assert "X-MCP-Mode" in response.headers["Access-Control-Allow-Headers"]
     assert "POST" in response.headers["Access-Control-Allow-Methods"]

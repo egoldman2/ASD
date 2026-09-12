@@ -718,6 +718,81 @@ body {
   font-weight: 700;
 }
 
+.mcpModeControl,
+.mcpModeToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.mcpModeToggle {
+  color: #294862;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mcpModeToggle input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.mcpModeTrack {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #8293a3;
+  transition: background 160ms ease;
+}
+
+.mcpModeTrack::after {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(11, 37, 69, 0.28);
+  content: "";
+  transition: transform 160ms ease;
+}
+
+.mcpModeToggle input:checked + .mcpModeTrack {
+  background: #18864b;
+}
+
+.mcpModeToggle input:checked + .mcpModeTrack::after {
+  transform: translateX(18px);
+}
+
+.mcpModeToggle input:focus-visible + .mcpModeTrack {
+  outline: 3px solid rgba(29, 91, 158, 0.25);
+  outline-offset: 2px;
+}
+
+.mcpModeState {
+  min-width: 35px;
+  padding: 0.2rem 0.4rem;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.mcpModeState--on {
+  background: #e5f5ec;
+  color: #126b3b;
+}
+
+.mcpModeState--off {
+  background: #f7e8e6;
+  color: #a2392d;
+}
+
 .mcpSecondaryButton,
 .mcpPrimaryButton,
 .mcpRemoveButton {
@@ -743,13 +818,22 @@ body {
 .mcpSecondaryButton:disabled,
 .mcpPrimaryButton:disabled {
   opacity: 0.6;
-  cursor: wait;
+  cursor: not-allowed;
 }
 
 .mcpWorkspace {
   display: grid;
   grid-template-columns: minmax(230px, 0.34fr) minmax(0, 1fr);
   overflow: hidden;
+}
+
+.mcpWorkspace--disabled {
+  opacity: 0.62;
+}
+
+.mcpWorkspace--disabled .mcpToolButton,
+.mcpWorkspace--disabled .mcpForm {
+  cursor: not-allowed;
 }
 
 .mcpToolMenu {
