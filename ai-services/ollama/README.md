@@ -1,17 +1,17 @@
 # Ollama AI Service
 
-Release 0 uses approved Qwen and Llama models through Ollama. Product Catalogue
-and Customer Support call the shared containerised Ollama service using
-`qwen2.5:0.5b`. Customer Support analysis is advisory and cannot directly
-modify tickets or send messages. Ethan Ting's Customer Accounts and Loyalty AI
-connects to Ollama on the host computer using `llama3.1:8b`. It prepares
-read-only insights and customer-change proposals; changes are saved only after
-an administrator reviews and confirms them through the protected API.
+Release 1 uses the locally installed, non-containerised Ollama runtime with
+approved Qwen and Llama models. Backend containers access Ollama on the host
+computer through `http://host.docker.internal:11434`. Product Catalogue,
+Customer Support, and Inventory use `qwen2.5:0.5b`; Customer Accounts and
+Loyalty uses `llama3.1:8b`. AI assistance remains advisory and cannot directly
+modify application data.
 
-Before starting the application, make sure the host model used by Customer
-Accounts and Loyalty is available:
+Before starting Docker Compose, start Ollama on the host computer and make sure
+the required models are available:
 
 ```bash
+ollama pull qwen2.5:0.5b
 ollama pull llama3.1:8b
 ollama list
 ```
@@ -22,16 +22,16 @@ Then start the application from the project root:
 docker compose up --build -d
 ```
 
-The one-shot `ollama-init` service pulls the model into the persistent
-`ollama-models` volume and verifies it before dependent backends start. A fresh
-volume requires a one-time download; later starts reuse it.
+Ollama, MCP, RAG, and the shared agentic loop remain outside Docker Compose.
+Compose starts only the containerised student frontend, backend/API, and
+database microservices. It does not download models.
 
-To verify that the Product Catalogue backend is running:
+To verify the host runtime and the Product Catalogue backend:
 
 ```bash
+curl http://localhost:11434/api/tags
 docker compose ps
-docker compose logs ollama-init ollama
-docker compose exec ollama ollama show qwen2.5:0.5b
+docker compose logs shared-backend
 ```
 
 ## Shared Agentic Review Loop
@@ -145,6 +145,5 @@ Endpoint review requires the Docker application to be running. Database and
 architecture collection are read-only. Review evidence is saved under
 `docs/evidence/agentic/` unless `--no-save` is supplied.
 
-CI uses mocked AI clients for inference behavior and starts the support service
-boundary without downloading the model on every workflow run. Local and
-demonstration evidence must use the real containerised model.
+CI uses mocked AI clients for inference behavior and does not start or download
+Ollama. Local and demonstration evidence must use the real host runtime.

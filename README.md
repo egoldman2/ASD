@@ -233,7 +233,7 @@ Flask Customer Support API
                SQLite Database
 ```
 
-Only the database service accesses SQLite. The `support_tickets` and `support_ticket_messages` tables contain 12 seeded tickets and 20 messages, with foreign keys and cascading message deletion. The `support-ticket-data` Docker volume persists the database. Docker Compose connects the services and uses health checks and startup dependencies to prepare the database, authentication and Ollama services before the support backend starts.
+Only the database service accesses SQLite. The `support_tickets` and `support_ticket_messages` tables contain 12 seeded tickets and 20 messages, with foreign keys and cascading message deletion. The `support-ticket-data` Docker volume persists the database. Docker Compose connects the containerised feature services and uses health checks and startup dependencies to prepare the database and authentication services. Ollama runs separately on the host computer and is accessed from backend containers through `http://host.docker.internal:11434`.
 
 #### Testing and CI/CD
 
@@ -245,13 +245,13 @@ Run the Customer Support tests from the repository root using a Python 3.11 envi
 python -m pytest "student-Ethan Goldman/tests" -v
 ```
 
-The live inference test is enabled with `RUN_LIVE_AI=1` and requires a reachable Ollama service containing `qwen2.5:0.5b`. Local tests default to `http://127.0.0.1:11434`; set `OLLAMA_URL` to use another accessible runtime.
+The live inference test is enabled with `RUN_LIVE_AI=1` and requires a reachable host Ollama runtime containing `qwen2.5:0.5b`. Local tests default to `http://127.0.0.1:11434`; backend containers use `http://host.docker.internal:11434`. Start Ollama and install the required models before launching Docker Compose; CI keeps live AI disabled.
 
 The Ethan Goldman GitHub Actions workflow:
 
 - Installs Python 3.11 dependencies, runs the support tests and checks Python compilation
 - Builds and runs the Customer Support Docker test target
-- Validates Docker Compose and starts support, authentication and Ollama services
-- Checks service health, access control, HTMX responses and real AI analysis
-- Verifies agentic workflow logs and that AI analysis leaves the database unchanged
+- Validates Docker Compose and starts the support and authentication services with local AI disabled
+- Checks service health, access control and HTMX responses without downloading a model
+- Uses deterministic AI policy tests while reserving real host-Ollama validation for local evidence
 - Displays service logs on failure and removes CI containers and volumes after execution
