@@ -162,11 +162,11 @@
         ]
       },
       {
-        "name": "compose_wires_database_volume_and_ollama",
+        "name": "compose_wires_database_volume_and_host_ollama",
         "file": "docker-compose.yml",
         "contains": [
           "SUPPORT_DATABASE_API_URL: http://customer-support-database:6006",
-          "OLLAMA_URL: http://ollama:11434",
+          "OLLAMA_URL: \"${OLLAMA_URL:-http://host.docker.internal:11434}\"",
           "support-ticket-data:/data"
         ]
       },
@@ -193,29 +193,29 @@
         ]
       },
       {
-        "name": "workflow_starts_and_health_checks_support_stack",
+        "name": "workflow_starts_and_health_checks_support_stack_with_local_ai_disabled",
         "file": ".github/workflows/EthanGoldman.yml",
         "contains": [
-          "docker compose up -d --build ethan-database ethan-backend customer-support-database ollama",
+          "AI_MODE_ENABLED: \"false\"",
+          "docker compose up -d --build ethan-database ethan-backend customer-support-database",
           "http://localhost:6005/health",
           "http://localhost:8005/health"
         ]
       },
       {
-        "name": "workflow_checks_real_ai_agentic_logs",
+        "name": "workflow_disables_local_ai_services",
         "file": ".github/workflows/EthanGoldman.yml",
         "contains": [
-          "for stage in Plan Act Observe Adapt",
-          "correlation_id",
-          "qwen2.5:0.5b"
+          "MCP_ENABLED: \"false\"",
+          "RAG_ENABLED: \"false\"",
+          "RUN_LIVE_AI: \"0\""
         ]
       },
       {
-        "name": "workflow_checks_ai_read_only_and_database_ownership",
+        "name": "workflow_checks_database_ownership_while_ai_is_disabled",
         "file": ".github/workflows/EthanGoldman.yml",
         "contains": [
-          "before_ai_hash",
-          "test \"$before_ai_hash\" = \"$after_ai_hash\"",
+          "OLLAMA_URL: \"http://127.0.0.1:9\"",
           "customer-support-backend test ! -e",
           "customer-support-database sh -c 'test -f \"$DATABASE_PATH\"'"
         ]

@@ -22,39 +22,6 @@ services:
       ethan-backend:
         condition: service_healthy
 
-  ollama:
-    image: ollama/ollama:latest
-    environment:
-      OLLAMA_HOST: 0.0.0.0:11434
-      OLLAMA_MODEL: qwen2.5:0.5b
-    expose:
-      - "11434"
-    volumes:
-      - ollama-models:/root/.ollama
-    healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 10s
-      timeout: 5s
-      start_period: 15s
-      retries: 10
-
-  ollama-init:
-    image: ollama/ollama:latest
-    environment:
-      OLLAMA_HOST: http://ollama:11434
-      OLLAMA_MODEL: qwen2.5:0.5b
-    volumes:
-      - ollama-models:/root/.ollama
-    depends_on:
-      ollama:
-        condition: service_healthy
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - >-
-        ollama pull "$${OLLAMA_MODEL}" &&
-        ollama show "$${OLLAMA_MODEL}" >/dev/null
-    restart: "no"
-
   product-database:
     build:
       context: .
@@ -84,7 +51,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      OLLAMA_URL: http://ollama:11434
+      OLLAMA_URL: "${OLLAMA_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: qwen2.5:0.5b
       PRODUCT_DATABASE_API_URL: http://product-database:6001/api/database
       AUTH_SERVICE_URL: http://ethan-backend:6002
@@ -95,8 +62,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
-      ollama-init:
-        condition: service_completed_successfully
       product-database:
         condition: service_healthy
       ethan-backend:
@@ -129,8 +94,10 @@ services:
     environment:
       DATABASE_API_URL: http://ethan-database:6003
       SESSION_SECRET: ${ETHAN_SESSION_SECRET:-release-0-local-secret}
-      OLLAMA_URL: http://host.docker.internal:11434
+      OLLAMA_URL: "${OLLAMA_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: llama3.1:8b
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       ethan-database:
         condition: service_healthy
@@ -201,18 +168,18 @@ services:
       APP_PORT: 6005
       SUPPORT_DATABASE_API_URL: http://customer-support-database:6006
       AUTH_SERVICE_URL: http://ethan-backend:6002
-      OLLAMA_URL: http://ollama:11434
+      OLLAMA_URL: "${OLLAMA_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: qwen2.5:0.5b
       OLLAMA_TIMEOUT_SECONDS: 45
       LOG_LEVEL: INFO
       SUPPORT_FRONTEND_ORIGIN: http://localhost:8005
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       customer-support-database:
         condition: service_healthy
       ethan-backend:
         condition: service_healthy
-      ollama-init:
-        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:6005/health', timeout=2).read()"]
       interval: 10s
@@ -259,17 +226,17 @@ services:
     ports:
       - "8102:8102"
     environment:
-      OLLAMA_URL: http://ollama:11434
+      OLLAMA_URL: "${OLLAMA_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: qwen2.5:0.5b
       AUTH_SERVICE_URL: http://ethan-backend:6002
       PRODUCT_DATABASE_API_URL: http://product-database:6001/api/database
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       ethan-backend:
         condition: service_healthy
       product-database:
         condition: service_healthy
-      ollama-init:
-        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/health', timeout=2)"]
       interval: 10s
@@ -280,5 +247,4 @@ services:
 volumes:
   ethan-user-data:
   support-ticket-data:
-  ollama-models:
   product-database-data:
