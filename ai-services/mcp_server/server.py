@@ -24,14 +24,28 @@ from mcp_server.tools.chufeng_catalogue import (
 )
 
 
+from mcp_server.tools.ryan_inventory import (
+    CALCULATE_RESTOCK_ORDER,
+    GET_LOW_STOCK_ITEMS,
+    GET_PRODUCT_INVENTORY,
+    GET_SUPPLIER_DETAILS,
+    calculate_restock_order,
+    get_low_stock_items,
+    get_product_inventory,
+    get_supplier_details,
+)
+
 SERVER_NAME = "ASD Marketplace MCP"
 SERVER_INSTRUCTIONS = """
 Shared, local MCP service for the ASD marketplace student features.
 
 Choose tools by their student-prefixed names. Chufeng catalogue tools are
 read-only: they search products, return product details, check stock, and
-calculate a proposed cart summary. Tool output is wrapped in a stable response
-envelope containing success, tool, result, error, and optional metadata.
+calculate a proposed cart summary. Ryan inventory tools are read-only: they
+list low-stock products, return replenishment details, return supplier
+details, and calculate a proposed restock order without placing it. Tool
+output is wrapped in a stable response envelope containing success, tool,
+result, error, and optional metadata.
 """.strip()
 
 READ_ONLY_ANNOTATIONS = ToolAnnotations(
@@ -46,6 +60,13 @@ REGISTERED_CHUFENG_TOOLS = (
     GET_PRODUCT_DETAILS,
     CHECK_PRODUCT_STOCK,
     CALCULATE_CART_SUMMARY,
+)
+
+REGISTERED_RYAN_TOOLS = (
+    GET_LOW_STOCK_ITEMS,
+    GET_PRODUCT_INVENTORY,
+    GET_SUPPLIER_DETAILS,
+    CALCULATE_RESTOCK_ORDER,
 )
 
 
@@ -130,6 +151,53 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
         structured_output=True,
     )(calculate_cart_summary)
 
+
+    # Ryan
+    server.tool(
+        name=GET_LOW_STOCK_ITEMS,
+        title="Get Low Stock Items",
+        description=(
+            "List products at or below their reorder threshold, most urgent "
+            "first, with supplier name. This tool is read-only."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(get_low_stock_items)
+
+    server.tool(
+        name=GET_PRODUCT_INVENTORY,
+        title="Get Product Inventory",
+        description=(
+            "Get stock level, reorder threshold, reorder quantity, supplier "
+            "and last restocked date for one positive product ID. Unit cost "
+            "is not returned. This tool is read-only."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(get_product_inventory)
+
+    server.tool(
+        name=GET_SUPPLIER_DETAILS,
+        title="Get Supplier Details",
+        description=(
+            "Get one supplier's contact details and the products they supply "
+            "for one positive supplier ID. This tool is read-only."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(get_supplier_details)
+
+    server.tool(
+        name=CALCULATE_RESTOCK_ORDER,
+        title="Calculate Restock Order",
+        description=(
+            "Calculate a proposed restock quantity and estimated cost for "
+            "one product. This does not place or persist an order."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(calculate_restock_order)
+
     @server.custom_route("/health", methods=["GET"], name="health")
     async def health(_: Request) -> JSONResponse:
         return JSONResponse(
@@ -138,7 +206,7 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
                 "service": "asd-marketplace-mcp",
                 "transport": "streamable-http",
                 "mcp_path": resolved.path,
-                "registered_tools": len(REGISTERED_CHUFENG_TOOLS),
+                "registered_tools": len(REGISTERED_CHUFENG_TOOLS) + len(REGISTERED_RYAN_TOOLS),
             }
         )
 

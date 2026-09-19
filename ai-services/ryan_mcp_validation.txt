@@ -1,0 +1,288 @@
+Registered tools:
+  - chufeng_calculate_cart_summary
+  - chufeng_check_product_stock
+  - chufeng_get_product_details
+  - chufeng_search_products
+  - ryan_calculate_restock_order
+  - ryan_get_low_stock_items
+  - ryan_get_product_inventory
+  - ryan_get_supplier_details
+
+======================================================================
+1. Low stock list
+  tool: ryan_get_low_stock_items
+  args: {"limit": 20}
+{
+  "success": true,
+  "tool": "ryan_get_low_stock_items",
+  "result": {
+    "products": [
+      {
+        "id": 13,
+        "name": "Smart Glasses",
+        "category": "Wearables",
+        "status": "active",
+        "stock_quantity": 0,
+        "reorder_threshold": 10,
+        "reorder_quantity": 20,
+        "needs_reorder": true,
+        "supplier_id": 5,
+        "supplier_name": "Wavefront Wearables",
+        "last_restocked_at": "2026-08-05 16:50:00"
+      },
+      {
+        "id": 10,
+        "name": "Travel Power Adapter",
+        "category": "Accessories",
+        "status": "active",
+        "stock_quantity": 12,
+        "reorder_threshold": 20,
+        "reorder_quantity": 50,
+        "needs_reorder": true,
+        "supplier_id": 4,
+        "supplier_name": "Pinnacle Accessories Co.",
+        "last_restocked_at": "2026-08-20 09:50:00"
+      },
+      {
+        "id": 7,
+        "name": "Noise Cancelling Headphones",
+        "category": "Electronics",
+        "status": "active",
+        "stock_quantity": 10,
+        "reorder_threshold": 15,
+        "reorder_quantity": 25,
+        "needs_reorder": true,
+        "supplier_id": 1,
+        "supplier_name": "Northline Electronics Supply",
+        "last_restocked_at": "2026-07-28 09:00:00"
+      },
+      {
+        "id": 6,
+        "name": "Smart LED Desk Lamp",
+        "category": "Smart Home",
+        "status": "active",
+        "stock_quantity": 15,
+        "reorder_threshold": 18,
+        "reorder_quantity": 35,
+        "needs_reorder": true,
+        "supplier_id": 3,
+        "supplier_name": "Greenfield Home Goods",
+        "last_restocked_at": "2026-08-01 13:20:00"
+      },
+      {
+        "id": 3,
+        "name": "Fitness Watch",
+        "category": "Wearables",
+        "status": "active",
+        "stock_quantity": 18,
+        "reorder_threshold": 20,
+        "reorder_quantity": 40,
+        "needs_reorder": true,
+        "supplier_id": 5,
+        "supplier_name": "Wavefront Wearables",
+        "last_restocked_at": "2026-08-05 14:30:00"
+      },
+      {
+        "id": 9,
+        "name": "Smart Security Camera",
+        "category": "Smart Home",
+        "status": "active",
+        "stock_quantity": 14,
+        "reorder_threshold": 15,
+        "reorder_quantity": 30,
+        "needs_reorder": true,
+        "supplier_id": 1,
+        "supplier_name": "Northline Electronics Supply",
+        "last_restocked_at": "2026-08-09 10:30:00"
+      }
+    ],
+    "count": 6
+  },
+  "error": null,
+  "metadata": {
+    "matched_count": 6,
+    "limit": 20,
+    "read_only": true
+  }
+}
+  PASS
+======================================================================
+2. Product inventory
+  tool: ryan_get_product_inventory
+  args: {"product_id": 3}
+{
+  "success": true,
+  "tool": "ryan_get_product_inventory",
+  "result": {
+    "product": {
+      "id": 3,
+      "name": "Fitness Watch",
+      "category": "Wearables",
+      "status": "active",
+      "stock_quantity": 18,
+      "reorder_threshold": 20,
+      "reorder_quantity": 40,
+      "needs_reorder": true,
+      "supplier_id": 5,
+      "supplier_name": "Wavefront Wearables",
+      "last_restocked_at": "2026-08-05 14:30:00"
+    }
+  },
+  "error": null,
+  "metadata": {
+    "read_only": true
+  }
+}
+  PASS
+======================================================================
+3. Supplier details
+  tool: ryan_get_supplier_details
+  args: {"supplier_id": 5}
+{
+  "success": true,
+  "tool": "ryan_get_supplier_details",
+  "result": {
+    "supplier": {
+      "id": 5,
+      "name": "Wavefront Wearables",
+      "contact_name": "Tara Whitfield",
+      "email": "tara.whitfield@wavefrontwear.com",
+      "phone": "08 8234 7711",
+      "address": "9 Beacon Ln, Adelaide SA 5000",
+      "created_at": "2026-09-08 10:16:37"
+    },
+    "products": [
+      {
+        "id": 3,
+        "name": "Fitness Watch",
+        "category": "Wearables",
+        "status": "active",
+        "stock_quantity": 18,
+        "reorder_threshold": 20,
+        "reorder_quantity": 40,
+        "needs_reorder": true,
+        "supplier_id": 5,
+        "supplier_name": "Wavefront Wearables",
+        "last_restocked_at": "2026-08-05 14:30:00"
+      },
+      {
+        "id": 13,
+        "name": "Smart Glasses",
+        "category": "Wearables",
+        "status": "active",
+        "stock_quantity": 0,
+        "reorder_threshold": 10,
+        "reorder_quantity": 20,
+        "needs_reorder": true,
+        "supplier_id": 5,
+        "supplier_name": "Wavefront Wearables",
+        "last_restocked_at": "2026-08-05 16:50:00"
+      }
+    ],
+    "product_count": 2
+  },
+  "error": null,
+  "metadata": {
+    "matched_count": 2,
+    "limit": 50,
+    "read_only": true
+  }
+}
+  PASS
+======================================================================
+4. Restock order
+  tool: ryan_calculate_restock_order
+  args: {"product_id": 13}
+{
+  "success": true,
+  "tool": "ryan_calculate_restock_order",
+  "result": {
+    "product_id": 13,
+    "product_name": "Smart Glasses",
+    "stock_quantity": 0,
+    "reorder_threshold": 10,
+    "needs_reorder": true,
+    "shortfall_to_threshold": 10,
+    "suggested_order_quantity": 20,
+    "projected_stock_after_order": 20,
+    "unit_cost": 160.0,
+    "estimated_order_cost": 3200.0,
+    "currency": "AUD",
+    "supplier_id": 5,
+    "supplier_name": "Wavefront Wearables"
+  },
+  "error": null,
+  "metadata": {
+    "read_only": true,
+    "persisted": false
+  }
+}
+  PASS
+======================================================================
+5. Bad product_id (0)
+  tool: ryan_get_product_inventory
+  args: {"product_id": 0}
+{
+  "success": false,
+  "tool": "ryan_get_product_inventory",
+  "result": null,
+  "error": {
+    "code": "INVALID_ARGUMENT",
+    "message": "product_id must be a positive integer.",
+    "details": {
+      "field": "product_id"
+    }
+  }
+}
+  PASS
+======================================================================
+6. Missing product (99999)
+  tool: ryan_get_product_inventory
+  args: {"product_id": 99999}
+{
+  "success": false,
+  "tool": "ryan_get_product_inventory",
+  "result": null,
+  "error": {
+    "code": "RECORD_NOT_FOUND",
+    "message": "The requested record was not found."
+  }
+}
+  PASS
+======================================================================
+7. Limit too large (500)
+  tool: ryan_get_low_stock_items
+  args: {"limit": 500}
+{
+  "success": false,
+  "tool": "ryan_get_low_stock_items",
+  "result": null,
+  "error": {
+    "code": "INVALID_ARGUMENT",
+    "message": "limit must not exceed 50.",
+    "details": {
+      "field": "limit",
+      "maximum": 50
+    }
+  }
+}
+  PASS
+======================================================================
+8. Bad supplier_id (-1)
+  tool: ryan_get_supplier_details
+  args: {"supplier_id": -1}
+{
+  "success": false,
+  "tool": "ryan_get_supplier_details",
+  "result": null,
+  "error": {
+    "code": "INVALID_ARGUMENT",
+    "message": "supplier_id must be a positive integer.",
+    "details": {
+      "field": "supplier_id"
+    }
+  }
+}
+  PASS
+======================================================================
+8/8 cases passed
