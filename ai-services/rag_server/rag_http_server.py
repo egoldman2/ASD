@@ -61,6 +61,17 @@ def _status_for(payload: dict[str, Any]) -> int:
 def _json_body(operation: str) -> tuple[dict[str, Any] | None, Any | None]:
     """Return an object JSON body or a ready-to-send error response."""
 
+    if (
+        request.content_length is not None
+        and request.content_length > MAX_REQUEST_BODY_BYTES
+    ):
+        payload = error_response(
+            operation,
+            RAGErrorCode.INVALID_ARGUMENT,
+            f"Request body must not exceed {MAX_REQUEST_BODY_BYTES} bytes.",
+        )
+        return None, (jsonify(payload), 413)
+
     if not request.is_json:
         payload = error_response(
             operation,
@@ -91,8 +102,8 @@ def create_app(
     app = Flask(__name__)
     app.config.update(
         MAX_CONTENT_LENGTH=MAX_REQUEST_BODY_BYTES,
-        JSON_SORT_KEYS=False,
     )
+    app.json.sort_keys = False
 
     @app.get("/")
     def service_index() -> tuple[Any, int]:
