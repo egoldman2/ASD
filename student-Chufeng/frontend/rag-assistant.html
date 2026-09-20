@@ -1,1 +1,195 @@
 
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RAG Product Assistant | ASD 2026</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+    <link rel="stylesheet" href="css/styles.css?v=12">
+    <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
+    <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+    <script src="js/rag-tools.js?v=1" defer></script>
+  </head>
+  <body>
+    <header class="navbar appleNav" data-site-header data-active="catalogue">
+      <div class="navContainer">
+        <div class="navLogo">
+          <a href="http://localhost:8000" class="logoLink">
+            <span class="logoMain">ASD 2026</span>
+          </a>
+        </div>
+        <nav class="navLinks" aria-label="Main navigation">
+          <a href="index.html" class="navLink active">Product Catalogue</a>
+          <a href="http://localhost:8002" class="navLink">Inventory Management</a>
+          <a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a>
+          <a href="http://localhost:8005" class="navLink">Customer Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="cataloguePage mcpPage ragPage">
+      <section class="catalogueHero catalogueHero--compact mcpHero">
+        <div>
+          <p class="sectionEyebrow">Grounded RAG Integration</p>
+          <h1>RAG Product Assistant</h1>
+          <p class="heroDescription">
+            Refresh the product knowledge base, inspect Top-K retrieval, and ask
+            Ollama for answers grounded in cited catalogue evidence.
+          </p>
+        </div>
+        <a class="cartLink cartLink--secondary" href="index.html">Back to Catalogue</a>
+      </section>
+
+      <section class="mcpStatusPanel" aria-labelledby="ragStatusTitle">
+        <div class="mcpStatusIdentity">
+          <span id="ragStatusDot" class="mcpStatusDot" aria-hidden="true"></span>
+          <div>
+            <p class="sectionEyebrow">Connection</p>
+            <h2 id="ragStatusTitle">Checking RAG status...</h2>
+            <p id="ragStatusMessage" class="mcpStatusMessage" aria-live="polite">
+              Contacting the Chufeng backend.
+            </p>
+          </div>
+        </div>
+        <div class="mcpStatusActions">
+          <div class="mcpModeControl">
+            <label class="mcpModeToggle" for="ragModeToggle">
+              <input id="ragModeToggle" type="checkbox" checked>
+              <span class="mcpModeTrack" aria-hidden="true"></span>
+              <span>Use RAG</span>
+            </label>
+            <span id="ragModeState" class="mcpModeState mcpModeState--on">ON</span>
+          </div>
+          <span id="ragModelBadge" class="mcpToolCount">Model unavailable</span>
+          <button id="refreshRagStatusButton" class="mcpSecondaryButton" type="button">
+            Refresh status
+          </button>
+        </div>
+      </section>
+
+      <section class="mcpWorkspace" aria-label="RAG demonstration workflow">
+        <aside class="mcpToolMenu" aria-labelledby="ragTasksTitle">
+          <p class="sectionEyebrow">RAG Workflow</p>
+          <h2 id="ragTasksTitle">Choose a task</h2>
+          <p class="mcpMenuDescription">
+            Every request travels through the frontend, Chufeng backend, shared
+            RAG server, ChromaDB, and—when answering—local Ollama.
+          </p>
+          <div class="mcpToolButtons" role="tablist" aria-label="RAG tasks">
+            <button class="mcpToolButton active" type="button" role="tab" aria-selected="true" data-rag-panel="refreshCorpusPanel">
+              <span>Refresh Corpus</span>
+              <small>Index current catalogue data</small>
+            </button>
+            <button class="mcpToolButton" type="button" role="tab" aria-selected="false" data-rag-panel="retrieveContextPanel">
+              <span>Retrieve Context</span>
+              <small>Inspect Top-K evidence</small>
+            </button>
+            <button class="mcpToolButton" type="button" role="tab" aria-selected="false" data-rag-panel="answerQuestionPanel">
+              <span>Answer with Citations</span>
+              <small>Generate a grounded response</small>
+            </button>
+          </div>
+        </aside>
+
+        <div class="mcpToolStage">
+          <section id="refreshCorpusPanel" class="mcpToolPanel" role="tabpanel">
+            <div class="mcpPanelHeading">
+              <p class="sectionEyebrow">Step 1 · Corpus</p>
+              <h2>Refresh the product knowledge base</h2>
+              <p>
+                Load customer-safe product records from the Product Database API,
+                create one semantic document per product, and update ChromaDB.
+              </p>
+            </div>
+            <form id="refreshCorpusForm" class="mcpForm ragSingleActionForm">
+              <button class="mcpPrimaryButton" type="submit">Refresh knowledge base</button>
+            </form>
+          </section>
+
+          <section id="retrieveContextPanel" class="mcpToolPanel" role="tabpanel" hidden>
+            <div class="mcpPanelHeading">
+              <p class="sectionEyebrow">Step 2 · Retrieval</p>
+              <h2>Retrieve relevant product context</h2>
+              <p>Compare a query embedding with indexed product documents and inspect the ranked evidence.</p>
+            </div>
+            <form id="retrieveContextForm" class="mcpForm">
+              <label class="mcpField mcpField--wide">
+                <span>Search query</span>
+                <input name="query" type="search" maxlength="1000" value="mechanical keyboard" required>
+              </label>
+              <label class="mcpField">
+                <span>Top K results</span>
+                <input name="top_k" type="number" min="1" max="20" step="1" value="5" required>
+              </label>
+              <button class="mcpPrimaryButton" type="submit">Retrieve context</button>
+            </form>
+          </section>
+
+          <section id="answerQuestionPanel" class="mcpToolPanel" role="tabpanel" hidden>
+            <div class="mcpPanelHeading">
+              <p class="sectionEyebrow">Step 3 · Grounded Answer</p>
+              <h2>Answer with citations</h2>
+              <p>Retrieve catalogue evidence first, then ask the local Ollama model to answer only from that context.</p>
+            </div>
+            <form id="answerQuestionForm" class="mcpForm">
+              <label class="mcpField mcpField--wide">
+                <span>Product question</span>
+                <textarea name="question" rows="4" maxlength="1000" required>Which mechanical keyboard is in stock and how much does it cost?</textarea>
+              </label>
+              <label class="mcpField">
+                <span>Top K evidence</span>
+                <input name="top_k" type="number" min="1" max="20" step="1" value="5" required>
+              </label>
+              <button class="mcpPrimaryButton" type="submit">Answer with citations</button>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section id="ragResultSection" class="mcpResultSection" aria-labelledby="ragResultTitle" hidden>
+        <div class="mcpResultHeader">
+          <div>
+            <p class="sectionEyebrow">Auditable Evidence</p>
+            <h2 id="ragResultTitle">RAG result</h2>
+          </div>
+          <div class="ragResultBadges">
+            <span id="ragConfidenceBadge" class="ragConfidenceBadge" hidden></span>
+            <span id="ragResultStatus" class="mcpResultStatus"></span>
+          </div>
+        </div>
+        <div id="ragFriendlyResult" class="mcpFriendlyResult" aria-live="polite"></div>
+        <dl class="mcpEvidenceSummary">
+          <div>
+            <dt>Operation</dt>
+            <dd id="ragEvidenceOperation">-</dd>
+          </div>
+          <div>
+            <dt>Knowledge scope</dt>
+            <dd id="ragEvidenceScope">chufeng_catalogue</dd>
+          </div>
+          <div>
+            <dt>Data path</dt>
+            <dd>Frontend → Backend → RAG → ChromaDB / Ollama</dd>
+          </div>
+        </dl>
+        <details class="mcpRawEvidence">
+          <summary>View RAG request and response</summary>
+          <div class="mcpRawGrid">
+            <div>
+              <h3>Request</h3>
+              <pre id="ragRequestOutput"></pre>
+            </div>
+            <div>
+              <h3>Response</h3>
+              <pre id="ragResponseOutput"></pre>
+            </div>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <footer class="footer">asd(2026)-group7</footer>
+  </body>
+</html>
