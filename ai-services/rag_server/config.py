@@ -11,7 +11,10 @@ from urllib.parse import urlsplit
 BASE_DIR = Path(__file__).resolve().parent
 
 DEFAULT_RAG_ENABLED = True
-DEFAULT_RAG_HOST = "127.0.0.1"
+# Listen on every local interface so Dockerised student backends can reach the
+# host-side service through host.docker.internal.  This is still a local
+# development service and must not be exposed on a public network.
+DEFAULT_RAG_HOST = "0.0.0.0"
 DEFAULT_RAG_PORT = 5003
 DEFAULT_PRODUCT_DATABASE_API_URL = (
     "http://127.0.0.1:6001/api/database/products"
