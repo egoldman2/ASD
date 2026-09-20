@@ -59,6 +59,9 @@ services:
       MCP_ENABLED: "${MCP_ENABLED:-true}"
       MCP_SERVER_URL: "${MCP_SERVER_URL:-http://host.docker.internal:8765/mcp}"
       MCP_CLIENT_TIMEOUT_SECONDS: "${MCP_CLIENT_TIMEOUT_SECONDS:-10}"
+      RAG_ENABLED: "${RAG_ENABLED:-true}"
+      RAG_SERVER_URL: "${RAG_SERVER_URL:-http://host.docker.internal:5003}"
+      RAG_CLIENT_TIMEOUT_SECONDS: "${RAG_CLIENT_TIMEOUT_SECONDS:-60}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
