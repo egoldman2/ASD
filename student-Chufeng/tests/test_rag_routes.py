@@ -162,3 +162,42 @@ def test_route_maps_rag_service_error_to_http_status(client, monkeypatch):
 
     assert response.status_code == 503
     assert response.get_json()["error"]["code"] == "OLLAMA_UNAVAILABLE"
+
+
+def test_rag_mode_header_blocks_workflow_calls(client, monkeypatch):
+    stub = StubRAGClient()
+    use_stub(monkeypatch, stub)
+
+    responses = [
+        client.post(
+            "/api/chufeng/rag/refresh",
+            headers={"X-RAG-Mode": "off"},
+        ),
+        client.post(
+            "/api/chufeng/rag/retrieve",
+            json={"query": "keyboard"},
+            headers={"X-RAG-Mode": "off"},
+        ),
+        client.post(
+            "/api/chufeng/rag/answer",
+            json={"question": "What is available?"},
+            headers={"X-RAG-Mode": "off"},
+        ),
+    ]
+
+    assert all(response.status_code == 403 for response in responses)
+    assert all(
+        response.get_json()["error"]["code"] == "RAG_DISABLED"
+        for response in responses
+    )
+    assert stub.calls == []
+
+
+def test_cors_allows_rag_mode_header(client):
+    response = client.options(
+        "/api/chufeng/rag/retrieve",
+        headers={"Origin": "http://localhost:8001"},
+    )
+
+    assert response.status_code == 204
+    assert "X-RAG-Mode" in response.headers["Access-Control-Allow-Headers"]
