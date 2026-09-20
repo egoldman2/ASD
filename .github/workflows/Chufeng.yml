@@ -57,12 +57,14 @@ jobs:
           cache-dependency-path: |
             requirements.txt
             ai-services/mcp_server/requirements.txt
+            ai-services/rag_server/requirements.txt
 
       - name: Install dependencies
         run: >-
           python -m pip install
           -r requirements.txt
           -r ai-services/mcp_server/requirements.txt
+          -r ai-services/rag_server/requirements.txt
 
       - name: Confirm local AI services are disabled in CI
         run: |
@@ -71,11 +73,12 @@ jobs:
           test "$RAG_ENABLED" = "false"
           test "$RUN_LIVE_AI" = "0"
 
-      - name: Run Product Catalogue and MCP tests
+      - name: Run Product Catalogue, MCP, and RAG tests
         run: >-
           python -m pytest
           student-Chufeng/tests
           ai-services/mcp_server/tests
+          ai-services/rag_server/tests
           -q
 
   docker-build:
