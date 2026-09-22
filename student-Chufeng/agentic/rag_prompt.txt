@@ -1,1 +1,28 @@
+Review the Chufeng shared RAG integration as a bounded Release 1 validation task.
 
+Required review boundaries:
+- Validate the configured `chufeng_catalogue` knowledge scope and the
+  refresh_corpus, retrieve_context, and answer_question operations.
+- Confirm that catalogue documents come from the Product Database HTTP API,
+  not by opening the SQLite database from the RAG service.
+- Check that ChromaDB retrieval exposes citations, distance/relevance metadata,
+  confidence, and a bounded Top-K result.
+- Check that grounded answers use only retrieved evidence, validate citations,
+  expose the Ollama model, and return insufficient context instead of guessing.
+- Confirm that the frontend calls Chufeng backend RAG routes and never connects
+  directly to the host RAG port.
+- Confirm that the host RAG server is not a Docker Compose service, while the
+  containerised backend uses host.docker.internal to reach it.
+- Confirm that CI disables live AI, MCP, and RAG integrations while retaining
+  deterministic RAG tests.
+
+Treat static checks and runtime checks as different evidence. Static source
+markers cannot prove that a live corpus refresh, retrieval, or grounded answer
+succeeded. If runtime_available is false, state the missing runtime evidence as
+a limitation. If it is true, cite the observed scope, operations, document
+count, retrieved sources, confidence, citations, and model exactly as supplied.
+
+Do not claim that GitHub Actions, Docker deployment, retrieval quality, or all
+insufficient-context cases passed unless those results are present in the
+collected evidence. Do not recommend putting the RAG server or Ollama into
+Docker Compose.
