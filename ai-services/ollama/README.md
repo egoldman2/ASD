@@ -62,6 +62,18 @@ python ai-services/agentic_loop.py --feature student-Chufeng --mode endpoints
 python ai-services/agentic_loop.py --feature student-Chufeng --mode architecture
 ```
 
+Chufeng's Release 1 integration also provides MCP and RAG validation modes:
+
+```bash
+python ai-services/agentic_loop.py --feature student-Chufeng --mode mcp
+python ai-services/agentic_loop.py --feature student-Chufeng --mode rag
+```
+
+The MCP mode requires the host MCP server and Product Database API. The RAG
+mode requires the Product Database API, host RAG server, local Ollama, and the
+configured `qwen2.5:0.5b` model. Both modes retain static evidence if their
+runtime integration is disabled, as it is during CI.
+
 ## Ethan Goldman - Customer Support
 
 Ethan Goldman's configuration covers the four assessed review areas: database,

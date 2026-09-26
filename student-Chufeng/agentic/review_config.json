@@ -7,7 +7,8 @@
     "architecture": "architecture_prompt.txt",
     "implementation": "implementation_prompt.txt",
     "devops": "devops_prompt.txt",
-    "mcp": "mcp_prompt.txt"
+    "mcp": "mcp_prompt.txt",
+    "rag": "rag_prompt.txt"
   },
   "database": "student-Chufeng/database/products.db",
   "endpoints": [
@@ -85,6 +86,33 @@
       "limit": 1
     }
   },
+  "rag_files": [
+    "ai-services/rag_server/config.py",
+    "ai-services/rag_server/rag_http_server.py",
+    "ai-services/rag_server/rag_server.py",
+    "ai-services/rag_server/rag_pipeline.py",
+    "ai-services/rag_server/response.py",
+    "ai-services/rag_server/sources/chufeng_catalogue.py",
+    "student-Chufeng/backend/services/rag_client.py",
+    "student-Chufeng/backend/controllers/rag_controller.py",
+    "student-Chufeng/backend/routes/rag_routes.py",
+    "student-Chufeng/frontend/rag-assistant.html",
+    "student-Chufeng/frontend/js/rag-tools.js",
+    "ai-services/rag_server/tests/test_pipeline.py",
+    "docker-compose.yml",
+    ".github/workflows/Chufeng.yml"
+  ],
+  "rag_server_url": "http://127.0.0.1:5003",
+  "rag_rules": {
+    "required_scope": "chufeng_catalogue",
+    "required_operations": [
+      "refresh_corpus",
+      "retrieve_context",
+      "answer_question"
+    ],
+    "probe_question": "Which products with smart in their names are in stock, and what are their prices?",
+    "probe_top_k": 5
+  },
   "source_checks": {
     "mcp": [
       {
@@ -141,6 +169,73 @@
         "contains": [
           "MCP_ENABLED: \"false\"",
           "ai-services/mcp_server/tests"
+        ],
+        "excludes": [
+          "docker compose up",
+          "ollama pull"
+        ]
+      }
+    ],
+    "rag": [
+      {
+        "name": "catalogue_source_uses_database_api_without_sqlite",
+        "file": "ai-services/rag_server/sources/chufeng_catalogue.py",
+        "contains": [
+          "requests.get",
+          "settings.product_database_api_url",
+          "KnowledgeDocument"
+        ],
+        "excludes": [
+          "import sqlite3"
+        ]
+      },
+      {
+        "name": "pipeline_uses_chroma_and_grounded_citations",
+        "file": "ai-services/rag_server/rag_pipeline.py",
+        "contains": [
+          "chromadb.PersistentClient",
+          "collection.query(",
+          "GROUNDING_SYSTEM_PROMPT",
+          "_answer_with_valid_citations",
+          "INSUFFICIENT_ANSWER"
+        ]
+      },
+      {
+        "name": "backend_uses_structured_rag_client",
+        "file": "student-Chufeng/backend/services/rag_client.py",
+        "contains": [
+          "ChufengRAGClient",
+          "refresh_corpus",
+          "retrieve_context",
+          "answer_question"
+        ]
+      },
+      {
+        "name": "frontend_calls_backend_rag_routes",
+        "file": "student-Chufeng/frontend/js/rag-tools.js",
+        "contains": [
+          "http://localhost:5000/api/chufeng/rag",
+          "X-RAG-Mode"
+        ],
+        "excludes": [
+          "localhost:5003",
+          "127.0.0.1:5003"
+        ]
+      },
+      {
+        "name": "docker_calls_host_rag_server",
+        "file": "docker-compose.yml",
+        "contains": [
+          "host.docker.internal:5003",
+          "host.docker.internal:host-gateway"
+        ]
+      },
+      {
+        "name": "ci_disables_live_rag",
+        "file": ".github/workflows/Chufeng.yml",
+        "contains": [
+          "RAG_ENABLED: \"false\"",
+          "ai-services/rag_server/tests"
         ],
         "excludes": [
           "docker compose up",

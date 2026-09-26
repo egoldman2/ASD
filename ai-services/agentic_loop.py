@@ -16,7 +16,7 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
 MAX_STATIC_REVIEW_FILE_CHARS = 400
 SENSITIVE_COLUMN_TERMS = ("password", "secret", "token")
-FILE_REVIEW_MODES = ("implementation", "devops", "mcp")
+FILE_REVIEW_MODES = ("implementation", "devops", "mcp", "rag")
 
 SYSTEM_PROMPT = """You are the read-only software review agent for the ASD 2026 project.
 
@@ -692,6 +692,268 @@ def collect_mcp_evidence(config, runtime_probe=None):
     return evidence
 
 
+def _rag_runtime_enabled():
+    """Respect the same runtime switch used by CI and the Chufeng backend."""
+    value = os.getenv("RAG_ENABLED", "true").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+def _rag_payload_summary(payload, operation):
+    """Keep auditable RAG facts without copying full catalogue documents."""
+    data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+    metadata = (
+        payload.get("metadata")
+        if isinstance(payload.get("metadata"), dict)
+        else {}
+    )
+    citations = (
+        payload.get("citations")
+        if isinstance(payload.get("citations"), list)
+        else []
+    )
+    summary = {
+        "success": payload.get("success") is True,
+        "operation": payload.get("operation"),
+        "confidence": payload.get("confidence"),
+        "insufficient_context": payload.get("insufficient_context") is True,
+        "citation_count": len(citations),
+        "source_ids": [
+            citation.get("source_id")
+            for citation in citations
+            if isinstance(citation, dict)
+            and isinstance(citation.get("source_id"), str)
+        ],
+    }
+    if operation == "refresh_corpus":
+        summary.update(
+            {
+                "scope": data.get("scope"),
+                "source": data.get("source"),
+                "document_count": data.get("document_count"),
+                "added_count": data.get("added_count"),
+                "updated_count": data.get("updated_count"),
+                "removed_count": data.get("removed_count"),
+                "collection": data.get("collection"),
+                "collection_count": data.get("collection_count"),
+                "read_only_source": metadata.get("read_only_source"),
+            }
+        )
+    elif operation == "retrieve_context":
+        summary.update(
+            {
+                "scope": data.get("scope"),
+                "result_count": data.get("result_count"),
+                "requested_top_k": metadata.get("requested_top_k"),
+                "indexed_document_count": metadata.get(
+                    "indexed_document_count"
+                ),
+                "distance_metric": metadata.get("distance_metric"),
+            }
+        )
+    elif operation == "answer_question":
+        answer = data.get("answer")
+        summary.update(
+            {
+                "scope": data.get("scope"),
+                "retrieved_count": data.get("retrieved_count"),
+                "model": data.get("model"),
+                "grounded": metadata.get("grounded"),
+                "model_invoked": metadata.get("model_invoked"),
+                "answer_preview": (
+                    answer[:300] if isinstance(answer, str) else None
+                ),
+            }
+        )
+    if payload.get("success") is False and isinstance(payload.get("error"), dict):
+        summary["error"] = {
+            "code": payload["error"].get("code"),
+            "message": payload["error"].get("message"),
+        }
+    return summary
+
+
+def _probe_rag_runtime(config):
+    """Run one bounded refresh, retrieval, and grounded-answer workflow."""
+    module_path = _project_path(
+        "student-Chufeng/backend/services/rag_client.py"
+    )
+    module_name = "chufeng_agentic_rag_client"
+    specification = importlib.util.spec_from_file_location(module_name, module_path)
+    if specification is None or specification.loader is None:
+        raise AgenticLoopError("Unable to load the Chufeng RAG client.")
+
+    module = importlib.util.module_from_spec(specification)
+    sys.modules[module_name] = module
+    try:
+        specification.loader.exec_module(module)
+    finally:
+        sys.modules.pop(module_name, None)
+
+    settings = module.RAGClientSettings(
+        enabled=True,
+        server_url=config.get("rag_server_url", "http://127.0.0.1:5003"),
+        timeout_seconds=float(config.get("rag_timeout_seconds", 90.0)),
+    )
+    client = module.ChufengRAGClient(settings=settings)
+    health = client.health()
+    health_summary = {
+        "status": health.get("status"),
+        "service": health.get("service"),
+        "enabled": health.get("enabled"),
+        "available_scopes": health.get("available_scopes", []),
+        "operations": health.get("tools", []),
+        "ollama_model": health.get("ollama_model"),
+    }
+    runtime = {
+        "available": health.get("status") == "healthy",
+        "health": health_summary,
+    }
+    if not runtime["available"]:
+        return runtime
+
+    rules = config.get("rag_rules", {})
+    question = rules.get(
+        "probe_question",
+        "Which products with smart in their names are in stock, and what are their prices?",
+    )
+    top_k = rules.get("probe_top_k", 5)
+    refresh = client.refresh_corpus()
+    retrieval = client.retrieve_context(question, top_k)
+    answer = client.answer_question(question, top_k)
+    runtime["probe"] = {
+        "question": question,
+        "top_k": top_k,
+        "refresh": _rag_payload_summary(refresh, "refresh_corpus"),
+        "retrieval": _rag_payload_summary(retrieval, "retrieve_context"),
+        "answer": _rag_payload_summary(answer, "answer_question"),
+    }
+    return runtime
+
+
+def collect_rag_evidence(config, runtime_probe=None):
+    """Collect static RAG boundaries plus an optional live grounded workflow."""
+    evidence = collect_file_evidence(config, "rag")
+    rules = config.get("rag_rules", {})
+    required_scope = rules.get("required_scope", "chufeng_catalogue")
+    required_operations = rules.get(
+        "required_operations",
+        ["refresh_corpus", "retrieve_context", "answer_question"],
+    )
+    source_by_path = {}
+    for relative_path in config.get("rag_files", []):
+        file_path = _project_path(relative_path)
+        if file_path.is_file():
+            source_by_path[relative_path] = file_path.read_text(
+                encoding="utf-8",
+                errors="replace",
+            )
+
+    rag_server_source = source_by_path.get(
+        "ai-services/rag_server/rag_server.py", ""
+    )
+    pipeline_source = source_by_path.get(
+        "ai-services/rag_server/rag_pipeline.py", ""
+    )
+    catalogue_source = source_by_path.get(
+        "ai-services/rag_server/sources/chufeng_catalogue.py", ""
+    )
+    client_source = source_by_path.get(
+        "student-Chufeng/backend/services/rag_client.py", ""
+    )
+    controller_source = source_by_path.get(
+        "student-Chufeng/backend/controllers/rag_controller.py", ""
+    )
+    routes_source = source_by_path.get(
+        "student-Chufeng/backend/routes/rag_routes.py", ""
+    )
+    frontend_source = source_by_path.get(
+        "student-Chufeng/frontend/js/rag-tools.js", ""
+    )
+    compose_source = source_by_path.get("docker-compose.yml", "")
+    checks = evidence["verified_checks"]
+    checks.update(
+        {
+            "required_scope": required_scope,
+            "required_operations": required_operations,
+            "all_required_operations_registered": bool(required_operations)
+            and all(operation in rag_server_source for operation in required_operations),
+            "required_scope_registered": required_scope in catalogue_source
+            and required_scope in client_source,
+            "grounding_controls_present": all(
+                marker in pipeline_source
+                for marker in (
+                    "GROUNDING_SYSTEM_PROMPT",
+                    "_answer_with_valid_citations",
+                    "INSUFFICIENT_ANSWER",
+                    "model_invoked",
+                )
+            ),
+            "rag_server_not_in_compose": not bool(
+                re.search(
+                    r"(?m)^\s{2}(?:rag|rag-server|rag_server):\s*$",
+                    compose_source,
+                )
+            ),
+            "frontend_uses_backend_rag_routes": (
+                "/api/chufeng/rag" in frontend_source
+                and "X-RAG-Mode" in frontend_source
+                and "rag_controller" in routes_source
+                and "ChufengRAGClient" in controller_source
+            ),
+        }
+    )
+
+    runtime = {
+        "attempted": False,
+        "available": False,
+        "server_url": config.get(
+            "rag_server_url", "http://127.0.0.1:5003"
+        ),
+    }
+    if not _rag_runtime_enabled():
+        runtime["skip_reason"] = "RAG_ENABLED disables live validation."
+    else:
+        runtime["attempted"] = True
+        probe = runtime_probe or _probe_rag_runtime
+        try:
+            runtime.update(probe(config))
+        except Exception as exc:
+            runtime["error"] = f"{type(exc).__name__}: {exc}"[:300]
+
+    health = runtime.get("health", {})
+    observed_operations = set(health.get("operations", []))
+    runtime["required_scope_available"] = bool(runtime.get("available")) and (
+        required_scope in health.get("available_scopes", [])
+    )
+    runtime["required_operations_available"] = bool(runtime.get("available")) and set(
+        required_operations
+    ).issubset(observed_operations)
+    probe = runtime.get("probe", {})
+    refresh = probe.get("refresh", {})
+    retrieval = probe.get("retrieval", {})
+    answer = probe.get("answer", {})
+    runtime["grounded_answer_verified"] = bool(
+        answer.get("success")
+        and not answer.get("insufficient_context")
+        and answer.get("grounded") is True
+        and answer.get("model_invoked") is True
+        and answer.get("model")
+        and answer.get("citation_count", 0) > 0
+    )
+    runtime["probe_complete"] = bool(
+        runtime.get("required_scope_available")
+        and runtime.get("required_operations_available")
+        and refresh.get("success")
+        and refresh.get("scope") == required_scope
+        and retrieval.get("success")
+        and retrieval.get("scope") == required_scope
+        and retrieval.get("citation_count", 0) > 0
+        and runtime.get("grounded_answer_verified")
+    )
+    evidence["runtime"] = runtime
+    return evidence
+
+
 def collect_evidence(mode, config):
     collectors = {
         "database": collect_database_evidence,
@@ -700,6 +962,8 @@ def collect_evidence(mode, config):
     }
     if mode == "mcp":
         return collect_mcp_evidence(config)
+    if mode == "rag":
+        return collect_rag_evidence(config)
     if mode in FILE_REVIEW_MODES:
         return collect_file_evidence(config, mode)
     return collectors[mode](config)
@@ -828,6 +1092,19 @@ def _grounding_summary(mode, evidence):
         )
         return "\n".join(lines)
 
+    if mode == "rag":
+        return (
+            "Verified RAG file checks and runtime evidence:\n"
+            + json.dumps(
+                {
+                    "verified_checks": evidence.get("verified_checks", {}),
+                    "runtime": evidence.get("runtime", {}),
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
+
     if mode == "architecture" or mode in FILE_REVIEW_MODES:
         return (
             "Verified file checks (values are collected from the configured source "
@@ -890,6 +1167,49 @@ def _deterministic_issues(mode, evidence, candidate):
         ):
             issues.append(
                 "The live MCP server did not expose every configured required tool."
+            )
+
+    if mode == "rag":
+        checks = evidence.get("verified_checks", {})
+        runtime = evidence.get("runtime", {})
+        required_scope = checks.get("required_scope", "")
+        required_operations = checks.get("required_operations", [])
+        mentioned_operations = [
+            operation
+            for operation in required_operations
+            if operation.lower() in candidate_lower
+        ]
+        if required_scope and required_scope.lower() not in candidate_lower:
+            issues.append(
+                "The RAG response omits the configured Chufeng knowledge scope."
+            )
+        if len(mentioned_operations) < min(2, len(required_operations)):
+            issues.append(
+                "The RAG response names fewer than two required operations and is "
+                "too vague to validate the pipeline boundaries."
+            )
+        if not runtime.get("available") and re.search(
+            r"(?:live|runtime|rag server|retrieval|grounded answer)[^.\n]{0,140}"
+            r"(?:succeed(?:ed|s)?|pass(?:ed|es)?|available|confirmed|verified)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response claims successful live RAG evidence, but the runtime "
+                "collector did not connect to the server."
+            )
+        if runtime.get("available") and not runtime.get("probe_complete"):
+            issues.append(
+                "The live RAG server was reachable, but the bounded refresh, retrieval, "
+                "and grounded-answer probe was incomplete."
+            )
+        if not runtime.get("grounded_answer_verified") and re.search(
+            r"(?:grounded answer|citations?|sources?)[^.\n]{0,140}"
+            r"(?:succeed(?:ed|s)?|pass(?:ed|es)?|confirmed|verified|valid)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response claims a verified grounded answer or citations without "
+                "collected live answer evidence."
             )
 
     is_generic_file_review = mode in FILE_REVIEW_MODES or (
@@ -1376,6 +1696,108 @@ def _grounded_fallback(mode, evidence, issues, config=None):
             + "\n".join(recommendations)
             + "\n\nADAPTATION APPLIED\n"
             "- Replaced unsupported model claims with a deterministic MCP evidence summary.\n"
+            "- Grounding issues removed: "
+            + ("; ".join(issues) if issues else "none")
+        )
+
+    if mode == "rag":
+        checks = evidence.get("verified_checks", {})
+        runtime = evidence.get("runtime", {})
+        source_checks = checks.get("source_checks", {})
+        required_operations = checks.get("required_operations", [])
+        observations = [
+            f"- {checks.get('present_files', 0)} of "
+            f"{checks.get('configured_files', 0)} configured RAG files were present.",
+            f"- Required knowledge scope: {checks.get('required_scope')}.",
+            "- Required operations: " + ", ".join(required_operations) + ".",
+            "- All required operations appear in the shared RAG server: "
+            f"{checks.get('all_required_operations_registered')}.",
+            "- The required Chufeng scope appears in the source and backend client: "
+            f"{checks.get('required_scope_registered')}.",
+            "- Grounding, citation validation, and insufficient-context controls are present: "
+            f"{checks.get('grounding_controls_present')}.",
+            "- No RAG server service is defined in Docker Compose: "
+            f"{checks.get('rag_server_not_in_compose')}.",
+            "- The frontend-to-backend RAG route markers are present: "
+            f"{checks.get('frontend_uses_backend_rag_routes')}.",
+            "- Live RAG validation available: "
+            f"{runtime.get('available', False)}; attempted: "
+            f"{runtime.get('attempted', False)}.",
+        ]
+        observations.extend(
+            f"- Configured source check `{name}`: {str(passed).lower()}."
+            for name, passed in source_checks.items()
+        )
+        if runtime.get("available"):
+            observations.extend(
+                [
+                    "- Live RAG health: "
+                    + json.dumps(runtime.get("health", {}), ensure_ascii=False)
+                    + ".",
+                    "- Bounded RAG probe: "
+                    + json.dumps(runtime.get("probe", {}), ensure_ascii=False)
+                    + ".",
+                    "- Required scope available: "
+                    f"{runtime.get('required_scope_available')}; required operations "
+                    f"available: {runtime.get('required_operations_available')}.",
+                    "- Grounded answer verified: "
+                    f"{runtime.get('grounded_answer_verified')}; complete probe: "
+                    f"{runtime.get('probe_complete')}.",
+                ]
+            )
+
+        findings = []
+        missing = checks.get("missing_files", [])
+        if missing:
+            findings.append(
+                "- High: Configured RAG evidence files were missing: "
+                + ", ".join(missing)
+                + "."
+            )
+        failed_checks = [
+            name for name, passed in source_checks.items() if not passed
+        ]
+        if failed_checks:
+            findings.append(
+                "- Medium: Static RAG checks did not pass: "
+                + ", ".join(failed_checks)
+                + "."
+            )
+        if runtime.get("available") and not runtime.get("probe_complete"):
+            findings.append(
+                "- High: The live RAG server was reachable, but the complete bounded "
+                "refresh, retrieval, and grounded-answer workflow did not pass."
+            )
+        if not runtime.get("available"):
+            findings.append(
+                "- Evidence limitation: no successful live RAG connection was collected; "
+                "static checks do not prove corpus refresh, retrieval, or grounded answers."
+            )
+        if not findings:
+            findings.append(
+                "- The collected static and live RAG checks did not prove a grounding "
+                "or integration defect."
+            )
+
+        recommendations = [
+            "- Keep the Product Database API as the authoritative read-only knowledge source.",
+            "- Keep citations, confidence, Top-K bounds, and insufficient-context handling visible.",
+            "- Retain focused RAG pipeline and backend integration tests as separate deterministic evidence.",
+        ]
+        if not runtime.get("available"):
+            recommendations.append(
+                "- Start the Product Database API, local Ollama, and host RAG server, "
+                "then rerun RAG mode to collect live grounded evidence."
+            )
+        return (
+            "OBSERVATIONS\n"
+            + "\n".join(observations)
+            + "\n\nFINDINGS\n"
+            + "\n".join(findings)
+            + "\n\nRECOMMENDATIONS\n"
+            + "\n".join(recommendations)
+            + "\n\nADAPTATION APPLIED\n"
+            "- Replaced unsupported model claims with a deterministic RAG evidence summary.\n"
             "- Grounding issues removed: "
             + ("; ".join(issues) if issues else "none")
         )
@@ -1871,6 +2293,7 @@ def _choose_mode():
     print("4 = Implementation")
     print("5 = DevOps")
     print("6 = MCP")
+    print("7 = RAG")
     choices = {
         "1": "database",
         "2": "endpoints",
@@ -1878,10 +2301,11 @@ def _choose_mode():
         "4": "implementation",
         "5": "devops",
         "6": "mcp",
+        "7": "rag",
     }
     selection = input("Selection: ").strip()
     if selection not in choices:
-        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, 5, or 6.")
+        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, 5, 6, or 7.")
     return choices[selection]
 
 

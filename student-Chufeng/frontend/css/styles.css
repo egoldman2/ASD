@@ -938,6 +938,25 @@ body {
   outline: 3px solid rgba(29, 91, 158, 0.16);
 }
 
+.mcpField textarea {
+  width: 100%;
+  min-height: 108px;
+  padding: 0.65rem 0.8rem;
+  resize: vertical;
+  border: 1px solid #afc6d9;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e2f4d;
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.mcpField textarea:focus {
+  border-color: #1d5b9e;
+  outline: 3px solid rgba(29, 91, 158, 0.16);
+}
+
 .mcpPrimaryButton {
   justify-self: start;
   border: 1px solid #1d5b9e;
@@ -1103,6 +1122,130 @@ body {
   white-space: pre-wrap;
 }
 
+.ragSingleActionForm {
+  grid-template-columns: 1fr;
+}
+
+.ragResultBadges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.ragConfidenceBadge {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: #edf4f9;
+  color: #1d5b9e;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.ragConfidenceBadge--high {
+  background: #e5f5ec;
+  color: #176b3a;
+}
+
+.ragConfidenceBadge--medium {
+  background: #fff4d8;
+  color: #8a5a00;
+}
+
+.ragConfidenceBadge--low,
+.ragConfidenceBadge--insufficient {
+  background: #fbe9e7;
+  color: #a33a2b;
+}
+
+.ragMetricGrid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.ragMetricGrid div {
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid #d5e2ec;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.ragMetricGrid span,
+.ragResultMeta,
+.ragResultNote,
+.ragSourceId {
+  color: #61788e;
+  font-size: 0.85rem;
+}
+
+.ragMetricGrid strong {
+  color: #0b2545;
+  font-size: 1.25rem;
+}
+
+.ragResultNote {
+  margin-top: 0.8rem;
+}
+
+.ragRetrievalList {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.ragRetrievalCard {
+  padding: 1rem;
+  border: 1px solid #d5e2ec;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.ragRank {
+  color: #1d5b9e;
+  font-weight: 700;
+}
+
+.ragDocumentText,
+.ragAnswerText {
+  margin-top: 0.45rem;
+  color: #203a54;
+  white-space: pre-wrap;
+}
+
+.ragAnswerText {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.ragResultMeta {
+  margin-top: 0.65rem;
+}
+
+.ragCitationHeading {
+  margin-top: 1.15rem;
+  color: #0b2545;
+}
+
+.ragCitationList {
+  margin: 0.65rem 0 0 1.2rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ragCitationList li {
+  padding-left: 0.25rem;
+}
+
+.ragCitationList strong,
+.ragCitationList span {
+  display: block;
+}
+
 @media (max-width: 900px) {
   .navContainer {
     align-items: flex-start;
@@ -1179,6 +1322,10 @@ body {
 
   .mcpCartRow {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .ragMetricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .mcpRemoveButton {

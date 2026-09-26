@@ -8,3 +8,8 @@ venv/
 
 # Ignore local SQLite databases. Schema and seed files recreate them.
 *.db
+
+# Ignore locally generated RAG indexes and audit records.
+# Each developer rebuilds the ChromaDB index through Refresh Corpus.
+ai-services/rag_server/chroma/
+ai-services/rag_server/rag-audit.jsonl
