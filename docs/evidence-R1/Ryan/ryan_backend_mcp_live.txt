@@ -1,0 +1,246 @@
+======================================================================
+GET /api/inventory/mcp/status
+HTTP 200
+{
+  "available": true,
+  "enabled": true,
+  "error": null,
+  "success": true,
+  "tool_count": 4
+}
+======================================================================
+GET /api/inventory/mcp/tools
+HTTP 200
+{
+  "count": 4,
+  "error": null,
+  "success": true,
+  "tools": [
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "List products at or below their reorder threshold, most urgent first, with supplier name. This tool is read-only.",
+      "input_schema": {
+        "properties": {
+          "limit": {
+            "default": 20,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "get_low_stock_itemsArguments",
+        "type": "object"
+      },
+      "name": "ryan_get_low_stock_items",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "get_low_stock_itemsDictOutput",
+        "type": "object"
+      },
+      "title": "Get Low Stock Items"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get stock level, reorder threshold, reorder quantity, supplier and last restocked date for one positive product ID. Unit cost is not returned. This tool is read-only.",
+      "input_schema": {
+        "properties": {
+          "product_id": {
+            "title": "Product Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "product_id"
+        ],
+        "title": "get_product_inventoryArguments",
+        "type": "object"
+      },
+      "name": "ryan_get_product_inventory",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "get_product_inventoryDictOutput",
+        "type": "object"
+      },
+      "title": "Get Product Inventory"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Get one supplier's contact details and the products they supply for one positive supplier ID. This tool is read-only.",
+      "input_schema": {
+        "properties": {
+          "supplier_id": {
+            "title": "Supplier Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "supplier_id"
+        ],
+        "title": "get_supplier_detailsArguments",
+        "type": "object"
+      },
+      "name": "ryan_get_supplier_details",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "get_supplier_detailsDictOutput",
+        "type": "object"
+      },
+      "title": "Get Supplier Details"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Calculate a proposed restock quantity and estimated cost for one product. This does not place or persist an order.",
+      "input_schema": {
+        "properties": {
+          "product_id": {
+            "title": "Product Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "product_id"
+        ],
+        "title": "calculate_restock_orderArguments",
+        "type": "object"
+      },
+      "name": "ryan_calculate_restock_order",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "calculate_restock_orderDictOutput",
+        "type": "object"
+      },
+      "title": "Calculate Restock Order"
+    }
+  ]
+}
+======================================================================
+POST /api/inventory/mcp/tools/call
+body: {"tool": "ryan_get_low_stock_items", "arguments": {"limit": 3}}
+HTTP 200
+{
+  "error": null,
+  "metadata": {
+    "limit": 3,
+    "matched_count": 6,
+    "read_only": true
+  },
+  "result": {
+    "count": 3,
+    "products": [
+      {
+        "category": "Wearables",
+        "id": 13,
+        "last_restocked_at": "2026-08-05 16:50:00",
+        "name": "Smart Glasses",
+        "needs_reorder": true,
+        "reorder_quantity": 20,
+        "reorder_threshold": 10,
+        "status": "active",
+        "stock_quantity": 0,
+        "supplier_id": 5,
+        "supplier_name": "Wavefront Wearables"
+      },
+      {
+        "category": "Accessories",
+        "id": 10,
+        "last_restocked_at": "2026-08-20 09:50:00",
+        "name": "Travel Power Adapter",
+        "needs_reorder": true,
+        "reorder_quantity": 50,
+        "reorder_threshold": 20,
+        "status": "active",
+        "stock_quantity": 12,
+        "supplier_id": 4,
+        "supplier_name": "Pinnacle Accessories Co."
+      },
+      {
+        "category": "Electronics",
+        "id": 7,
+        "last_restocked_at": "2026-07-28 09:00:00",
+        "name": "Noise Cancelling Headphones",
+        "needs_reorder": true,
+        "reorder_quantity": 25,
+        "reorder_threshold": 15,
+        "status": "active",
+        "stock_quantity": 10,
+        "supplier_id": 1,
+        "supplier_name": "Northline Electronics Supply"
+      }
+    ]
+  },
+  "success": true,
+  "tool": "ryan_get_low_stock_items"
+}
+======================================================================
+POST /api/inventory/mcp/tools/call
+body: {"tool": "ryan_calculate_restock_order", "arguments": {"product_id": 13}}
+HTTP 200
+{
+  "error": null,
+  "metadata": {
+    "persisted": false,
+    "read_only": true
+  },
+  "result": {
+    "currency": "AUD",
+    "estimated_order_cost": 3200.0,
+    "needs_reorder": true,
+    "product_id": 13,
+    "product_name": "Smart Glasses",
+    "projected_stock_after_order": 20,
+    "reorder_threshold": 10,
+    "shortfall_to_threshold": 10,
+    "stock_quantity": 0,
+    "suggested_order_quantity": 20,
+    "supplier_id": 5,
+    "supplier_name": "Wavefront Wearables",
+    "unit_cost": 160.0
+  },
+  "success": true,
+  "tool": "ryan_calculate_restock_order"
+}
+======================================================================
+POST /api/inventory/mcp/tools/call
+body: {"tool": "ryan_get_product_inventory", "arguments": {"product_id": 0}}
+HTTP 400
+{
+  "error": {
+    "code": "INVALID_ARGUMENT",
+    "details": {
+      "field": "product_id"
+    },
+    "message": "product_id must be a positive integer."
+  },
+  "result": null,
+  "success": false,
+  "tool": "ryan_get_product_inventory"
+}
+======================================================================
+POST /api/inventory/mcp/tools/call
+body: {"tool": "chufeng_search_products", "arguments": {}}
+HTTP 403
+{
+  "error": {
+    "code": "TOOL_NOT_ALLOWED",
+    "message": "Tool 'chufeng_search_products' is not allowed for the inventory feature."
+  }
+}
