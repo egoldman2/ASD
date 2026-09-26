@@ -76,7 +76,10 @@ jobs:
           PY
 
       - name: Run Ryan Nolan tests
-        run: python -m pytest "student-Ryan_Nolan/tests/inventory_tests.py" -q
+        env:
+          MCP_ENABLED: "false"
+          RAG_ENABLED: "false"
+        run: python -m pytest "student-Ryan_Nolan/tests/inventory_tests.py" "student-Ryan_Nolan/tests/mcp_route_test.py" -q
 
       - name: Compile Ryan Nolan Python modules
         run: python -m compileall -q "student-Ryan_Nolan"
@@ -102,4 +105,4 @@ jobs:
           docker build --file "student-Ryan_Nolan/Dockerfile" --target test --tag asd-ryan-nolan-test:ci .
 
       - name: Run tests in the Docker test container
-        run: docker run --rm asd-ryan-nolan-test:ci
+        run: docker run --rm -e MCP_ENABLED=false -e RAG_ENABLED=false asd-ryan-nolan-test:ci
