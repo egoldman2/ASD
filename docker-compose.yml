@@ -230,6 +230,9 @@ services:
       OLLAMA_MODEL: qwen2.5:0.5b
       AUTH_SERVICE_URL: http://ethan-backend:6002
       PRODUCT_DATABASE_API_URL: http://product-database:6001/api/database
+      MCP_ENABLED: "${MCP_ENABLED:-true}"
+      MCP_SERVER_URL: "${MCP_SERVER_URL:-http://host.docker.internal:8765/mcp}"
+      MCP_CLIENT_TIMEOUT_SECONDS: "${MCP_CLIENT_TIMEOUT_SECONDS:-10}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
