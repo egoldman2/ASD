@@ -28,6 +28,9 @@ ENV APP_HOST=0.0.0.0 \
     OLLAMA_URL=http://host.docker.internal:11434 \
     OLLAMA_MODEL=qwen2.5:0.5b \
     OLLAMA_TIMEOUT_SECONDS=45 \
+    MCP_ENABLED=true \
+    MCP_SERVER_URL=http://host.docker.internal:8765/mcp \
+    MCP_CLIENT_TIMEOUT_SECONDS=10 \
     LOG_LEVEL=INFO
 
 EXPOSE 6005

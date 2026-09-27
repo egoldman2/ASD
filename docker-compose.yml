@@ -176,6 +176,9 @@ services:
       OLLAMA_TIMEOUT_SECONDS: 45
       LOG_LEVEL: INFO
       SUPPORT_FRONTEND_ORIGIN: http://localhost:8005
+      MCP_ENABLED: "${MCP_ENABLED:-true}"
+      MCP_SERVER_URL: "${MCP_SERVER_URL:-http://host.docker.internal:8765/mcp}"
+      MCP_CLIENT_TIMEOUT_SECONDS: "${MCP_CLIENT_TIMEOUT_SECONDS:-10}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
