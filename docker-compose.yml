@@ -51,6 +51,7 @@ services:
     ports:
       - "5000:5000"
     environment:
+      AI_MODE_ENABLED: "${AI_MODE_ENABLED:-true}"
       OLLAMA_URL: "${OLLAMA_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: qwen2.5:0.5b
       PRODUCT_DATABASE_API_URL: http://product-database:6001/api/database
@@ -95,6 +96,7 @@ services:
     ports:
       - "6002:6002"
     environment:
+      AI_MODE_ENABLED: "${AI_MODE_ENABLED:-true}"
       DATABASE_API_URL: http://ethan-database:6003
       SESSION_SECRET: ${ETHAN_SESSION_SECRET:-release-0-local-secret}
       OLLAMA_URL: "${OLLAMA_URL:-http://host.docker.internal:11434}"
@@ -167,6 +169,7 @@ services:
     ports:
       - "6005:6005"
     environment:
+      AI_MODE_ENABLED: "${AI_MODE_ENABLED:-true}"
       APP_HOST: 0.0.0.0
       APP_PORT: 6005
       SUPPORT_DATABASE_API_URL: http://customer-support-database:6006
@@ -232,6 +235,7 @@ services:
     ports:
       - "8102:8102"
     environment:
+      AI_MODE_ENABLED: "${AI_MODE_ENABLED:-true}"
       OLLAMA_URL: "${OLLAMA_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: qwen2.5:0.5b
       AUTH_SERVICE_URL: http://ethan-backend:6002

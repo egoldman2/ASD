@@ -20,6 +20,7 @@ FROM support-python-base AS backend
 
 COPY ["student-Ethan Goldman/support_backend/", "/app/support_backend/"]
 COPY shared/mcp_client.py /app/shared/mcp_client.py
+COPY shared/feature_flags.py /app/shared/feature_flags.py
 
 ENV APP_HOST=0.0.0.0 \
     APP_PORT=6005 \

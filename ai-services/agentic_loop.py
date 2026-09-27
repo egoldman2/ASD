@@ -11,6 +11,9 @@ from urllib import error, request
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+from shared.feature_flags import feature_enabled
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
@@ -1022,6 +1025,8 @@ def _evidence_digest(mode, evidence):
 
 
 def _call_ollama(prompt):
+    if not feature_enabled():
+        raise OllamaError("AI mode is disabled.")
     payload = json.dumps(
         {
             "model": OLLAMA_MODEL,

@@ -20,7 +20,8 @@ def load_module(module_name):
 
 
 @pytest.fixture
-def auth_module():
+def auth_module(monkeypatch):
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
     module = load_module("ethan_customer_insight_app")
     module.app.config.update(TESTING=True, SECRET_KEY="unit-test-key")
     return module

@@ -7,6 +7,11 @@ import requests
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def enable_deterministic_generation_contracts(monkeypatch):
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
+
+
 rag_client_module = import_module(
     "student-Chufeng.backend.services.rag_client"
 )

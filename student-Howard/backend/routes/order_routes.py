@@ -3,6 +3,7 @@ import sqlite3
 import subprocess
 import requests
 from flask import Blueprint, current_app, g, jsonify, request
+from shared.feature_flags import feature_enabled
 
 order_blueprint = Blueprint(
     "order_returns",
@@ -39,7 +40,9 @@ def rows_to_list(rows):
 
 
 def ask_ollama(prompt):
-    resp = requests.post(OLLAMA_URL, json={"model": MODEL, "prompt": prompt, "stream": False})
+    if not feature_enabled():
+        raise requests.RequestException("AI mode is disabled.")
+    resp = requests.post(OLLAMA_URL, json={"model": MODEL, "prompt": prompt, "stream": False}, timeout=60)
     resp.raise_for_status()
     return resp.json()["response"].strip()
 
@@ -302,6 +305,8 @@ def return_advice(return_id):
     user = current_user()
     if user is None:
         return authentication_failure()
+    if not feature_enabled():
+        return jsonify({"error": "AI mode is disabled.", "code": "AI_MODE_DISABLED"}), 503
 
     conn = get_db()
     ret = conn.execute("SELECT * FROM returns WHERE return_id=?", (return_id,)).fetchone()

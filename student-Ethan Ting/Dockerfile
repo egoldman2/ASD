@@ -18,6 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 FROM python-base AS backend
 
+COPY shared/feature_flags.py /app/shared/feature_flags.py
+
 COPY ["student-Ethan Ting/backend/app.py", "/app/app.py"]
 COPY ["student-Ethan Ting/agentic/customer_insight_prompt.txt", "/app/agentic/customer_insight_prompt.txt"]
 COPY ["student-Ethan Ting/agentic/customer_change_prompt.txt", "/app/agentic/customer_change_prompt.txt"]
@@ -37,6 +39,8 @@ CMD ["python", "app.py"]
 
 
 FROM python-base AS test
+
+COPY shared/feature_flags.py /app/shared/feature_flags.py
 
 COPY ["student-Ethan Ting/backend/", "/app/backend/"]
 COPY ["student-Ethan Ting/database/", "/app/database/"]

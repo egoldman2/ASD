@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 import requests
+from shared.feature_flags import feature_enabled
 
 from rag_server.config import RAGSettings, get_settings
 
@@ -59,6 +60,9 @@ class OllamaClient:
         user_prompt: str,
     ) -> OllamaAnswer:
         """Return one validated local chat completion."""
+
+        if not self.settings.enabled or not feature_enabled():
+            raise OllamaUnavailableError("AI or RAG mode is disabled.")
 
         cleaned_system_prompt = _required_text(
             system_prompt,

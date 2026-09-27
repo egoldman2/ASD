@@ -159,3 +159,11 @@ architecture collection are read-only. Review evidence is saved under
 
 CI uses mocked AI clients for inference behavior and does not start or download
 Ollama. Local and demonstration evidence must use the real host runtime.
+
+`AI_MODE_ENABLED=false` now stops the application model paths before inference,
+including catalogue, support, customer/loyalty, inventory and order advice.
+Compose passes this switch to every feature backend. `MCP_ENABLED=false` stops
+MCP clients before opening transport; `RAG_ENABLED=false` stops RAG clients.
+RAG answer generation also requires AI mode. Health and normal CRUD can run
+without any AI service. Deterministic tests may explicitly enable a temporary
+test integration; they do not start the user's AI services or download models.

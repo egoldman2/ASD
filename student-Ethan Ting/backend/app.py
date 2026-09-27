@@ -10,6 +10,7 @@ from urllib.request import urlopen
 
 from flask import Flask, g, jsonify, request, session
 from werkzeug.security import check_password_hash
+from shared.feature_flags import feature_enabled
 
 
 app = Flask(__name__)
@@ -133,6 +134,8 @@ def database_request(path, method="GET", payload=None):
 
 
 def ollama_chat(system_prompt, prompt, num_predict):
+    if not feature_enabled():
+        raise OllamaUnavailableError
     body = json.dumps({
         "model": OLLAMA_MODEL,
         "stream": False,
@@ -1028,6 +1031,8 @@ def get_all_loyalty_accounts():
 @app.post("/api/admin/ai/customer-insight")
 @admin_required
 def create_customer_insight():
+    if not feature_enabled():
+        return jsonify({"error": "AI mode is disabled.", "code": "AI_MODE_DISABLED"}), 503
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return jsonify({"error": "A JSON request body is required."}), 400
