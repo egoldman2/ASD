@@ -21,7 +21,7 @@ DEFAULT_PRODUCT_DATABASE_API_URL = (
     "http://127.0.0.1:6001/api/database/products"
 )
 DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434"
-DEFAULT_OLLAMA_MODEL = "qwen2.5:0.5b"
+DEFAULT_OLLAMA_MODEL = "qwen2.5:3b"
 DEFAULT_CHROMA_PATH = BASE_DIR / "chroma"
 DEFAULT_COLLECTION_NAME = "asd_release1_shared_context"
 DEFAULT_AUDIT_PATH = BASE_DIR / "rag-audit.jsonl"

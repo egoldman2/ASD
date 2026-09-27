@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
+import math
+import time
 from typing import Any, Callable
 
 import requests
@@ -13,6 +16,7 @@ from rag_server.config import RAGSettings, get_settings
 
 MAX_PROMPT_LENGTH = 50_000
 MAX_RESPONSE_LENGTH = 10_000
+MAX_RESPONSE_BYTES = 64 * 1024
 
 HttpPost = Callable[..., Any]
 
@@ -58,6 +62,8 @@ class OllamaClient:
         self,
         system_prompt: str,
         user_prompt: str,
+        *,
+        timeout_seconds: float | None = None,
     ) -> OllamaAnswer:
         """Return one validated local chat completion."""
 
@@ -75,6 +81,10 @@ class OllamaClient:
             MAX_PROMPT_LENGTH,
         )
         post = self._http_post or requests.post
+        budget = self.settings.request_timeout_seconds if timeout_seconds is None else timeout_seconds
+        if isinstance(budget, bool) or not isinstance(budget, (int, float)) or not math.isfinite(budget) or not 0 < budget <= 90:
+            raise ValueError("Generation timeout must be finite, positive and at most 90 seconds.")
+        deadline = time.monotonic() + budget
 
         try:
             response = post(
@@ -86,9 +96,11 @@ class OllamaClient:
                         {"role": "system", "content": cleaned_system_prompt},
                         {"role": "user", "content": cleaned_user_prompt},
                     ],
-                    "options": {"temperature": 0},
+                    "options": {"temperature": 0, "num_ctx": 8192, "num_predict": 512},
                 },
-                timeout=self.settings.request_timeout_seconds,
+                timeout=budget,
+                stream=True,
+                allow_redirects=False,
             )
         except (requests.ConnectionError, requests.Timeout) as exc:
             raise OllamaUnavailableError(
@@ -99,30 +111,36 @@ class OllamaClient:
                 "The local Ollama request failed."
             ) from exc
 
-        status_code = getattr(response, "status_code", None)
-        if not isinstance(status_code, int):
-            raise OllamaResponseError(
-                "The local Ollama service returned an invalid HTTP response."
-            )
-        if status_code >= 500:
-            raise OllamaUnavailableError(
-                "The local Ollama service returned a server error."
-            )
-        if not 200 <= status_code < 300:
-            raise OllamaResponseError(
-                "The local Ollama service rejected the generation request."
-            )
-
         try:
-            payload = response.json()
-        except (TypeError, ValueError) as exc:
+            status_code = getattr(response, "status_code", None)
+            if isinstance(status_code, bool) or not isinstance(status_code, int):
+                raise OllamaResponseError("The local Ollama service returned an invalid HTTP response.")
+            if status_code >= 500:
+                raise OllamaUnavailableError("The local Ollama service returned a server error.")
+            if not 200 <= status_code < 300:
+                raise OllamaResponseError("The local Ollama service rejected the generation request.")
+            raw = bytearray()
+            for chunk in response.iter_content(chunk_size=4096):
+                if time.monotonic() > deadline:
+                    raise OllamaUnavailableError("The local Ollama generation deadline expired.")
+                raw.extend(chunk)
+                if len(raw) > MAX_RESPONSE_BYTES:
+                    raise OllamaResponseError("The local Ollama response exceeded its size limit.")
+            payload = json.loads(raw)
+        except requests.RequestException as exc:
+            raise OllamaUnavailableError("The local Ollama response could not be received.") from exc
+        except (TypeError, ValueError, UnicodeError) as exc:
             raise OllamaResponseError(
                 "The local Ollama service returned invalid JSON."
             ) from exc
+        finally:
+            response.close()
         if not isinstance(payload, dict):
             raise OllamaResponseError(
                 "The local Ollama service returned an invalid payload."
             )
+        if payload.get("done") is not True or payload.get("done_reason") == "length":
+            raise OllamaResponseError("The local model did not finish a complete answer.")
 
         message = payload.get("message")
         if not isinstance(message, dict):
@@ -138,7 +156,7 @@ class OllamaClient:
         except ValueError as exc:
             raise OllamaResponseError(str(exc)) from exc
 
-        returned_model = payload.get("model", self.settings.ollama_model)
-        if not isinstance(returned_model, str) or not returned_model.strip():
-            returned_model = self.settings.ollama_model
+        returned_model = payload.get("model")
+        if not isinstance(returned_model, str) or not returned_model.strip() or len(returned_model) > 160:
+            raise OllamaResponseError("The local model returned an invalid model identity.")
         return OllamaAnswer(content=content, model=returned_model.strip())

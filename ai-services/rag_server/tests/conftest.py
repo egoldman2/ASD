@@ -19,10 +19,14 @@ if str(PROJECT_ROOT) not in sys.path:
 
 
 @pytest.fixture
-def rag_settings(tmp_path):
+def rag_settings(tmp_path, monkeypatch):
     """Return complete settings whose writable state stays under tmp_path."""
 
     from rag_server.config import RAGSettings
+
+    # These fixtures explicitly enable their deterministic model substitutes.
+    # Disabled-path tests override this flag before exercising the boundary.
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
 
     return RAGSettings(
         enabled=True,

@@ -56,3 +56,44 @@ Run retrieval, isolation, refresh and HTTP checks without model inference:
 ```bash
 python -m pytest ai-services/rag_server/tests -q
 ```
+
+Grounded generation uses the installed local `qwen2.5:3b` by default; select
+another installed model with `OLLAMA_MODEL`. The smaller `qwen2.5:0.5b` failed
+support citation acceptance and is not the RAG default. This setting does not
+change other features' existing advisory models. No model runs in the containers.
+
+```bash
+curl -X POST http://127.0.0.1:5003/answer -H 'Content-Type: application/json' \
+  -d '{"scope":"ethan_goldman_support","question":"What subject and initial message lengths are required when creating a customer support ticket?"}'
+```
+
+`/answer` retrieves within the selected scope, supplies complete numbered chunks
+to the actual model, and validates the returned source numbers and answer size.
+The catalogue keeps its product-specific grounding rules; support uses its own
+workflow prompt. Every answer paragraph must cite a supplied source. Missing or
+invented citations trigger at most one correction using the original evidence;
+the service never attaches an inferred source to an uncited model answer.
+Generation shares a configured deadline across both attempts, caps the original
+context prompt at 16,000 characters, and requests at most 512 output tokens.
+HTTP model bodies cap at 64 KiB and displayed answers at 150 words/2000 characters.
+Incomplete, malformed, oversized or late replies become explicit failures.
+
+Answers retain actual model identity, retrieved count, used citations and
+`model_invoked`/`generation_attempts` metadata. Confidence is a retrieval similarity
+label: high at 0.60+, medium at 0.40+, otherwise low for usable context. It is not
+a calibrated probability that the answer is correct. Citation validation checks
+source identity and presence, not a proof that every statement follows from its
+source; staff can inspect the underlying knowledge before acting.
+
+No usable context skips the model and returns the exact insufficient-context
+sentence with no claimed citations. A model can also abstain after examining
+context. Model outages return `OLLAMA_UNAVAILABLE`, never a successful fabricated
+answer. AI-disabled answers stop before retrieval or generation.
+
+The live check records actual retrieved chunks and model requests/responses in
+`/tmp/asd-support-rag-generation-live.json` using curated workflow knowledge:
+
+```bash
+RUN_LIVE_RAG_AI=1 python -m pytest \
+  ai-services/rag_server/tests/test_grounded_generation.py -q
+```
