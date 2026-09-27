@@ -13,7 +13,7 @@ from typing import Any
 
 import chromadb
 
-from rag_server.config import RAGSettings, get_settings
+from rag_server.config import BASE_DIR, RAGSettings, get_settings
 from rag_server.ollama_client import (
     OllamaClient,
     OllamaResponseError,
@@ -27,6 +27,7 @@ from rag_server.response import (
 )
 from rag_server.sources import (
     ChufengCatalogueSource,
+    MarkdownKnowledgeSource,
     KnowledgeDocument,
     KnowledgeSource,
     SourceDataError,
@@ -136,7 +137,10 @@ def embed_texts(texts: Sequence[str], dimensions: int = 256) -> list[list[float]
 
 def _default_sources(settings: RAGSettings) -> dict[str, KnowledgeSource]:
     sources: list[KnowledgeSource] = [
-        ChufengCatalogueSource(settings_loader=lambda: settings)
+        ChufengCatalogueSource(settings_loader=lambda: settings),
+        MarkdownKnowledgeSource(scope="ethan_goldman_support",
+                                directory=BASE_DIR / "knowledge" / "ethan_goldman",
+                                source_name="Ethan Goldman Customer Support"),
     ]
     return {source.scope: source for source in sources}
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
+import math
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -86,8 +87,8 @@ def _positive_float_from_environment(value: str, setting_name: str) -> float:
     except (TypeError, ValueError) as exc:
         raise ConfigurationError(f"{setting_name} must be a number.") from exc
 
-    if parsed <= 0:
-        raise ConfigurationError(f"{setting_name} must be greater than zero.")
+    if not math.isfinite(parsed) or not 0 < parsed <= 90:
+        raise ConfigurationError(f"{setting_name} must be finite and between zero (exclusive) and 90 seconds.")
     return parsed
 
 
