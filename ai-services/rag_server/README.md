@@ -97,3 +97,20 @@ The live check records actual retrieved chunks and model requests/responses in
 RUN_LIVE_RAG_AI=1 python -m pytest \
   ai-services/rag_server/tests/test_grounded_generation.py -q
 ```
+
+Customer Support uses staff-authorised `POST /api/support/admin/rag/answer` with
+only `question` and optional integer `top_k`. The backend fixes the support scope;
+client-supplied scope, paths or credentials are rejected. It forwards no staff
+session or private ticket context to the knowledge service. The HTTP adapter
+requires actual model identity for answered results and rejects citations outside
+approved support Markdown files. AI/RAG-disabled requests stop before HTTP calls.
+Container configuration uses `RAG_SERVER_URL=http://host.docker.internal:5003`
+and a 60-second client timeout (finite, positive, maximum 120 seconds).
+
+Staff can read cited files at `/api/support/admin/rag/sources/<filename>` after
+normal authentication. Sources are returned as plain text, never rendered HTML.
+Backend images bundle the same approved knowledge files; after changing knowledge,
+refresh the host index and rebuild the backend to keep the displayed sources current.
+Representative questions include the ticket subject/message limits, allowed triage
+states, queue count definitions and attention reasons. Refund/warranty entitlements
+are absent; unrelated astronomy queries demonstrate insufficient context.
