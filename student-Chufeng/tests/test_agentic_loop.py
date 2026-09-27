@@ -2,6 +2,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sqlite3
+import sys
 
 import pytest
 
@@ -302,6 +303,18 @@ def test_loads_chufeng_mcp_prompt_and_rules(agentic_loop):
     ]
 
 
+def test_mcp_runtime_adapter_imports_shared_client_when_run_as_script(agentic_loop, monkeypatch):
+    from shared.mcp_client import MCPClient
+
+    root = str(agentic_loop.PROJECT_ROOT)
+    monkeypatch.setattr(sys, "path", [path for path in sys.path if path != root])
+    monkeypatch.setattr(MCPClient, "list_tools", lambda self: [{"name": "chufeng_search_products"}])
+    result = agentic_loop._probe_mcp_runtime({})
+    assert root in sys.path
+    assert result["available"] is True
+    assert result["tool_names"] == ["chufeng_search_products"]
+
+
 def test_mcp_evidence_keeps_static_checks_when_runtime_is_disabled(
     agentic_loop,
     monkeypatch,
@@ -312,8 +325,8 @@ def test_mcp_evidence_keeps_static_checks_when_runtime_is_disabled(
     evidence = agentic_loop.collect_mcp_evidence(config)
 
     checks = evidence["verified_checks"]
-    assert checks["configured_files"] == 10
-    assert checks["present_files"] == 10
+    assert checks["configured_files"] == 11
+    assert checks["present_files"] == 11
     assert checks["all_required_tools_registered"] is True
     assert checks["all_required_tools_allowlisted"] is True
     assert checks["read_only_annotations_present"] is True

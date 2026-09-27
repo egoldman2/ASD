@@ -543,6 +543,9 @@ def _mcp_runtime_enabled():
 
 def _probe_mcp_runtime(config):
     """Discover tools and run one bounded, read-only call over the MCP protocol."""
+    # Direct script execution starts with ai-services/, while the adapter imports shared/.
+    if str(PROJECT_ROOT) not in sys.path:
+        sys.path.insert(0, str(PROJECT_ROOT))
     module_path = _project_path(
         "student-Chufeng/backend/services/mcp_client.py"
     )

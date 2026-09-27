@@ -36,6 +36,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py ./
+COPY shared/mcp_client.py ./shared/mcp_client.py
 COPY student-Chufeng/ ./student-Chufeng/
 
 CMD ["python", "-m", "pytest", "student-Chufeng/tests", "-q"]

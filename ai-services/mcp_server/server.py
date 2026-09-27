@@ -138,7 +138,7 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
                 "service": "asd-marketplace-mcp",
                 "transport": "streamable-http",
                 "mcp_path": resolved.path,
-                "registered_tools": len(REGISTERED_CHUFENG_TOOLS),
+                "registered_tools": len(await server.list_tools()),
             }
         )
 

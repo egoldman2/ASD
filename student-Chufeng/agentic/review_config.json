@@ -61,6 +61,7 @@
     "student-Chufeng/tests/test_agentic_loop.py"
   ],
   "mcp_files": [
+    "shared/mcp_client.py",
     "ai-services/mcp_server/server.py",
     "ai-services/mcp_server/tools/chufeng_catalogue.py",
     "ai-services/mcp_server/response.py",
