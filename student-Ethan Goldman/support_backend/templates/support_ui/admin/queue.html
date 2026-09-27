@@ -5,6 +5,8 @@
   <p class="adminUserContext">Signed in as {{ user.name or 'Administrator' }}</p>
 </header>
 
+{% include "support_ui/admin/mcp_panel.html" %}
+
 <section class="panel adminQueuePanel" aria-labelledby="queue-title">
   <div class="sectionHeader">
     <div><h2 id="queue-title">All tickets</h2><p>Search is restricted to signed-in administrators.</p></div>

@@ -95,6 +95,21 @@ the response includes those observations and actual call counts. Unavailable,
 partial, disabled and timeout states return explicit errors without a fabricated
 successful answer. This assistant cannot edit tickets or send replies.
 
+The staff queue (`staff.html`) provides the question form and direct search,
+summary and attention controls. The ticket workspace (`staff-ticket.html`)
+adds the conversation read and selected-ticket question. HTMX requests use
+staff-authenticated support UI routes; example buttons only fill the question.
+Generated answers show the actual read results and verified scalar references.
+Conversation model input excludes timestamps to keep summaries focused on
+message content and state; the full read evidence still displays timestamps.
+Scalar/reference validation does not prove every prose sentence true, so staff
+should review the data before acting. Existing reply/edit/triage controls remain
+separate from these read-only helpers.
+Labelled numeric queue counts and duplicate ticket-reference lists are also
+checked in generated prose. A native draft can lead to a separate structured
+generation request; that draft is never displayed as an answer, and all requests
+still share the four-request limit and one verification correction.
+
 The deterministic contract suite runs without a model. To also test actual
 host inference through temporary authenticated support and MCP services:
 

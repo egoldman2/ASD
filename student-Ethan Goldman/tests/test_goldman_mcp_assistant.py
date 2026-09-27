@@ -103,6 +103,7 @@ def test_one_bad_selection_retries_native_selection_without_executing_it():
     assert status == 200 and result["model_requests"] == 3
     assert client.calls == [(adapter.GET_QUEUE_SUMMARY, {})]
     assert model.requests[1]["final"] is False
+    assert model.requests[2]["final"] is True
 
 
 def test_invalid_final_facts_force_one_schema_correction():
@@ -131,6 +132,8 @@ def test_generation_schema_contains_only_observed_facts_and_ids():
 
 @pytest.mark.parametrize("response", [
     final(ticket_ids=[999]), final(answer="Ticket #999 is pending."), final(value=True),
+    final(ticket_ids=[2002, 2002]), final(answer="Ticket IDs 2002, 999 need attention."),
+    final(answer="Tickets 2002, 2002 need attention."),
     final(path="__class__"), final(index=-1), final(answer="I have updated the ticket."),
     {"content": "not JSON"},
 ])
@@ -150,6 +153,19 @@ def test_search_then_context_and_three_tool_call_bound():
     result, status = assistant.answer_question("Queue?", None, FakeMCP(), {}, model=loop)
     assert status == 502 and result["model_requests"] == 4 and result["tool_calls"] == 3
     assert result["error"]["code"] == "AI_TOOL_LIMIT"
+
+
+def test_conversation_model_input_omits_times_but_staff_evidence_preserves_them():
+    client = FakeMCP(result={"id": 2002, "updated_at": "2026-08-24T10:02:00Z",
+        "messages": [{"message": "The address is correct.", "created_at": "2026-08-24T09:42:00Z"}]})
+    model = ScriptedModel([call(adapter.GET_TICKET_CONTEXT, {"ticket_id": 2002}),
+        final(answer="Ticket 2002 is recorded.", ticket_ids=[2002], path="id", value=2002)])
+    result, status = assistant.answer_question("Summarise ticket 2002", None, client, {}, model=model)
+    assert status == 200
+    assert "2026-08-24" not in model.requests[1]["messages"][-1]["content"]
+    evidence = result["observations"][0]["result"]
+    assert evidence["updated_at"] == "2026-08-24T10:02:00Z"
+    assert evidence["messages"][0]["created_at"] == "2026-08-24T09:42:00Z"
 
 
 @pytest.mark.parametrize("bad_arguments", [{"ethan_session": "fake"}, {"limit": True}, {"limit": 11}, {"status": "unassigned"}])
@@ -243,3 +259,18 @@ def test_live_model_executes_mcp_and_generates_verified_answer(live_mcp, monkeyp
     assert result["answer"] and result["facts"] and 2 <= result["model_requests"] <= 4
     assert sha256(stack.database_path.read_bytes()).hexdigest() == before
     Path('/tmp/asd-support-mcp-assistant-live.json').write_text(json.dumps(result, indent=2))
+
+
+def test_native_draft_then_wrong_labelled_count_gets_one_bounded_correction():
+    data = {'total': 12, 'status_counts': {'solved': 3, 'open': 4}}
+    model = ScriptedModel([call(adapter.GET_QUEUE_SUMMARY), {'content': 'A draft workload summary.'},
+        final(answer="There are 2 in 'solved' and 4 open."), final(answer='There are 3 solved and 4 open.')])
+    result, status = assistant.answer_question('Queue?', None, FakeMCP(result=data), {}, model=model)
+    assert status == 200 and result['model_requests'] == 4
+    assert model.requests[2]['final'] and model.requests[3]['final']
+    assert result['answer'] == 'There are 3 solved and 4 open.'
+    for text in ('2 solved', "2 in 'solved'", 'solved: 2', '99 needs_triage'):
+        bad = final(answer=text)['content']
+        with pytest.raises(assistant.AssistantError):
+            assistant.validate_answer(bad, [{'tool': adapter.GET_QUEUE_SUMMARY,
+                'result': {**data, 'status_counts': {**data['status_counts'], 'needs_triage': 2}}}])

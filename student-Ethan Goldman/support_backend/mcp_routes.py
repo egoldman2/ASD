@@ -6,11 +6,11 @@ from shared.mcp_client import MCPClientError
 try:
     from .mcp_client import SupportMCPClient, validate_tool_arguments, validate_tool_response
     from .validation import ValidationError
-    from .mcp_assistant import answer_question
+    from .mcp_assistant import answer_question, validate_question
 except ImportError:
     from mcp_client import SupportMCPClient, validate_tool_arguments, validate_tool_response
     from validation import ValidationError
-    from mcp_assistant import answer_question
+    from mcp_assistant import answer_question, validate_question
 
 
 TOOL_ERROR_STATUSES = {"INVALID_ARGUMENT": 400, "AUTHENTICATION_REQUIRED": 401,
@@ -75,14 +75,7 @@ def create_mcp_blueprint(*, principal):
             if len(request.get_data()) > 4096:
                 return jsonify({"error": "Assistant request is too large."}), 413
             payload = request.get_json(silent=True) if request.is_json else None
-            if not isinstance(payload, dict) or set(payload) - {"question", "ticket_id"}:
-                raise ValidationError("Provide a question and optional selected ticket ID only.")
-            question = payload.get("question")
-            if not isinstance(question, str) or not 1 <= len(question.strip()) <= 1000:
-                raise ValidationError("Question must contain between 1 and 1000 characters.")
-            ticket_id = payload.get("ticket_id")
-            if ticket_id is not None and (type(ticket_id) is not int or not 1 <= ticket_id <= 2**63 - 1):
-                raise ValidationError("ticket_id must be a positive integer.")
+            question, ticket_id = validate_question(payload)
             result, status = answer_question(
                 question.strip(), ticket_id, support_mcp_client(), session_headers(),
                 model=current_app.extensions.get("support_mcp_model"),

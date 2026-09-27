@@ -1,0 +1,58 @@
+<section class="panel supportMcpPanel" aria-labelledby="mcp-title">
+  <div class="sectionHeader sectionHeader--compact"><div><h2 id="mcp-title">Support data assistant</h2><p>Ask about recorded tickets and workload. Answers use current support data; review the evidence before acting.</p></div></div>
+  <form hx-post="/api/support/ui/admin/mcp/assistant" hx-target="#mcp-assistant-result" hx-swap="innerHTML"
+    hx-disabled-elt="find button" hx-sync="this:drop" hx-request='{"timeout":95000}' class="adminFormStack">
+    {% if ticket_id %}<input type="hidden" name="ticket_id" value="{{ ticket_id }}">{% endif %}
+    <label for="mcp-question">Ask a support question</label>
+    <textarea id="mcp-question" name="question" rows="2" maxlength="1000" required placeholder="How does our support workload look?"></textarea>
+    <div class="adminFormActions"><button type="submit" class="button">Ask assistant</button><span class="htmx-indicator adminInlineStatus" role="status">Reading support data and preparing an answer…</span></div>
+    <div class="supportMcpExamples" aria-label="Example questions">
+      {% if ticket_id %}<button class="button button--secondary" type="button" data-support-question="Summarise the conversation and current state of ticket {{ ticket_id }}.">Summarise this ticket</button>
+      {% else %}
+      <button class="button button--secondary" type="button" data-support-question="Find unassigned delivery tickets.">Unassigned delivery tickets</button>
+      <button class="button button--secondary" type="button" data-support-question="How does our support workload look?">Queue workload</button>
+      <button class="button button--secondary" type="button" data-support-question="Which tickets need attention, and why?">Tickets needing attention</button>
+      {% endif %}
+    </div>
+  </form>
+  <div id="mcp-assistant-result" class="supportMcpResult" aria-live="polite"><p class="adminFieldHint">Enter a question, or choose an example and ask the assistant.</p></div>
+  <details class="supportMcpDirect"><summary>Read support data directly</summary>
+    <p class="adminFieldHint">These controls read records without generating an AI answer.</p>
+    {% if ticket_id %}
+    <form hx-post="/api/support/ui/admin/mcp/tools/context" hx-target="#mcp-results" hx-swap="innerHTML" hx-disabled-elt="find button" class="adminFormStack">
+      <input type="hidden" name="ticket_id" value="{{ ticket_id }}">
+      <label for="mcp-message-limit">Latest messages to read</label><input id="mcp-message-limit" name="message_limit" type="number" min="1" max="50" value="20" required>
+      <div class="adminFormActions"><button class="button" type="submit">Read ticket context</button><span class="htmx-indicator" role="status">Loading context…</span></div>
+    </form>
+    {% else %}
+    <form hx-post="/api/support/ui/admin/mcp/tools/search" hx-target="#mcp-results" hx-swap="innerHTML" hx-disabled-elt="find button" class="adminFormStack">
+      <h3>Find tickets</h3>
+      <label for="mcp-search">Ticket number or subject</label><input id="mcp-search" name="search" type="search" maxlength="160">
+      <div class="adminFilterGrid">
+        <div class="adminFilterField"><label for="mcp-category">Category</label><select id="mcp-category" name="category"><option value="">All categories</option>{% for value in ('unclassified', 'order', 'return', 'payment', 'product', 'delivery', 'account', 'other') %}<option value="{{ value }}">{{ value|title }}</option>{% endfor %}</select></div>
+        <div class="adminFilterField"><label for="mcp-status">Status</label><select id="mcp-status" name="status"><option value="">All statuses</option>{% for value in ('needs_triage', 'open', 'pending', 'solved') %}<option value="{{ value }}">{{ value|replace('_', ' ')|title }}</option>{% endfor %}</select></div>
+        <div class="adminFilterField"><label for="mcp-priority">Priority</label><select id="mcp-priority" name="priority"><option value="">All priorities</option>{% for value in ('unclassified', 'low', 'medium', 'high', 'urgent') %}<option value="{{ value }}">{{ value|title }}</option>{% endfor %}</select></div>
+        <div class="adminFilterField"><label for="mcp-assignee">Assignee</label><input id="mcp-assignee" name="assigned_to" maxlength="100" placeholder="Name or unassigned"></div>
+      </div>
+      <div class="supportMcpPaging">
+        <label>Page size <input name="limit" type="number" min="1" max="50" value="20" required></label>
+        <label>Offset <input name="offset" type="number" min="0" max="10000" value="0" required></label>
+      </div>
+      <div class="adminFormActions"><button class="button" type="submit">Find tickets</button><span class="htmx-indicator" role="status">Finding tickets…</span></div>
+    </form>
+    <form hx-post="/api/support/ui/admin/mcp/tools/summary" hx-target="#mcp-results" hx-swap="innerHTML" hx-disabled-elt="find button" class="supportMcpDirectAction">
+      <button class="button button--secondary" type="submit">Read queue summary</button><span class="htmx-indicator" role="status">Loading totals…</span>
+    </form>
+    <form hx-post="/api/support/ui/admin/mcp/tools/attention" hx-target="#mcp-results" hx-swap="innerHTML" hx-disabled-elt="find button" class="adminFormStack">
+      <h3>Review attention reasons</h3>
+      <label for="mcp-inactive">Inactivity threshold (hours)</label><input id="mcp-inactive" name="inactive_hours" type="number" min="1" max="720" value="48" required>
+      <div class="supportMcpPaging">
+        <label>Page size <input name="limit" type="number" min="1" max="50" value="20" required></label>
+        <label>Offset <input name="offset" type="number" min="0" max="10000" value="0" required></label>
+      </div>
+      <div class="adminFormActions"><button class="button button--secondary" type="submit">Find tickets needing attention</button><span class="htmx-indicator" role="status">Checking attention reasons…</span></div>
+    </form>
+    {% endif %}
+    <div id="mcp-results" class="supportMcpResult" aria-live="polite"><p class="adminFieldHint">Choose a read action to see the current records.</p></div>
+  </details>
+</section>

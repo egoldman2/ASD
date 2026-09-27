@@ -6,13 +6,18 @@ from collections.abc import Callable, Mapping
 from typing import Any
 from urllib.parse import urlencode
 
-from flask import Blueprint, Response, g, make_response, redirect, render_template, request
+from flask import Blueprint, Response, current_app, g, make_response, redirect, render_template, request
+from shared.mcp_client import MCPClientError
 
 try:
     from . import ai, validation
+    from . import mcp_client, mcp_routes, mcp_assistant
 except ImportError:  # Direct Docker script execution.
     import ai  # type: ignore
     import validation  # type: ignore
+    import mcp_client
+    import mcp_routes
+    import mcp_assistant
 
 
 def create_ui_blueprint(
@@ -27,6 +32,8 @@ def create_ui_blueprint(
 
     def error_target() -> str | None:
         path = request.path
+        if "/mcp/" in path:
+            return None  # These forms swap inside an existing result region.
         if path.endswith("/ai-analysis"):
             return "ai-panel"
         if "/ui/customer/tickets/" in path:
@@ -270,6 +277,67 @@ def create_ui_blueprint(
             counts=counts if isinstance(counts, Mapping) else {},
             filters=filters,
         )
+
+    def tool_arguments(form, allowed_fields):
+        if set(form) - set(allowed_fields) or any(len(form.getlist(key)) != 1 for key in form):
+            raise validation.ValidationError("Provide supported fields once each.")
+        arguments = {key: value for key, value in form.items() if value != ""}
+        for field in mcp_client.INTEGER_BOUNDS:
+            if field in arguments:
+                value = arguments[field]
+                if not value.isascii() or not value.isdecimal() or len(value) > 19:
+                    raise validation.ValidationError(f"{field} must be an integer.")
+                arguments[field] = int(value)
+        return arguments
+
+    @blueprint.post("/api/support/ui/admin/mcp/tools/<action>")
+    def admin_mcp_tool(action):
+        _user, failure = principal("admin")
+        if failure:
+            return error_fragment(failure)
+        names = {"search": mcp_client.SEARCH_TICKETS, "context": mcp_client.GET_TICKET_CONTEXT,
+                 "summary": mcp_client.GET_QUEUE_SUMMARY, "attention": mcp_client.GET_TICKETS_NEEDING_ATTENTION}
+        name = names.get(action)
+        result, error, status = None, None, 200
+        try:
+            if len(request.get_data()) > 4096:
+                return render_template("support_ui/admin/mcp_result.html", error="Tool request is too large."), 413
+            arguments = mcp_client.validate_tool_arguments(name, tool_arguments(
+                request.form, mcp_client.TOOL_FIELDS.get(name, set()),
+            ))
+            envelope = mcp_client.validate_tool_response(name, mcp_routes.support_mcp_client().call_tool(
+                name, arguments, request_headers=mcp_routes.session_headers(),
+            ))
+            if envelope["success"]:
+                result = envelope["result"]
+            else:
+                error = "The support tool could not complete the request."
+                status = mcp_routes.TOOL_ERROR_STATUSES.get(envelope["error"]["code"], 502)
+        except validation.ValidationError as exc:
+            error, status = str(exc), 400
+        except MCPClientError as exc:
+            error, status = str(exc), exc.status_code
+        return render_template("support_ui/admin/mcp_result.html", action=action, result=result, error=error), status
+
+    @blueprint.post("/api/support/ui/admin/mcp/assistant")
+    def admin_mcp_assistant():
+        _user, failure = principal("admin")
+        if failure:
+            return error_fragment(failure)
+        try:
+            if len(request.get_data()) > 4096:
+                return render_template("support_ui/admin/mcp_answer.html", error="Assistant request is too large."), 413
+            arguments = tool_arguments(request.form, {"question", "ticket_id"})
+            question, ticket_id = mcp_assistant.validate_question(arguments)
+            result, status = mcp_assistant.answer_question(
+                question, ticket_id, mcp_routes.support_mcp_client(), mcp_routes.session_headers(),
+                model=current_app.extensions.get("support_mcp_model"),
+            )
+            return render_template("support_ui/admin/mcp_answer.html", result=result), status
+        except validation.ValidationError as exc:
+            return render_template("support_ui/admin/mcp_answer.html", error=str(exc)), 400
+        except MCPClientError as exc:
+            return render_template("support_ui/admin/mcp_answer.html", error=str(exc)), exc.status_code
 
     @blueprint.get("/api/support/ui/admin/tickets/<int:ticket_id>")
     def admin_detail(ticket_id: int):
