@@ -12,12 +12,15 @@ from shared.mcp_client import MCPClientError
 try:
     from . import ai, validation
     from . import mcp_client, mcp_routes, mcp_assistant
+    from . import rag_client, rag_routes
 except ImportError:  # Direct Docker script execution.
     import ai  # type: ignore
     import validation  # type: ignore
     import mcp_client
     import mcp_routes
     import mcp_assistant
+    import rag_client
+    import rag_routes
 
 
 def create_ui_blueprint(
@@ -32,7 +35,7 @@ def create_ui_blueprint(
 
     def error_target() -> str | None:
         path = request.path
-        if "/mcp/" in path:
+        if "/mcp/" in path or "/rag/" in path:
             return None  # These forms swap inside an existing result region.
         if path.endswith("/ai-analysis"):
             return "ai-panel"
@@ -338,6 +341,47 @@ def create_ui_blueprint(
             return render_template("support_ui/admin/mcp_answer.html", error=str(exc)), 400
         except MCPClientError as exc:
             return render_template("support_ui/admin/mcp_answer.html", error=str(exc)), exc.status_code
+
+    @blueprint.post("/api/support/ui/admin/rag/answer")
+    def admin_knowledge_answer():
+        _user, failure = principal("admin")
+        if failure:
+            return error_fragment(failure)
+        try:
+            if len(request.get_data()) > 4096:
+                return render_template("support_ui/admin/rag_answer.html", error="Knowledge question is too large."), 413
+            arguments = tool_arguments(request.form, {"question"})
+            question, top_k = rag_client.validate_question(arguments)
+            result = rag_routes.support_rag_client().answer_question(question, top_k)
+            result = rag_client.validate_answer(result, question)
+            return render_template("support_ui/admin/rag_answer.html", result=result)
+        except validation.ValidationError as exc:
+            return render_template("support_ui/admin/rag_answer.html", error=str(exc), invalid=True), 400
+        except rag_client.RAGClientError as exc:
+            return render_template("support_ui/admin/rag_answer.html", error=str(exc)), exc.status_code
+
+    @blueprint.get("/api/support/ui/admin/rag/sources/<filename>")
+    def admin_knowledge_source(filename):
+        _user, failure = principal("admin")
+        if failure:
+            return error_fragment(failure)
+        path = rag_client.knowledge_file(filename)
+        text = None
+        if path is not None:
+            try:
+                with path.open("rb") as stream:
+                    raw = stream.read(65537)
+                if len(raw) <= 65536:
+                    text = raw.decode("utf-8")
+            except (OSError, UnicodeError):
+                pass
+        if text is None:
+            return render_template("support_ui/error.html", message="Knowledge source not found or unavailable.",
+                                   status=404, login_url=None, target_id=None, retry_path=None), 404
+        response = make_response(render_template("support_ui/admin/rag_source.html", filename=filename, text=text))
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Cache-Control"] = "no-store"
+        return response
 
     @blueprint.get("/api/support/ui/admin/tickets/<int:ticket_id>")
     def admin_detail(ticket_id: int):

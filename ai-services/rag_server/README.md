@@ -114,3 +114,11 @@ refresh the host index and rebuild the backend to keep the displayed sources cur
 Representative questions include the ticket subject/message limits, allowed triage
 states, queue count definitions and attention reasons. Refund/warranty entitlements
 are absent; unrelated astronomy queries demonstrate insufficient context.
+
+The staff queue and ticket workspace include the Support knowledge assistant.
+Answers show used source numbers, passage locations, retrieval confidence and
+actual model identity. Citation links open staff-authorised escaped previews at
+`/api/support/ui/admin/rag/sources/<filename>`; the plain-text source API remains
+available for programmatic review. The form retains the question through loading
+and failures so staff can retry, and insufficient context displays no fabricated
+answer or source list. Example buttons prefill questions without submitting them.

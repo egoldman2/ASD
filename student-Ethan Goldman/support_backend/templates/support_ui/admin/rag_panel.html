@@ -1,0 +1,16 @@
+<section class="panel supportKnowledgePanel" aria-labelledby="knowledge-title">
+  <div class="sectionHeader sectionHeader--compact"><div><h2 id="knowledge-title">Support knowledge assistant</h2><p>Ask about ticket workflows, triage and queue metrics. Answers use the documented support guidance.</p></div></div>
+  <form hx-post="/api/support/ui/admin/rag/answer" hx-target="#rag-answer-result" hx-swap="innerHTML"
+    hx-disabled-elt="find button" hx-sync="this:drop" hx-request='{"timeout":95000}' class="adminFormStack">
+    <label for="knowledge-question">Ask a workflow question</label>
+    <textarea id="knowledge-question" name="question" rows="2" maxlength="1000" required
+      placeholder="What subject and message lengths are required for a new ticket?"></textarea>
+    <div class="adminFormActions"><button type="submit" class="button">Ask knowledge assistant</button><span class="htmx-indicator adminInlineStatus" role="status">Finding guidance and preparing an answer…</span></div>
+    <div class="supportMcpExamples" aria-label="Example knowledge questions">
+      <button class="button button--secondary" type="button" data-support-question="What subject and initial message lengths are required when creating a customer support ticket?">Ticket field limits</button>
+      <button class="button button--secondary" type="button" data-support-question="Which statuses and priorities are allowed when staff triage a ticket?">Triage states</button>
+      <button class="button button--secondary" type="button" data-support-question="Why are unresolved tickets included in the attention list, and what does inactivity mean?">Attention reasons</button>
+    </div>
+  </form>
+  <div id="rag-answer-result" class="supportMcpResult" aria-live="polite"><p class="adminFieldHint">Enter a workflow question, or choose an example to get started.</p></div>
+</section>

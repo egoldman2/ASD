@@ -1384,3 +1384,10 @@
 .supportMcpTickets > li { margin: .75rem 0; }
 .supportMcpAnswer { white-space: pre-wrap; line-height: 1.6; }
 .supportMcpEvidence { padding: .75rem 0; border-top: 1px solid var(--support-border); }
+
+/* Staff knowledge questions and attributed guidance. */
+.supportKnowledgePanel { margin-bottom: 1.5rem; }
+.supportKnowledgePanel textarea { width: 100%; padding: .75rem; font: inherit; border: 1px solid var(--support-control-border); border-radius: 6px; resize: vertical; }
+.supportKnowledgeSources { padding-left: 1.25rem; }
+.supportKnowledgeSources li { margin: .5rem 0; overflow-wrap: anywhere; }
+.supportKnowledgeSource { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.6; margin-top: 1rem; }
