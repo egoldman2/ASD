@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from flask import Flask, jsonify, request
+from werkzeug.exceptions import HTTPException
 
 try:
     from . import database
@@ -135,13 +136,9 @@ def create_app(database_path=None):
     def api_error(error):
         return _error(error.status_code, error.code, error.message)
 
-    @application.errorhandler(400)
-    def bad_request(_error):
-        return _error(400, "bad_request", "The request could not be understood.")
-
-    @application.errorhandler(404)
-    def not_found(_error):
-        return _error(404, "not_found", "The requested resource was not found.")
+    @application.errorhandler(HTTPException)
+    def http_error(error):
+        return _error(error.code, error.name.lower().replace(" ", "_"), error.description)
 
     @application.errorhandler(sqlite3.IntegrityError)
     def integrity_error(error):
