@@ -2,46 +2,14 @@
 
 from hashlib import sha256
 from importlib import import_module
-from pathlib import Path
-import socket
-import sys
-from threading import Thread
-import time
 
 import pytest
 import requests
-import uvicorn
 
-sys.path.insert(0, str(Path(__file__).parents[2] / "ai-services"))
-from mcp_server.server import create_server
 from shared.mcp_client import MCPClient
 
 adapter = import_module("student-Ethan Goldman.support_backend.mcp_client")
 
-
-@pytest.fixture
-def live_mcp(support_stack, monkeypatch):
-    listener = socket.socket()
-    listener.bind(("127.0.0.1", 0))
-    port = listener.getsockname()[1]
-    monkeypatch.setenv("MCP_PORT", str(port))
-    monkeypatch.setenv("MCP_SUPPORT_API_URL", support_stack.backend.url)
-    monkeypatch.setenv("MCP_SERVER_URL", f"http://127.0.0.1:{port}/mcp")
-    monkeypatch.setenv("MCP_ENABLED", "true")
-    application = create_server().streamable_http_app()
-    server = uvicorn.Server(uvicorn.Config(application, log_level="critical", lifespan="on"))
-    thread = Thread(target=lambda: server.run(sockets=[listener]), daemon=True)
-    thread.start()
-    try:
-        deadline = time.monotonic() + 5
-        while not server.started and time.monotonic() < deadline:
-            time.sleep(0.01)
-        assert server.started
-        yield support_stack
-    finally:
-        server.should_exit = True
-        thread.join(timeout=5)
-        listener.close()
 
 
 def test_staff_routes_discover_and_call_all_four_tools(live_mcp):

@@ -75,3 +75,29 @@ identity fields and redacts message/subject content before returning results.
 Search results include total matches and continuation metadata; context
 includes the full message count and a truncation flag. SQL limits are applied
 inside the independent database service. Existing ticket CRUD is unchanged.
+
+## Support model-driven assistant
+
+The support backend exposes staff-only `POST /api/support/admin/mcp/assistant`
+with JSON `{"question": "How does our support workload look?"}` and an optional
+positive `ticket_id`. Both `AI_MODE_ENABLED` and `MCP_ENABLED` must be enabled.
+`MCP_ASSISTANT_MODEL` defaults to the host Ollama model `qwen2.5:3b`; install
+that model locally before using this endpoint. `OLLAMA_URL` selects the host
+runtime, with `host.docker.internal` used by the containerised backend.
+
+The model receives the four discovered support schemas, chooses real MCP calls,
+and generates an answer from their returned evidence. A request permits at most
+three tool calls and four model requests, with one correction and a total
+`MCP_ASSISTANT_TIMEOUT_SECONDS` deadline (default 75, maximum 90 seconds).
+Assistant reads cap at ten tickets or six conversation messages per call.
+Final scalar citations and ticket references are checked against observations;
+the response includes those observations and actual call counts. Unavailable,
+partial, disabled and timeout states return explicit errors without a fabricated
+successful answer. This assistant cannot edit tickets or send replies.
+
+The deterministic contract suite runs without a model. To also test actual
+host inference through temporary authenticated support and MCP services:
+
+```bash
+RUN_LIVE_MCP_AI=1 python -m pytest 'student-Ethan Goldman/tests/test_goldman_mcp_assistant.py' -q
+```

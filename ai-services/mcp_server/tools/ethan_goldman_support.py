@@ -80,7 +80,14 @@ def search_tickets(
     category: str | None = None, priority: str | None = None, assigned_to: str | None = None,
     limit: StrictInt = 20, offset: StrictInt = 0,
 ) -> dict[str, Any]:
-    """Search staff tickets without conversation bodies; admin session required."""
+    """Find/search/filter matching tickets without conversation bodies; admin session required.
+
+    Use this tool to find tickets by text or exact recorded filters. To find
+    unassigned tickets use assigned_to="unassigned" (it is not a status).
+    Statuses: needs_triage, open, pending, solved. Categories: order, return,
+    payment, product, delivery, account, other, unclassified. Priorities: low,
+    medium, high, urgent, unclassified. Pages default to 20 and cap at 50.
+    """
     try:
         _integer(limit, "limit", 1, 50)
         _integer(offset, "offset", 0, 10000)
@@ -129,7 +136,12 @@ def get_tickets_needing_attention(
     ctx: Context, category: str | None = None, assigned_to: str | None = None,
     inactive_hours: StrictInt = 48, limit: StrictInt = 20, offset: StrictInt = 0,
 ) -> dict[str, Any]:
-    """List unresolved tickets with every recorded attention reason, ordered by priority then oldest activity.
+    """Find which unresolved tickets need attention and explain every recorded review reason.
+
+    Use for prioritising work or asking why tickets need attention, rather than
+    ordinary exact-filter search. Reasons include needs_triage, unassigned,
+    high/urgent priority, latest customer message or inactivity. Solved tickets
+    are excluded. Order is priority then oldest activity then ticket ID.
 
     The inactivity threshold is a review heuristic, not an SLA. Defaults to
     48 hours (allowed 1–720). Pages default to 20, cap at 50; offset caps at 10,000.
