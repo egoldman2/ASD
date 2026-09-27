@@ -1,0 +1,29 @@
+Validate Ethan Goldman's four protected Customer Support MCP tools:
+ethan_goldman_search_tickets, ethan_goldman_get_ticket_context,
+ethan_goldman_get_queue_summary, ethan_goldman_get_tickets_needing_attention.
+
+Review only collected evidence. Keep each review under 220 words. Cite at least
+three configured file paths and name at least two exact required tool names.
+Separate source markers, live discovery, direct read-only execution, and
+application model selection/generation. Discovery and this review model's prose
+cannot prove application AI integration. Report every configured probe outcome.
+
+The acceptance probes target an isolated, unchanged seeded support database:
+12 total tickets, 9 unresolved, 5 unresolved/unassigned; 2 delivery search
+matches; ticket 2002 has 3 messages; attention returns 9 unresolved tickets.
+There are zero unassigned delivery matches in this seed: that assistant example
+is an explained empty search. The separate delivery search must return data,
+and the no-match probe must return zero. Counts on a different live dataset
+must not be described as passing these seeded expectations.
+
+Each of the four assistant questions must expose actual model requests, selected
+allowlisted MCP calls, returned observations, grounded scalar facts and a
+model-generated answer. Cookies belong to separate HTTP request context, never
+model arguments, prompts or saved evidence. Private reads revalidate staff.
+Tools cannot edit tickets or send replies. Keep call, context and timeout bounds.
+
+State disabled, unavailable, invalid, partial or unverified outcomes explicitly.
+Bounded excerpts do not prove omitted code is incomplete. Do not claim CI/test
+success, deployed UI acceptance, all team integrations, or universal prose truth
+from these probes. Final source-grounded adaptation may correct review prose;
+it must never manufacture application inference, tool results or successful tests.

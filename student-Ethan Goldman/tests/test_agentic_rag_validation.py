@@ -218,7 +218,7 @@ def test_actual_model_response_matches_runner_answer_and_sources(runner, feature
 
 def test_review_summary_preserves_outcomes_but_does_not_duplicate_full_passages(runner, feature_config, rag_host):
     evidence = runner.collect_evidence('rag', feature_config)
-    summary = runner._runtime_review_summary('rag', evidence['runtime'], excerpts=True)
+    summary = runner._runtime_review_summary('rag', evidence['runtime'])
     assert len(summary['probes']) == len(evidence['runtime']['probes']) == 2
     assert all(item['verified'] for item in summary['probes'])
     assert summary['probes'][0]['citations'] and summary['probes'][1]['generation_skipped']
@@ -226,7 +226,7 @@ def test_review_summary_preserves_outcomes_but_does_not_duplicate_full_passages(
     digest = runner._evidence_digest('rag', evidence)
     assert len(digest) < 16000 and 'review_limitations' in digest
     broken = {'probes': [{'state': 'invalid', 'answer': [], 'retrieval': {'data': None}}]}
-    assert runner._runtime_review_summary('rag', broken, excerpts=True)['probes'][0]['state'] == 'invalid'
+    assert runner._runtime_review_summary('rag', broken)['probes'][0]['state'] == 'invalid'
 
 
 def test_review_model_requires_complete_bounded_named_response(runner, monkeypatch):

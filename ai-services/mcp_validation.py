@@ -234,7 +234,11 @@ def probe_runtime(config):
             if not feature_enabled():
                 observation['skip_reason'] = 'AI_MODE_ENABLED disables application assistant validation.'
             else:
-                target, origin = local_url(probe['url']), local_url(probe['origin'])
+                variable = rules.get('assistant_url_env')
+                if variable is not None and (not isinstance(variable, str) or not re.fullmatch(r'[A-Z][A-Z0-9_]{0,79}', variable)):
+                    raise ProbeConfigurationError('Assistant URL override must name an environment variable.')
+                target = local_url((os.getenv(variable) if variable else None) or probe['url'])
+                origin = local_url(probe['origin'])
                 body = probe.get('payload')
                 if (not urlsplit(target).path.endswith('/mcp/assistant') or urlsplit(origin).path not in {'', '/'}
                         or not isinstance(body, dict) or set(body) - {'question', 'ticket_id'}
