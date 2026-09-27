@@ -4,6 +4,8 @@ Baseline inspected: **18 September 2026**, local `main` at **`bccf637`**. Ethan 
 
 ## 1. Instructions for agents using this plan
 
+**Commit and push only to `ethan-goldman`, Ethan’s existing branch. Use neutral “AI coding agent” attribution in generated files, logs and commit messages; do not include the coding product’s name.**
+
 **The default task is implementing and validating working software. Do not treat the technical report, presentation/slides, showcase video, report diagrams, or contribution-log prose as key implementation requirements or blockers. Work on those only when Ethan explicitly asks.** Capture useful test results and required agentic validation outputs as part of engineering work; do not turn a coding stage into a report-writing exercise. RAG knowledge files are runtime application data and remain in scope.
 
 **On every user prompt handled under this plan, create or update the separate `RELEASE_1_ETHAN_GOLDMAN_WORK_LOG.md` file at the repository root. Append one concise entry summarising the specific work performed for that prompt before the final response.** Keep one running log rather than creating a new file for every prompt. This lightweight agent work log is explicitly requested and is required even though assessment report/contribution-log preparation is otherwise out of scope.
