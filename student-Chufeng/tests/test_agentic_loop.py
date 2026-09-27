@@ -308,8 +308,9 @@ def test_mcp_runtime_adapter_imports_shared_client_when_run_as_script(agentic_lo
 
     root = str(agentic_loop.PROJECT_ROOT)
     monkeypatch.setattr(sys, "path", [path for path in sys.path if path != root])
-    monkeypatch.setattr(MCPClient, "list_tools", lambda self: [{"name": "chufeng_search_products"}])
-    result = agentic_loop._probe_mcp_runtime({})
+    monkeypatch.setattr(MCPClient, "list_tools", lambda self, **kwargs: [{"name": "chufeng_search_products"}])
+    monkeypatch.setenv("MCP_ENABLED", "true")
+    result = agentic_loop._probe_mcp_runtime({"mcp_rules": {"required_tools": ["chufeng_search_products"]}})
     assert root in sys.path
     assert result["available"] is True
     assert result["tool_names"] == ["chufeng_search_products"]
@@ -339,6 +340,9 @@ def test_mcp_evidence_keeps_static_checks_when_runtime_is_disabled(
         "server_url": "http://127.0.0.1:8765/mcp",
         "skip_reason": "MCP_ENABLED disables live validation.",
         "required_tools_discovered": False,
+        "probe_complete": False,
+        "all_required_tools_probed": False,
+        "assistant_verified": False,
     }
 
 
@@ -357,6 +361,7 @@ def test_mcp_evidence_accepts_live_tool_discovery(agentic_loop, monkeypatch):
                 "success": True,
                 "response_tool": "chufeng_search_products",
                 "read_only": True,
+                "checks_passed": True,
             },
         }
 

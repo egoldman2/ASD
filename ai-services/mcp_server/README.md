@@ -116,3 +116,60 @@ host inference through temporary authenticated support and MCP services:
 ```bash
 RUN_LIVE_MCP_AI=1 python -m pytest 'student-Ethan Goldman/tests/test_goldman_mcp_assistant.py' -q
 ```
+
+## Feature-aware runner validation
+
+MCP mode in `ai-services/agentic_loop.py` uses the selected feature's
+`mcp_rules.required_tools` allowlist with the shared protocol client. Configure
+`source_files` roles (`server`, `tools`, `client`, `frontend`, `routes`, optional
+`controller`, `compose`), `frontend_route_prefix` and `backend_client_marker`
+for source checks. The runner inspects the configured trusted local server
+factory's SDK definitions without starting a server or executing tools; those
+checks remain source evidence, including when MCP is disabled.
+
+`probes` accepts at most ten objects with `name`, `tool`, `arguments` and an
+optional `expect` list of exact typed `{ "path": "result.total", "value": 12 }`
+checks. Paths address response dictionaries and numeric list indexes. Every
+configured call must be allowlisted, discovered as read-only/non-destructive,
+and return a matching successful read-only envelope. Each outcome is retained
+independently, so a failed check does not hide later probes. Existing
+`probe_tool`/`probe_arguments` configuration remains supported.
+
+Private feature reads can configure `request_context` with a `cookie_name` and
+`cookie_env` identifying an environment variable containing a current staff
+session. Supply that value locally; never put it in JSON configuration, prompts
+or evidence files. The same separate HTTP context is used for protocol calls
+and optional application probes. Missing/expired/customer sessions cannot
+validate protected support reads. Saved evidence redacts session values and
+private identity/conversation fields; bounded direct-call outcomes include
+expected/observed checks and a response digest.
+
+An optional `assistant_probes` list supplies `url`, `origin`, question `payload`,
+`expected_tools` and optional `expect` checks. It targets a local read-only
+`/mcp/assistant` endpoint and verifies an answered application trace: actual
+model name, two to four model requests, one to three allowlisted tool calls,
+matching observations and exact scalar fact references. The support endpoint
+implements this trace contract. Other feature owners must provide equivalent
+application evidence before their AI integration can pass. URLs must be local,
+contain no credentials/query parameters, and HTTP redirects are never followed.
+Each application probe has a bounded timeout (default/maximum 95 seconds).
+
+Runtime evidence separates `required_tools_discovered`, `probe_complete`,
+`all_required_tools_probed` and `assistant_verified`. Discovery proves no tool
+execution; a catalogue single-probe success does not mean all four tools ran.
+`MCP_ENABLED=false` skips live validation while retaining source checks.
+`AI_MODE_ENABLED=false` skips assistant inference while allowing configured
+read-only protocol checks when MCP is enabled. Unavailable, skipped and failed
+probes remain evidence limitations. Review-model prose is separate from the
+application model's observed tool selections and generated answer.
+
+The opt-in support runner acceptance captures actual host-model outputs and
+real protocol/application results from isolated seeded services:
+
+```bash
+RUN_LIVE_MCP_AI=1 python -m pytest 'student-Ethan Goldman/tests/test_agentic_mcp_validation.py' -q
+```
+
+Goldman's persistent runner configuration and mode prompts are added in the
+following feature configuration stage; the shared runner is already tested
+against both catalogue and support configurations.

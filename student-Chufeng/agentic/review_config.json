@@ -85,7 +85,18 @@
     "probe_arguments": {
       "query": "",
       "limit": 1
-    }
+    },
+    "source_files": {
+      "server": "ai-services/mcp_server/server.py",
+      "tools": "ai-services/mcp_server/tools/chufeng_catalogue.py",
+      "client": "student-Chufeng/backend/services/mcp_client.py",
+      "frontend": "student-Chufeng/frontend/js/mcp-tools.js",
+      "routes": "student-Chufeng/backend/routes/mcp_routes.py",
+      "controller": "student-Chufeng/backend/controllers/mcp_controller.py",
+      "compose": "docker-compose.yml"
+    },
+    "frontend_route_prefix": "/api/chufeng/mcp/",
+    "backend_client_marker": "ChufengMCPClient"
   },
   "rag_files": [
     "ai-services/rag_server/config.py",
