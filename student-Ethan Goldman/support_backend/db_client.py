@@ -194,6 +194,18 @@ class SupportDatabaseClient:
             expected=(200, 201),
         )
 
+    def search_ticket_summaries(self, filters=None, *, limit=20, offset=0):
+        return self._request(
+            "GET", "/api/tool-data/tickets",
+            query={**(filters or {}), "limit": limit, "offset": offset}, expected=(200,),
+        )
+
+    def get_ticket_context(self, ticket_id, *, message_limit=20):
+        return self._request(
+            "GET", f"/api/tool-data/tickets/{_ticket_id(ticket_id)}",
+            query={"message_limit": message_limit}, expected=(200,),
+        )
+
     def update_ticket(self, ticket_id: Any, updates: Mapping[str, Any]) -> Any:
         return self._request(
             "PUT",

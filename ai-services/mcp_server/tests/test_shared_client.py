@@ -133,6 +133,7 @@ def test_safe_connection_errors_do_not_expose_credentials():
 def test_health_counts_tools_added_by_other_features():
     async def exercise():
         server = create_server()
+        initial_count = len(await server.list_tools())
 
         @server.tool()
         def another_feature_tool() -> dict:
@@ -141,6 +142,6 @@ def test_health_counts_tools_added_by_other_features():
         app = server.streamable_http_app()
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app)) as client:
             response = await client.get("http://127.0.0.1:8765/health")
-        assert response.json()["registered_tools"] == 5
+        assert response.json()["registered_tools"] == initial_count + 1
 
     asyncio.run(exercise())

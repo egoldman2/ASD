@@ -113,6 +113,18 @@ def _filters():
     return filters
 
 
+def _tool_query(allowed):
+    if set(request.args) - set(allowed) or any(len(request.args.getlist(key)) != 1 for key in request.args):
+        raise ApiError(400, "invalid_filter", "Unsupported or repeated query parameter.")
+
+
+def _bounded_integer(field, default, minimum, maximum):
+    value = request.args.get(field, str(default))
+    if not value.isascii() or not value.isdecimal() or not minimum <= int(value) <= maximum:
+        raise ApiError(400, "invalid_filter", f"{field} must be an integer between {minimum} and {maximum}.")
+    return int(value)
+
+
 def create_app(database_path=None):
     application = Flask(__name__)
     path = database_path or database.get_database_path()
@@ -160,6 +172,24 @@ def create_app(database_path=None):
     def get_ticket(ticket_id):
         owner_user_id = request.args.get("owner_user_id")
         ticket = database.get_ticket(ticket_id, path, owner_user_id=owner_user_id)
+        if ticket is None:
+            raise ApiError(404, "not_found", "Ticket not found.")
+        return jsonify(ticket)
+
+    @application.get("/api/tool-data/tickets")
+    def search_ticket_summaries():
+        _tool_query({"search", "category", "priority", "status", "assigned_to", "limit", "offset"})
+        return jsonify(database.search_ticket_summaries(
+            _filters(), _bounded_integer("limit", 20, 1, 50),
+            _bounded_integer("offset", 0, 0, 10000), path,
+        ))
+
+    @application.get("/api/tool-data/tickets/<int:ticket_id>")
+    def bounded_ticket_context(ticket_id):
+        _tool_query({"message_limit"})
+        ticket = database.get_ticket_context(
+            ticket_id, _bounded_integer("message_limit", 20, 1, 50), path,
+        )
         if ticket is None:
             raise ApiError(404, "not_found", "Ticket not found.")
         return jsonify(ticket)

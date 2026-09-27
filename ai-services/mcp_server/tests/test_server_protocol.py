@@ -8,6 +8,7 @@ from mcp.client.streamable_http import streamable_http_client
 
 from mcp_server.server import (
     REGISTERED_CHUFENG_TOOLS,
+    REGISTERED_GOLDMAN_TOOLS,
     SERVER_NAME,
     create_server,
 )
@@ -40,7 +41,7 @@ def test_streamable_http_initialise_list_and_call(
 
                         listed = await session.list_tools()
                         tools = {tool.name: tool for tool in listed.tools}
-                        assert set(tools) == set(REGISTERED_CHUFENG_TOOLS)
+                        assert set(tools) == set(REGISTERED_CHUFENG_TOOLS + REGISTERED_GOLDMAN_TOOLS)
                         for tool in tools.values():
                             assert tool.annotations.readOnlyHint is True
                             assert tool.annotations.destructiveHint is False
@@ -95,7 +96,7 @@ def test_health_route_reports_transport_and_tool_count():
             "service": "asd-marketplace-mcp",
             "transport": "streamable-http",
             "mcp_path": "/mcp",
-            "registered_tools": 4,
+            "registered_tools": len(REGISTERED_CHUFENG_TOOLS + REGISTERED_GOLDMAN_TOOLS),
         }
 
     asyncio.run(request_health())

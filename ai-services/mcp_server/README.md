@@ -38,6 +38,7 @@ The service can be configured with these environment variables:
 | `MCP_PORT` | `8765` |
 | `MCP_PATH` | `/mcp` |
 | `PRODUCT_DATABASE_API_URL` | `http://127.0.0.1:6001/api/database` |
+| `MCP_SUPPORT_API_URL` | `http://127.0.0.1:6005` |
 | `MCP_REQUEST_TIMEOUT_SECONDS` | `10` |
 | `MCP_LOG_LEVEL` | `INFO` |
 
@@ -51,3 +52,19 @@ The service can be configured with these environment variables:
 All four tools are read-only and use the Product Database API rather than
 opening the database directly. Other student-owned tools should be added to
 their matching module under `tools/` and registered in `server.py`.
+
+## Registered Ethan Goldman tools
+
+- `ethan_goldman_search_tickets`: filtered ticket summaries; default 20,
+  maximum 50 rows, offset at most 10,000, no conversation bodies.
+- `ethan_goldman_get_ticket_context`: positive ticket ID and the latest
+  messages; default 20, maximum 50, displayed chronologically.
+
+Both tools require an `ethan_session` cookie on the MCP HTTP request. The host
+server forwards that request's cookie to protected Customer Support API reads;
+the API verifies the session and admin role again. Cookies are never accepted
+as tool arguments or stored between requests. The backend removes customer
+identity fields and redacts message/subject content before returning results.
+Search results include total matches and continuation metadata; context
+includes the full message count and a truncation flag. SQL limits are applied
+inside the independent database service. Existing ticket CRUD is unchanged.

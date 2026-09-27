@@ -50,7 +50,7 @@ def _ticket_dict(row, messages):
     return ticket
 
 
-def get_tickets(filters=None, database_path=None):
+def _ticket_where(filters=None):
     filters = filters or {}
     conditions, parameters = [], []
     search = filters.get("search")
@@ -74,6 +74,11 @@ def get_tickets(filters=None, database_path=None):
         conditions.append("ticket.customer_user_id = ?")
         parameters.append(owner_user_id)
     where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+    return where, parameters
+
+
+def get_tickets(filters=None, database_path=None):
+    where, parameters = _ticket_where(filters)
     with closing(get_database_connection(database_path)) as connection:
         rows = connection.execute(
             f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "
@@ -84,6 +89,44 @@ def get_tickets(filters=None, database_path=None):
         tickets = [_ticket_dict(row, messages) for row in rows]
     counts = {status: sum(ticket["status"] == status for ticket in tickets) for status in ("needs_triage", "open", "pending", "solved")}
     return tickets, counts
+
+
+def search_ticket_summaries(filters=None, limit=20, offset=0, database_path=None):
+    """Page ticket rows in SQL without reading any conversation bodies."""
+    where, parameters = _ticket_where(filters)
+    with closing(get_database_connection(database_path)) as connection:
+        total = connection.execute(
+            f"SELECT COUNT(*) FROM support_tickets AS ticket {where}", parameters,
+        ).fetchone()[0]
+        rows = connection.execute(
+            f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "
+            "ORDER BY datetime(ticket.updated_at) DESC, ticket.id DESC LIMIT ? OFFSET ?",
+            [*parameters, limit, offset],
+        ).fetchall()
+    next_offset = offset + len(rows) if offset + len(rows) < total else None
+    return {"tickets": [dict(row) for row in rows], "total": total,
+            "limit": limit, "offset": offset, "next_offset": next_offset,
+            "truncated": next_offset is not None, "filters": filters or {}}
+
+
+def get_ticket_context(ticket_id, message_limit=20, database_path=None):
+    """Return only the latest bounded messages, displayed chronologically."""
+    with closing(get_database_connection(database_path)) as connection:
+        row = connection.execute(
+            f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        count = connection.execute(
+            "SELECT COUNT(*) FROM support_ticket_messages WHERE ticket_id = ?", (ticket_id,),
+        ).fetchone()[0]
+        messages = connection.execute(
+            f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages WHERE ticket_id = ? "
+            "ORDER BY datetime(created_at) DESC, id DESC LIMIT ?", (ticket_id, message_limit),
+        ).fetchall()
+    return {**dict(row), "messages": [dict(message) for message in reversed(messages)],
+            "message_count": count, "message_limit": message_limit,
+            "messages_truncated": count > len(messages)}
 
 
 def get_ticket(ticket_id, database_path=None, owner_user_id=None):

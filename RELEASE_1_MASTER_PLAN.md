@@ -1,6 +1,6 @@
 # Release 1 master implementation plan
 
-Baseline inspected: **18 September 2026**, local `main` at **`bccf637`**. Ethan Goldman's latest commit is **`52b3b5a`**, `update README`, 9 September 2026. This plan compares `52b3b5a..bccf637` and reads the current implementation. It is a source/history audit, not a claim that the current stack or CI has been rerun successfully. Remote changes after the local checkout are not covered.
+Baseline inspected: **18 September 2026**, local `main` at **`bccf637`**. Ethan Goldman's latest commit is **`52b3b5a`**, `update README`, 9 September 2026. This plan compares `52b3b5a..bccf637` and reads the current implementation. It is a source/history audit, not a claim that the current stack or CI has been rerun successfully. The history and gap tables below describe that historical baseline. **Refresh, 27 September 2026:** the current personal branch includes team `main` through `c0c2cc7` plus the validated shared-client checkpoint `793763d`. Twenty later team commits added host Ollama deployment, catalogue retrieval/generation/UI, and a catalogue RAG validation mode. Reuse those implementations for the remaining shared stages; their presence alone does not complete cross-feature or live acceptance.
 
 ## 1. Instructions for agents using this plan
 
@@ -63,7 +63,7 @@ The local history contains 19 commits after `52b3b5a`, including merges. The dif
 | MCP agentic validation | `3a427a9`, `c99205f`; `ai-services/agentic_loop.py` | MCP mode exists, but imports Chufeng's client and hard-codes Chufeng paths/checks. It is not yet a general five-feature validator. |
 | Saved validation | `docs/evidence/agentic/chufeng-product-catalogue-and-shopping-cart-mcp-20260912-201208.md` | Committed evidence records tool discovery and a successful live probe on Chufeng's machine. It does not prove all features or today's environment work. |
 
-### Remaining gaps and inherited issues
+### Gaps and inherited issues at the 18 September baseline
 
 - `ethan_goldman_support.py`, `ethan_ting_customer.py`, `howard_orders.py`, and `ryan_inventory.py` under MCP `tools/` are **empty**. The server registers only Chufeng's four tools and hard-codes that count in health output.
 - There is **no shared RAG server, retrieval corpus/index, grounded-response flow, frontend RAG integration, or RAG agentic mode** in the current tree.
@@ -112,14 +112,14 @@ Containerised feature frontend
        -> host Ollama selects support tools
           -> backend validates calls -> host MCP /mcp -> authorised data API
           -> tool results return to host Ollama -> grounded support answer
-       -> host RAG /query -> scoped retrieval -> host Ollama -> validated answer
+       -> host RAG /answer -> scoped retrieval -> host Ollama -> validated answer
        -> host Ollama (existing AI-Mode)
 
 Host agentic_loop.py -> selected feature's MCP/RAG validation -> captured outputs
 ```
 
 - Keep MCP port 8765 and existing response envelope (`success`, `tool`, `result`, `error`, optional `metadata`). Use genuine MCP tool discovery/calls, not a similarly named REST substitute.
-- Proposed RAG service: `ai-services/rag_server/`, HTTP port 8766, `/health` and `/query`. These are plan choices, not existing endpoints. Use Flask and a small local retrieval index; SQLite FTS5 is a reasonable starting point if available. Add embeddings only if measured retrieval quality needs them.
+- Reuse the shared RAG implementation now in `ai-services/rag_server/`: host HTTP port 5003 with `/health`, `/retrieve`, and `/answer`, Flask and an embedded local Chroma index. Generalise its catalogue-only source/prompt assumptions for feature-scoped support knowledge while preserving catalogue behaviour. Do not create a second retrieval service or migrate storage merely to follow the earlier proposal.
 - Use explicit `AI_MODE_ENABLED`, `MCP_ENABLED`, `RAG_ENABLED` switches in the code paths that actually call services. Pass them through Compose. The support MCP assistant requires both AI and MCP enabled; the support RAG assistant requires both AI and RAG enabled. Direct diagnostic MCP calls only require MCP. Disabled assistant routes must return before any model/tool/retrieval call. Offline feature CRUD and health checks must work without host AI services.
 - Container clients use configurable `host.docker.internal` URLs and required host-gateway mapping. Host tools use published feature APIs through `127.0.0.1`; never use Docker-only DNS from a host process. Test the real bind/interface configuration. Preserve MCP host restrictions; avoid unnecessarily publishing database APIs on all interfaces.
 - Existing clients/tool functions and tests should be reused. A shared protocol client must be included in each consuming Docker image; a repo-only import that fails in Goldman's narrowly copied backend image is not complete.
@@ -397,7 +397,7 @@ Shared stages:
 
 Ethan Goldman stages:
 
-- [ ] **E1a** — Protected MCP ticket search and context tools.
+- [x] **E1a** — Protected MCP ticket search and context tools.
 - [ ] **E1b** — Protected MCP queue summary and attention tools.
 - [ ] **E2a** — Support backend access with the four-tool allowlist.
 - [ ] **E2b** — Model-driven MCP assistant with bounded tool execution.
@@ -422,13 +422,13 @@ Status values: `pending`, `in progress`, `implemented`, `validated`, `blocked`. 
 | Stage | Owner | Current status | Commit / verification / next action |
 | --- | --- | --- | --- |
 | Existing catalogue MCP slice | Chufeng Li | Implemented; historical validation committed | Through `bccf637`; rerun after shared changes. |
-| G1 shared MCP client | Ethan Goldman (agent implementation) | Validated | 114 tests passed, 1 opt-in real-AI test skipped; support/shared backend Docker builds and isolated import checks passed. See prompt entry in the work log. Changes uncommitted; next E1a. |
-| G2 host runtime | To allocate | Pending | Coordinate Compose, feature guards and Goldman CI. |
-| G3 retrieval | To allocate | Pending | Agree source/response contract. |
-| G4 grounded generation | Same RAG owner | Pending | Depends on G3. |
+| G1 shared MCP client | Ethan Goldman (agent implementation) | Validated | 114 tests passed, 1 opt-in real-AI test skipped; support/shared backend Docker builds and isolated import checks passed. Committed as `793763d`; rebased regression: 137 passed, 1 skipped. Current branch `ethan-goldman`; next E1a. |
+| G2 host runtime | Shared; Ethan owns required support guards | In progress | Team host migration exists through `c0c2cc7`; verify enforced flags and Docker-to-host connectivity. |
+| G3 retrieval | Shared RAG owner / Ethan for scoped prerequisites | In progress | Team catalogue Chroma retrieval exists; generalise feature scope and verify. |
+| G4 grounded generation | Shared RAG owner / Ethan for scoped prerequisites | In progress | Team grounded catalogue generation exists; preserve it and verify live support scope. |
 | G5 generic MCP validation | To allocate | Pending | Remove Chufeng-specific assumptions. |
-| G6 RAG validation | Same runner owner | Pending | Depends on G4. |
-| E1a MCP search/context tools | Ethan Goldman | Pending | Depends on G1; bounded authenticated reads. |
+| G6 RAG validation | Shared runner owner | In progress | Team catalogue RAG mode exists; extend per-feature configuration and run acceptance. |
+| E1a MCP search/context tools | Ethan Goldman (agent implementation) | Validated | 149 tests passed, 1 opt-in real-AI test skipped; real MCP protocol with live temporary auth/support/database APIs; backend/database image builds and isolated packaging checks passed. Next E1b. |
 | E1b MCP summary/attention tools | Ethan Goldman | Pending | Depends on E1a; aggregate/attention rules. |
 | E2a support MCP API | Ethan Goldman | Pending | Depends on E1a/E1b; four-tool allowlist. |
 | E2b model-driven MCP assistant | Ethan Goldman | Pending | Depends on E2a/G2; real model selection and grounded answer. |
