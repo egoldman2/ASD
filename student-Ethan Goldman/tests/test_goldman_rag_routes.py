@@ -154,12 +154,13 @@ def test_rag_configuration_fails_safely_before_network(monkeypatch, setting, val
 
 
 def test_rag_transport_rejects_malformed_oversized_and_redirected_replies(monkeypatch):
-    from flask import Flask, Response
+    from flask import Flask, Response, request
     monkeypatch.setenv('AI_MODE_ENABLED', 'true'); monkeypatch.setenv('RAG_ENABLED', 'true')
     app = Flask('rag-transport-fixture')
     replies = [('not JSON', 200), ('x' * 65537, 200), ('', 302), ('{"success":true}', 503)]
     @app.post('/answer')
     def answer():
+        request.get_data()
         body, status = replies.pop(0)
         return Response(body, status=status, headers={'Location': '/unexpected-redirect'})
     host = LiveServer(app)
