@@ -122,3 +122,60 @@ actual model identity. Citation links open staff-authorised escaped previews at
 available for programmatic review. The form retains the question through loading
 and failures so staff can retry, and insufficient context displays no fabricated
 answer or source list. Example buttons prefill questions without submitting them.
+
+## Feature-aware validation mode
+
+Run the shared `ai-services/agentic_loop.py` in `rag` mode with a feature's
+`rag_rules.required_scope` and `required_operations`. Source checks use its
+configured `source_files` roles (`server`, `pipeline`, `source`, optional
+`registry`, `client`, `frontend`, `routes`, optional `controller`, `compose`),
+`frontend_route_prefix` and `backend_client_marker`. Knowledge scope and source
+markers are checked independently of live health and HTTP results. The runner
+imports no Chroma/model runtime merely to collect source evidence.
+
+Configure at most ten `probes` with `name`, `question`, `top_k` (1–20),
+`expected` (`grounded` or `insufficient`) and optional exact typed `expect`
+checks. Existing `probe_question`/`probe_top_k` remain supported; add
+`unsupported_question` to validate abstention too. URLs identify local service
+roots, with no credentials/query parameters. Requests carry no staff cookies,
+do not follow redirects, and have bounded bodies/timeouts. The runner refreshes
+only the selected approved knowledge scope, never the feature's business data.
+
+For each question, retain the actual retrieved passages and source identities,
+answer, citations, confidence and model metadata. Successful answers must cite
+sources seen in that question's independent retrieval, match the selected scope
+and question, identify actual inference, and cite every factual paragraph.
+Citation counts or plausible-looking labels alone cannot pass validation.
+Unsupported probes require the exact insufficient-context sentence, no answer
+citations and no model invocation. Model abstention after inference is recorded
+but cannot pass this model-free negative case.
+
+`grounded_answer_verified`, `insufficient_context_verified`, `probe_complete`
+and `validation_complete` are separate results. Complete validation requires
+all configured probes, a refreshed selected corpus, available operations, an
+actual grounded answer and a model-free unsupported result. A missing negative
+case cannot establish complete validation. A model outage can leave retrieval
+and the negative case verified while the positive remains unavailable.
+`AI_MODE_ENABLED=false` or `RAG_ENABLED=false` skips every live RAG request and
+retains source checks. Failed, skipped, invalid and unavailable cases remain
+visible, rather than becoming successful model-review claims.
+
+Plan/Act/Observe/Adapt review prompts retain every outcome with labelled source
+and answer excerpts; full payloads remain in the saved engineering evidence.
+They omit repeated schemas/passages, use an 8192-token model context, and reject
+prompts above 24,000 characters instead of silently claiming an exhaustive
+review. Review responses are capped at 64 KiB and must be complete, untruncated
+responses from the configured local model. These review calls remain separate
+from the application inference proved by runtime observations. Select a local
+review model with `OLLAMA_MODEL`; the integration acceptance uses `qwen2.5:3b`.
+
+Opt-in direct generation and full validation-loop acceptance use temporary
+approved knowledge indexes and seeded support/auth/MCP services:
+
+```bash
+RUN_LIVE_RAG_AI=1 python -m pytest 'student-Ethan Goldman/tests/test_agentic_rag_validation.py' -q
+RUN_LIVE_VALIDATION=1 python -m pytest 'student-Ethan Goldman/tests/test_agentic_rag_validation.py::test_live_agentic_modes_produce_actual_review_outputs' -q
+```
+
+The shared-mode tests use temporary support configuration. Goldman's persistent
+mode prompts/configuration follow in the feature registration stage.

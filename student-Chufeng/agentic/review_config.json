@@ -123,7 +123,21 @@
       "answer_question"
     ],
     "probe_question": "Which products with smart in their names are in stock, and what are their prices?",
-    "probe_top_k": 5
+    "probe_top_k": 5,
+    "unsupported_question": "quasar orbital spectroscopy wavelengths",
+    "source_files": {
+      "server": "ai-services/rag_server/rag_server.py",
+      "pipeline": "ai-services/rag_server/rag_pipeline.py",
+      "registry": "ai-services/rag_server/rag_pipeline.py",
+      "source": "ai-services/rag_server/sources/chufeng_catalogue.py",
+      "client": "student-Chufeng/backend/services/rag_client.py",
+      "frontend": "student-Chufeng/frontend/js/rag-tools.js",
+      "routes": "student-Chufeng/backend/routes/rag_routes.py",
+      "controller": "student-Chufeng/backend/controllers/rag_controller.py",
+      "compose": "docker-compose.yml"
+    },
+    "frontend_route_prefix": "/api/chufeng/rag",
+    "backend_client_marker": "ChufengRAGClient"
   },
   "source_checks": {
     "mcp": [

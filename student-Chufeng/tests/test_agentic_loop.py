@@ -455,7 +455,7 @@ def test_loads_chufeng_rag_prompt_and_rules(agentic_loop):
 
     assert "rag" in config["mode_prompts"]
     assert "bounded Release 1 validation task" in config["mode_prompts"]["rag"]
-    assert config["rag_rules"] == {
+    assert {key: config["rag_rules"][key] for key in ("required_scope", "required_operations", "probe_question", "probe_top_k")} == {
         "required_scope": "chufeng_catalogue",
         "required_operations": [
             "refresh_corpus",
@@ -497,70 +497,28 @@ def test_rag_evidence_keeps_static_checks_when_runtime_is_disabled(
         "required_operations_available": False,
         "grounded_answer_verified": False,
         "probe_complete": False,
+        "insufficient_context_verified": False,
+        "validation_complete": False,
     }
 
 
 def test_rag_evidence_accepts_complete_live_probe(agentic_loop, monkeypatch):
     monkeypatch.setenv("RAG_ENABLED", "true")
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
     config, _ = agentic_loop.load_feature("student-Chufeng")
-
+    # Injected probe records exercise aggregation only; HTTP contract checks have
+    # separate genuine local-service tests.
     def fake_probe(_config):
-        return {
-            "available": True,
-            "health": {
-                "status": "healthy",
-                "service": "asd-marketplace-rag",
-                "enabled": True,
-                "available_scopes": ["chufeng_catalogue"],
-                "operations": [
-                    "refresh_corpus",
-                    "retrieve_context",
-                    "answer_question",
-                ],
-                "ollama_model": "qwen2.5:0.5b",
-            },
-            "probe": {
-                "question": config["rag_rules"]["probe_question"],
-                "top_k": 5,
-                "refresh": {
-                    "success": True,
-                    "scope": "chufeng_catalogue",
-                    "document_count": 13,
-                    "collection": "asd_release1_shared_context",
-                },
-                "retrieval": {
-                    "success": True,
-                    "scope": "chufeng_catalogue",
-                    "citation_count": 4,
-                    "source_ids": ["product-catalogue:7"],
-                    "confidence": "medium",
-                },
-                "answer": {
-                    "success": True,
-                    "scope": "chufeng_catalogue",
-                    "insufficient_context": False,
-                    "citation_count": 2,
-                    "source_ids": ["product-catalogue:7"],
-                    "confidence": "medium",
-                    "model": "qwen2.5:0.5b",
-                    "grounded": True,
-                    "model_invoked": True,
-                },
-            },
-        }
-
-    evidence = agentic_loop.collect_rag_evidence(
-        config,
-        runtime_probe=fake_probe,
-    )
-
-    runtime = evidence["runtime"]
-    assert runtime["attempted"] is True
-    assert runtime["available"] is True
-    assert runtime["required_scope_available"] is True
-    assert runtime["required_operations_available"] is True
-    assert runtime["grounded_answer_verified"] is True
-    assert runtime["probe_complete"] is True
+        return {"available": True, "health": {"available_scopes": ["chufeng_catalogue"],
+            "operations": ["refresh_corpus", "retrieve_context", "answer_question"]},
+            "refresh_verified": True, "probes": [
+                {"state": "grounded", "expected": "grounded", "verified": True},
+                {"state": "insufficient", "expected": "insufficient", "generation_skipped": True, "verified": True},
+            ]}
+    runtime = agentic_loop.collect_rag_evidence(config, runtime_probe=fake_probe)["runtime"]
+    assert runtime["attempted"] and runtime["available"] and runtime["required_scope_available"]
+    assert runtime["required_operations_available"] and runtime["grounded_answer_verified"]
+    assert runtime["probe_complete"] and runtime["insufficient_context_verified"] and runtime["validation_complete"]
 
 
 def test_rag_grounding_rejects_invented_live_success(agentic_loop):
@@ -640,7 +598,7 @@ def test_rag_fallback_separates_static_and_runtime_evidence(agentic_loop):
 
     assert "Live RAG validation available: False" in review
     assert "static checks do not prove corpus refresh" in review
-    assert "Start the Product Database API" in review
+    assert "Start the selected feature knowledge source" in review
     assert "Invented live RAG success" in review
 
 
