@@ -120,7 +120,8 @@ def _tool_query(allowed):
 
 def _bounded_integer(field, default, minimum, maximum):
     value = request.args.get(field, str(default))
-    if not value.isascii() or not value.isdecimal() or not minimum <= int(value) <= maximum:
+    if (len(value) > len(str(maximum)) or not value.isascii() or not value.isdecimal()
+            or not minimum <= int(value) <= maximum):
         raise ApiError(400, "invalid_filter", f"{field} must be an integer between {minimum} and {maximum}.")
     return int(value)
 
@@ -193,6 +194,20 @@ def create_app(database_path=None):
         if ticket is None:
             raise ApiError(404, "not_found", "Ticket not found.")
         return jsonify(ticket)
+
+    @application.get("/api/tool-data/summary")
+    def queue_summary():
+        _tool_query({"category", "assigned_to"})
+        return jsonify(database.get_queue_summary(_filters(), _now(), path))
+
+    @application.get("/api/tool-data/attention")
+    def attention_tickets():
+        _tool_query({"category", "assigned_to", "inactive_hours", "limit", "offset"})
+        return jsonify(database.get_tickets_needing_attention(
+            _filters(), _bounded_integer("inactive_hours", 48, 1, 720),
+            _bounded_integer("limit", 20, 1, 50), _bounded_integer("offset", 0, 0, 10000),
+            _now(), path,
+        ))
 
     @application.post("/api/tickets")
     def create_ticket():

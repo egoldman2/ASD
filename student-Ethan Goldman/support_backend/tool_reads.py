@@ -17,7 +17,8 @@ def _query(allowed):
 
 def _integer(field, default, minimum, maximum):
     value = request.args.get(field, str(default))
-    if not value.isascii() or not value.isdecimal() or not minimum <= int(value) <= maximum:
+    if (len(value) > len(str(maximum)) or not value.isascii() or not value.isdecimal()
+            or not minimum <= int(value) <= maximum):
         raise ValidationError(f"{field} must be an integer between {minimum} and {maximum}.", field)
     return int(value)
 
@@ -48,6 +49,16 @@ def public_ticket(ticket):
     return result
 
 
+def public_ticket_page(result, filters):
+    private = tuple(value for ticket in result["tickets"] for value in _private_values(ticket))
+    result["tickets"] = [
+        {**public_ticket(ticket), **{field: ticket[field] for field in ("reasons", "last_activity_at") if field in ticket}}
+        for ticket in result["tickets"]
+    ]
+    result["filters"] = {key: redact_text(value, private) for key, value in filters.items()}
+    return result
+
+
 def create_tool_reads_blueprint(*, principal, database, db_error):
     blueprint = Blueprint("support_tool_reads", __name__, url_prefix="/api/support/admin/tool-data")
 
@@ -62,10 +73,7 @@ def create_tool_reads_blueprint(*, principal, database, db_error):
             result = database().search_ticket_summaries(
                 filters, limit=_integer("limit", 20, 1, 50), offset=_integer("offset", 0, 0, 10000),
             )
-            private = tuple(value for ticket in result["tickets"] for value in _private_values(ticket))
-            result["tickets"] = [public_ticket(ticket) for ticket in result["tickets"]]
-            result["filters"] = {key: redact_text(value, private) for key, value in filters.items()}
-            return jsonify(result)
+            return jsonify(public_ticket_page(result, filters))
         except ValidationError as exc:
             return jsonify({"error": str(exc)}), 400
         except Exception as exc:
@@ -84,6 +92,40 @@ def create_tool_reads_blueprint(*, principal, database, db_error):
                 ticket_id, message_limit=_integer("message_limit", 20, 1, 50),
             )
             return jsonify(public_ticket(result))
+        except ValidationError as exc:
+            return jsonify({"error": str(exc)}), 400
+        except Exception as exc:
+            return db_error(exc)
+
+    @blueprint.get("/summary")
+    def queue_summary():
+        _, error = principal("admin")
+        if error is not None:
+            return error
+        try:
+            _query({"category", "assigned_to"})
+            filters = validate_admin_filters(request.args)
+            result = database().get_queue_summary(filters)
+            result["filters"] = {key: redact_text(value) for key, value in filters.items()}
+            return jsonify(result)
+        except ValidationError as exc:
+            return jsonify({"error": str(exc)}), 400
+        except Exception as exc:
+            return db_error(exc)
+
+    @blueprint.get("/attention")
+    def attention_tickets():
+        _, error = principal("admin")
+        if error is not None:
+            return error
+        try:
+            _query({"category", "assigned_to", "inactive_hours", "limit", "offset"})
+            filters = validate_admin_filters(request.args)
+            result = database().get_tickets_needing_attention(
+                filters, inactive_hours=_integer("inactive_hours", 48, 1, 720),
+                limit=_integer("limit", 20, 1, 50), offset=_integer("offset", 0, 0, 10000),
+            )
+            return jsonify(public_ticket_page(result, filters))
         except ValidationError as exc:
             return jsonify({"error": str(exc)}), 400
         except Exception as exc:

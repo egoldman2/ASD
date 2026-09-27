@@ -59,8 +59,15 @@ their matching module under `tools/` and registered in `server.py`.
   maximum 50 rows, offset at most 10,000, no conversation bodies.
 - `ethan_goldman_get_ticket_context`: positive ticket ID and the latest
   messages; default 20, maximum 50, displayed chronologically.
+- `ethan_goldman_get_queue_summary`: full-set status/priority totals,
+  unresolved and unresolved-unassigned counts, with optional category/assignee.
+- `ethan_goldman_get_tickets_needing_attention`: unresolved tickets with every
+  applicable review reason, ordered by urgent/high/medium/low/unclassified,
+  oldest activity, then ticket ID before paging. Activity includes ticket updates
+  and messages. Solved tickets are excluded. Inactivity defaults to 48 hours
+  (allowed 1–720); this is a review heuristic, not a promised SLA.
 
-Both tools require an `ethan_session` cookie on the MCP HTTP request. The host
+All four tools require an `ethan_session` cookie on the MCP HTTP request. The host
 server forwards that request's cookie to protected Customer Support API reads;
 the API verifies the session and admin role again. Cookies are never accepted
 as tool arguments or stored between requests. The backend removes customer

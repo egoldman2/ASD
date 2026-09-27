@@ -14,6 +14,8 @@ from mcp_server.response import ToolErrorCode, error_response, success_response
 
 SEARCH_TICKETS = "ethan_goldman_search_tickets"
 GET_TICKET_CONTEXT = "ethan_goldman_get_ticket_context"
+GET_QUEUE_SUMMARY = "ethan_goldman_get_queue_summary"
+GET_TICKETS_NEEDING_ATTENTION = "ethan_goldman_get_tickets_needing_attention"
 MAX_RESPONSE_BYTES = 256 * 1024
 
 
@@ -56,9 +58,14 @@ def _read(tool, ctx, path, params):
             result = json.loads(body)
             if not isinstance(result, dict):
                 raise ValueError("Invalid response shape")
-            if path == "/tickets":
+            if path in {"/tickets", "/attention"}:
                 if not isinstance(result.get("tickets"), list) or not isinstance(result.get("total"), int):
                     raise ValueError("Invalid search result")
+            elif path == "/summary":
+                if (not isinstance(result.get("total"), int)
+                        or not isinstance(result.get("status_counts"), dict)
+                        or not isinstance(result.get("priority_counts"), dict)):
+                    raise ValueError("Invalid summary result")
             elif not isinstance(result.get("id"), int) or not isinstance(result.get("messages"), list):
                 raise ValueError("Invalid context result")
     except requests.RequestException:
@@ -97,3 +104,43 @@ def get_ticket_context(
     except ValueError as exc:
         return error_response(GET_TICKET_CONTEXT, ToolErrorCode.INVALID_ARGUMENT, str(exc))
     return _read(GET_TICKET_CONTEXT, ctx, f"/tickets/{ticket_id}", {"message_limit": message_limit})
+
+
+def _queue_filters(category, assigned_to):
+    filters = {"category": category, "assigned_to": assigned_to}
+    for field, value in filters.items():
+        if value is not None and (not isinstance(value, str) or len(value) > 100):
+            raise ValueError(f"Invalid {field} filter.")
+    return filters
+
+
+def get_queue_summary(
+    ctx: Context, category: str | None = None, assigned_to: str | None = None,
+) -> dict[str, Any]:
+    """Count the full filtered staff queue by status and priority, including unresolved/unassigned totals."""
+    try:
+        filters = _queue_filters(category, assigned_to)
+    except ValueError as exc:
+        return error_response(GET_QUEUE_SUMMARY, ToolErrorCode.INVALID_ARGUMENT, str(exc))
+    return _read(GET_QUEUE_SUMMARY, ctx, "/summary", filters)
+
+
+def get_tickets_needing_attention(
+    ctx: Context, category: str | None = None, assigned_to: str | None = None,
+    inactive_hours: StrictInt = 48, limit: StrictInt = 20, offset: StrictInt = 0,
+) -> dict[str, Any]:
+    """List unresolved tickets with every recorded attention reason, ordered by priority then oldest activity.
+
+    The inactivity threshold is a review heuristic, not an SLA. Defaults to
+    48 hours (allowed 1–720). Pages default to 20, cap at 50; offset caps at 10,000.
+    """
+    try:
+        filters = _queue_filters(category, assigned_to)
+        _integer(inactive_hours, "inactive_hours", 1, 720)
+        _integer(limit, "limit", 1, 50)
+        _integer(offset, "offset", 0, 10000)
+    except ValueError as exc:
+        return error_response(GET_TICKETS_NEEDING_ATTENTION, ToolErrorCode.INVALID_ARGUMENT, str(exc))
+    return _read(GET_TICKETS_NEEDING_ATTENTION, ctx, "/attention", {
+        **filters, "inactive_hours": inactive_hours, "limit": limit, "offset": offset,
+    })

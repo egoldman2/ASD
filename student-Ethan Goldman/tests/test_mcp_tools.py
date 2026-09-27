@@ -119,6 +119,8 @@ def test_support_tools_use_real_protocol_and_revalidate_sessions(support_stack, 
             for name, arguments in (
                 ("ethan_goldman_search_tickets", {"search": "Bounded case", "limit": 1}),
                 ("ethan_goldman_get_ticket_context", {"ticket_id": ticket_id, "message_limit": 2}),
+                ("ethan_goldman_get_queue_summary", {}),
+                ("ethan_goldman_get_tickets_needing_attention", {"limit": 1}),
             ):
                 result = await client.acall_tool(name, arguments, request_headers=headers)
                 assert result["success"] is True and result["metadata"]["read_only"] is True
@@ -132,6 +134,8 @@ def test_support_tools_use_real_protocol_and_revalidate_sessions(support_stack, 
                 ("ethan_goldman_search_tickets", {"priority": "invalid"}, "INVALID_ARGUMENT"),
                 ("ethan_goldman_get_ticket_context", {"ticket_id": -1}, "INVALID_ARGUMENT"),
                 ("ethan_goldman_get_ticket_context", {"ticket_id": 999999}, "RECORD_NOT_FOUND"),
+                ("ethan_goldman_get_queue_summary", {"category": "invalid"}, "INVALID_ARGUMENT"),
+                ("ethan_goldman_get_tickets_needing_attention", {"inactive_hours": 0}, "INVALID_ARGUMENT"),
             ):
                 result = await client.acall_tool(name, arguments, request_headers=headers)
                 assert result["success"] is False and result["error"]["code"] == code

@@ -206,6 +206,16 @@ class SupportDatabaseClient:
             query={"message_limit": message_limit}, expected=(200,),
         )
 
+    def get_queue_summary(self, filters=None):
+        return self._request("GET", "/api/tool-data/summary", query=filters, expected=(200,))
+
+    def get_tickets_needing_attention(self, filters=None, *, inactive_hours=48, limit=20, offset=0):
+        return self._request(
+            "GET", "/api/tool-data/attention",
+            query={**(filters or {}), "inactive_hours": inactive_hours, "limit": limit, "offset": offset},
+            expected=(200,),
+        )
+
     def update_ticket(self, ticket_id: Any, updates: Mapping[str, Any]) -> Any:
         return self._request(
             "PUT",
