@@ -8,7 +8,9 @@ import json
 import os
 from pathlib import Path
 import sys
+from unittest.mock import AsyncMock
 
+import httpx
 import pytest
 import requests
 
@@ -122,6 +124,8 @@ def test_generation_schema_contains_only_observed_facts_and_ids():
         "total": 12, "tickets": [{"id": 2002, "status": "pending"}],
     }})}
     schema = assistant.final_schema([message])
+    assert schema['properties']['facts']['minItems'] == 1
+    assert assistant.final_schema([])['properties']['facts']['minItems'] == 0
     assert schema["properties"]["ticket_ids"]["items"]["enum"] == [2002]
     allowed = schema["properties"]["facts"]["items"]["enum"]
     assert {"call_index": 0, "path": "tickets.0.status", "value": "pending"} in allowed
@@ -263,8 +267,13 @@ def test_live_model_executes_mcp_and_generates_verified_answer(live_mcp, monkeyp
 
 def test_native_draft_then_wrong_labelled_count_gets_one_bounded_correction():
     data = {'total': 12, 'status_counts': {'solved': 3, 'open': 4}}
+    corrected = final(answer='There are 3 solved and 4 open.')
+    payload = json.loads(corrected['content'])
+    payload['facts'] += [{'call_index': 0, 'path': f'status_counts.{label}', 'value': value}
+                         for label, value in (('solved', 3), ('open', 4))]
+    corrected['content'] = json.dumps(payload)
     model = ScriptedModel([call(adapter.GET_QUEUE_SUMMARY), {'content': 'A draft workload summary.'},
-        final(answer="There are 2 in 'solved' and 4 open."), final(answer='There are 3 solved and 4 open.')])
+        final(answer="There are 2 in 'solved' and 4 open."), corrected])
     result, status = assistant.answer_question('Queue?', None, FakeMCP(result=data), {}, model=model)
     assert status == 200 and result['model_requests'] == 4
     assert model.requests[2]['final'] and model.requests[3]['final']
@@ -274,3 +283,58 @@ def test_native_draft_then_wrong_labelled_count_gets_one_bounded_correction():
         with pytest.raises(assistant.AssistantError):
             assistant.validate_answer(bad, [{'tool': adapter.GET_QUEUE_SUMMARY,
                 'result': {**data, 'status_counts': {**data['status_counts'], 'needs_triage': 2}}}])
+
+
+@pytest.mark.parametrize('prose', [
+    'There are 999 tickets.', 'The number of open tickets is 999.',
+    'The number of open tickets is 12.', 'There are 4 open tickets.',
+    'There are -12 tickets.', 'There are 12.5 recorded tickets.',
+    'Every customer is entitled to a full refund.', 'Compensation is guaranteed.',
+])
+def test_prose_must_cite_its_numbers_and_cannot_establish_policy(prose):
+    observations = [{'tool': adapter.GET_QUEUE_SUMMARY, 'result': {
+        'total': 12, 'status_counts': {'open': 4},
+    }}]
+    with pytest.raises(assistant.AssistantError):
+        assistant.validate_answer(final(answer=prose)['content'], observations)
+    assert assistant.validate_answer(final()['content'], observations)['answer'] == 'There are 12 recorded tickets.'
+
+
+def test_count_labels_cannot_borrow_an_unrelated_but_observed_value():
+    for prose, path, value, result in (
+        ('There are 4 tickets.', 'status_counts.open', 4, {'total': 12, 'status_counts': {'open': 4}}),
+        ('There are 4 unassigned tickets.', 'status_counts.open', 4,
+         {'total': 12, 'unresolved_unassigned': 5, 'status_counts': {'open': 4}}),
+        ('There are 6 messages.', 'message_limit', 6, {'message_count': 3, 'message_limit': 6}),
+    ):
+        with pytest.raises(assistant.AssistantError):
+            assistant.validate_answer(final(answer=prose, path=path, value=value)['content'], [{'result': result}])
+
+
+def test_uncited_count_gets_one_correction_then_fails_without_an_answer():
+    model = ScriptedModel([call(adapter.GET_QUEUE_SUMMARY), final(answer='There are 999 tickets.'), final()])
+    result, status = assistant.answer_question('Queue?', None, FakeMCP(), {}, model=model)
+    assert status == 200 and result['answer'] == 'There are 12 recorded tickets.'
+    assert result['model_requests'] == 3 and model.requests[-1]['final']
+    model = ScriptedModel([call(adapter.GET_QUEUE_SUMMARY)] + [final(answer='There are 999 tickets.')] * 2)
+    result, status = assistant.answer_question('Queue?', None, FakeMCP(), {}, model=model)
+    assert status == 502 and 'answer' not in result and result['error']['code'] == 'AI_INVALID_RESPONSE'
+
+
+@pytest.mark.parametrize('change', [
+    {'done': False}, {'done': 1}, {'done': None}, {'done_reason': 'length'},
+    {'model': 'wrong-model'}, {'model': None}, {'message': {'role': 'system', 'content': 'Untrusted'}},
+])
+def test_native_model_rejects_incomplete_or_misattributed_responses(monkeypatch, change):
+    model = assistant.OllamaToolModel()
+    payload = {'model': model.model, 'done': True, 'done_reason': 'stop', 'message': final()}
+    client = AsyncMock()
+    client.__aenter__.return_value = client
+    client.post.return_value = httpx.Response(200, json={**payload, **change})
+    monkeypatch.setattr(assistant.httpx, 'AsyncClient', lambda **kwargs: client)
+    mcp = FakeMCP()
+    result, status = assistant.answer_question('Queue?', None, mcp, {}, model=model)
+    assert status == 502 and result['error']['code'] == 'AI_INVALID_RESPONSE'
+    assert 'answer' not in result and mcp.calls == []
+    client.post.return_value = httpx.Response(200, json=payload)
+    assert asyncio.run(model.chat([], [], final=True)) == final()

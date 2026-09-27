@@ -32,6 +32,9 @@ ACTION_CLAIM_RE = re.compile(
     r"\b(?:i|we)\s+(?:(?:have|already|will|shall)\s+){0,2}"
     r"(?:updat\w*|chang\w*|sen[dt]\w*|repl\w*|assign\w*|refund\w*|delet\w*|clos\w*)\b", re.I,
 )
+POLICY_CLAIM_RE = re.compile(
+    r"\b(?:entitl\w*|eligib\w*|guarantee\w*|promis\w*|qualif\w*)\b", re.I,
+)
 SYSTEM_PROMPT = """You are a read-only staff support assistant. Choose tools from the discovered schemas.
 Search finds ordinary matching tickets; context reads one conversation; summary counts workload;
 attention explains recorded review reasons. Unassigned is assigned_to="unassigned", never a status.
@@ -49,6 +52,9 @@ Return your final answer as JSON with exactly answer, ticket_ids, facts, needs_c
 answer is concise prose. ticket_ids contains only returned IDs. facts is a nonempty list of
 {call_index, path, value} matching observed data exactly, e.g. path "total" or "status_counts.open".
 Paths start inside result; do not cite whole objects. Numeric counts are numbers, not strings.
+Every number in answer must appear in its cited facts or ticket_ids. Write counts as digits and
+cite each count separately, including message_count. Do not state refund, compensation or warranty
+entitlements; these tools provide records, not policy.
 Use zero-based call_index. Keep the answer under 120 words. Do not derive extra counts or
 invent interpretations, historical trends or SLA promises. No facts can be invented. If more information is needed, set
 needs_clarification true and ask a question. Mention pagination or truncated context where relevant.
@@ -146,6 +152,8 @@ def validate_answer(content, observations):
             raise ValueError("Invalid answer shape")
         if ACTION_CLAIM_RE.search(answer["answer"]):
             raise ValueError("The assistant cannot claim mutations")
+        if POLICY_CLAIM_RE.search(answer["answer"]):
+            raise ValueError("Support records do not establish policy entitlements")
         returned_ids = set()
         for observation in observations:
             result = observation["result"]
@@ -164,15 +172,18 @@ def validate_answer(content, observations):
             raise ValueError("Unobserved prose reference")
         counts = {}
         for observation in observations:
-            if observation.get("tool") == "ethan_goldman_get_queue_summary":
-                result = observation["result"]
-                for label, value in {**result.get("status_counts", {}), **result.get("priority_counts", {}),
-                                     **{key: result[key] for key in ("total", "unresolved") if key in result}}.items():
-                    counts.setdefault(label, set()).add(value)
+            result = observation["result"]
+            for label, value in {**result.get("status_counts", {}), **result.get("priority_counts", {}),
+                                 **{key: result[key] for key in ("total", "unresolved", "unresolved_unassigned", "message_count") if key in result}}.items():
+                counts.setdefault(label, set()).add(value)
         for label, allowed in counts.items():
-            name = re.escape(label).replace("_", r"[_\s]+")
+            name = {"message_count": r"(?:messages?|message[_\s]+count)",
+                    "unresolved_unassigned": r"(?:unresolved(?:\s+and)?[_\s]+unassigned|unassigned)"
+                    }.get(label, re.escape(label).replace("_", r"[_\s]+"))
             patterns = (rf"(\d+)\s+(?:tickets?\s+)?(?:in\s+)?['\"]?{name}\b",
-                        rf"\b{name}['\"]?\s*[:=]\s*(\d+)")
+                        rf"\b{name}['\"]?\s*(?:tickets?\s*)?(?:[:=]|is|are|of)\s*(\d+)")
+            if label == "total":
+                patterns += (r"\b(\d+)\s+(?:recorded\s+)?tickets?\b",)
             if any(int(value) not in allowed for pattern in patterns for value in re.findall(pattern, answer["answer"], re.I)):
                 raise ValueError("Invented labelled queue count")
         if not answer["needs_clarification"] and (not observations or not answer["facts"]):
@@ -186,6 +197,10 @@ def validate_answer(content, observations):
             actual = _lookup(observations[index]["result"], fact["path"])
             if type(actual) is not type(fact["value"]) or actual != fact["value"]:
                 raise ValueError("Invented fact")
+        cited_numbers = set(re.findall(r"-?\d+(?:\.\d+)?", json.dumps(
+            [fact["value"] for fact in answer["facts"]] + answer["ticket_ids"])))
+        if not set(re.findall(r"-?\d+(?:\.\d+)?", answer["answer"])).issubset(cited_numbers):
+            raise ValueError("Uncited number in the answer")
         return answer
     except (ValueError, TypeError, KeyError, IndexError):
         raise AssistantError("AI_INVALID_RESPONSE", "The AI answer could not be verified.") from None
@@ -218,7 +233,7 @@ def final_schema(messages):
             collect(observation["call_index"], observation["result"])
     schema = copy.deepcopy(FINAL_SCHEMA)
     schema["properties"]["answer"].update(minLength=1, maxLength=1600)
-    schema["properties"]["facts"].update(maxItems=12)
+    schema["properties"]["facts"].update(minItems=1 if facts else 0, maxItems=12)
     schema["properties"]["ticket_ids"] = ({"type": "array", "uniqueItems": True,
         "maxItems": min(30, len(ticket_ids)), "items": {"type": "integer", "enum": sorted(ticket_ids)}}
         if ticket_ids else {"const": []})
@@ -248,8 +263,12 @@ class OllamaToolModel:
                 raise AssistantError("OLLAMA_UNAVAILABLE", "The local model is unavailable.", 503)
             if len(response.content) > 64 * 1024:
                 raise ValueError("Oversized model response")
-            message = response.json()["message"]
-            if not isinstance(message, dict):
+            payload = response.json()
+            if (not isinstance(payload, dict) or payload.get("done") is not True
+                    or payload.get("done_reason") == "length" or payload.get("model") != self.model):
+                raise ValueError("Incomplete response or unexpected model")
+            message = payload.get("message")
+            if not isinstance(message, dict) or message.get("role") != "assistant":
                 raise ValueError("Invalid model message")
             return {key: message[key] for key in ("role", "content", "tool_calls") if key in message}
         except httpx.HTTPError:
@@ -319,7 +338,7 @@ async def _answer(question, ticket_id, mcp, model, headers, observations, counte
                 raise
             correction = True
             force_final = True
-            messages.append({"role": "user", "content": "The answer failed verification. Return the required final JSON. Match each labelled count exactly, do not repeat ticket IDs, and cite only observed IDs and exact scalar facts with call_index and path."})
+            messages.append({"role": "user", "content": "The answer failed verification. Return the required final JSON. Cite every number in the answer with an exact scalar fact or ticket_ids, match each labelled count, do not repeat ticket IDs, and make no policy promises. Facts require call_index and path."})
     raise AssistantError("AI_REQUEST_LIMIT", "The assistant exceeded its model-request limit.")
 
 

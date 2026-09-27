@@ -72,7 +72,7 @@ def test_mcp_ui_access_validation_escaping_and_disabled_transport(live_mcp, monk
 
 def test_assistant_ui_answer_evidence_and_safe_failure_states(live_mcp, monkeypatch):
     stack, admin = live_mcp, live_mcp.admin()
-    model = ScriptedModel([call(adapter.GET_QUEUE_SUMMARY), final(answer='<img src=x onerror=alert(1)> There are 12 tickets.')])
+    model = ScriptedModel([call(adapter.GET_QUEUE_SUMMARY), final(answer='<img src=x onerror=alert("unsafe")> There are 12 tickets.')])
     stack.backend.server.app.extensions['support_mcp_model'] = model
     response = post(stack, admin, 'assistant', {'question': 'Queue workload?'})
     assert response.status_code == 200 and 'Assistant answer' in response.text
