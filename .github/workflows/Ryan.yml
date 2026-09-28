@@ -79,8 +79,8 @@ jobs:
         env:
           MCP_ENABLED: "false"
           RAG_ENABLED: "false"
-        run: python -m pytest "student-Ryan_Nolan/tests/inventory_tests.py" "student-Ryan_Nolan/tests/mcp_route_test.py" -q
-
+        run: python -m pytest "student-Ryan_Nolan/tests/inventory_tests.py" "student-Ryan_Nolan/tests/mcp_route_test.py" "student-Ryan_Nolan/tests/rag_route_test.py" -q
+        
       - name: Compile Ryan Nolan Python modules
         run: python -m compileall -q "student-Ryan_Nolan"
 

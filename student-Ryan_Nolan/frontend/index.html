@@ -12,6 +12,7 @@
   <script src="js/auth_guard.js?v=4" defer></script>
   <script src="js/inventory.js?v=4" defer></script>
   <script src="js/mcp_tools.js?v=1" defer></script>
+    <script src="js/rag_tools.js?v=1" defer></script>
 </head>
 
 <body>
@@ -194,6 +195,40 @@
             readonly
           ></textarea>
         </div>
+      </details>
+
+      <details class="collapsibleSection">
+        <summary class="collapsibleSummary">
+          <p class="sectionEyebrow">RAG</p>
+          <h3>Knowledge Assistant</h3>
+        </summary>
+
+        <p id="ragStatusLine" class="productMeta">Checking RAG status...</p>
+
+        <form id="ragForm" class="aiForm">
+          <div class="aiField">
+            <label for="ragQuestion">Your inventory question</label>
+            <textarea id="ragQuestion" name="question" rows="2" maxlength="1000">Who supplies Fitness Watch?</textarea>
+          </div>
+          <div class="formActions">
+            <button id="ragAskButton" class="askAiButton" type="submit">Ask Knowledge Assistant</button>
+            <button id="ragRefreshButton" class="filterButton" type="button">Refresh Knowledge</button>
+          </div>
+        </form>
+
+        <div class="aiField aiResponseField">
+          <label for="ragAnswer">Answer</label>
+          <textarea
+            id="ragAnswer"
+            rows="4"
+            placeholder="The grounded answer will appear here."
+            aria-live="polite"
+            readonly
+          ></textarea>
+        </div>
+
+        <p id="ragConfidence" class="productMeta"></p>
+        <div id="ragCitations" class="productMeta"></div>
       </details>
 
       <details class="collapsibleSection" open>
