@@ -2,7 +2,7 @@ name: Howard - Order & Returns
 
 on:
   push:
-    branches: [ main, howard-blueprint-integration ]
+    branches: [ main, howard-blueprint-integration, howard-release1-mcp ]
     paths:
       - 'student-Howard/**'
       - '.github/workflows/Howard.yml'
@@ -15,6 +15,13 @@ on:
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
+
+    # Release 1: the MCP and RAG integration stays in the code, but both are
+    # disabled during CI/CD so the build validates the feature without the
+    # local MCP and RAG servers.
+    env:
+      MCP_ENABLED: "false"
+      RAG_ENABLED: "false"
 
     steps:
       - name: Check out repository
@@ -29,6 +36,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flask flask-cors requests pytest
+
+      - name: Confirm MCP and RAG are disabled for CI
+        run: |
+          echo "MCP_ENABLED=$MCP_ENABLED"
+          echo "RAG_ENABLED=$RAG_ENABLED"
 
       - name: Seed the database
         working-directory: student-Howard/database

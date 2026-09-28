@@ -23,6 +23,13 @@ from mcp_server.tools.chufeng_catalogue import (
     search_products,
 )
 
+from mcp_server.tools.howard_orders import (
+    GET_ORDER_STATUS,
+    GET_RETURN_DETAILS,
+    get_order_status,
+    get_return_details,
+)
+
 
 SERVER_NAME = "ASD Marketplace MCP"
 SERVER_INSTRUCTIONS = """
@@ -129,6 +136,28 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
         annotations=READ_ONLY_ANNOTATIONS,
         structured_output=True,
     )(calculate_cart_summary)
+
+    server.tool(
+        name=GET_ORDER_STATUS,
+        title="Get Order Status",
+        description=(
+            "Get the current status, date, total, and item count for one "
+            "order by its positive order ID. This tool is read-only."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(get_order_status)
+
+    server.tool(
+        name=GET_RETURN_DETAILS,
+        title="Get Return Details",
+        description=(
+            "Get one return request by its positive return ID, including its "
+            "reason, status, and the linked order's status. Read-only."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(get_return_details)
 
     @server.custom_route("/health", methods=["GET"], name="health")
     async def health(_: Request) -> JSONResponse:
