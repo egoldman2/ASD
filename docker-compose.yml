@@ -99,6 +99,9 @@ services:
       SESSION_SECRET: ${ETHAN_SESSION_SECRET:-release-0-local-secret}
       OLLAMA_URL: "${OLLAMA_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: llama3.1:8b
+      MCP_ENABLED: "${MCP_ENABLED:-true}"
+      MCP_SERVER_URL: "${MCP_SERVER_URL:-http://host.docker.internal:8765/mcp}"
+      MCP_CLIENT_TIMEOUT_SECONDS: "${MCP_CLIENT_TIMEOUT_SECONDS:-10}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

@@ -269,6 +269,38 @@
   color: #18794e;
 }
 
+.dashboardMessage.pending {
+  color: #4a627a;
+}
+
+.mcpTierForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+}
+
+.mcpTierForm .formField {
+  flex: 1 1 250px;
+  max-width: 420px;
+}
+
+.mcpTierForm select {
+  width: 100%;
+}
+
+.mcpTierResult {
+  padding: 1rem;
+  border: 1px solid #d7e4ef;
+  border-radius: 9px;
+  background: #f2f7fb;
+}
+
+.mcpTierResult p {
+  margin: 0.65rem 0 0;
+  color: #354d63;
+}
+
 .tableWrapper {
   overflow-x: auto;
 }

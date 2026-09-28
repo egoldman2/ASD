@@ -51,3 +51,13 @@ The service can be configured with these environment variables:
 All four tools are read-only and use the Product Database API rather than
 opening the database directly. Other student-owned tools should be added to
 their matching module under `tools/` and registered in `server.py`.
+
+## Registered Ethan Ting tools
+
+- `ethan_ting_calculate_loyalty_tier`
+
+This read-only tool accepts a non-negative `points_balance` and returns the
+Bronze, Silver, or Gold tier and progress to the next tier. It uses the same
+500/1000-point thresholds as the customer database service. It does not fetch
+or expose customer account records. Frontend/backend integration is a
+separate step.

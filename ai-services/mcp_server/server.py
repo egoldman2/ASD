@@ -22,6 +22,10 @@ from mcp_server.tools.chufeng_catalogue import (
     get_product_details,
     search_products,
 )
+from mcp_server.tools.ethan_ting_customer import (
+    CALCULATE_LOYALTY_TIER,
+    calculate_loyalty_tier,
+)
 
 
 SERVER_NAME = "ASD Marketplace MCP"
@@ -30,8 +34,10 @@ Shared, local MCP service for the ASD marketplace student features.
 
 Choose tools by their student-prefixed names. Chufeng catalogue tools are
 read-only: they search products, return product details, check stock, and
-calculate a proposed cart summary. Tool output is wrapped in a stable response
-envelope containing success, tool, result, error, and optional metadata.
+calculate a proposed cart summary. Ethan Ting's loyalty tier tool calculates
+a tier from supplied points without reading customer records. Tool output is
+wrapped in a stable response envelope containing success, tool, result,
+error, and optional metadata.
 """.strip()
 
 READ_ONLY_ANNOTATIONS = ToolAnnotations(
@@ -47,6 +53,8 @@ REGISTERED_CHUFENG_TOOLS = (
     CHECK_PRODUCT_STOCK,
     CALCULATE_CART_SUMMARY,
 )
+REGISTERED_ETHAN_TING_TOOLS = (CALCULATE_LOYALTY_TIER,)
+REGISTERED_TOOLS = REGISTERED_CHUFENG_TOOLS + REGISTERED_ETHAN_TING_TOOLS
 
 
 def _transport_security(settings: MCPSettings) -> TransportSecuritySettings:
@@ -130,6 +138,18 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
         structured_output=True,
     )(calculate_cart_summary)
 
+    server.tool(
+        name=CALCULATE_LOYALTY_TIER,
+        title="Calculate Loyalty Tier",
+        description=(
+            "Calculate the Bronze, Silver, or Gold loyalty tier and points "
+            "needed for the next tier from a supplied non-negative points "
+            "balance. This tool is read-only and does not access customer data."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(calculate_loyalty_tier)
+
     @server.custom_route("/health", methods=["GET"], name="health")
     async def health(_: Request) -> JSONResponse:
         return JSONResponse(
@@ -138,7 +158,7 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
                 "service": "asd-marketplace-mcp",
                 "transport": "streamable-http",
                 "mcp_path": resolved.path,
-                "registered_tools": len(REGISTERED_CHUFENG_TOOLS),
+                "registered_tools": len(REGISTERED_TOOLS),
             }
         )
 
