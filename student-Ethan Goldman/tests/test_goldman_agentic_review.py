@@ -27,9 +27,11 @@ def test_goldman_review_config_is_discoverable_and_complete():
         "implementation",
         "architecture",
         "devops",
+        "mcp",
+        "rag",
     }
     assert "read-only" in prompt
-    for key in ("implementation_files", "architecture_files", "devops_files"):
+    for key in ("implementation_files", "architecture_files", "devops_files", "mcp_files", "rag_files"):
         assert config[key]
         assert all((PROJECT_ROOT / path).is_file() for path in config[key])
 
@@ -143,11 +145,11 @@ Keep the verified fully functional pipeline.
     assert any("cannot verify" in issue for issue in issues)
 
 
-def test_cli_accepts_all_four_goldman_review_modes():
+def test_cli_accepts_all_goldman_review_modes():
     agentic_loop = load_agentic_loop("ethan_goldman_parser")
     parser = agentic_loop.build_parser()
 
-    for mode in ("database", "implementation", "architecture", "devops"):
+    for mode in ("database", "implementation", "architecture", "devops", "mcp", "rag"):
         parsed = parser.parse_args(
             ["--feature", "student-Ethan Goldman", "--mode", mode, "--no-save"]
         )

@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
+from shared.feature_flags import feature_enabled
 
 
 LOGGER = logging.getLogger(__name__)
@@ -164,6 +165,11 @@ class OllamaUnavailableError(OllamaError):
     safe_message = "The AI assistant is currently unavailable."
 
 
+class OllamaDisabledError(OllamaError):
+    status_code = 503
+    safe_message = "AI mode is disabled."
+
+
 class OllamaInvalidOutputError(OllamaError):
     status_code = 502
     safe_message = "The AI assistant returned an invalid response."
@@ -197,6 +203,8 @@ class OllamaClient:
         )
 
     def chat(self, prompt: str) -> str:
+        if not feature_enabled():
+            raise OllamaDisabledError()
         try:
             response = requests.post(
                 f"{self.url}/api/chat",
@@ -473,6 +481,8 @@ def analyze_ticket(
     client: OllamaClient | None = None,
     correlation_id: str | None = None,
 ) -> dict[str, Any]:
+    if not feature_enabled():
+        raise OllamaDisabledError()
     safe_context = redact_ticket_context(context)
     active_client = client or OllamaClient.from_environment()
     correlation_id = (

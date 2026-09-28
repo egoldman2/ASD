@@ -1,0 +1,28 @@
+{% macro evidence(action, result) %}
+  {% if action == 'summary' %}
+    <h3>Queue summary</h3>
+    <dl class="supportMcpCounts"><div><dt>Total tickets</dt><dd>{{ result.total }}</dd></div><div><dt>Unresolved</dt><dd>{{ result.unresolved }}</dd></div><div><dt>Unresolved and unassigned</dt><dd>{{ result.unresolved_unassigned }}</dd></div></dl>
+    <h4>Status counts</h4><dl class="supportMcpCounts">{% for key, value in result.status_counts.items() %}<div><dt>{{ key|replace('_', ' ')|title }}</dt><dd>{{ value }}</dd></div>{% endfor %}</dl>
+    <h4>Priority counts</h4><dl class="supportMcpCounts">{% for key, value in result.priority_counts.items() %}<div><dt>{{ key|title }}</dt><dd>{{ value }}</dd></div>{% endfor %}</dl>
+  {% elif action == 'context' %}
+    <h3><a href="staff-ticket.html?ticket={{ result.id }}">Ticket #{{ result.id }}</a> · {{ result.subject }}</h3>
+    <p>{{ result.status|replace('_', ' ')|title }} · {{ result.category|title }} · {{ result.priority|title }} · {{ result.assigned_to or 'Unassigned' }}</p>
+    <p>{{ result.messages|length }} of {{ result.message_count }} messages displayed, oldest first.{% if result.messages_truncated %} Only the latest {{ result.message_limit }} messages were read.{% endif %}</p>
+    <ol class="adminMessageThread">{% for message in result.messages %}<li class="adminMessage"><div class="adminMessageMeta"><strong>{{ message.sender_role|title }}</strong><time>{{ message.created_at }}</time></div><p>{{ message.message }}</p></li>{% else %}<li>No recorded messages.</li>{% endfor %}</ol>
+  {% else %}
+    <h3>{{ 'Tickets needing attention' if action == 'attention' else 'Matching tickets' }}</h3>
+    <p>{{ result.tickets|length }} of {{ result.total }} tickets displayed · offset {{ result.offset }} · page size {{ result.limit }}.</p>
+    {% if action == 'attention' %}<p>Inactivity threshold: {{ result.inactive_hours }} hours. These are review reasons, not SLA breach findings.</p>{% endif %}
+    <ul class="supportMcpTickets">{% for ticket in result.tickets %}
+      <li><a href="staff-ticket.html?ticket={{ ticket.id }}"><strong>#{{ ticket.id }} · {{ ticket.subject }}</strong></a>
+        <p>{{ ticket.status|replace('_', ' ')|title }} · {{ ticket.category|title }} · {{ ticket.priority|title }} · {{ ticket.assigned_to or 'Unassigned' }}</p>
+        {% if action == 'attention' %}<ul>{% for reason in ticket.reasons %}<li>{{ reason.label }}</li>{% endfor %}</ul><p class="adminFieldHint">Last activity: {{ ticket.last_activity_at }}</p>{% else %}<p class="adminFieldHint">Updated: {{ ticket.updated_at }}</p>{% endif %}
+      </li>
+    {% else %}<li class="adminState" role="status">No matching tickets.</li>{% endfor %}</ul>
+    {% if result.truncated %}<p class="adminFieldHint">More results are available. Use offset {{ result.next_offset }} for the next page.</p>{% endif %}
+  {% endif %}
+  {% if result.filters %}<p class="adminFieldHint">Applied filters: {% for key, value in result.filters.items() %}{{ key|replace('_', ' ') }}: {{ value }}{% if not loop.last %}; {% endif %}{% endfor %}.</p>{% endif %}
+  {% if result.observed_at %}<p class="adminFieldHint">Observed: {{ result.observed_at }}</p>{% endif %}
+{% endmacro %}
+{% if error %}<div class="adminFeedback adminFeedback--error" role="alert">{{ error }} Use the read action again to retry.</div>
+{% elif result %}{{ evidence(action, result) }}{% endif %}

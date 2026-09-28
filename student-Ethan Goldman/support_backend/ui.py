@@ -6,13 +6,21 @@ from collections.abc import Callable, Mapping
 from typing import Any
 from urllib.parse import urlencode
 
-from flask import Blueprint, Response, g, make_response, redirect, render_template, request
+from flask import Blueprint, Response, current_app, g, make_response, redirect, render_template, request
+from shared.mcp_client import MCPClientError
 
 try:
     from . import ai, validation
+    from . import mcp_client, mcp_routes, mcp_assistant
+    from . import rag_client, rag_routes
 except ImportError:  # Direct Docker script execution.
     import ai  # type: ignore
     import validation  # type: ignore
+    import mcp_client
+    import mcp_routes
+    import mcp_assistant
+    import rag_client
+    import rag_routes
 
 
 def create_ui_blueprint(
@@ -27,6 +35,8 @@ def create_ui_blueprint(
 
     def error_target() -> str | None:
         path = request.path
+        if "/mcp/" in path or "/rag/" in path:
+            return None  # These forms swap inside an existing result region.
         if path.endswith("/ai-analysis"):
             return "ai-panel"
         if "/ui/customer/tickets/" in path:
@@ -270,6 +280,108 @@ def create_ui_blueprint(
             counts=counts if isinstance(counts, Mapping) else {},
             filters=filters,
         )
+
+    def tool_arguments(form, allowed_fields):
+        if set(form) - set(allowed_fields) or any(len(form.getlist(key)) != 1 for key in form):
+            raise validation.ValidationError("Provide supported fields once each.")
+        arguments = {key: value for key, value in form.items() if value != ""}
+        for field in mcp_client.INTEGER_BOUNDS:
+            if field in arguments:
+                value = arguments[field]
+                if not value.isascii() or not value.isdecimal() or len(value) > 19:
+                    raise validation.ValidationError(f"{field} must be an integer.")
+                arguments[field] = int(value)
+        return arguments
+
+    @blueprint.post("/api/support/ui/admin/mcp/tools/<action>")
+    def admin_mcp_tool(action):
+        _user, failure = principal("admin")
+        if failure:
+            return error_fragment(failure)
+        names = {"search": mcp_client.SEARCH_TICKETS, "context": mcp_client.GET_TICKET_CONTEXT,
+                 "summary": mcp_client.GET_QUEUE_SUMMARY, "attention": mcp_client.GET_TICKETS_NEEDING_ATTENTION}
+        name = names.get(action)
+        result, error, status = None, None, 200
+        try:
+            if len(request.get_data()) > 4096:
+                return render_template("support_ui/admin/mcp_result.html", error="Tool request is too large."), 413
+            arguments = mcp_client.validate_tool_arguments(name, tool_arguments(
+                request.form, mcp_client.TOOL_FIELDS.get(name, set()),
+            ))
+            envelope = mcp_client.validate_tool_response(name, mcp_routes.support_mcp_client().call_tool(
+                name, arguments, request_headers=mcp_routes.session_headers(),
+            ))
+            if envelope["success"]:
+                result = envelope["result"]
+            else:
+                error = "The support tool could not complete the request."
+                status = mcp_routes.TOOL_ERROR_STATUSES.get(envelope["error"]["code"], 502)
+        except validation.ValidationError as exc:
+            error, status = str(exc), 400
+        except MCPClientError as exc:
+            error, status = str(exc), exc.status_code
+        return render_template("support_ui/admin/mcp_result.html", action=action, result=result, error=error), status
+
+    @blueprint.post("/api/support/ui/admin/mcp/assistant")
+    def admin_mcp_assistant():
+        _user, failure = principal("admin")
+        if failure:
+            return error_fragment(failure)
+        try:
+            if len(request.get_data()) > 4096:
+                return render_template("support_ui/admin/mcp_answer.html", error="Assistant request is too large."), 413
+            arguments = tool_arguments(request.form, {"question", "ticket_id"})
+            question, ticket_id = mcp_assistant.validate_question(arguments)
+            result, status = mcp_assistant.answer_question(
+                question, ticket_id, mcp_routes.support_mcp_client(), mcp_routes.session_headers(),
+                model=current_app.extensions.get("support_mcp_model"),
+            )
+            return render_template("support_ui/admin/mcp_answer.html", result=result), status
+        except validation.ValidationError as exc:
+            return render_template("support_ui/admin/mcp_answer.html", error=str(exc)), 400
+        except MCPClientError as exc:
+            return render_template("support_ui/admin/mcp_answer.html", error=str(exc)), exc.status_code
+
+    @blueprint.post("/api/support/ui/admin/rag/answer")
+    def admin_knowledge_answer():
+        _user, failure = principal("admin")
+        if failure:
+            return error_fragment(failure)
+        try:
+            if len(request.get_data()) > 4096:
+                return render_template("support_ui/admin/rag_answer.html", error="Knowledge question is too large."), 413
+            arguments = tool_arguments(request.form, {"question"})
+            question, top_k = rag_client.validate_question(arguments)
+            result = rag_routes.support_rag_client().answer_question(question, top_k)
+            result = rag_client.validate_answer(result, question)
+            return render_template("support_ui/admin/rag_answer.html", result=result)
+        except validation.ValidationError as exc:
+            return render_template("support_ui/admin/rag_answer.html", error=str(exc), invalid=True), 400
+        except rag_client.RAGClientError as exc:
+            return render_template("support_ui/admin/rag_answer.html", error=str(exc)), exc.status_code
+
+    @blueprint.get("/api/support/ui/admin/rag/sources/<filename>")
+    def admin_knowledge_source(filename):
+        _user, failure = principal("admin")
+        if failure:
+            return error_fragment(failure)
+        path = rag_client.knowledge_file(filename)
+        text = None
+        if path is not None:
+            try:
+                with path.open("rb") as stream:
+                    raw = stream.read(65537)
+                if len(raw) <= 65536:
+                    text = raw.decode("utf-8")
+            except (OSError, UnicodeError):
+                pass
+        if text is None:
+            return render_template("support_ui/error.html", message="Knowledge source not found or unavailable.",
+                                   status=404, login_url=None, target_id=None, retry_path=None), 404
+        response = make_response(render_template("support_ui/admin/rag_source.html", filename=filename, text=text))
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Cache-Control"] = "no-store"
+        return response
 
     @blueprint.get("/api/support/ui/admin/tickets/<int:ticket_id>")
     def admin_detail(ticket_id: int):

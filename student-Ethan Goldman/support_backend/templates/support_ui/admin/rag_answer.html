@@ -1,0 +1,15 @@
+{% if error %}
+<div class="adminFeedback adminFeedback--error" role="alert"><strong>{{ 'Check your question' if invalid else 'Knowledge assistant unavailable' }}</strong><p>{{ error }}</p><p>{{ 'Edit the question and submit it again.' if invalid else 'Your question is still in the form. Try again when the service is available.' }}</p></div>
+{% elif result %}
+  {% if result.insufficient_context %}
+  <div class="adminState adminState--empty" role="status"><strong>Insufficient context</strong><p>The support guidance does not provide enough information to answer this question. Try a question about the documented workflow, or consult an approved policy.</p></div>
+  <p class="adminFieldHint">Confidence: Insufficient · {{ 'The model reviewed the available guidance and could not answer.' if result.metadata.model_invoked else 'No usable evidence was found; no AI answer was generated.' }}</p>
+  {% else %}
+  <h3>Knowledge answer</h3><p class="supportMcpAnswer">{{ result.data.answer }}</p>
+  <p class="adminFieldHint">Confidence: {{ result.confidence|title }} · Based on how closely the retrieved guidance matches the question; this is not a guarantee of correctness.</p>
+  <ul class="supportKnowledgeSources" aria-label="Answer sources">
+    {% for citation in result.citations %}<li><a href="/api/support/ui/admin/rag/sources/{{ citation.source_id.split('/')[-1] }}" target="_blank" rel="noopener">[{{ citation.rank }}] {{ citation.label }}</a><span class="adminFieldHint"> · {{ citation.source_id.split('/')[-1] }} · passage {{ citation.document_id.split(':')[-1]|int + 1 }}</span></li>{% endfor %}
+  </ul>
+  {% endif %}
+  {% if result.metadata.model_invoked %}<p class="adminFieldHint">Model: {{ result.data.model }} · {{ result.data.retrieved_count }} passages reviewed · {{ result.metadata.generation_attempts }} generation {{ 'attempt' if result.metadata.generation_attempts == 1 else 'attempts' }}.</p>{% endif %}
+{% endif %}

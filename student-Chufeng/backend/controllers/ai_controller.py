@@ -4,6 +4,7 @@ import logging
 import os
 import re
 from urllib import error, request
+from shared.feature_flags import feature_enabled
 
 from ..models import product_model
 from ..models.database import DatabaseAPIError
@@ -113,6 +114,8 @@ def _best_combination_within_budget(products, budget):
 
 
 def _call_ollama(prompt):
+    if not feature_enabled():
+        raise OllamaUnavailableError
     body = json.dumps(
         {
             "model": OLLAMA_MODEL,
@@ -174,6 +177,8 @@ def _format_combination_answer(products, total, rationale):
 
 
 def ask_product_assistant(data):
+    if not feature_enabled():
+        return {"error": "AI mode is disabled.", "code": "AI_MODE_DISABLED"}, 503
     if not isinstance(data, dict):
         return {"error": "A JSON request body is required."}, 400
 

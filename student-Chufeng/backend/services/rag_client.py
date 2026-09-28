@@ -9,6 +9,7 @@ from typing import Any, Callable
 from urllib.parse import urlparse
 
 import requests
+from shared.feature_flags import feature_enabled
 
 
 DEFAULT_RAG_SERVER_URL = "http://127.0.0.1:5003"
@@ -228,6 +229,8 @@ class ChufengRAGClient:
         )
 
     def answer_question(self, question: str, top_k: int) -> dict[str, Any]:
+        if not feature_enabled():
+            raise RAGClientError("AI mode is disabled.", code="AI_MODE_DISABLED", status_code=503)
         return self._send(
             "POST",
             "/answer",

@@ -50,7 +50,7 @@ def _ticket_dict(row, messages):
     return ticket
 
 
-def get_tickets(filters=None, database_path=None):
+def _ticket_where(filters=None):
     filters = filters or {}
     conditions, parameters = [], []
     search = filters.get("search")
@@ -74,6 +74,11 @@ def get_tickets(filters=None, database_path=None):
         conditions.append("ticket.customer_user_id = ?")
         parameters.append(owner_user_id)
     where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+    return where, parameters
+
+
+def get_tickets(filters=None, database_path=None):
+    where, parameters = _ticket_where(filters)
     with closing(get_database_connection(database_path)) as connection:
         rows = connection.execute(
             f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "
@@ -84,6 +89,116 @@ def get_tickets(filters=None, database_path=None):
         tickets = [_ticket_dict(row, messages) for row in rows]
     counts = {status: sum(ticket["status"] == status for ticket in tickets) for status in ("needs_triage", "open", "pending", "solved")}
     return tickets, counts
+
+
+def search_ticket_summaries(filters=None, limit=20, offset=0, database_path=None):
+    """Page ticket rows in SQL without reading any conversation bodies."""
+    where, parameters = _ticket_where(filters)
+    with closing(get_database_connection(database_path)) as connection:
+        total = connection.execute(
+            f"SELECT COUNT(*) FROM support_tickets AS ticket {where}", parameters,
+        ).fetchone()[0]
+        rows = connection.execute(
+            f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "
+            "ORDER BY datetime(ticket.updated_at) DESC, ticket.id DESC LIMIT ? OFFSET ?",
+            [*parameters, limit, offset],
+        ).fetchall()
+    next_offset = offset + len(rows) if offset + len(rows) < total else None
+    return {"tickets": [dict(row) for row in rows], "total": total,
+            "limit": limit, "offset": offset, "next_offset": next_offset,
+            "truncated": next_offset is not None, "filters": filters or {}}
+
+
+def get_ticket_context(ticket_id, message_limit=20, database_path=None):
+    """Return only the latest bounded messages, displayed chronologically."""
+    with closing(get_database_connection(database_path)) as connection:
+        row = connection.execute(
+            f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        count = connection.execute(
+            "SELECT COUNT(*) FROM support_ticket_messages WHERE ticket_id = ?", (ticket_id,),
+        ).fetchone()[0]
+        messages = connection.execute(
+            f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages WHERE ticket_id = ? "
+            "ORDER BY datetime(created_at) DESC, id DESC LIMIT ?", (ticket_id, message_limit),
+        ).fetchall()
+    return {**dict(row), "messages": [dict(message) for message in reversed(messages)],
+            "message_count": count, "message_limit": message_limit,
+            "messages_truncated": count > len(messages)}
+
+
+def get_queue_summary(filters=None, observed_at=None, database_path=None):
+    """Aggregate the whole filtered queue without loading tickets/messages."""
+    where, parameters = _ticket_where(filters)
+    statuses = ("needs_triage", "open", "pending", "solved")
+    priorities = ("low", "medium", "high", "urgent", "unclassified")
+    fields = ["COUNT(*) AS total"]
+    fields.extend(f"COALESCE(SUM({field} = '{value}'), 0) AS {field}_{value}"
+                  for field, values in (("status", statuses), ("priority", priorities)) for value in values)
+    fields.extend(("COALESCE(SUM(status != 'solved'), 0) AS unresolved",
+                   "COALESCE(SUM(status != 'solved' AND assigned_to IS NULL), 0) AS unresolved_unassigned"))
+    with closing(get_database_connection(database_path)) as connection:
+        row = connection.execute(
+            f"SELECT {', '.join(fields)} FROM support_tickets AS ticket {where}", parameters,
+        ).fetchone()
+    return {"total": row["total"], "status_counts": {value: row[f"status_{value}"] for value in statuses},
+            "priority_counts": {value: row[f"priority_{value}"] for value in priorities},
+            "unresolved": row["unresolved"], "unresolved_unassigned": row["unresolved_unassigned"],
+            "filters": filters or {}, "observed_at": observed_at}
+
+
+ATTENTION_REASONS = {
+    "needs_triage": "Needs triage",
+    "unassigned": "No assignee",
+    "high_priority": "High or urgent priority",
+    "awaiting_staff_reply": "Latest message is from the customer",
+    "inactive": "No recent ticket or message activity",
+}
+
+
+def get_tickets_needing_attention(filters=None, inactive_hours=48, limit=20, offset=0,
+                                 observed_at=None, database_path=None):
+    """Filter and sort recorded review reasons before applying pagination."""
+    where, parameters = _ticket_where(filters)
+    cte = f"""WITH scoped AS (
+        SELECT ticket.*,
+            (SELECT sender_role FROM support_ticket_messages WHERE ticket_id = ticket.id
+             ORDER BY datetime(created_at) DESC, id DESC LIMIT 1) AS latest_sender,
+            (SELECT created_at FROM support_ticket_messages WHERE ticket_id = ticket.id
+             ORDER BY datetime(created_at) DESC, id DESC LIMIT 1) AS latest_message_at
+        FROM support_tickets AS ticket {where}
+    ), activity AS (
+        SELECT *, CASE WHEN julianday(latest_message_at) > julianday(updated_at)
+                       THEN latest_message_at ELSE updated_at END AS last_activity_at FROM scoped
+    ), reasons AS (
+        SELECT *, status = 'needs_triage' AS needs_triage, assigned_to IS NULL AS unassigned,
+            priority IN ('high', 'urgent') AS high_priority,
+            COALESCE(latest_sender = 'customer', 0) AS awaiting_staff_reply,
+            julianday(last_activity_at) <= julianday(?, '-' || ? || ' hours') AS inactive
+        FROM activity WHERE status != 'solved'
+    ), flagged AS (
+        SELECT * FROM reasons WHERE needs_triage OR unassigned OR high_priority OR awaiting_staff_reply OR inactive
+    )"""
+    parameters = [*parameters, observed_at, inactive_hours]
+    with closing(get_database_connection(database_path)) as connection:
+        total = connection.execute(cte + " SELECT COUNT(*) FROM flagged", parameters).fetchone()[0]
+        rows = connection.execute(cte + """ SELECT * FROM flagged
+            ORDER BY CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2
+                     WHEN 'low' THEN 3 ELSE 4 END, julianday(last_activity_at), id LIMIT ? OFFSET ?""",
+            [*parameters, limit, offset],
+        ).fetchall()
+    tickets = []
+    for row in rows:
+        ticket = {field: row[field] for field in TICKET_COLUMNS}
+        ticket["last_activity_at"] = row["last_activity_at"]
+        ticket["reasons"] = [{"code": code, "label": label} for code, label in ATTENTION_REASONS.items() if row[code]]
+        tickets.append(ticket)
+    next_offset = offset + len(tickets) if offset + len(tickets) < total else None
+    return {"tickets": tickets, "total": total, "limit": limit, "offset": offset,
+            "next_offset": next_offset, "truncated": next_offset is not None,
+            "filters": filters or {}, "observed_at": observed_at, "inactive_hours": inactive_hours}
 
 
 def get_ticket(ticket_id, database_path=None, owner_user_id=None):

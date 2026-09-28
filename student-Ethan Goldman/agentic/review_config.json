@@ -6,7 +6,9 @@
     "database": "database_prompt.txt",
     "implementation": "implementation_prompt.txt",
     "architecture": "architecture_prompt.txt",
-    "devops": "devops_prompt.txt"
+    "devops": "devops_prompt.txt",
+    "mcp": "mcp_prompt.txt",
+    "rag": "rag_prompt.txt"
   },
   "database": "student-Ethan Goldman/database_service/support_tickets.db",
   "database_rules": {
@@ -42,7 +44,13 @@
     "student-Ethan Goldman/support_backend/prompts/system.txt",
     "student-Ethan Goldman/support_backend/prompts/correction.txt",
     "student-Ethan Goldman/tests/test_ai_policy.py",
-    "student-Ethan Goldman/tests/test_live_services.py"
+    "student-Ethan Goldman/tests/test_live_services.py",
+    "student-Ethan Goldman/support_backend/mcp_client.py",
+    "student-Ethan Goldman/support_backend/mcp_assistant.py",
+    "student-Ethan Goldman/support_backend/mcp_routes.py",
+    "student-Ethan Goldman/support_backend/rag_client.py",
+    "student-Ethan Goldman/support_backend/rag_routes.py",
+    "student-Ethan Goldman/support_backend/ui.py"
   ],
   "architecture_files": [
     "docker-compose.yml",
@@ -219,6 +227,399 @@
           "customer-support-backend test ! -e",
           "customer-support-database sh -c 'test -f \"$DATABASE_PATH\"'"
         ]
+      }
+    ],
+    "mcp": [
+      {
+        "name": "support_reads_revalidate_staff_without_sqlite",
+        "file": "ai-services/mcp_server/tools/ethan_goldman_support.py",
+        "contains": [
+          "ethan_session",
+          "/api/support/admin/tool-data",
+          "allow_redirects=False",
+          "metadata={\"read_only\": True}"
+        ],
+        "excludes": [
+          "import sqlite3"
+        ]
+      },
+      {
+        "name": "support_backend_enforces_own_allowlist",
+        "file": "student-Ethan Goldman/support_backend/mcp_client.py",
+        "contains": [
+          "GOLDMAN_ALLOWED_TOOLS",
+          "MCPToolNotAllowedError",
+          "validate_tool_arguments"
+        ]
+      },
+      {
+        "name": "support_routes_require_staff",
+        "file": "student-Ethan Goldman/support_backend/mcp_routes.py",
+        "contains": [
+          "principal(\"admin\")",
+          "session_headers()",
+          "answer_question"
+        ]
+      },
+      {
+        "name": "assistant_uses_native_selection_and_bounded_grounding",
+        "file": "student-Ethan Goldman/support_backend/mcp_assistant.py",
+        "contains": [
+          "MAX_MODEL_REQUESTS = 4",
+          "MAX_TOOL_CALLS = 3",
+          "tool_calls",
+          "validate_answer",
+          "asyncio.timeout"
+        ]
+      },
+      {
+        "name": "support_calls_host_mcp",
+        "file": "docker-compose.yml",
+        "contains": [
+          "host.docker.internal:8765/mcp",
+          "host.docker.internal:host-gateway"
+        ]
+      },
+      {
+        "name": "workflow_disables_live_mcp",
+        "file": ".github/workflows/EthanGoldman.yml",
+        "contains": [
+          "MCP_ENABLED: \"false\"",
+          "AI_MODE_ENABLED: \"false\""
+        ]
+      }
+    ],
+    "rag": [
+      {
+        "name": "support_scope_is_fixed",
+        "file": "student-Ethan Goldman/support_backend/rag_client.py",
+        "contains": [
+          "SUPPORT_SCOPE = 'ethan_goldman_support'",
+          "model_invoked",
+          "allow_redirects=False",
+          "CITATION_NUMBER"
+        ]
+      },
+      {
+        "name": "approved_markdown_sources_are_bounded",
+        "file": "ai-services/rag_server/sources/markdown_knowledge.py",
+        "contains": [
+          "MAX_FILES = 40",
+          "MAX_FILE_BYTES = 64 * 1024",
+          "is_symlink()",
+          "KnowledgeDocument"
+        ]
+      },
+      {
+        "name": "shared_pipeline_generates_grounded_answers",
+        "file": "ai-services/rag_server/rag_pipeline.py",
+        "contains": [
+          "chromadb.PersistentClient",
+          "collection.query(",
+          "_answer_with_valid_citations",
+          "model_invoked",
+          "INSUFFICIENT_ANSWER"
+        ]
+      },
+      {
+        "name": "support_rag_requires_staff",
+        "file": "student-Ethan Goldman/support_backend/rag_routes.py",
+        "contains": [
+          "principal('admin')",
+          "SupportRAGClient",
+          "knowledge_file"
+        ]
+      },
+      {
+        "name": "support_calls_host_rag",
+        "file": "docker-compose.yml",
+        "contains": [
+          "host.docker.internal:5003",
+          "RAG_ENABLED:"
+        ]
+      },
+      {
+        "name": "workflow_disables_live_rag",
+        "file": ".github/workflows/EthanGoldman.yml",
+        "contains": [
+          "RAG_ENABLED: \"false\"",
+          "AI_MODE_ENABLED: \"false\""
+        ]
+      }
+    ]
+  },
+  "mcp_files": [
+    "ai-services/mcp_server/server.py",
+    "ai-services/mcp_server/tools/ethan_goldman_support.py",
+    "student-Ethan Goldman/support_backend/mcp_client.py",
+    "student-Ethan Goldman/support_backend/templates/support_ui/admin/mcp_panel.html",
+    "student-Ethan Goldman/support_backend/ui.py",
+    "student-Ethan Goldman/support_backend/mcp_routes.py",
+    "docker-compose.yml",
+    "shared/mcp_client.py",
+    "student-Ethan Goldman/support_backend/mcp_assistant.py",
+    ".github/workflows/EthanGoldman.yml"
+  ],
+  "mcp_server_url": "http://127.0.0.1:8765/mcp",
+  "mcp_rules": {
+    "required_tools": [
+      "ethan_goldman_search_tickets",
+      "ethan_goldman_get_ticket_context",
+      "ethan_goldman_get_queue_summary",
+      "ethan_goldman_get_tickets_needing_attention"
+    ],
+    "source_files": {
+      "server": "ai-services/mcp_server/server.py",
+      "tools": "ai-services/mcp_server/tools/ethan_goldman_support.py",
+      "client": "student-Ethan Goldman/support_backend/mcp_client.py",
+      "frontend": "student-Ethan Goldman/support_backend/templates/support_ui/admin/mcp_panel.html",
+      "routes": "student-Ethan Goldman/support_backend/ui.py",
+      "controller": "student-Ethan Goldman/support_backend/mcp_routes.py",
+      "compose": "docker-compose.yml"
+    },
+    "frontend_route_prefix": "/api/support/ui/admin/mcp/",
+    "backend_client_marker": "SupportMCPClient",
+    "timeout_seconds": 10,
+    "request_context": {
+      "cookie_name": "ethan_session",
+      "cookie_env": "SUPPORT_VALIDATION_SESSION"
+    },
+    "assistant_url_env": "SUPPORT_VALIDATION_ASSISTANT_URL",
+    "probes": [
+      {
+        "name": "delivery-search",
+        "tool": "ethan_goldman_search_tickets",
+        "arguments": {
+          "category": "delivery",
+          "limit": 2
+        },
+        "expect": [
+          {
+            "path": "result.total",
+            "value": 2
+          },
+          {
+            "path": "result.tickets.0.category",
+            "value": "delivery"
+          }
+        ]
+      },
+      {
+        "name": "ticket-context",
+        "tool": "ethan_goldman_get_ticket_context",
+        "arguments": {
+          "ticket_id": 2002,
+          "message_limit": 2
+        },
+        "expect": [
+          {
+            "path": "result.id",
+            "value": 2002
+          },
+          {
+            "path": "result.message_count",
+            "value": 3
+          },
+          {
+            "path": "result.messages_truncated",
+            "value": true
+          }
+        ]
+      },
+      {
+        "name": "queue-summary",
+        "tool": "ethan_goldman_get_queue_summary",
+        "arguments": {},
+        "expect": [
+          {
+            "path": "result.total",
+            "value": 12
+          },
+          {
+            "path": "result.unresolved",
+            "value": 9
+          },
+          {
+            "path": "result.unresolved_unassigned",
+            "value": 5
+          }
+        ]
+      },
+      {
+        "name": "recorded-attention",
+        "tool": "ethan_goldman_get_tickets_needing_attention",
+        "arguments": {
+          "inactive_hours": 48,
+          "limit": 2
+        },
+        "expect": [
+          {
+            "path": "result.total",
+            "value": 9
+          },
+          {
+            "path": "result.inactive_hours",
+            "value": 48
+          }
+        ]
+      },
+      {
+        "name": "no-match",
+        "tool": "ethan_goldman_search_tickets",
+        "arguments": {
+          "search": "unique-nonexistent-case"
+        },
+        "expect": [
+          {
+            "path": "result.total",
+            "value": 0
+          },
+          {
+            "path": "result.tickets",
+            "value": []
+          }
+        ]
+      }
+    ],
+    "assistant_probes": [
+      {
+        "name": "filtered-search",
+        "url": "http://127.0.0.1:6005/api/support/admin/mcp/assistant",
+        "origin": "http://localhost:8005",
+        "payload": {
+          "question": "Find unassigned delivery tickets."
+        },
+        "expected_tools": [
+          "ethan_goldman_search_tickets"
+        ],
+        "expect": [
+          {
+            "path": "observations.0.result.total",
+            "value": 0
+          },
+          {
+            "path": "observations.0.result.filters.category",
+            "value": "delivery"
+          },
+          {
+            "path": "observations.0.result.filters.assigned_to",
+            "value": "unassigned"
+          }
+        ],
+        "timeout_seconds": 95
+      },
+      {
+        "name": "conversation",
+        "url": "http://127.0.0.1:6005/api/support/admin/mcp/assistant",
+        "origin": "http://localhost:8005",
+        "payload": {
+          "question": "Summarise the conversation and current state of ticket 2002.",
+          "ticket_id": 2002
+        },
+        "expected_tools": [
+          "ethan_goldman_get_ticket_context"
+        ],
+        "expect": [
+          {
+            "path": "observations.0.result.id",
+            "value": 2002
+          },
+          {
+            "path": "observations.0.result.message_count",
+            "value": 3
+          }
+        ],
+        "timeout_seconds": 95
+      },
+      {
+        "name": "workload",
+        "url": "http://127.0.0.1:6005/api/support/admin/mcp/assistant",
+        "origin": "http://localhost:8005",
+        "payload": {
+          "question": "How does our support workload look?"
+        },
+        "expected_tools": [
+          "ethan_goldman_get_queue_summary"
+        ],
+        "expect": [
+          {
+            "path": "observations.0.result.total",
+            "value": 12
+          },
+          {
+            "path": "observations.0.result.unresolved",
+            "value": 9
+          }
+        ],
+        "timeout_seconds": 95
+      },
+      {
+        "name": "attention-reasons",
+        "url": "http://127.0.0.1:6005/api/support/admin/mcp/assistant",
+        "origin": "http://localhost:8005",
+        "payload": {
+          "question": "Which tickets need attention, and why?"
+        },
+        "expected_tools": [
+          "ethan_goldman_get_tickets_needing_attention"
+        ],
+        "expect": [
+          {
+            "path": "observations.0.result.total",
+            "value": 9
+          }
+        ],
+        "timeout_seconds": 95
+      }
+    ]
+  },
+  "rag_files": [
+    "ai-services/rag_server/rag_server.py",
+    "ai-services/rag_server/rag_pipeline.py",
+    "ai-services/rag_server/sources/markdown_knowledge.py",
+    "student-Ethan Goldman/support_backend/rag_client.py",
+    "student-Ethan Goldman/support_backend/templates/support_ui/admin/rag_panel.html",
+    "student-Ethan Goldman/support_backend/ui.py",
+    "student-Ethan Goldman/support_backend/rag_routes.py",
+    "docker-compose.yml",
+    "ai-services/rag_server/knowledge/ethan_goldman/ticket_workflow.md",
+    "ai-services/rag_server/knowledge/ethan_goldman/staff_assistant_guide.md",
+    ".github/workflows/EthanGoldman.yml"
+  ],
+  "rag_server_url": "http://127.0.0.1:5003",
+  "rag_timeout_seconds": 95,
+  "rag_rules": {
+    "required_scope": "ethan_goldman_support",
+    "required_operations": [
+      "refresh_corpus",
+      "retrieve_context",
+      "answer_question"
+    ],
+    "source_files": {
+      "server": "ai-services/rag_server/rag_server.py",
+      "pipeline": "ai-services/rag_server/rag_pipeline.py",
+      "registry": "ai-services/rag_server/rag_pipeline.py",
+      "source": "ai-services/rag_server/sources/markdown_knowledge.py",
+      "client": "student-Ethan Goldman/support_backend/rag_client.py",
+      "frontend": "student-Ethan Goldman/support_backend/templates/support_ui/admin/rag_panel.html",
+      "routes": "student-Ethan Goldman/support_backend/ui.py",
+      "controller": "student-Ethan Goldman/support_backend/rag_routes.py",
+      "compose": "docker-compose.yml"
+    },
+    "frontend_route_prefix": "/api/support/ui/admin/rag/",
+    "backend_client_marker": "SupportRAGClient",
+    "probes": [
+      {
+        "name": "ticket-creation-limits",
+        "question": "What subject and initial message lengths are required when creating a customer support ticket?",
+        "top_k": 5,
+        "expected": "grounded"
+      },
+      {
+        "name": "unsupported-astronomy",
+        "question": "quasar orbital spectroscopy wavelengths",
+        "top_k": 5,
+        "expected": "insufficient"
       }
     ]
   }

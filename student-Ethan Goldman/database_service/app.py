@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from flask import Flask, jsonify, request
+from werkzeug.exceptions import HTTPException
 
 try:
     from . import database
@@ -113,6 +114,19 @@ def _filters():
     return filters
 
 
+def _tool_query(allowed):
+    if set(request.args) - set(allowed) or any(len(request.args.getlist(key)) != 1 for key in request.args):
+        raise ApiError(400, "invalid_filter", "Unsupported or repeated query parameter.")
+
+
+def _bounded_integer(field, default, minimum, maximum):
+    value = request.args.get(field, str(default))
+    if (len(value) > len(str(maximum)) or not value.isascii() or not value.isdecimal()
+            or not minimum <= int(value) <= maximum):
+        raise ApiError(400, "invalid_filter", f"{field} must be an integer between {minimum} and {maximum}.")
+    return int(value)
+
+
 def create_app(database_path=None):
     application = Flask(__name__)
     path = database_path or database.get_database_path()
@@ -122,13 +136,9 @@ def create_app(database_path=None):
     def api_error(error):
         return _error(error.status_code, error.code, error.message)
 
-    @application.errorhandler(400)
-    def bad_request(_error):
-        return _error(400, "bad_request", "The request could not be understood.")
-
-    @application.errorhandler(404)
-    def not_found(_error):
-        return _error(404, "not_found", "The requested resource was not found.")
+    @application.errorhandler(HTTPException)
+    def http_error(error):
+        return _error(error.code, error.name.lower().replace(" ", "_"), error.description)
 
     @application.errorhandler(sqlite3.IntegrityError)
     def integrity_error(error):
@@ -163,6 +173,38 @@ def create_app(database_path=None):
         if ticket is None:
             raise ApiError(404, "not_found", "Ticket not found.")
         return jsonify(ticket)
+
+    @application.get("/api/tool-data/tickets")
+    def search_ticket_summaries():
+        _tool_query({"search", "category", "priority", "status", "assigned_to", "limit", "offset"})
+        return jsonify(database.search_ticket_summaries(
+            _filters(), _bounded_integer("limit", 20, 1, 50),
+            _bounded_integer("offset", 0, 0, 10000), path,
+        ))
+
+    @application.get("/api/tool-data/tickets/<int:ticket_id>")
+    def bounded_ticket_context(ticket_id):
+        _tool_query({"message_limit"})
+        ticket = database.get_ticket_context(
+            ticket_id, _bounded_integer("message_limit", 20, 1, 50), path,
+        )
+        if ticket is None:
+            raise ApiError(404, "not_found", "Ticket not found.")
+        return jsonify(ticket)
+
+    @application.get("/api/tool-data/summary")
+    def queue_summary():
+        _tool_query({"category", "assigned_to"})
+        return jsonify(database.get_queue_summary(_filters(), _now(), path))
+
+    @application.get("/api/tool-data/attention")
+    def attention_tickets():
+        _tool_query({"category", "assigned_to", "inactive_hours", "limit", "offset"})
+        return jsonify(database.get_tickets_needing_attention(
+            _filters(), _bounded_integer("inactive_hours", 48, 1, 720),
+            _bounded_integer("limit", 20, 1, 50), _bounded_integer("offset", 0, 0, 10000),
+            _now(), path,
+        ))
 
     @application.post("/api/tickets")
     def create_ticket():

@@ -1,0 +1,15 @@
+{% from 'support_ui/admin/mcp_result.html' import evidence %}
+{% set labels = {'ethan_goldman_search_tickets': 'search', 'ethan_goldman_get_ticket_context': 'context', 'ethan_goldman_get_queue_summary': 'summary', 'ethan_goldman_get_tickets_needing_attention': 'attention'} %}
+{% if error %}<div class="adminFeedback adminFeedback--error" role="alert">{{ error }} Edit the question and try again.</div>
+{% elif result %}
+  {% if result.status in ('answered', 'clarification') %}<h3>{{ 'More information needed' if result.status == 'clarification' else 'Assistant answer' }}</h3><p class="supportMcpAnswer">{{ result.answer }}</p>
+  {% else %}<div class="adminFeedback adminFeedback--error" role="alert"><strong>{{ result.status|title }}</strong> · {{ result.error.message }} Try the question again; direct ticket reads remain available.</div>{% endif %}
+  <p class="adminFieldHint">Model: {{ result.model }} · {{ result.tool_calls }} tool calls · {{ result.elapsed_seconds }} seconds.</p>
+  {% if result.ticket_ids %}<p>Referenced tickets: {% for id in result.ticket_ids %}<a href="staff-ticket.html?ticket={{ id }}">#{{ id }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+  {% for observation in result.observations %}
+  <details class="supportMcpEvidence"{% if result.status not in ('answered', 'clarification') %} open{% endif %}><summary>Data used: {{ labels.get(observation.tool, observation.tool)|replace('_', ' ')|title }} (read {{ loop.index }})</summary>
+    {{ evidence(labels.get(observation.tool), observation.result) }}
+  </details>
+  {% endfor %}
+  {% if result.facts %}<details class="supportMcpEvidence"><summary>Verified fact references</summary><ul>{% for fact in result.facts %}<li>Read {{ fact.call_index + 1 }} · {{ fact.path }}: {{ fact.value }}</li>{% endfor %}</ul></details>{% endif %}
+{% endif %}

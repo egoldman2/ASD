@@ -12,6 +12,10 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from mcp_server.config import MCPSettings, get_settings
+from mcp_server.tools.ethan_goldman_support import (
+    SEARCH_TICKETS, GET_TICKET_CONTEXT, GET_QUEUE_SUMMARY, GET_TICKETS_NEEDING_ATTENTION,
+    search_tickets, get_ticket_context, get_queue_summary, get_tickets_needing_attention,
+)
 from mcp_server.tools.chufeng_catalogue import (
     CALCULATE_CART_SUMMARY,
     CHECK_PRODUCT_STOCK,
@@ -34,10 +38,14 @@ Shared, local MCP service for the ASD marketplace student features.
 
 Choose tools by their student-prefixed names. Chufeng catalogue tools are
 read-only: they search products, return product details, check stock, and
-calculate a proposed cart summary. Ethan Ting's loyalty tier tool calculates
-a tier from supplied points without reading customer records. Tool output is
-wrapped in a stable response envelope containing success, tool, result,
-error, and optional metadata.
+calculate a proposed cart summary. Tool output is wrapped in a stable response
+envelope containing success, tool, result, error, and optional metadata.
+Ethan Goldman support tools search tickets, return bounded conversation
+context, count queue workloads, and list recorded attention reasons.
+They require an admin session supplied by the MCP transport and return
+redacted, read-only data; credentials must never be provided as tool arguments.
+Ethan Ting's loyalty tier tool calculates a tier from supplied points without
+reading customer records.
 """.strip()
 
 READ_ONLY_ANNOTATIONS = ToolAnnotations(
@@ -53,8 +61,9 @@ REGISTERED_CHUFENG_TOOLS = (
     CHECK_PRODUCT_STOCK,
     CALCULATE_CART_SUMMARY,
 )
+REGISTERED_GOLDMAN_TOOLS = (SEARCH_TICKETS, GET_TICKET_CONTEXT, GET_QUEUE_SUMMARY, GET_TICKETS_NEEDING_ATTENTION)
 REGISTERED_ETHAN_TING_TOOLS = (CALCULATE_LOYALTY_TIER,)
-REGISTERED_TOOLS = REGISTERED_CHUFENG_TOOLS + REGISTERED_ETHAN_TING_TOOLS
+REGISTERED_TOOLS = REGISTERED_CHUFENG_TOOLS + REGISTERED_GOLDMAN_TOOLS + REGISTERED_ETHAN_TING_TOOLS
 
 
 def _transport_security(settings: MCPSettings) -> TransportSecuritySettings:
@@ -138,6 +147,12 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
         structured_output=True,
     )(calculate_cart_summary)
 
+    for name, function in (
+        (SEARCH_TICKETS, search_tickets), (GET_TICKET_CONTEXT, get_ticket_context),
+        (GET_QUEUE_SUMMARY, get_queue_summary), (GET_TICKETS_NEEDING_ATTENTION, get_tickets_needing_attention),
+    ):
+        server.tool(name=name, annotations=READ_ONLY_ANNOTATIONS, structured_output=True)(function)
+
     server.tool(
         name=CALCULATE_LOYALTY_TIER,
         title="Calculate Loyalty Tier",
@@ -158,7 +173,7 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
                 "service": "asd-marketplace-mcp",
                 "transport": "streamable-http",
                 "mcp_path": resolved.path,
-                "registered_tools": len(REGISTERED_TOOLS),
+                "registered_tools": len(await server.list_tools()),
             }
         )
 

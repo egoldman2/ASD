@@ -20,6 +20,9 @@ from werkzeug.exceptions import RequestEntityTooLarge
 try:
     from . import ai, auth, db_client, validation
     from .ui import create_ui_blueprint
+    from .tool_reads import create_tool_reads_blueprint
+    from .mcp_routes import create_mcp_blueprint
+    from .rag_routes import create_rag_blueprint
 except ImportError:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import ai  # type: ignore
@@ -27,6 +30,9 @@ except ImportError:
     import db_client  # type: ignore
     import validation  # type: ignore
     from ui import create_ui_blueprint  # type: ignore
+    from tool_reads import create_tool_reads_blueprint
+    from mcp_routes import create_mcp_blueprint
+    from rag_routes import create_rag_blueprint
 
 
 LOGGER = logging.getLogger(__name__)
@@ -349,6 +355,11 @@ def create_app(config: Mapping[str, Any] | None = None, *, database: Any = None)
             return _error("The AI assistant is currently unavailable.", 503)
         return jsonify(result)
 
+    app.register_blueprint(create_tool_reads_blueprint(
+        principal=_principal, database=_database, db_error=_db_error,
+    ))
+    app.register_blueprint(create_mcp_blueprint(principal=_principal))
+    app.register_blueprint(create_rag_blueprint(principal=_principal))
     app.register_blueprint(
         create_ui_blueprint(
             principal=_principal,

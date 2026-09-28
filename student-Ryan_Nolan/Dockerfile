@@ -7,7 +7,8 @@ EXPOSE 80
 FROM python:3.11-slim AS python-base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
 
 WORKDIR /app
 
@@ -17,12 +18,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 FROM python-base AS backend
 
+COPY shared/feature_flags.py /app/shared/feature_flags.py
+
 COPY student-Ryan_Nolan/ ./student-Ryan_Nolan/
 
 WORKDIR /app/student-Ryan_Nolan/backend
 
 ENV APP_HOST=0.0.0.0 \
     APP_PORT=8102 \
+    OLLAMA_URL=http://host.docker.internal:11434 \
+    OLLAMA_MODEL=qwen2.5:0.5b \
     AUTH_SERVICE_URL=http://ethan-backend:6002 \
     PRODUCT_DATABASE_API_URL=http://product-database:6001/api/database
 

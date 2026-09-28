@@ -5,6 +5,10 @@ env:
   MCP_ENABLED: "false"
   RAG_ENABLED: "false"
   RUN_LIVE_AI: "0"
+  RUN_LIVE_MCP_AI: "0"
+  RUN_LIVE_RAG_AI: "0"
+  RUN_LIVE_VALIDATION: "0"
+  RUN_LIVE_RELEASE1_VALIDATION: "0"
   OLLAMA_URL: "http://127.0.0.1:9"
 
 on:
@@ -38,15 +42,24 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            ai-services/rag_server/requirements.txt
 
       - name: Install dependencies
-        run: python -m pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt -r ai-services/rag_server/requirements.txt
 
       - name: Run Customer Support tests
         run: python -m pytest 'student-Ethan Goldman/tests' -q
 
+      - name: Run shared MCP and RAG contract tests
+        run: python -m pytest ai-services/mcp_server/tests ai-services/rag_server/tests -q
+
+      - name: Run shared access and disabled-runtime checks
+        run: python -m pytest shared/tests -q
+
       - name: Compile application Python modules
-        run: python -m compileall -q 'student-Ethan Goldman'
+        run: python -m compileall -q 'student-Ethan Goldman' shared ai-services
 
   docker-build:
     name: Build and validate Customer Support services
@@ -67,7 +80,12 @@ jobs:
           .
 
       - name: Run Customer Support test target
-        run: docker run --rm asd-customer-support-test:ci
+        run: >-
+          docker run --rm
+          --env AI_MODE_ENABLED --env MCP_ENABLED --env RAG_ENABLED
+          --env RUN_LIVE_AI --env RUN_LIVE_MCP_AI --env RUN_LIVE_RAG_AI
+          --env RUN_LIVE_VALIDATION --env RUN_LIVE_RELEASE1_VALIDATION
+          --env OLLAMA_URL asd-customer-support-test:ci
 
       - name: Validate Docker Compose
         run: docker compose config --quiet
@@ -139,6 +157,41 @@ jobs:
             http://localhost:6002/api/login >/dev/null
           docker compose exec -T customer-support-backend test ! -e '/app/student-Ethan Goldman/database/support_tickets.db'
           docker compose exec -T customer-support-database sh -c 'test -f "$DATABASE_PATH"'
+
+      - name: Verify disabled AI, MCP and RAG through the frontend
+        run: |
+          docker compose exec -T customer-support-backend python -c 'import os; assert all(os.environ.get(key) == "false" for key in ("AI_MODE_ENABLED", "MCP_ENABLED", "RAG_ENABLED"))'
+          python - <<'PY'
+          import json
+          from http.cookiejar import MozillaCookieJar
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+
+          base = "http://localhost:8005"
+          jar = MozillaCookieJar("/tmp/customer-support-admin.cookies")
+          jar.load(ignore_discard=True, ignore_expires=True)
+          cookie = next(item for item in jar if item.name == "ethan_session")
+          headers = {"Cookie": "ethan_session=" + cookie.value, "Origin": base, "Content-Type": "application/json"}
+          for path, payload, code in (
+              ("/api/support/admin/mcp/tools", None, "MCP_DISABLED"),
+              ("/api/support/admin/mcp/tools/call", {"tool": "ethan_goldman_get_queue_summary"}, "MCP_DISABLED"),
+              ("/api/support/admin/mcp/assistant", {"question": "How does our support workload look?"}, "AI_DISABLED"),
+              ("/api/support/admin/rag/answer", {"question": "What lengths are allowed for support ticket subjects?"}, "RAG_DISABLED"),
+              ("/api/support/admin/tickets/2002/ai-analysis", {}, "AI mode is disabled."),
+          ):
+              request = Request(base + path, headers=headers, data=json.dumps(payload).encode() if payload is not None else None)
+              try:
+                  response = urlopen(request, timeout=10)
+              except HTTPError as error:
+                  response = error
+              with response:
+                  assert response.status == 503, (path, response.status)
+                  error = json.load(response)["error"]
+                  assert (error["code"] if isinstance(error, dict) else error) == code, path
+              print(path, 503, code)
+          with urlopen(Request(base + "/api/support/admin/tickets", headers=headers), timeout=10) as response:
+              assert response.status == 200 and json.load(response)["tickets"]
+          PY
 
       - name: Show integration logs on failure
         if: failure()

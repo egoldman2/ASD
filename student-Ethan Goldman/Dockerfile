@@ -19,6 +19,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM support-python-base AS backend
 
 COPY ["student-Ethan Goldman/support_backend/", "/app/support_backend/"]
+COPY shared/mcp_client.py /app/shared/mcp_client.py
+COPY shared/feature_flags.py /app/shared/feature_flags.py
+COPY ai-services/rag_server/knowledge/ethan_goldman/ /app/support_backend/knowledge/
 
 ENV APP_HOST=0.0.0.0 \
     APP_PORT=6005 \
@@ -27,6 +30,14 @@ ENV APP_HOST=0.0.0.0 \
     OLLAMA_URL=http://host.docker.internal:11434 \
     OLLAMA_MODEL=qwen2.5:0.5b \
     OLLAMA_TIMEOUT_SECONDS=45 \
+    MCP_ENABLED=true \
+    MCP_SERVER_URL=http://host.docker.internal:8765/mcp \
+    MCP_CLIENT_TIMEOUT_SECONDS=10 \
+    MCP_ASSISTANT_MODEL=qwen2.5:3b \
+    MCP_ASSISTANT_TIMEOUT_SECONDS=75 \
+    RAG_ENABLED=true \
+    RAG_SERVER_URL=http://host.docker.internal:5003 \
+    RAG_CLIENT_TIMEOUT_SECONDS=60 \
     LOG_LEVEL=INFO
 
 EXPOSE 6005
