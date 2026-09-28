@@ -3,3 +3,4 @@ Werkzeug==2.2.3
 pytest==7.4.4
 requests==2.31.0
 mcp[cli]==1.30.0
+chromadb

@@ -29,6 +29,7 @@ from rag_server.sources import (
     ChufengCatalogueSource,
     KnowledgeDocument,
     KnowledgeSource,
+    RyanInventorySource,
     SourceDataError,
     SourceUnavailableError,
 )
@@ -136,7 +137,8 @@ def embed_texts(texts: Sequence[str], dimensions: int = 256) -> list[list[float]
 
 def _default_sources(settings: RAGSettings) -> dict[str, KnowledgeSource]:
     sources: list[KnowledgeSource] = [
-        ChufengCatalogueSource(settings_loader=lambda: settings)
+        ChufengCatalogueSource(settings_loader=lambda: settings),
+        RyanInventorySource(settings_loader=lambda: settings),
     ]
     return {source.scope: source for source in sources}
 

@@ -1,0 +1,18 @@
+=== HEALTH ===
+{"status":"healthy","service":"asd-marketplace-rag","enabled":true,"available_scopes":["chufeng_catalogue","ryan_inventory"],"tools":["refresh_corpus","retrieve_context","answer_question"],"ollama_model":"qwen2.5:0.5b"}
+
+
+=== REFRESH ===
+{"success":true,"operation":"refresh_corpus","data":{"scope":"ryan_inventory","source":"Ryan Inventory Management","document_count":18,"added_count":0,"updated_count":18,"removed_count":0,"collection":"asd_release1_shared_context","collection_count":18,"refreshed_at":"2026-09-27T04:51:35.496385+00:00"},"citations":[],"confidence":null,"insufficient_context":false,"error":null,"metadata":{"read_only_source":true,"embedding":"deterministic_sha256","embedding_dimensions":256}}
+
+
+=== RETRIEVE: reorder ===
+{"success":true,"operation":"retrieve_context","data":{"query":"reorder","scope":"ryan_inventory","results":[],"result_count":0,"message":"Insufficient context was found for this query."},"citations":[],"confidence":"insufficient","insufficient_context":true,"error":null,"metadata":{"requested_top_k":5,"indexed_document_count":18,"minimum_relevance_score":0.25}}
+
+
+=== ANSWER: Fitness Watch supplier ===
+{"success":true,"operation":"answer_question","data":{"question":"Fitness Watch supplier","scope":"ryan_inventory","answer":"Yes, Fitness Watch is a wearable device from Wavefront Wearables.\n\nSources: [1] Wavefront Wearables (supplier record)","retrieved_count":2,"model":"qwen2.5:0.5b"},"citations":[{"rank":1,"document_id":"ryan_inventory:supplier:5","source_id":"inventory-supplier:5","label":"Wavefront Wearables (supplier record)","scope":"ryan_inventory"}],"confidence":"medium","insufficient_context":false,"error":null,"metadata":{"grounded":true,"model_invoked":true,"requested_top_k":5,"minimum_relevance_score":0.25,"distance_metric":"cosine","embedding":"deterministic_sha256"}}
+
+
+=== ANSWER (insufficient context): loyalty policy ===
+{"success":true,"operation":"answer_question","data":{"question":"What is the customer loyalty points policy?","scope":"ryan_inventory","answer":"Insufficient context to answer this question.","retrieved_count":0,"model":null},"citations":[],"confidence":"insufficient","insufficient_context":true,"error":null,"metadata":{"grounded":true,"model_invoked":false,"minimum_relevance_score":0.25}}

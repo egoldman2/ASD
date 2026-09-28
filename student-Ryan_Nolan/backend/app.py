@@ -4,6 +4,7 @@ import requests
 from flask import Flask, g, jsonify, request
 
 from routes.mcp import mcp_blueprint
+from routes.rag import rag_blueprint
 
 from routes.products import products_blueprint
 from routes.suppliers import suppliers_blueprint
@@ -87,6 +88,7 @@ def create_app():
     app.register_blueprint(suppliers_blueprint)
     app.register_blueprint(assistant_blueprint)
     app.register_blueprint(mcp_blueprint)
+    app.register_blueprint(rag_blueprint)
 
     @app.route("/health")
     def health():
@@ -132,7 +134,7 @@ def create_app():
             response.headers["Access-Control-Allow-Credentials"] = "true"
             response.headers.add("Vary", "Origin")
         response.headers["Access-Control-Allow-Headers"] = (
-            "Content-Type, X-MCP-Mode"
+            "Content-Type, X-MCP-Mode, X-RAG-Mode"
         )
         response.headers["Access-Control-Allow-Methods"] = (
             "GET, POST, PUT, PATCH, DELETE, OPTIONS"

@@ -8,12 +8,14 @@ from .base import (
     SourceUnavailableError,
 )
 from .chufeng_catalogue import ChufengCatalogueSource
+from .ryan_inventory import RyanInventorySource
 
 __all__ = [
     "ChufengCatalogueSource",
     "KnowledgeDocument",
     "KnowledgeSource",
     "KnowledgeSourceError",
+    "RyanInventorySource",
     "SourceDataError",
     "SourceUnavailableError",
 ]
