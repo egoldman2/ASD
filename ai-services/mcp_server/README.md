@@ -173,3 +173,13 @@ RUN_LIVE_MCP_AI=1 python -m pytest 'student-Ethan Goldman/tests/test_agentic_mcp
 Goldman's persistent runner configuration and mode prompts are added in the
 following feature configuration stage; the shared runner is already tested
 against both catalogue and support configurations.
+
+## Registered Ethan Ting tools
+
+- `ethan_ting_calculate_loyalty_tier`
+
+This read-only tool accepts a non-negative `points_balance` and returns the
+Bronze, Silver, or Gold tier and progress to the next tier. It uses the same
+500/1000-point thresholds as the customer database service. It does not fetch
+or expose customer account records. Frontend/backend integration is a
+separate step.

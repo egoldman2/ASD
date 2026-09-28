@@ -26,6 +26,10 @@ from mcp_server.tools.chufeng_catalogue import (
     get_product_details,
     search_products,
 )
+from mcp_server.tools.ethan_ting_customer import (
+    CALCULATE_LOYALTY_TIER,
+    calculate_loyalty_tier,
+)
 
 
 SERVER_NAME = "ASD Marketplace MCP"
@@ -40,6 +44,8 @@ Ethan Goldman support tools search tickets, return bounded conversation
 context, count queue workloads, and list recorded attention reasons.
 They require an admin session supplied by the MCP transport and return
 redacted, read-only data; credentials must never be provided as tool arguments.
+Ethan Ting's loyalty tier tool calculates a tier from supplied points without
+reading customer records.
 """.strip()
 
 READ_ONLY_ANNOTATIONS = ToolAnnotations(
@@ -56,6 +62,8 @@ REGISTERED_CHUFENG_TOOLS = (
     CALCULATE_CART_SUMMARY,
 )
 REGISTERED_GOLDMAN_TOOLS = (SEARCH_TICKETS, GET_TICKET_CONTEXT, GET_QUEUE_SUMMARY, GET_TICKETS_NEEDING_ATTENTION)
+REGISTERED_ETHAN_TING_TOOLS = (CALCULATE_LOYALTY_TIER,)
+REGISTERED_TOOLS = REGISTERED_CHUFENG_TOOLS + REGISTERED_GOLDMAN_TOOLS + REGISTERED_ETHAN_TING_TOOLS
 
 
 def _transport_security(settings: MCPSettings) -> TransportSecuritySettings:
@@ -144,6 +152,18 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
         (GET_QUEUE_SUMMARY, get_queue_summary), (GET_TICKETS_NEEDING_ATTENTION, get_tickets_needing_attention),
     ):
         server.tool(name=name, annotations=READ_ONLY_ANNOTATIONS, structured_output=True)(function)
+
+    server.tool(
+        name=CALCULATE_LOYALTY_TIER,
+        title="Calculate Loyalty Tier",
+        description=(
+            "Calculate the Bronze, Silver, or Gold loyalty tier and points "
+            "needed for the next tier from a supplied non-negative points "
+            "balance. This tool is read-only and does not access customer data."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(calculate_loyalty_tier)
 
     @server.custom_route("/health", methods=["GET"], name="health")
     async def health(_: Request) -> JSONResponse:
