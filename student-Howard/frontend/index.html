@@ -366,6 +366,17 @@
             </div>
             <div id="advice" class="ai-box">Enter a return ID and ask the AI for advice.</div>
         </div>
+
+        <div class="sectionHead">
+            <h2>MCP Tools &mdash; Order Lookup</h2>
+        </div>
+        <div class="card">
+            <div class="aiRow">
+                <input type="number" id="mcp-order-id" placeholder="Order ID" min="1">
+                <button class="actionBtn" onclick="lookupMcp()">Look up via MCP</button>
+            </div>
+            <div id="mcp-result" class="ai-box">Enter an order ID and query the shared MCP server.</div>
+        </div>
     </main>
 
     <footer class="footer">
@@ -610,6 +621,36 @@
             } catch (e) {
                 title.textContent = "Order & Returns";
                 sub.textContent = "";
+            }
+        }
+
+        // Release 1: call the shared MCP server through the backend.
+        async function lookupMcp() {
+            const id = document.getElementById("mcp-order-id").value;
+            const box = document.getElementById("mcp-result");
+            if (!id) {
+                box.textContent = "Please enter an order ID first.";
+                return;
+            }
+            box.textContent = "Querying MCP server...";
+            try {
+                const res = await fetch(API + "/mcp/order-status/" + id, { credentials: "include" });
+                const data = await res.json();
+                if (!res.ok || data.success === false) {
+                    const msg = (data.error && data.error.message) || data.error || ("HTTP " + res.status);
+                    box.textContent = "MCP error: " + msg;
+                    return;
+                }
+                const r = data.result;
+                box.innerHTML =
+                    "<strong>MCP tool:</strong> " + data.tool + "<br>" +
+                    "<strong>Order ID:</strong> " + r.order_id + "<br>" +
+                    "<strong>Status:</strong> " + r.status + "<br>" +
+                    "<strong>Date:</strong> " + r.order_date + "<br>" +
+                    "<strong>Total:</strong> $" + r.total + "<br>" +
+                    "<strong>Items:</strong> " + r.item_count;
+            } catch (e) {
+                box.textContent = "Could not reach the MCP server: " + e.message;
             }
         }
 
