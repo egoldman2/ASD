@@ -333,3 +333,66 @@ def return_advice(return_id):
         "ai_summary": advice,
         "note": "Advisory only. Use the status endpoint to actually change status.",
     })
+
+
+# ---------- Release 1: MCP integration ----------
+import asyncio as _asyncio
+
+MCP_ENABLED = os.environ.get("MCP_ENABLED", "true").lower() == "true"
+MCP_SERVER_URL = os.environ.get("MCP_SERVER_URL", "http://127.0.0.1:8765/mcp")
+MCP_TIMEOUT_SECONDS = float(os.environ.get("MCP_TIMEOUT_SECONDS", "15"))
+
+
+async def _mcp_call(tool_name, arguments):
+    import json
+    from mcp import ClientSession
+    from mcp.client.streamable_http import streamablehttp_client
+
+    async with streamablehttp_client(MCP_SERVER_URL) as (read, write, _):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            result = await session.call_tool(tool_name, arguments)
+            if result.structuredContent is not None:
+                return result.structuredContent
+            for block in result.content:
+                if getattr(block, "type", None) == "text":
+                    try:
+                        return json.loads(block.text)
+                    except ValueError:
+                        return {"text": block.text}
+            return {}
+
+
+def call_mcp_tool(tool_name, arguments):
+    """Call a tool on the shared MCP server; frontend reaches MCP only via here."""
+    if not MCP_ENABLED:
+        return {
+            "success": False,
+            "tool": tool_name,
+            "result": None,
+            "error": {"code": "MCP_DISABLED",
+                      "message": "MCP is disabled in this environment."},
+        }
+    try:
+        return _asyncio.run(
+            _asyncio.wait_for(_mcp_call(tool_name, arguments),
+                              timeout=MCP_TIMEOUT_SECONDS)
+        )
+    except Exception as exc:
+        return {
+            "success": False,
+            "tool": tool_name,
+            "result": None,
+            "error": {"code": "MCP_UNAVAILABLE",
+                      "message": f"Could not reach the MCP server: {exc}"},
+        }
+
+
+@order_blueprint.get("/mcp/order-status/<int:order_id>")
+def mcp_order_status(order_id):
+    return jsonify(call_mcp_tool("howard_get_order_status", {"order_id": order_id}))
+
+
+@order_blueprint.get("/mcp/return-details/<int:return_id>")
+def mcp_return_details(return_id):
+    return jsonify(call_mcp_tool("howard_get_return_details", {"return_id": return_id}))
