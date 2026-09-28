@@ -396,3 +396,48 @@ def mcp_order_status(order_id):
 @order_blueprint.get("/mcp/return-details/<int:return_id>")
 def mcp_return_details(return_id):
     return jsonify(call_mcp_tool("howard_get_return_details", {"return_id": return_id}))
+
+
+# ---------- Release 1: RAG integration ----------
+RAG_ENABLED = os.environ.get("RAG_ENABLED", "true").lower() == "true"
+RAG_SERVER_URL = os.environ.get("RAG_SERVER_URL", "http://127.0.0.1:5003").rstrip("/")
+RAG_TIMEOUT_SECONDS = float(os.environ.get("RAG_CLIENT_TIMEOUT_SECONDS", "60"))
+
+
+@order_blueprint.post("/rag/answer")
+def rag_answer():
+    """Send a question to the shared RAG server and return its grounded answer."""
+    if not RAG_ENABLED:
+        return jsonify({
+            "success": False, "operation": "answer_question", "data": None,
+            "citations": [], "confidence": None, "insufficient_context": False,
+            "error": {"code": "RAG_DISABLED",
+                      "message": "RAG is disabled in this environment."},
+        }), 503
+
+    body = request.get_json(silent=True) or {}
+    question = (body.get("question") or "").strip()
+    if not question:
+        return jsonify({
+            "success": False, "operation": "answer_question", "data": None,
+            "citations": [], "confidence": None, "insufficient_context": False,
+            "error": {"code": "INVALID_ARGUMENT",
+                      "message": "question must be a non-empty string."},
+        }), 400
+
+    payload = {"question": question}
+    scope = body.get("scope")
+    if scope:
+        payload["scope"] = scope
+
+    try:
+        resp = requests.post(RAG_SERVER_URL + "/answer", json=payload,
+                             timeout=RAG_TIMEOUT_SECONDS)
+        return jsonify(resp.json()), resp.status_code
+    except requests.RequestException as exc:
+        return jsonify({
+            "success": False, "operation": "answer_question", "data": None,
+            "citations": [], "confidence": None, "insufficient_context": False,
+            "error": {"code": "RAG_UNAVAILABLE",
+                      "message": f"Could not reach the RAG server: {exc}"},
+        }), 503
