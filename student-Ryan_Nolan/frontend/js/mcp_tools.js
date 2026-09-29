@@ -7,14 +7,16 @@
 
   const statusLine = document.getElementById("mcpStatusLine");
   const toolSelect = document.getElementById("mcpToolSelect");
-  const argLimitField = document.getElementById("mcpArgLimit");
-  const argLimitInput = document.getElementById("mcpArgLimitInput");
-  const argProductIdField = document.getElementById("mcpArgProductId");
-  const argProductIdInput = document.getElementById("mcpArgProductIdInput");
-  const argSupplierIdField = document.getElementById("mcpArgSupplierId");
-  const argSupplierIdInput = document.getElementById("mcpArgSupplierIdInput");
+  const argLabel = document.getElementById("mcpArgLabel");
+  const argInput = document.getElementById("mcpArgInput");
   const callButton = document.getElementById("mcpCallButton");
   const output = document.getElementById("mcpOutput");
+
+  function escapeHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+  }
 
   const TOOL_ARGS = {
     ryan_get_low_stock_items: ["limit"],
@@ -23,27 +25,35 @@
     ryan_calculate_restock_order: ["product_id"],
   };
 
+  const ARG_LABELS = {
+    limit: "Limit",
+    product_id: "Product ID",
+    supplier_id: "Supplier ID",
+  };
+
+  const ARG_DEFAULTS = {
+    limit: 20,
+    product_id: "",
+    supplier_id: "",
+  };
+
+  function currentArgKey(tool) {
+    return (TOOL_ARGS[tool] || [])[0] || "limit";
+  }
+
   function showArgFieldsFor(tool) {
-    const needed = TOOL_ARGS[tool] || [];
-    argLimitField.hidden = !needed.includes("limit");
-    argProductIdField.hidden = !needed.includes("product_id");
-    argSupplierIdField.hidden = !needed.includes("supplier_id");
+    const key = currentArgKey(tool);
+    argLabel.textContent = ARG_LABELS[key];
+    argInput.value = ARG_DEFAULTS[key];
+    argInput.min = 1;
+    argInput.max = key === "limit" ? 50 : "";
   }
 
   function collectArguments(tool) {
-    const needed = TOOL_ARGS[tool] || [];
+    const key = currentArgKey(tool);
+    const value = Number(argInput.value);
     const args = {};
-
-    if (needed.includes("limit")) {
-      const value = Number(argLimitInput.value);
-      if (Number.isFinite(value)) args.limit = value;
-    }
-    if (needed.includes("product_id")) {
-      args.product_id = Number(argProductIdInput.value);
-    }
-    if (needed.includes("supplier_id")) {
-      args.supplier_id = Number(argSupplierIdInput.value);
-    }
+    if (Number.isFinite(value)) args[key] = value;
     return args;
   }
 
@@ -202,19 +212,18 @@
 
     const summary = humanSummary(payload);
     const tableHtml = resultTableHtml(payload);
-    const structuredJson = JSON.stringify(payload, null, 2);
 
-    let text = "";
     if (payload && payload.success === false && payload.error) {
-      text = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
+      output.value = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
     } else if (payload && payload.error && !("success" in payload)) {
       // Route-level rejection (MCP_DISABLED, TOOL_NOT_ALLOWED, INVALID_ARGUMENT)
-      text = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
+      output.value = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
     } else if (summary) {
-      text = summary;
+      output.value = summary;
+    } else {
+      output.value = "";
     }
 
-    output.value = (text ? text + "\n\n" : "") + "Structured result:\n" + structuredJson;
     getOrCreateTableContainer().innerHTML = tableHtml;
   }
 

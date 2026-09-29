@@ -146,25 +146,15 @@
             <label for="mcpToolSelect">Tool</label>
             <select id="mcpToolSelect">
               <option value="ryan_get_low_stock_items">List low stock items</option>
-              <option value="ryan_get_product_inventory">Get product inventory (by ID)</option>
-              <option value="ryan_get_supplier_details">Get supplier details (by ID)</option>
-              <option value="ryan_calculate_restock_order">Calculate restock order (by product ID)</option>
+              <option value="ryan_get_product_inventory">Get product inventory</option>
+              <option value="ryan_get_supplier_details">Get supplier details</option>
+              <option value="ryan_calculate_restock_order">Calculate restock order</option>
             </select>
           </div>
 
-          <div id="mcpArgLimit" class="aiField">
-            <label for="mcpArgLimitInput">Limit</label>
-            <input id="mcpArgLimitInput" type="number" min="1" max="50" value="20">
-          </div>
-
-          <div id="mcpArgProductId" class="aiField" hidden>
-            <label for="mcpArgProductIdInput">Product ID</label>
-            <input id="mcpArgProductIdInput" type="number" min="1">
-          </div>
-
-          <div id="mcpArgSupplierId" class="aiField" hidden>
-            <label for="mcpArgSupplierIdInput">Supplier ID</label>
-            <input id="mcpArgSupplierIdInput" type="number" min="1">
+          <div class="aiField">
+            <label id="mcpArgLabel" for="mcpArgInput">Limit</label>
+            <input id="mcpArgInput" type="number" min="1" value="20">
           </div>
 
           <button id="mcpCallButton" class="askAiButton" type="button">Run Tool</button>
@@ -206,7 +196,7 @@
           <textarea
             id="ragAnswer"
             rows="4"
-            placeholder="The grounded answer will appear here."
+            placeholder="The RAG answer will appear here."
             aria-live="polite"
             readonly
           ></textarea>
