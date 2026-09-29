@@ -1,0 +1,118 @@
+{
+  "feature_name": "Ryan_Nolan - Inventory Management and Suppliers",
+  "prompt_file": "review_prompt.txt",
+  "mode_prompt_files": {
+    "database": "database_prompt.txt",
+    "endpoints": "endpoints_prompt.txt",
+    "architecture": "architecture_prompt.txt",
+    "mcp": "mcp_prompt.txt",
+    "rag": "rag_prompt.txt"
+  },
+  "database": "student-Ryan_Nolan/database/products.db",
+  "database_rules": {
+    "required_tables": ["products", "suppliers"],
+    "foreign_key_tables": ["products"]
+  },
+  "endpoints": [
+    {
+      "name": "Inventory Products API",
+      "url": "http://localhost:8102/api/inventory/products",
+      "health_url": "http://localhost:8102/health"
+    },
+    {
+      "name": "Suppliers API",
+      "url": "http://localhost:8102/api/inventory/suppliers",
+      "health_url": "http://localhost:8102/health"
+    }
+  ],
+  "architecture_files": [
+    "docker-compose.yml",
+    "student-Ryan_Nolan/Dockerfile",
+    "student-Ryan_Nolan/backend/app.py",
+    "student-Ryan_Nolan/backend/database_client.py",
+    "student-Ryan_Nolan/backend/routes/products.py",
+    "student-Ryan_Nolan/backend/routes/suppliers.py",
+    "student-Ryan_Nolan/backend/routes/assistant.py",
+    "student-Ryan_Nolan/backend/routes/mcp.py",
+    "student-Ryan_Nolan/backend/routes/rag.py",
+    "student-Ryan_Nolan/database/ryan_init_db.py",
+    "student-Ryan_Nolan/frontend/index.html",
+    "student-Ryan_Nolan/frontend/suppliers.html",
+    "student-Ryan_Nolan/frontend/js/inventory.js",
+    "student-Ryan_Nolan/frontend/js/mcp_tools.js",
+    "student-Ryan_Nolan/frontend/js/rag_tools.js"
+  ],
+  "mcp_files": [
+    "ai-services/mcp_server/server.py",
+    "ai-services/mcp_server/tools/ryan_inventory.py",
+    "student-Ryan_Nolan/backend/routes/mcp.py",
+    "student-Ryan_Nolan/frontend/js/mcp_tools.js",
+    "docker-compose.yml",
+    ".github/workflows/Ryan.yml"
+  ],
+  "mcp_server_url": "http://127.0.0.1:8765/mcp",
+  "mcp_rules": {
+    "required_tools": [
+      "ryan_get_low_stock_items",
+      "ryan_get_product_inventory",
+      "ryan_get_supplier_details",
+      "ryan_calculate_restock_order"
+    ],
+    "probe_tool": "ryan_get_low_stock_items",
+    "probe_arguments": {"limit": 5}
+  },
+  "rag_files": [
+    "ai-services/rag_server/rag_server.py",
+    "ai-services/rag_server/rag_pipeline.py",
+    "ai-services/rag_server/sources/ryan_inventory.py",
+    "student-Ryan_Nolan/backend/routes/rag.py",
+    "student-Ryan_Nolan/frontend/js/rag_tools.js",
+    "docker-compose.yml",
+    ".github/workflows/Ryan.yml"
+  ],
+  "rag_server_url": "http://127.0.0.1:5003",
+  "rag_rules": {
+    "required_scope": "ryan_inventory",
+    "required_operations": ["refresh_corpus", "retrieve_context", "answer_question"],
+    "probe_question": "Who supplies Fitness Watch?",
+    "probe_top_k": 5
+  },
+  "source_checks": {
+    "mcp": [
+      {
+        "name": "backend_enforces_tool_allowlist",
+        "file": "student-Ryan_Nolan/backend/routes/mcp.py",
+        "contains": ["ALLOWED_TOOLS", "TOOL_NOT_ALLOWED"]
+      },
+      {
+        "name": "frontend_calls_backend_mcp_routes",
+        "file": "student-Ryan_Nolan/frontend/js/mcp_tools.js",
+        "contains": ["/api/inventory/mcp/"],
+        "excludes": ["127.0.0.1:8765", "localhost:8765"]
+      },
+      {
+        "name": "ci_disables_live_mcp",
+        "file": ".github/workflows/Ryan.yml",
+        "contains": ["MCP_ENABLED: \"false\""]
+      }
+    ],
+    "rag": [
+      {
+        "name": "scope_fixed_in_backend",
+        "file": "student-Ryan_Nolan/backend/routes/rag.py",
+        "contains": ["RAG_SCOPE = \"ryan_inventory\"", "InventoryRAGClient"]
+      },
+      {
+        "name": "frontend_calls_backend_rag_routes",
+        "file": "student-Ryan_Nolan/frontend/js/rag_tools.js",
+        "contains": ["/api/inventory/rag"],
+        "excludes": ["localhost:5003", "127.0.0.1:5003"]
+      },
+      {
+        "name": "ci_disables_live_rag",
+        "file": ".github/workflows/Ryan.yml",
+        "contains": ["RAG_ENABLED: \"false\""]
+      }
+    ]
+  }
+}
