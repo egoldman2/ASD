@@ -1,5 +1,7 @@
+import asyncio
 import json
 import os
+from datetime import timedelta
 from functools import wraps
 from pathlib import Path
 import re
@@ -8,8 +10,12 @@ from urllib.parse import urlencode
 from urllib.request import Request as URLRequest
 from urllib.request import urlopen
 
+import httpx
 from flask import Flask, g, jsonify, request, session
+from mcp import ClientSession
+from mcp.client.streamable_http import streamable_http_client
 from werkzeug.security import check_password_hash
+from shared.feature_flags import feature_enabled
 
 
 app = Flask(__name__)
@@ -31,6 +37,7 @@ OLLAMA_URL = os.environ.get(
     "http://host.docker.internal:11434",
 ).rstrip("/")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1:8b")
+LOYALTY_TIER_MCP_TOOL = "ethan_ting_calculate_loyalty_tier"
 MAX_INSIGHT_QUESTION_LENGTH = 400
 MAX_INSIGHT_RESPONSE_WORDS = 180
 EMAIL_PATTERN = (
@@ -132,7 +139,40 @@ def database_request(path, method="GET", payload=None):
         return json.load(response)
 
 
+def call_loyalty_tier_mcp(points_balance):
+    """Send only a points balance to the shared local MCP server."""
+
+    server_url = os.environ.get(
+        "MCP_SERVER_URL", "http://127.0.0.1:8765/mcp"
+    )
+    timeout = float(os.environ.get("MCP_CLIENT_TIMEOUT_SECONDS", "10"))
+    if timeout <= 0:
+        raise ValueError("MCP_CLIENT_TIMEOUT_SECONDS must be positive.")
+
+    async def request_tier():
+        async with httpx.AsyncClient(timeout=timeout) as http_client:
+            async with streamable_http_client(
+                server_url, http_client=http_client
+            ) as (read_stream, write_stream, _):
+                async with ClientSession(read_stream, write_stream) as client:
+                    await client.initialize()
+                    response = await client.call_tool(
+                        LOYALTY_TIER_MCP_TOOL,
+                        {"points_balance": points_balance},
+                        read_timeout_seconds=timedelta(seconds=timeout),
+                    )
+                    if response.isError or not isinstance(
+                        response.structuredContent, dict
+                    ):
+                        raise ValueError("Invalid MCP tool response.")
+                    return response.structuredContent
+
+    return asyncio.run(request_tier())
+
+
 def ollama_chat(system_prompt, prompt, num_predict):
+    if not feature_enabled():
+        raise OllamaUnavailableError
     body = json.dumps({
         "model": OLLAMA_MODEL,
         "stream": False,
@@ -1025,9 +1065,65 @@ def get_all_loyalty_accounts():
     return jsonify(result)
 
 
+@app.post("/api/admin/mcp/loyalty-tier")
+@admin_required
+def get_customer_loyalty_tier_from_mcp():
+    """Check a customer's current points via MCP without sending identity data."""
+
+    data = request.get_json(silent=True)
+    user_id = data.get("user_id") if isinstance(data, dict) else None
+    if isinstance(user_id, bool) or not isinstance(user_id, int) or user_id <= 0:
+        return jsonify({"error": "Select a valid customer."}), 400
+
+    if os.environ.get("MCP_ENABLED", "true").strip().lower() not in {
+        "1", "true", "yes", "on"
+    }:
+        return jsonify({"error": "MCP mode is disabled."}), 503
+
+    try:
+        account = database_request(f"/internal/loyalty/{user_id}").get(
+            "loyalty", {}
+        )
+    except (HTTPError, URLError) as error:
+        return database_error_response(error)
+
+    points_balance = account.get("points_balance") if isinstance(account, dict) else None
+    if (
+        isinstance(points_balance, bool)
+        or not isinstance(points_balance, int)
+        or points_balance < 0
+    ):
+        return jsonify({"error": "The loyalty account returned invalid points."}), 502
+
+    try:
+        payload = call_loyalty_tier_mcp(points_balance)
+    except Exception:
+        return jsonify({"error": "The local MCP service is unavailable."}), 503
+
+    result = payload.get("result") if isinstance(payload, dict) else None
+    if (
+        not isinstance(payload, dict)
+        or payload.get("success") is not True
+        or payload.get("tool") != LOYALTY_TIER_MCP_TOOL
+        or not isinstance(result, dict)
+        or type(result.get("points_balance")) is not int
+        or result["points_balance"] != points_balance
+        or result.get("tier") not in {"Bronze", "Silver", "Gold"}
+        or result.get("next_tier") not in {None, "Silver", "Gold"}
+        or isinstance(result.get("points_to_next_tier"), bool)
+        or not isinstance(result.get("points_to_next_tier"), int)
+        or result["points_to_next_tier"] < 0
+    ):
+        return jsonify({"error": "The MCP service returned an invalid result."}), 502
+
+    return jsonify(payload)
+
+
 @app.post("/api/admin/ai/customer-insight")
 @admin_required
 def create_customer_insight():
+    if not feature_enabled():
+        return jsonify({"error": "AI mode is disabled.", "code": "AI_MODE_DISABLED"}), 503
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return jsonify({"error": "A JSON request body is required."}), 400

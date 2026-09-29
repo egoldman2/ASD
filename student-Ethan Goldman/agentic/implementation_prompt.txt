@@ -5,4 +5,6 @@ access, HTMX rendering, and the advisory AI path. Check the AI implementation fo
 and redacted ticket context, system.txt and correction.txt usage, strict JSON validation,
 evidence citation validation, one correction retry, approved next-step allow-lists, and
 read-only Plan -> Act -> Observe -> Adapt logging. Cite at least three configured files.
-Static excerpts do not prove runtime or test success.
+Include the protected, allowlisted MCP assistant, actual model-selected calls,
+read-only grounding, fixed-scope RAG adapter, cited knowledge answers and safe
+HTMX states. Static excerpts do not prove runtime or test success.

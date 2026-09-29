@@ -88,6 +88,12 @@ def _json_body(operation: str) -> tuple[dict[str, Any] | None, Any | None]:
             "Request body must be a JSON object.",
         )
         return None, (jsonify(payload), 400)
+    allowed = {"refresh_corpus": {"scope"}, "retrieve_context": {"scope", "query", "top_k"},
+               "answer_question": {"scope", "question", "top_k"}}[operation]
+    if set(body) - allowed:
+        payload = error_response(operation, RAGErrorCode.INVALID_ARGUMENT,
+                                 "Provide only the declared RAG request fields.")
+        return None, (jsonify(payload), 400)
     return body, None
 
 

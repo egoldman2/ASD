@@ -505,8 +505,9 @@ def test_live_auth_service_outage_returns_503():
         server.close()
 
 
-def test_live_htmx_ai_outage_returns_safe_503_fragment(support_stack):
+def test_live_htmx_ai_outage_returns_safe_503_fragment(support_stack, monkeypatch):
     """Exercise the authenticated route against a genuine failed TCP connection."""
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
 
     previous_url = os.environ.get("OLLAMA_URL")
     previous_timeout = os.environ.get("OLLAMA_TIMEOUT_SECONDS")

@@ -1,4 +1,10 @@
 from importlib import import_module
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def enable_deterministic_ai_contracts(monkeypatch):
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
 
 import requests
 

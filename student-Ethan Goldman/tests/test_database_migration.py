@@ -3,6 +3,24 @@
 from importlib import import_module
 from pathlib import Path
 import sqlite3
+from flask import abort
+
+
+def test_database_http_errors_preserve_status_and_json_envelope(tmp_path):
+    module = import_module("student-Ethan Goldman.database_service.app")
+    application = module.create_app(tmp_path / "errors.db")
+    application.add_url_rule('/bad-request', view_func=lambda: abort(400))
+    client = application.test_client()
+    for method, path, status, code in (
+        ('GET', '/bad-request', 400, 'bad_request'),
+        ('GET', '/missing', 404, 'not_found'),
+        ('GET', '/api/tickets/not-an-id', 404, 'not_found'),
+        ('PATCH', '/api/tickets/2002', 405, 'method_not_allowed'),
+    ):
+        response = client.open(path, method=method)
+        assert response.status_code == status
+        assert response.json['error']['code'] == code
+        assert isinstance(response.json['error']['message'], str)
 
 
 def test_real_database_seed_is_idempotent_and_owner_scoped(tmp_path):

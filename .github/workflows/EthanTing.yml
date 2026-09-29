@@ -7,6 +7,7 @@ on:
       - Ethan_Ting
     paths:
       - "student-Ethan Ting/**"
+      - "ai-services/mcp_server/**"
       - "shared/**"
       - "app.py"
       - "docker-compose.yml"
@@ -17,12 +18,18 @@ on:
       - main
     paths:
       - "student-Ethan Ting/**"
+      - "ai-services/mcp_server/**"
       - "shared/**"
       - "app.py"
       - "docker-compose.yml"
       - "requirements.txt"
       - ".github/workflows/EthanTing.yml"
   workflow_dispatch:
+
+env:
+  AI_MODE_ENABLED: "false"
+  MCP_ENABLED: "false"
+  RAG_ENABLED: "false"
 
 permissions:
   contents: read

@@ -1,6 +1,7 @@
 import os
 import requests
 from flask import Blueprint, request, g, jsonify, abort
+from shared.feature_flags import feature_enabled
 
 from database_client import DatabaseServiceError, database_request
 
@@ -36,6 +37,8 @@ def _build_low_stock_context():
 
 
 def _call_ollama(prompt: str) -> str:
+    if not feature_enabled():
+        raise requests.RequestException("AI mode is disabled.")
     response = requests.post(
         OLLAMA_URL,
         json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
@@ -57,6 +60,8 @@ def ask_assistant():
     """
     if (err := _require_admin()) is not None:
         return err
+    if not feature_enabled():
+        return jsonify({"error": "AI mode is disabled.", "code": "AI_MODE_DISABLED"}), 503
 
     payload = request.get_json(silent=True) or {}
     message = (payload.get("message") or "").strip()

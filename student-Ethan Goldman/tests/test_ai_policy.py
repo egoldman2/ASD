@@ -116,7 +116,8 @@ def test_small_model_adapter_only_keeps_server_approved_values():
     )["suggested_steps"] == ["verify_tracking", "request_more_information"]
 
 
-def test_real_ollama_network_outage_fails_closed_and_logs_no_ticket_text(caplog):
+def test_real_ollama_network_outage_fails_closed_and_logs_no_ticket_text(caplog, monkeypatch):
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
     ai = _ai()
     private_message = "Private outage probe for Alice Example at alice@example.test."
     context = {

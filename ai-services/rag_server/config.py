@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
+import math
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -20,7 +21,7 @@ DEFAULT_PRODUCT_DATABASE_API_URL = (
     "http://127.0.0.1:6001/api/database/products"
 )
 DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434"
-DEFAULT_OLLAMA_MODEL = "qwen2.5:0.5b"
+DEFAULT_OLLAMA_MODEL = "qwen2.5:3b"
 DEFAULT_CHROMA_PATH = BASE_DIR / "chroma"
 DEFAULT_COLLECTION_NAME = "asd_release1_shared_context"
 DEFAULT_AUDIT_PATH = BASE_DIR / "rag-audit.jsonl"
@@ -86,8 +87,8 @@ def _positive_float_from_environment(value: str, setting_name: str) -> float:
     except (TypeError, ValueError) as exc:
         raise ConfigurationError(f"{setting_name} must be a number.") from exc
 
-    if parsed <= 0:
-        raise ConfigurationError(f"{setting_name} must be greater than zero.")
+    if not math.isfinite(parsed) or not 0 < parsed <= 90:
+        raise ConfigurationError(f"{setting_name} must be finite and between zero (exclusive) and 90 seconds.")
     return parsed
 
 

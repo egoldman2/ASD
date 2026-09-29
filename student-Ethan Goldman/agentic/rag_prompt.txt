@@ -1,0 +1,28 @@
+Validate the configured ethan_goldman_support knowledge scope and the
+refresh_corpus, retrieve_context and answer_question operations. Keep each
+review under 220 words. Cite at least three configured file paths, the exact
+scope, and at least two operation names.
+
+Use approved workflow Markdown and the collected Chroma passages only. Support
+knowledge excludes customer records, secrets, assessment plans and work logs.
+The host service performs retrieval and actual local-model generation; the
+staff backend fixes the scope and the frontend uses protected backend routes.
+Refresh can update only the selected knowledge index, never business records.
+
+For the supported ticket-creation question, record actual retrieved chunks,
+source identities/ranks, model-generated answer, citations and confidence.
+Subjects require 5 to 160 characters and initial messages 1 to 2000 characters.
+Citations must match independently retrieved sources and every factual
+paragraph must cite them. Confidence is retrieval similarity, not a probability
+that all answer prose is true. Review-model text alone proves no application AI.
+
+The unrelated astronomy query must produce exact insufficient-context output,
+no answer citations and no model invocation. Model abstention after generation
+is a different outcome. Distinguish corpus refresh, retrieval, grounded-answer
+verification, negative verification and complete validation. Report source,
+model or service outages and disabled/skipped cases without fabricated success.
+
+Source markers cannot prove runtime availability or GitHub Actions success.
+Bounded excerpts cannot prove omitted code is incomplete. Do not claim tests,
+deployment, all team features or every unsupported question passed. Use final
+adaptation only to correct review prose from actual collected evidence.

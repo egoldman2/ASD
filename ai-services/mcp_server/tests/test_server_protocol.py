@@ -7,7 +7,7 @@ from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
 from mcp_server.server import (
-    REGISTERED_CHUFENG_TOOLS,
+    REGISTERED_TOOLS,
     SERVER_NAME,
     create_server,
 )
@@ -40,7 +40,8 @@ def test_streamable_http_initialise_list_and_call(
 
                         listed = await session.list_tools()
                         tools = {tool.name: tool for tool in listed.tools}
-                        assert set(tools) == set(REGISTERED_CHUFENG_TOOLS)
+                        assert set(tools) == set(REGISTERED_TOOLS)
+                        assert len(tools) == 9
                         for tool in tools.values():
                             assert tool.annotations.readOnlyHint is True
                             assert tool.annotations.destructiveHint is False
@@ -75,6 +76,19 @@ def test_streamable_http_initialise_list_and_call(
                         ]
                         assert "unit_cost" not in products[0]
 
+                        loyalty = await session.call_tool(
+                            "ethan_ting_calculate_loyalty_tier",
+                            {"points_balance": 720},
+                        )
+                        assert loyalty.isError is False
+                        assert loyalty.structuredContent["success"] is True
+                        assert loyalty.structuredContent["result"] == {
+                            "points_balance": 720,
+                            "tier": "Silver",
+                            "next_tier": "Gold",
+                            "points_to_next_tier": 280,
+                        }
+
     asyncio.run(exercise_protocol())
 
 
@@ -95,7 +109,7 @@ def test_health_route_reports_transport_and_tool_count():
             "service": "asd-marketplace-mcp",
             "transport": "streamable-http",
             "mcp_path": "/mcp",
-            "registered_tools": 4,
+            "registered_tools": len(REGISTERED_TOOLS),
         }
 
     asyncio.run(request_health())

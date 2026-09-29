@@ -1365,3 +1365,29 @@
     flex-wrap: wrap;
   }
 }
+
+/* Staff support data and generated answers. */
+.supportMcpPanel { margin-bottom: 1.5rem; }
+.supportMcpPanel textarea, .supportMcpPanel input:not([type="hidden"]), .supportMcpPanel select { width: 100%; padding: .75rem; font: inherit; border: 1px solid var(--support-control-border); border-radius: 6px; }
+.supportMcpExamples, .supportMcpPaging { display: flex; flex-wrap: wrap; gap: .65rem; }
+.supportMcpPaging input { width: 6rem; margin-left: .3rem; }
+.supportMcpDirect { margin-top: 1rem; border-top: 1px solid var(--support-border); padding-top: 1rem; }
+.supportMcpDirect summary, .supportMcpEvidence summary { cursor: pointer; font-weight: 600; }
+.supportMcpDirect form { margin-top: 1rem; }
+.supportMcpDirectAction { display: flex; gap: .65rem; align-items: center; }
+.supportMcpResult { margin-top: 1rem; overflow-wrap: anywhere; }
+.supportMcpResult h3, .supportMcpResult h4 { margin: .75rem 0 .4rem; }
+.supportMcpCounts { display: flex; flex-wrap: wrap; gap: 1rem; margin: .5rem 0; }
+.supportMcpCounts dt { color: var(--support-muted); font-size: .85rem; }
+.supportMcpCounts dd { margin: 0; font-size: 1.15rem; font-weight: 700; }
+.supportMcpTickets { padding-left: 1.25rem; }
+.supportMcpTickets > li { margin: .75rem 0; }
+.supportMcpAnswer { white-space: pre-wrap; line-height: 1.6; }
+.supportMcpEvidence { padding: .75rem 0; border-top: 1px solid var(--support-border); }
+
+/* Staff knowledge questions and attributed guidance. */
+.supportKnowledgePanel { margin-bottom: 1.5rem; }
+.supportKnowledgePanel textarea { width: 100%; padding: .75rem; font: inherit; border: 1px solid var(--support-control-border); border-radius: 6px; resize: vertical; }
+.supportKnowledgeSources { padding-left: 1.25rem; }
+.supportKnowledgeSources li { margin: .5rem 0; overflow-wrap: anywhere; }
+.supportKnowledgeSource { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.6; margin-top: 1rem; }

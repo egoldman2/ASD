@@ -44,7 +44,7 @@ class FakeOllama:
         self.failure = failure
         self.calls = []
 
-    def generate_answer(self, system_prompt, user_prompt):
+    def generate_answer(self, system_prompt, user_prompt, **kwargs):
         self.calls.append((system_prompt, user_prompt))
         if self.failure:
             raise self.failure
