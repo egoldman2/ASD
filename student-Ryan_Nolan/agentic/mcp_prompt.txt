@@ -1,0 +1,7 @@
+MCP review rules for the Inventory Management and Suppliers feature.
+- Review only the four read-only Inventory MCP tools listed as required_tools in the evidence, and name at least two of them by their exact names.
+- Cover: read-only, non-destructive, structured-output annotations on the shared server; the backend allowlist RYAN_ALLOWED_TOOLS in student-Ryan_Nolan/backend/routes/mcp.py; the frontend calling only the backend route prefix /api/inventory/mcp/ and never the MCP server directly; the MCP_ENABLED switch and X-MCP-Mode header; and Docker Compose and CI behaviour.
+- Cite at least three configured file paths exactly as listed in the evidence.
+- Report every configured probe outcome exactly as recorded. A skipped, failed, or unavailable probe is an evidence limitation, never a pass.
+- Do not claim the application AI assistant was verified unless the evidence says so. The Inventory Tools panel calls tools directly.
+- Do not claim tests or CI passed. File excerpts are truncated and prove nothing about unseen code.

@@ -1,0 +1,7 @@
+RAG review rules for the Inventory Management and Suppliers feature.
+- Review only the knowledge scope ryan_inventory and name it in the response. Name at least two of the operations refresh_corpus, retrieve_context, and answer_question.
+- Cover: the scope fixed in code in student-Ryan_Nolan/backend/routes/rag.py so the route cannot query another feature's data; the source that builds one document per product and per supplier from the Product Database API; citations, confidence category, and insufficient-context handling; the RAG_ENABLED switch and X-RAG-Mode header; and Docker Compose and CI behaviour.
+- Cite at least three configured file paths exactly as listed in the evidence.
+- Report the refresh, retrieval, grounded-answer, and unsupported-question probe outcomes exactly as recorded. A skipped, failed, or unavailable probe is an evidence limitation, never a pass.
+- State the known limitation: the shared embedding is a deterministic word-hash, so short keyword-style questions retrieve best.
+- Do not claim tests or CI passed. File excerpts are truncated and prove nothing about unseen code.
