@@ -21,10 +21,30 @@
     return div.innerHTML;
   }
 
+  function getOrCreateJsonBlock() {
+    let jsonBlock = document.getElementById("ragJsonBlock");
+    if (!jsonBlock) {
+      jsonBlock = document.createElement("pre");
+      jsonBlock.id = "ragJsonBlock";
+      jsonBlock.className = "productMeta";
+      citationsBox.insertAdjacentElement("afterend", jsonBlock);
+    }
+    return jsonBlock;
+  }
+
+  function renderJsonBlock(requestBody, payload) {
+    getOrCreateJsonBlock().textContent =
+      "Request:\n" +
+      JSON.stringify(requestBody, null, 2) +
+      "\n\nStructured result:\n" +
+      JSON.stringify(payload, null, 2);
+  }
+
   function clearResult() {
     answerBox.value = "";
     confidenceLine.textContent = "";
     citationsBox.innerHTML = "";
+    getOrCreateJsonBlock().textContent = "";
   }
 
   async function refreshStatus() {
@@ -60,34 +80,36 @@
     return { status: response.status, payload };
   }
 
-  function renderAnswer(status, payload) {
+  function renderAnswer(status, payload, requestBody) {
     clearResult();
 
     if (payload && payload.error && !payload.success) {
       answerBox.value = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
-      return;
-    }
-
-    const data = payload.data || {};
-    answerBox.value = data.answer || "No answer returned.";
-
-    if (payload.insufficient_context) {
-      confidenceLine.textContent = "Confidence: insufficient. No relevant context was found, so no answer was generated.";
     } else {
-      confidenceLine.textContent = `Confidence: ${payload.confidence}`;
+      const data = payload.data || {};
+      answerBox.value = data.answer || "No answer returned.";
+
+      if (payload.insufficient_context) {
+        confidenceLine.textContent =
+          "Confidence: insufficient. No relevant context was found, so no answer was generated.";
+      } else {
+        confidenceLine.textContent = `Confidence: ${payload.confidence}`;
+      }
+
+      const citations = Array.isArray(payload.citations) ? payload.citations : [];
+      if (citations.length) {
+        citationsBox.innerHTML =
+          "<strong>Sources:</strong><ul>" +
+          citations
+            .map((c) => `<li>[${escapeHtml(c.rank)}] ${escapeHtml(c.label)}</li>`)
+            .join("") +
+          "</ul>";
+      } else {
+        citationsBox.textContent = "Sources: none";
+      }
     }
 
-    const citations = Array.isArray(payload.citations) ? payload.citations : [];
-    if (citations.length) {
-      citationsBox.innerHTML =
-        "<strong>Sources:</strong><ul>" +
-        citations
-          .map((c) => `<li>[${escapeHtml(c.rank)}] ${escapeHtml(c.label)}</li>`)
-          .join("") +
-        "</ul>";
-    } else {
-      citationsBox.textContent = "Sources: none";
-    }
+    renderJsonBlock(requestBody, payload);
   }
 
   form?.addEventListener("submit", async (event) => {
@@ -100,9 +122,11 @@
     answerBox.placeholder = "Thinking...";
     askButton.disabled = true;
 
+    const requestBody = { question: text };
+
     try {
-      const { status, payload } = await post(RAG_ANSWER_API, { question: text });
-      renderAnswer(status, payload);
+      const { status, payload } = await post(RAG_ANSWER_API, requestBody);
+      renderAnswer(status, payload, requestBody);
     } catch (err) {
       answerBox.value = "The knowledge assistant is unavailable right now. Please try again.";
       console.error("RAG answer failed:", err);
@@ -117,14 +141,17 @@
     refreshButton.disabled = true;
     answerBox.value = "Refreshing knowledge...";
 
+    const requestBody = {};
+
     try {
-      const { status, payload } = await post(RAG_REFRESH_API, {});
+      const { status, payload } = await post(RAG_REFRESH_API, requestBody);
       if (payload && payload.success) {
         answerBox.value = `Knowledge refreshed: ${payload.data.document_count} documents indexed.`;
       } else {
         const err = payload.error || {};
         answerBox.value = `[HTTP ${status}] ${err.code}: ${err.message}`;
       }
+      renderJsonBlock(requestBody, payload);
     } catch (err) {
       answerBox.value = "Could not refresh knowledge.";
       console.error("RAG refresh failed:", err);

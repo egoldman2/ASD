@@ -212,18 +212,19 @@
 
     const summary = humanSummary(payload);
     const tableHtml = resultTableHtml(payload);
+    const structuredJson = JSON.stringify(payload, null, 2);
 
+    let text = "";
     if (payload && payload.success === false && payload.error) {
-      output.value = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
+      text = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
     } else if (payload && payload.error && !("success" in payload)) {
       // Route-level rejection (MCP_DISABLED, TOOL_NOT_ALLOWED, INVALID_ARGUMENT)
-      output.value = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
+      text = `[HTTP ${status}] ${payload.error.code}: ${payload.error.message}`;
     } else if (summary) {
-      output.value = summary;
-    } else {
-      output.value = "";
+      text = summary;
     }
 
+    output.value = (text ? text + "\n\n" : "") + "Structured result:\n" + structuredJson;
     getOrCreateTableContainer().innerHTML = tableHtml;
   }
 
