@@ -4,7 +4,9 @@
   "mode_prompt_files": {
     "database": "database_prompt.txt",
     "endpoints": "endpoints_prompt.txt",
-    "architecture": "architecture_prompt.txt"
+    "architecture": "architecture_prompt.txt",
+    "mcp": "mcp_prompt.txt",
+    "rag": "rag_prompt.txt"
   },
   "database": "student-Ethan Ting/database/users.db",
   "database_rules": {
@@ -89,5 +91,68 @@
     "student-Ethan Ting/agentic/customer_insight_prompt.txt",
     "ai-services/agentic_loop.py",
     "ai-services/ollama/README.md"
-  ]
+  ],
+  "mcp_files": [
+    "ai-services/mcp_server/server.py",
+    "ai-services/mcp_server/tools/ethan_ting_customer.py",
+    "shared/mcp_client.py",
+    "student-Ethan Ting/backend/app.py",
+    "student-Ethan Ting/frontend/js/admin-loyalty.js",
+    "student-Ethan Ting/tests/test_mcp_loyalty.py",
+    "docker-compose.yml",
+    ".github/workflows/EthanTing.yml"
+  ],
+  "mcp_server_url": "http://127.0.0.1:8765/mcp",
+  "mcp_rules": {
+    "required_tools": ["ethan_ting_calculate_loyalty_tier"],
+    "source_files": {
+      "server": "ai-services/mcp_server/server.py",
+      "tools": "ai-services/mcp_server/tools/ethan_ting_customer.py",
+      "client": "student-Ethan Ting/backend/app.py",
+      "frontend": "student-Ethan Ting/frontend/js/admin-loyalty.js",
+      "routes": "student-Ethan Ting/backend/app.py",
+      "compose": "docker-compose.yml"
+    },
+    "frontend_route_prefix": "/api/admin/mcp/",
+    "backend_client_marker": "call_loyalty_tier_mcp",
+    "probes": [
+      {"name": "bronze-zero", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 0}, "expect": [{"path": "result.tier", "value": "Bronze"}, {"path": "result.next_tier", "value": "Silver"}, {"path": "result.points_to_next_tier", "value": 500}]},
+      {"name": "bronze-boundary", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 499}, "expect": [{"path": "result.tier", "value": "Bronze"}, {"path": "result.next_tier", "value": "Silver"}, {"path": "result.points_to_next_tier", "value": 1}]},
+      {"name": "silver-start", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 500}, "expect": [{"path": "result.tier", "value": "Silver"}, {"path": "result.next_tier", "value": "Gold"}, {"path": "result.points_to_next_tier", "value": 500}]},
+      {"name": "silver-boundary", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 999}, "expect": [{"path": "result.tier", "value": "Silver"}, {"path": "result.next_tier", "value": "Gold"}, {"path": "result.points_to_next_tier", "value": 1}]},
+      {"name": "gold-start", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 1000}, "expect": [{"path": "result.tier", "value": "Gold"}, {"path": "result.next_tier", "value": null}, {"path": "result.points_to_next_tier", "value": 0}]}
+    ]
+  },
+  "rag_files": [
+    "ai-services/rag_server/rag_server.py",
+    "ai-services/rag_server/rag_pipeline.py",
+    "ai-services/rag_server/sources/markdown_knowledge.py",
+    "ai-services/rag_server/knowledge/ethan_ting/accounts_and_loyalty.md",
+    "student-Ethan Ting/backend/app.py",
+    "student-Ethan Ting/frontend/js/admin.js",
+    "student-Ethan Ting/tests/test_rag_accounts_loyalty.py",
+    "docker-compose.yml",
+    ".github/workflows/EthanTing.yml"
+  ],
+  "rag_server_url": "http://127.0.0.1:5003",
+  "rag_rules": {
+    "required_scope": "ethan_ting_accounts_loyalty",
+    "required_operations": ["refresh_corpus", "retrieve_context", "answer_question"],
+    "source_files": {
+      "server": "ai-services/rag_server/rag_server.py",
+      "pipeline": "ai-services/rag_server/rag_pipeline.py",
+      "registry": "ai-services/rag_server/rag_pipeline.py",
+      "source": "ai-services/rag_server/sources/markdown_knowledge.py",
+      "client": "student-Ethan Ting/backend/app.py",
+      "frontend": "student-Ethan Ting/frontend/js/admin.js",
+      "routes": "student-Ethan Ting/backend/app.py",
+      "compose": "docker-compose.yml"
+    },
+    "frontend_route_prefix": "/api/admin/rag/",
+    "backend_client_marker": "rag_request",
+    "probes": [
+      {"name": "gold-threshold", "question": "How many loyalty points are needed for Gold?", "top_k": 5, "expected": "grounded"},
+      {"name": "unrelated-astronomy", "question": "quasar orbital spectroscopy wavelengths", "top_k": 5, "expected": "insufficient"}
+    ]
+  }
 }

@@ -8,6 +8,10 @@ on:
     paths:
       - "student-Ethan Ting/**"
       - "ai-services/mcp_server/**"
+      - "ai-services/rag_server/**"
+      - "ai-services/agentic_loop.py"
+      - "ai-services/mcp_validation.py"
+      - "ai-services/rag_validation.py"
       - "shared/**"
       - "app.py"
       - "docker-compose.yml"
@@ -19,6 +23,10 @@ on:
     paths:
       - "student-Ethan Ting/**"
       - "ai-services/mcp_server/**"
+      - "ai-services/rag_server/**"
+      - "ai-services/agentic_loop.py"
+      - "ai-services/mcp_validation.py"
+      - "ai-services/rag_validation.py"
       - "shared/**"
       - "app.py"
       - "docker-compose.yml"
@@ -54,7 +62,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: python -m pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt -r ai-services/rag_server/requirements.txt
 
       - name: Initialise and verify the database
         env:
@@ -85,6 +93,12 @@ jobs:
       - name: Run Ethan Ting tests
         run: python -m pytest "student-Ethan Ting/tests" -q
 
+      - name: Run shared RAG scope and contract tests
+        run: python -m pytest ai-services/rag_server/tests -q
+
+      - name: Run shared MCP tool and protocol tests
+        run: python -m pytest ai-services/mcp_server/tests -q
+
       - name: Compile Ethan Ting Python modules
         run: python -m compileall -q "student-Ethan Ting"
 
@@ -109,7 +123,7 @@ jobs:
           docker build --file "student-Ethan Ting/Dockerfile" --target test --tag asd-ethan-ting-test:ci .
 
       - name: Run tests in the Docker test container
-        run: docker run --rm asd-ethan-ting-test:ci
+        run: docker run --rm --env AI_MODE_ENABLED=false --env MCP_ENABLED=false --env RAG_ENABLED=false --env RUN_LIVE_MCP_AI=0 --env RUN_LIVE_RAG_AI=0 asd-ethan-ting-test:ci
 
       - name: Start Ethan Ting services
         run: docker compose up -d --build ethan-database ethan-backend ethan-frontend
@@ -156,6 +170,24 @@ jobs:
           curl --fail --silent --cookie /tmp/ethan-ting-admin.cookies \
             http://localhost:6002/api/admin/customers \
             | grep -q 'customer@asd.local'
+
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --cookie /tmp/ethan-ting-admin.cookies \
+            --header 'Content-Type: application/json' \
+            --data '{"user_id":2}' \
+            http://localhost:6002/api/admin/mcp/loyalty-tier)" = "503"
+
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --cookie /tmp/ethan-ting-admin.cookies \
+            --header 'Content-Type: application/json' \
+            --data '{"question":"How many points for Gold?"}' \
+            http://localhost:6002/api/admin/rag/answer)" = "503"
+
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --cookie /tmp/ethan-ting-admin.cookies \
+            --header 'Content-Type: application/json' \
+            --data '{"question":"Find an email"}' \
+            http://localhost:6002/api/admin/ai/customer-insight)" = "503"
 
       - name: Show service logs on failure
         if: failure()

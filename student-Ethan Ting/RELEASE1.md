@@ -64,6 +64,6 @@ neither changes customer balances or account data. The confidence label is a
 retrieval similarity category, not a guarantee that every generated sentence
 is true.
 
-CI uses `.github/workflows/student-3.yml`, displayed as Ethan Ting - Customer
+CI uses `.github/workflows/EthanTing.yml`, displayed as Ethan Ting - Customer
 Accounts and Loyalty CI. It disables live AI, MCP and RAG calls while still
 running deterministic contract tests and building all three feature images.

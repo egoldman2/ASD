@@ -1,9 +1,9 @@
-You are reviewing Ethan Ting's Customer Accounts and Loyalty feature for ASD 2026 Release 0.
+You are reviewing Ethan Ting's Customer Accounts and Loyalty feature for ASD 2026 Release 1.
 
 Feature responsibilities:
 - Register customer accounts and authenticate customers and administrators.
 - Store passwords only as Werkzeug password hashes and use signed HTTP-only session cookies.
-- Allow customers to view and update only their own name and email address.
+- Allow customers to view and update only their own name and email address, and change their own password after verifying the current password.
 - Allow administrators to list, create, update, deactivate, and reactivate customer accounts.
 - Prevent customer routes from changing roles, activation state, other users, or loyalty balances.
 - Store one loyalty account per customer, show points and tiers, and retain an auditable points history.
@@ -12,9 +12,11 @@ Feature responsibilities:
 - Keep frontend, backend/API, and SQLite database responsibilities in separate containers.
 - Use the shared read-only Plan -> Act -> Observe -> Adapt loop as AI-assisted engineering evidence.
 
-Release 0 distinction:
-- The shared agentic review loop is development and review evidence.
-- A runtime Customer and Loyalty AI feature must not be claimed unless the supplied Ethan frontend and backend evidence actually shows a request to Ollama or another approved local LLM.
+Release 1 distinction:
+- The shared agentic review loop is development and review evidence, not the runtime customer-facing assistant.
+- The MCP tier tool accepts a points balance, returns a structured tier calculation, and never edits a customer record. Only the authenticated backend selects and sends a current database balance.
+- The RAG guide uses the fixed ethan_ting_accounts_loyalty scope and approved documentation. It does not retrieve live customer records. A citation shows the retrieved passage used, not guaranteed factual correctness.
+- The existing administrator AI Mode is separate from the MCP and RAG integrations. Do not claim it was tested unless the supplied evidence shows an actual request and response.
 - Automatic points from orders must not be claimed unless cross-feature order integration is present in the supplied evidence.
 
 Output expectations:

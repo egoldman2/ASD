@@ -1,0 +1,4 @@
+Review the registered Ethan Ting loyalty-tier MCP tool using only the collected evidence.
+Describe the read-only points-only boundary, live tool discovery, the five actual threshold probes, and any failed or unavailable check. Cite the backend route, frontend request, server registration, and tool implementation by path.
+Separate source inspection from real MCP calls. A successful tool call does not prove that the browser path was exercised; browser evidence is recorded separately. Do not claim model-selected tool use or account mutations.
+Report Plan, Act, Observe and Adapt in concise plain English. Never invent a result or hide a failed probe.

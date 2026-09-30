@@ -181,5 +181,8 @@ against both catalogue and support configurations.
 This read-only tool accepts a non-negative `points_balance` and returns the
 Bronze, Silver, or Gold tier and progress to the next tier. It uses the same
 500/1000-point thresholds as the customer database service. It does not fetch
-or expose customer account records. Frontend/backend integration is a
-separate step.
+or expose customer account records. An administrator chooses a customer on
+`http://localhost:8003/admin-loyalty.html`; the protected Ethan backend route
+`POST /api/admin/mcp/loyalty-tier` fetches their current balance from its own
+database API and sends only that integer to this shared tool. The result is
+shown in the page without exposing the account record to the MCP service.
