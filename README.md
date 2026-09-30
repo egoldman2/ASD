@@ -80,6 +80,8 @@ The Customer Accounts and Loyalty feature provides customer registration, login,
 
 The feature also includes the Customer Insight AI assistant powered by Ollama and `llama3.1:8b`. An administrator can ask questions about customer accounts and loyalty information, find the customer linked to an email address and prepare changes to a customer's name or email. Proposed account changes are not saved automatically. The administrator must review the current and proposed values and explicitly confirm the update.
 
+Release 1 adds an administrator-only MCP tier check on the loyalty page. The backend reads a selected customer's current points and sends only that number to the shared, read-only `ethan_ting_calculate_loyalty_tier` tool. The administrator assistant page also contains an Accounts and loyalty guide backed by the shared RAG server. It answers from approved feature documentation, shows source citations and retrieval confidence, and reports insufficient context for unsupported questions. The guide does not read live customer records.
+
 The frontend is available through Docker on: http://localhost:8003
 
 The Customer Accounts backend API is available on: http://localhost:6002
@@ -99,25 +101,29 @@ The database API is available internally through Docker Compose at `ethan-databa
 - Enforce customer and administrator role permissions in the backend
 - Find and summarise customer information using the administrator AI assistant
 - Prepare AI-assisted account changes for human review and confirmation
+- Check a selected customer's current tier through the shared MCP server
+- Ask the approved Accounts and loyalty guide through the shared RAG server
 - Demonstrate the Plan, Act, Observe and Adapt review workflow
 
 #### Architecture
 
-The feature runs as three separate services and uses the shared Ollama runtime:
+The feature runs as three separate Docker services and calls local shared services through its backend:
 
 ```text
 Nginx Frontend
     ↓ HTTP / JSON
 Flask Customer Accounts API
     ├── HTTP → Flask Database API → SQLite users and loyalty data
-    └── HTTP → Ollama / Llama 3.1 8B
+    ├── HTTP → host Ollama / Llama 3.1 8B
+    ├── MCP → host shared MCP server (read-only tier tool)
+    └── HTTP → host shared RAG server (approved guide)
 ```
 
 Only the database API directly accesses the customer SQLite database. The frontend communicates with the backend API, while the backend applies validation, session checks and role-based access control before requesting data or saving changes.
 
 #### Testing and CI/CD
 
-Automated tests use Pytest and cover registration, login, logout, sessions, customer profile and password updates, administrator permissions, account management, loyalty calculations, transaction history, database validation, Customer Insight AI safeguards and agentic review evidence.
+Automated tests use Pytest and cover registration, login, logout, sessions, customer profile and password updates, administrator permissions, account management, loyalty calculations, transaction history, database validation, Customer Insight AI safeguards, MCP/RAG boundaries and agentic review evidence.
 
 Run the Customer Accounts and Loyalty tests from the repository root:
 
@@ -125,7 +131,7 @@ Run the Customer Accounts and Loyalty tests from the repository root:
 python -m pytest "student-Ethan Ting/tests" -q
 ```
 
-The Ethan Ting GitHub Actions workflow:
+The Ethan Ting GitHub Actions workflow is `.github/workflows/EthanTing.yml`; its displayed name is Ethan Ting - Customer Accounts and Loyalty CI. It:
 
 - Sets up Python 3.11 and installs the project dependencies
 - Initialises and verifies the customer database
