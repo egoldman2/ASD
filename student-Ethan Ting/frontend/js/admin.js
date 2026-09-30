@@ -28,6 +28,16 @@ const customerInsightMeta = document.querySelector("#customerInsightMeta");
 const customerChangeProposal = document.querySelector("#customerChangeProposal");
 const confirmCustomerChangeButton = document.querySelector("#confirmCustomerChangeButton");
 const cancelCustomerChangeButton = document.querySelector("#cancelCustomerChangeButton");
+const ragGuideForm = document.querySelector("#ragGuideForm");
+const ragGuideQuestion = document.querySelector("#ragGuideQuestion");
+const askRagGuideButton = document.querySelector("#askRagGuideButton");
+const refreshRagGuideButton = document.querySelector("#refreshRagGuideButton");
+const ragGuideMessage = document.querySelector("#ragGuideMessage");
+const ragGuideResult = document.querySelector("#ragGuideResult");
+const ragGuideAnswer = document.querySelector("#ragGuideAnswer");
+const ragGuideMeta = document.querySelector("#ragGuideMeta");
+const ragGuideSources = document.querySelector("#ragGuideSources");
+const ragGuideCitationList = document.querySelector("#ragGuideCitationList");
 
 let customers = [];
 let administrators = [];
@@ -486,6 +496,75 @@ for (const promptButton of document.querySelectorAll("[data-insight-question]"))
   promptButton.addEventListener("click", () => {
     customerInsightQuestion.value = promptButton.dataset.insightQuestion;
     customerInsightQuestion.focus();
+  });
+}
+
+
+function showRagGuideMessage(message, success = false) {
+  ragGuideMessage.textContent = message;
+  ragGuideMessage.classList.toggle("success", success);
+}
+
+
+ragGuideForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const question = ragGuideQuestion.value.trim();
+  if (!question) {
+    showRagGuideMessage("Enter a question about the feature guide.");
+    return;
+  }
+  askRagGuideButton.disabled = true;
+  askRagGuideButton.textContent = "Checking sources...";
+  ragGuideResult.hidden = true;
+  showRagGuideMessage("Looking for approved account and loyalty guidance...", true);
+  try {
+    const result = await authRequest("/api/admin/rag/answer", {
+      method: "POST",
+      body: JSON.stringify({ question }),
+    });
+    ragGuideAnswer.textContent = result.answer;
+    ragGuideMeta.textContent = result.insufficient_context
+      ? "Insufficient context · No sources used"
+      : `${result.model} · ${result.confidence} retrieval confidence`;
+    ragGuideCitationList.replaceChildren();
+    for (const citation of result.citations) {
+      const item = document.createElement("li");
+      item.textContent = `[${citation.rank}] ${citation.label} (${citation.source_id})`;
+      ragGuideCitationList.append(item);
+    }
+    ragGuideSources.hidden = result.citations.length === 0;
+    ragGuideResult.hidden = false;
+    showRagGuideMessage(result.insufficient_context
+      ? "The approved guide does not contain enough evidence to answer."
+      : "Answer includes citations from the approved guide. Review the sources before acting.", true);
+  } catch (error) {
+    showRagGuideMessage(error.message);
+  } finally {
+    askRagGuideButton.disabled = false;
+    askRagGuideButton.textContent = "Ask guide";
+  }
+});
+
+
+refreshRagGuideButton.addEventListener("click", async () => {
+  refreshRagGuideButton.disabled = true;
+  refreshRagGuideButton.textContent = "Refreshing...";
+  try {
+    const result = await authRequest("/api/admin/rag/refresh", { method: "POST" });
+    showRagGuideMessage(`${result.message} ${result.document_count} knowledge sections indexed.`, true);
+  } catch (error) {
+    showRagGuideMessage(error.message);
+  } finally {
+    refreshRagGuideButton.disabled = false;
+    refreshRagGuideButton.textContent = "Refresh guide";
+  }
+});
+
+
+for (const promptButton of document.querySelectorAll("[data-rag-question]")) {
+  promptButton.addEventListener("click", () => {
+    ragGuideQuestion.value = promptButton.dataset.ragQuestion;
+    ragGuideQuestion.focus();
   });
 }
 

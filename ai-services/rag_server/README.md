@@ -6,10 +6,17 @@ The embedded Chroma index stays local and is rebuilt from approved sources.
 
 From the repository root:
 
+Use Python 3.11 for this service. The pinned Flask/Werkzeug versions do not run
+on Python 3.14.
+
 ```bash
 python -m pip install -r ai-services/rag_server/requirements.txt
 PYTHONPATH=ai-services python -m rag_server.rag_http_server
 ```
+
+If `qwen2.5:3b` is not installed locally, set `OLLAMA_MODEL` to an installed
+model before starting the service. The Ethan Ting live smoke check used
+`OLLAMA_MODEL=llama3.1:8b`.
 
 `RAG_ENABLED=false` disables retrieval and generation. `AI_MODE_ENABLED=false`
 also stops model generation; deterministic retrieval does not require Ollama.
@@ -25,6 +32,11 @@ Registered scopes:
 - `ethan_goldman_support`: curated Markdown workflow knowledge under
   `knowledge/ethan_goldman/`. This corpus contains implemented application facts;
   it does not index customer tickets or establish business entitlements.
+- `ethan_ting_accounts_loyalty`: curated feature rules under
+  `knowledge/ethan_ting/`. It contains no live customer accounts, emails or
+  balances. Administrators refresh and query it from the Accounts and loyalty
+  guide in the existing account-management assistant. The Ethan backend fixes
+  the scope and checks citations; it never sends customer records to RAG.
 
 Refresh a scope before querying it, and refresh again after its source changes:
 
@@ -33,6 +45,9 @@ curl -X POST http://127.0.0.1:5003/refresh -H 'Content-Type: application/json' \
   -d '{"scope":"ethan_goldman_support"}'
 curl -X POST http://127.0.0.1:5003/retrieve -H 'Content-Type: application/json' \
   -d '{"scope":"ethan_goldman_support","query":"subject initial message customer ticket characters","top_k":5}'
+
+curl -X POST http://127.0.0.1:5003/refresh -H 'Content-Type: application/json' \
+  -d '{"scope":"ethan_ting_accounts_loyalty"}'
 ```
 
 `GET /health` lists registered scopes. `/retrieve` returns the existing envelope

@@ -38,6 +38,7 @@ OLLAMA_URL = os.environ.get(
 ).rstrip("/")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1:8b")
 LOYALTY_TIER_MCP_TOOL = "ethan_ting_calculate_loyalty_tier"
+ACCOUNTS_LOYALTY_RAG_SCOPE = "ethan_ting_accounts_loyalty"
 MAX_INSIGHT_QUESTION_LENGTH = 400
 MAX_INSIGHT_RESPONSE_WORDS = 180
 EMAIL_PATTERN = (
@@ -136,6 +137,24 @@ def database_request(path, method="GET", payload=None):
     )
 
     with urlopen(request_to_database, timeout=5) as response:
+        return json.load(response)
+
+
+def rag_request(path, payload):
+    """Call the host RAG service with a fixed, feature-owned scope."""
+    server_url = os.environ.get(
+        "RAG_SERVER_URL", "http://127.0.0.1:5003"
+    ).rstrip("/")
+    timeout = float(os.environ.get("RAG_CLIENT_TIMEOUT_SECONDS", "60"))
+    if not 0 < timeout <= 120:
+        raise ValueError("RAG_CLIENT_TIMEOUT_SECONDS must be between 0 and 120.")
+    rag_http_request = URLRequest(
+        f"{server_url}{path}",
+        data=json.dumps({**payload, "scope": ACCOUNTS_LOYALTY_RAG_SCOPE}).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urlopen(rag_http_request, timeout=timeout) as response:
         return json.load(response)
 
 
@@ -1100,6 +1119,12 @@ def get_customer_loyalty_tier_from_mcp():
     except Exception:
         return jsonify({"error": "The local MCP service is unavailable."}), 503
 
+    if points_balance >= 1000:
+        expected_tier = ("Gold", None, 0)
+    elif points_balance >= 500:
+        expected_tier = ("Silver", "Gold", 1000 - points_balance)
+    else:
+        expected_tier = ("Bronze", "Silver", 500 - points_balance)
     result = payload.get("result") if isinstance(payload, dict) else None
     if (
         not isinstance(payload, dict)
@@ -1113,10 +1138,120 @@ def get_customer_loyalty_tier_from_mcp():
         or isinstance(result.get("points_to_next_tier"), bool)
         or not isinstance(result.get("points_to_next_tier"), int)
         or result["points_to_next_tier"] < 0
+        or (
+            result["tier"], result["next_tier"], result["points_to_next_tier"]
+        ) != expected_tier
+        or not isinstance(payload.get("metadata"), dict)
+        or payload["metadata"].get("read_only") is not True
     ):
         return jsonify({"error": "The MCP service returned an invalid result."}), 502
 
     return jsonify(payload)
+
+
+@app.post("/api/admin/rag/refresh")
+@admin_required
+def refresh_accounts_loyalty_knowledge():
+    if not feature_enabled() or not feature_enabled("RAG_ENABLED"):
+        return jsonify({"error": "RAG mode is disabled."}), 503
+    try:
+        result = rag_request("/refresh", {})
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError, TypeError):
+        return jsonify({"error": "The local RAG service is unavailable."}), 503
+    if (
+        not isinstance(result, dict)
+        or result.get("success") is not True
+        or result.get("operation") != "refresh_corpus"
+        or not isinstance(result.get("data"), dict)
+        or result["data"].get("scope") != ACCOUNTS_LOYALTY_RAG_SCOPE
+        or type(result["data"].get("document_count")) is not int
+        or result["data"]["document_count"] < 1
+    ):
+        return jsonify({"error": "The RAG knowledge could not be refreshed."}), 502
+    return jsonify({
+        "message": "Accounts and loyalty guide refreshed.",
+        "document_count": result["data"]["document_count"],
+    })
+
+
+@app.post("/api/admin/rag/answer")
+@admin_required
+def answer_accounts_loyalty_question():
+    if not feature_enabled() or not feature_enabled("RAG_ENABLED"):
+        return jsonify({"error": "RAG mode is disabled."}), 503
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict) or set(data) != {"question"}:
+        return jsonify({"error": "Only a question is required."}), 400
+    question = clean_text(data["question"])
+    if not question or len(question) > MAX_INSIGHT_QUESTION_LENGTH:
+        return jsonify({"error": "Enter a question of 400 characters or fewer."}), 400
+    if re.search(EMAIL_PATTERN, question, re.IGNORECASE):
+        return jsonify({"error": "Do not include customer email addresses in guide questions."}), 400
+    try:
+        result = rag_request("/answer", {"question": question, "top_k": 5})
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError, TypeError):
+        return jsonify({"error": "The local RAG service is unavailable."}), 503
+
+    if not isinstance(result, dict) or result.get("success") is not True:
+        error = result.get("error") if isinstance(result, dict) else None
+        code = error.get("code") if isinstance(error, dict) else None
+        if code == "OLLAMA_UNAVAILABLE":
+            return jsonify({"error": "The local RAG model is unavailable."}), 503
+        return jsonify({"error": "The RAG service could not answer this question."}), 502
+
+    answer_data = result.get("data")
+    citations = result.get("citations")
+    confidence = result.get("confidence")
+    insufficient = result.get("insufficient_context")
+    if (
+        result.get("operation") != "answer_question"
+        or not isinstance(answer_data, dict)
+        or answer_data.get("scope") != ACCOUNTS_LOYALTY_RAG_SCOPE
+        or answer_data.get("question") != question
+        or not isinstance(answer_data.get("answer"), str)
+        or not answer_data["answer"].strip()
+        or not isinstance(citations, list)
+        or type(insufficient) is not bool
+        or confidence not in {"high", "medium", "low", "insufficient"}
+    ):
+        return jsonify({"error": "The RAG service returned an invalid answer."}), 502
+    if insufficient:
+        if confidence != "insufficient" or citations or answer_data["answer"] != (
+            "Insufficient context to answer this question."
+        ):
+            return jsonify({"error": "The RAG service returned an invalid answer."}), 502
+    elif (
+        confidence == "insufficient"
+        or not citations
+        or not isinstance(answer_data.get("model"), str)
+        or not answer_data["model"].strip()
+        or set(re.findall(r"\[(\d+)\]", answer_data["answer"])) != {
+            str(citation.get("rank")) for citation in citations if isinstance(citation, dict)
+        }
+        or len({citation.get("rank") for citation in citations if isinstance(citation, dict)}) != len(citations)
+        or any(
+            not isinstance(citation, dict)
+            or citation.get("scope") != ACCOUNTS_LOYALTY_RAG_SCOPE
+            or citation.get("source_id") != f"{ACCOUNTS_LOYALTY_RAG_SCOPE}/accounts_and_loyalty.md"
+            or type(citation.get("rank")) is not int
+            or citation["rank"] < 1
+            or not isinstance(citation.get("label"), str)
+            or not citation["label"].strip()
+            for citation in citations
+        )
+    ):
+        return jsonify({"error": "The RAG service returned an invalid citation."}), 502
+
+    return jsonify({
+        "answer": answer_data["answer"],
+        "citations": [
+            {"rank": item["rank"], "label": item["label"], "source_id": item["source_id"]}
+            for item in citations
+        ],
+        "confidence": confidence,
+        "insufficient_context": insufficient,
+        "model": answer_data.get("model") if not insufficient else None,
+    })
 
 
 @app.post("/api/admin/ai/customer-insight")

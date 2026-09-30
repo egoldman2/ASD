@@ -549,6 +549,38 @@
   font-size: 0.85rem;
 }
 
+.ragGuide {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #d5e2ec;
+}
+
+.ragGuide .panelHeading {
+  margin-bottom: 1rem;
+}
+
+.ragGuide h3 {
+  margin: 0;
+  color: #0b2545;
+}
+
+.ragGuide h4 {
+  margin: 1rem 0 0.4rem;
+  color: #0b2545;
+}
+
+.ragGuide ol {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #405b73;
+  line-height: 1.5;
+}
+
+.ragGuide button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .aiChangeProposal {
   overflow: hidden;
   border: 1px solid #d0d7de;

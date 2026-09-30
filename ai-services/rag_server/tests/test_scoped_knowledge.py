@@ -102,7 +102,10 @@ def test_host_http_retrieves_actual_support_knowledge_and_rejects_bad_requests(r
     url = f'http://127.0.0.1:{server.server_port}'
     try:
         health = requests.get(url + '/health', timeout=10).json()
-        assert health['available_scopes'] == ['chufeng_catalogue', SUPPORT_SCOPE]
+        assert {
+            'chufeng_catalogue', SUPPORT_SCOPE,
+            'ethan_ting_accounts_loyalty', 'ryan_inventory'
+        }.issubset(set(health['available_scopes']))
         refresh = requests.post(url + '/refresh', json={'scope': SUPPORT_SCOPE}, timeout=10)
         assert refresh.status_code == 200 and refresh.json()['data']['document_count'] >= 2
         found = requests.post(url + '/retrieve', json={'scope': SUPPORT_SCOPE, 'query': 'subject initial message customer ticket characters'}, timeout=10)

@@ -107,7 +107,8 @@ content and explicitly does not treat that filename as a defect.
 ## Ethan Ting - Customer Accounts and Loyalty
 
 Ethan's review configuration covers the customer/loyalty SQLite schema,
-signed-out endpoint protection, and the frontend/backend/database architecture.
+signed-out endpoint protection, the frontend/backend/database architecture,
+and Release 1 MCP and RAG validation modes.
 The Ethan backend also exposes the administrator-only, read-only Customer
 Insight endpoint at `POST /api/admin/ai/customer-insight`. It uses
 `llama3.1:8b`, sends only allow-listed customer and loyalty fields, validates
@@ -119,6 +120,20 @@ Start the application and open `http://localhost:8003/admin.html`, then sign in
 with the seeded administrator account to demonstrate the AI from the frontend.
 The response includes visible Plan -> Act -> Observe -> Adapt metadata, while
 all account edits and point adjustments remain separate manual admin actions.
+
+Open `http://localhost:8003/admin-loyalty.html` to check a customer's live
+points balance through the shared read-only MCP tier tool. In `admin.html`,
+the Accounts and loyalty guide queries approved feature documentation through
+the shared host RAG server. It displays citations and retrieval confidence;
+unrelated questions show insufficient context. Start the host MCP and RAG
+servers and use the installed `llama3.1:8b` model before the live review:
+
+```bash
+OLLAMA_MODEL=llama3.1:8b .venv311/bin/python ai-services/agentic_loop.py \
+  --feature "student-Ethan Ting" --mode mcp
+OLLAMA_MODEL=llama3.1:8b .venv311/bin/python ai-services/agentic_loop.py \
+  --feature "student-Ethan Ting" --mode rag
+```
 
 Prepare the ignored local review database from the seeded schema after building
 the database image:

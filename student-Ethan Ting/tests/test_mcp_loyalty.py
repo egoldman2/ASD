@@ -151,6 +151,23 @@ def test_mcp_route_rejects_bad_tool_output(auth_module, monkeypatch, invalid_pay
     assert response.status_code == 502
 
 
+@pytest.mark.parametrize("field,value", [
+    ("tier", "Gold"),
+    ("next_tier", None),
+    ("points_to_next_tier", 279),
+])
+def test_mcp_route_rejects_inconsistent_tier(auth_module, monkeypatch, field, value):
+    monkeypatch.setattr(auth_module, "database_request", database_request)
+    monkeypatch.setenv("MCP_ENABLED", "true")
+    invalid = tool_response()
+    invalid["result"][field] = value
+    monkeypatch.setattr(auth_module, "call_loyalty_tier_mcp", lambda _: invalid)
+    with auth_module.app.test_client() as client:
+        login_session(client)
+        response = client.post("/api/admin/mcp/loyalty-tier", json={"user_id": 2})
+    assert response.status_code == 502
+
+
 def test_mcp_route_reports_local_service_unavailable(auth_module, monkeypatch):
     monkeypatch.setattr(auth_module, "database_request", database_request)
     monkeypatch.setenv("MCP_ENABLED", "true")

@@ -37,7 +37,16 @@ def test_ethan_feature_is_discoverable_and_complete():
         "database",
         "endpoints",
         "architecture",
+        "mcp",
+        "rag",
     }
+    assert config["mcp_rules"]["required_tools"] == ["ethan_ting_calculate_loyalty_tier"]
+    assert config["rag_rules"]["required_scope"] == "ethan_ting_accounts_loyalty"
+    assert {probe["expected"] for probe in config["rag_rules"]["probes"]} == {
+        "grounded", "insufficient",
+    }
+    for mode in ("mcp", "rag"):
+        assert all((PROJECT_ROOT / path).is_file() for path in config[f"{mode}_files"])
     assert set(config["database_rules"]["required_tables"]) == {
         "users",
         "loyalty_accounts",

@@ -6,10 +6,10 @@
     <title>Admin Dashboard | ASD 2026</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=15">
-    <link rel="stylesheet" href="css/dashboard.css?v=12">
+    <link rel="stylesheet" href="css/dashboard.css?v=13">
     <script src="http://localhost:8000/js/site-header.js?v=10" defer></script>
     <script src="http://localhost:8000/js/account-menu.js?v=12" defer></script>
-    <script src="js/admin.js?v=13" defer></script>
+    <script src="js/admin.js?v=14" defer></script>
   </head>
 
   <body>
@@ -306,6 +306,36 @@
             </div>
           </section>
         </div>
+
+        <section class="ragGuide" aria-labelledby="ragGuideTitle">
+          <div class="panelHeading panelHeading--responsive">
+            <div>
+              <p class="dashboardEyebrow">Grounded knowledge · RAG</p>
+              <h3 id="ragGuideTitle">Accounts and loyalty guide</h3>
+              <p class="panelDescription">Ask how the feature works. Answers use the approved guide and show sources. This does not look up live customers or change data.</p>
+            </div>
+            <button id="refreshRagGuideButton" class="secondaryButton" type="button">Refresh guide</button>
+          </div>
+          <form id="ragGuideForm" class="aiInsightForm">
+            <label for="ragGuideQuestion">Question about account or loyalty rules</label>
+            <textarea id="ragGuideQuestion" name="question" rows="2" maxlength="400" placeholder="For example: How many points are needed for Gold?" required></textarea>
+            <div class="aiPromptSuggestions" aria-label="Guide examples">
+              <button class="aiPromptButton" type="button" data-rag-question="How do loyalty tiers work?">Loyalty tiers</button>
+              <button class="aiPromptButton" type="button" data-rag-question="Can administrators remove points, and what are the limits?">Points adjustments</button>
+              <button class="aiPromptButton" type="button" data-rag-question="What is the warranty period for a laptop?">Unknown policy</button>
+            </div>
+            <div class="formActions"><button id="askRagGuideButton" class="primaryButton" type="submit">Ask guide</button></div>
+          </form>
+          <p id="ragGuideMessage" class="dashboardMessage" role="status" aria-live="polite"></p>
+          <div id="ragGuideResult" class="aiInsightResult" hidden>
+            <p id="ragGuideAnswer" class="aiInsightAnswer"></p>
+            <p id="ragGuideMeta" class="aiInsightMeta"></p>
+            <div id="ragGuideSources" hidden>
+              <h4>Sources used</h4>
+              <ol id="ragGuideCitationList"></ol>
+            </div>
+          </div>
+        </section>
       </section>
 
     </main>
