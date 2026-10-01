@@ -366,6 +366,28 @@
             </div>
             <div id="advice" class="ai-box">Enter a return ID and ask the AI for advice.</div>
         </div>
+
+        <div class="sectionHead">
+            <h2>MCP Tools &mdash; Order Lookup</h2>
+        </div>
+        <div class="card">
+            <div class="aiRow">
+                <input type="number" id="mcp-order-id" placeholder="Order ID" min="1">
+                <button class="actionBtn" onclick="lookupMcp()">Look up via MCP</button>
+            </div>
+            <div id="mcp-result" class="ai-box">Enter an order ID and query the shared MCP server.</div>
+        </div>
+
+        <div class="sectionHead">
+            <h2>Knowledge Base &mdash; Ask (RAG)</h2>
+        </div>
+        <div class="card">
+            <div class="aiRow">
+                <input type="text" id="rag-question" placeholder="Ask a question about the project..." style="flex:1; min-width:320px;">
+                <button class="actionBtn" onclick="askRag()">Ask</button>
+            </div>
+            <div id="rag-result" class="ai-box">Ask a question grounded in the project knowledge base.</div>
+        </div>
     </main>
 
     <footer class="footer">
@@ -611,6 +633,88 @@
                 title.textContent = "Order & Returns";
                 sub.textContent = "";
             }
+        }
+
+        // Release 1: call the shared MCP server through the backend.
+        async function lookupMcp() {
+            const id = document.getElementById("mcp-order-id").value;
+            const box = document.getElementById("mcp-result");
+            if (!id) {
+                box.textContent = "Please enter an order ID first.";
+                return;
+            }
+            box.textContent = "Querying MCP server...";
+            try {
+                const res = await fetch(API + "/mcp/order-status/" + id, { credentials: "include" });
+                const data = await res.json();
+                if (!res.ok || data.success === false) {
+                    const msg = (data.error && data.error.message) || data.error || ("HTTP " + res.status);
+                    box.textContent = "MCP error: " + msg;
+                    return;
+                }
+                const r = data.result;
+                box.innerHTML =
+                    "<strong>MCP tool:</strong> " + data.tool + "<br>" +
+                    "<strong>Order ID:</strong> " + r.order_id + "<br>" +
+                    "<strong>Status:</strong> " + r.status + "<br>" +
+                    "<strong>Date:</strong> " + r.order_date + "<br>" +
+                    "<strong>Total:</strong> $" + r.total + "<br>" +
+                    "<strong>Items:</strong> " + r.item_count;
+            } catch (e) {
+                box.textContent = "Could not reach the MCP server: " + e.message;
+            }
+        }
+
+        // Release 1: ask a grounded question via the shared RAG server (through the backend).
+        async function askRag() {
+            const q = document.getElementById("rag-question").value.trim();
+            const box = document.getElementById("rag-result");
+            if (!q) {
+                box.textContent = "Please enter a question first.";
+                return;
+            }
+            box.textContent = "Searching the knowledge base... (this can take a while)";
+            try {
+                const res = await fetch(API + "/rag/answer", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question: q, scope: "howard_order_returns" })
+                });
+                const d = await res.json();
+                if (d.success === false) {
+                    box.textContent = "RAG error: " + ((d.error && d.error.message) || ("HTTP " + res.status));
+                    return;
+                }
+                const answer = (d.data && (typeof d.data === "string" ? d.data : d.data.answer)) || "No answer.";
+                const conf = d.confidence || "unknown";
+                const confClass = conf === "high" ? "badge-green"
+                    : conf === "medium" ? "badge-amber"
+                    : conf === "insufficient" ? "badge-red" : "badge-grey";
+                let html = "";
+                if (d.insufficient_context) {
+                    html += '<span class="badge badge-red">Insufficient context</span><br><br>';
+                } else {
+                    html += '<span class="badge ' + confClass + '">Confidence: ' + conf + '</span><br><br>';
+                }
+                html += "<strong>Answer:</strong><br>" + escapeHtml(answer);
+                const cites = d.citations || [];
+                if (cites.length) {
+                    html += "<br><br><strong>Sources:</strong><ul>";
+                    cites.forEach(c => {
+                        const label = c.label || c.source_id || c.source || c.title || c.path || c.id || JSON.stringify(c);
+                        html += "<li>" + escapeHtml(String(label)) + "</li>";
+                    });
+                    html += "</ul>";
+                }
+                box.innerHTML = html;
+            } catch (e) {
+                box.textContent = "Could not reach the RAG server: " + e.message;
+            }
+        }
+
+        function escapeHtml(t) {
+            return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
         // Auto-load on page open.

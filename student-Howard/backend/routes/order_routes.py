@@ -3,7 +3,6 @@ import sqlite3
 import subprocess
 import requests
 from flask import Blueprint, current_app, g, jsonify, request
-from shared.feature_flags import feature_enabled
 
 order_blueprint = Blueprint(
     "order_returns",
@@ -40,9 +39,7 @@ def rows_to_list(rows):
 
 
 def ask_ollama(prompt):
-    if not feature_enabled():
-        raise requests.RequestException("AI mode is disabled.")
-    resp = requests.post(OLLAMA_URL, json={"model": MODEL, "prompt": prompt, "stream": False}, timeout=60)
+    resp = requests.post(OLLAMA_URL, json={"model": MODEL, "prompt": prompt, "stream": False})
     resp.raise_for_status()
     return resp.json()["response"].strip()
 
@@ -305,8 +302,6 @@ def return_advice(return_id):
     user = current_user()
     if user is None:
         return authentication_failure()
-    if not feature_enabled():
-        return jsonify({"error": "AI mode is disabled.", "code": "AI_MODE_DISABLED"}), 503
 
     conn = get_db()
     ret = conn.execute("SELECT * FROM returns WHERE return_id=?", (return_id,)).fetchone()
@@ -338,3 +333,111 @@ def return_advice(return_id):
         "ai_summary": advice,
         "note": "Advisory only. Use the status endpoint to actually change status.",
     })
+
+
+# ---------- Release 1: MCP integration ----------
+import asyncio as _asyncio
+
+MCP_ENABLED = os.environ.get("MCP_ENABLED", "true").lower() == "true"
+MCP_SERVER_URL = os.environ.get("MCP_SERVER_URL", "http://127.0.0.1:8765/mcp")
+MCP_TIMEOUT_SECONDS = float(os.environ.get("MCP_TIMEOUT_SECONDS", "15"))
+
+
+async def _mcp_call(tool_name, arguments):
+    import json
+    from mcp import ClientSession
+    from mcp.client.streamable_http import streamablehttp_client
+
+    async with streamablehttp_client(MCP_SERVER_URL) as (read, write, _):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            result = await session.call_tool(tool_name, arguments)
+            if result.structuredContent is not None:
+                return result.structuredContent
+            for block in result.content:
+                if getattr(block, "type", None) == "text":
+                    try:
+                        return json.loads(block.text)
+                    except ValueError:
+                        return {"text": block.text}
+            return {}
+
+
+def call_mcp_tool(tool_name, arguments):
+    """Call a tool on the shared MCP server; frontend reaches MCP only via here."""
+    if not MCP_ENABLED:
+        return {
+            "success": False,
+            "tool": tool_name,
+            "result": None,
+            "error": {"code": "MCP_DISABLED",
+                      "message": "MCP is disabled in this environment."},
+        }
+    try:
+        return _asyncio.run(
+            _asyncio.wait_for(_mcp_call(tool_name, arguments),
+                              timeout=MCP_TIMEOUT_SECONDS)
+        )
+    except Exception as exc:
+        return {
+            "success": False,
+            "tool": tool_name,
+            "result": None,
+            "error": {"code": "MCP_UNAVAILABLE",
+                      "message": f"Could not reach the MCP server: {exc}"},
+        }
+
+
+@order_blueprint.get("/mcp/order-status/<int:order_id>")
+def mcp_order_status(order_id):
+    return jsonify(call_mcp_tool("howard_get_order_status", {"order_id": order_id}))
+
+
+@order_blueprint.get("/mcp/return-details/<int:return_id>")
+def mcp_return_details(return_id):
+    return jsonify(call_mcp_tool("howard_get_return_details", {"return_id": return_id}))
+
+
+# ---------- Release 1: RAG integration ----------
+RAG_ENABLED = os.environ.get("RAG_ENABLED", "true").lower() == "true"
+RAG_SERVER_URL = os.environ.get("RAG_SERVER_URL", "http://127.0.0.1:5003").rstrip("/")
+RAG_TIMEOUT_SECONDS = float(os.environ.get("RAG_CLIENT_TIMEOUT_SECONDS", "60"))
+
+
+@order_blueprint.post("/rag/answer")
+def rag_answer():
+    """Send a question to the shared RAG server and return its grounded answer."""
+    if not RAG_ENABLED:
+        return jsonify({
+            "success": False, "operation": "answer_question", "data": None,
+            "citations": [], "confidence": None, "insufficient_context": False,
+            "error": {"code": "RAG_DISABLED",
+                      "message": "RAG is disabled in this environment."},
+        }), 503
+
+    body = request.get_json(silent=True) or {}
+    question = (body.get("question") or "").strip()
+    if not question:
+        return jsonify({
+            "success": False, "operation": "answer_question", "data": None,
+            "citations": [], "confidence": None, "insufficient_context": False,
+            "error": {"code": "INVALID_ARGUMENT",
+                      "message": "question must be a non-empty string."},
+        }), 400
+
+    payload = {"question": question}
+    scope = body.get("scope")
+    if scope:
+        payload["scope"] = scope
+
+    try:
+        resp = requests.post(RAG_SERVER_URL + "/answer", json=payload,
+                             timeout=RAG_TIMEOUT_SECONDS)
+        return jsonify(resp.json()), resp.status_code
+    except requests.RequestException as exc:
+        return jsonify({
+            "success": False, "operation": "answer_question", "data": None,
+            "citations": [], "confidence": None, "insufficient_context": False,
+            "error": {"code": "RAG_UNAVAILABLE",
+                      "message": f"Could not reach the RAG server: {exc}"},
+        }), 503
