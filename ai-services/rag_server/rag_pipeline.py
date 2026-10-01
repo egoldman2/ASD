@@ -182,6 +182,9 @@ def _default_sources(settings: RAGSettings) -> dict[str, KnowledgeSource]:
         MarkdownKnowledgeSource(scope="ethan_ting_accounts_loyalty",
                                 directory=BASE_DIR / "knowledge" / "ethan_ting",
                                 source_name="Ethan Ting Accounts and Loyalty"),
+        MarkdownKnowledgeSource(scope="howard_order_returns",
+                                directory=BASE_DIR / "knowledge" / "howard",
+                                source_name="Howard Order and Returns"),
     ]
     return {source.scope: source for source in sources}
 
