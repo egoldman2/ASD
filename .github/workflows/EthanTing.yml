@@ -145,6 +145,9 @@ jobs:
           test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
             http://localhost:6002/api/profile)" = "401"
 
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            http://localhost:8003/api/admin/assistant/service-status)" = "401"
+
           curl --fail --silent --cookie-jar /tmp/ethan-ting-customer.cookies \
             --header "Content-Type: application/json" \
             --data '{"email":"customer@asd.local","password":"CustomerPass!2026"}' \
@@ -162,6 +165,10 @@ jobs:
             --cookie /tmp/ethan-ting-customer.cookies \
             http://localhost:6002/api/admin/customers)" = "403"
 
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --cookie /tmp/ethan-ting-customer.cookies \
+            http://localhost:8003/api/admin/assistant/service-status)" = "403"
+
           curl --fail --silent --cookie-jar /tmp/ethan-ting-admin.cookies \
             --header "Content-Type: application/json" \
             --data '{"email":"admin@asd.local","password":"AdminPass!2026"}' \
@@ -170,6 +177,20 @@ jobs:
           curl --fail --silent --cookie /tmp/ethan-ting-admin.cookies \
             http://localhost:6002/api/admin/customers \
             | grep -q 'customer@asd.local'
+
+          curl --fail --silent --cookie /tmp/ethan-ting-admin.cookies \
+            http://localhost:8003/api/admin/assistant/service-status \
+            | grep -q 'MCP: Disabled'
+
+          curl --fail --silent --cookie /tmp/ethan-ting-admin.cookies \
+            http://localhost:8003/api/admin/assistant/service-status \
+            | grep -q 'RAG: Disabled'
+
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --cookie /tmp/ethan-ting-admin.cookies \
+            --header 'Content-Type: application/json' \
+            --data '{"user_id":2,"limit":5}' \
+            http://localhost:6002/api/admin/mcp/loyalty-history)" = "503"
 
           test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
             --cookie /tmp/ethan-ting-admin.cookies \

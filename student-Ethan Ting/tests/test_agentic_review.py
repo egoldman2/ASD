@@ -40,7 +40,7 @@ def test_ethan_feature_is_discoverable_and_complete():
         "mcp",
         "rag",
     }
-    assert config["mcp_rules"]["required_tools"] == ["ethan_ting_calculate_loyalty_tier"]
+    assert config["mcp_rules"]["required_tools"] == ["ethan_ting_calculate_loyalty_tier", "ethan_ting_get_loyalty_history"]
     assert config["rag_rules"]["required_scope"] == "ethan_ting_accounts_loyalty"
     assert {probe["expected"] for probe in config["rag_rules"]["probes"]} == {
         "grounded", "insufficient",

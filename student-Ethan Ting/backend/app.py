@@ -1,17 +1,21 @@
 import asyncio
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+from html import escape
 from datetime import timedelta
 from functools import wraps
 from pathlib import Path
 import re
+import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.request import Request as URLRequest
 from urllib.request import urlopen
 
 import httpx
-from flask import Flask, g, jsonify, request, session
+from flask import Flask, Response, g, jsonify, request, session
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 from werkzeug.security import check_password_hash
@@ -791,7 +795,7 @@ def validated_session_user():
             session.clear()
             return None, (jsonify({"error": "You must sign in."}), 401)
         return None, database_error_response(error)
-    except URLError as error:
+    except (URLError, TimeoutError, OSError) as error:
         return None, database_error_response(error)
 
     stored_user = result.get("user", {})
@@ -834,7 +838,8 @@ def admin_required(function):
     def protected_function(*args, **kwargs):
         user = session.get("user")
 
-        if user is None:
+        if not isinstance(user, dict):
+            session.clear()
             return jsonify({"error": "You must sign in."}), 401
 
         if user.get("role") != "admin":
@@ -1180,6 +1185,21 @@ def get_all_loyalty_accounts():
     return jsonify(result)
 
 
+@app.post("/api/admin/mcp/loyalty-history")
+@admin_required
+def get_selected_customer_history_from_mcp():
+    """A typed quick action shares the chat validator but does not need AI Mode."""
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict) or not set(data).issubset({"user_id", "limit"}):
+        return jsonify({"error": "Select a customer and a history limit."}), 400
+    user_id, limit = data.get("user_id"), data.get("limit", 5)
+    if type(user_id) is not int or not 1 <= user_id <= 2147483647:
+        return jsonify({"error": "Select a valid customer."}), 400
+    if type(limit) is not int or not 1 <= limit <= 20:
+        return jsonify({"error": "Request between 1 and 20 recent point changes."}), 400
+    return create_loyalty_history_insight(f"Show last {limit} point changes for Customer #{user_id}.")
+
+
 @app.post("/api/admin/mcp/loyalty-tier")
 @admin_required
 def get_customer_loyalty_tier_from_mcp():
@@ -1243,6 +1263,65 @@ def get_customer_loyalty_tier_from_mcp():
         return jsonify({"error": "The MCP service returned an invalid result."}), 502
 
     return jsonify(payload)
+
+
+def assistant_service_health(kind):
+    """Bounded, read-only liveness probe. No customer data or cookies leave here."""
+    enabled = feature_enabled("MCP_ENABLED") if kind == "MCP" else (
+        feature_enabled() and feature_enabled("RAG_ENABLED")
+    )
+    if not enabled:
+        return kind, "disabled", "Disabled"
+    configured = os.environ.get(
+        "MCP_SERVER_URL" if kind == "MCP" else "RAG_SERVER_URL",
+        "http://127.0.0.1:8765/mcp" if kind == "MCP" else "http://127.0.0.1:5003",
+    )
+    try:
+        parts = urlsplit(configured)
+        if parts.scheme not in {"http", "https"} or not parts.netloc or parts.username or parts.password:
+            return kind, "offline", "Unavailable"
+        health_url = urlunsplit((parts.scheme, parts.netloc, "/health", "", ""))
+        deadline = time.monotonic() + 3
+        with httpx.Client(timeout=2, follow_redirects=False) as client:
+            with client.stream("GET", health_url) as response:
+                if response.status_code != 200:
+                    return kind, "offline", "Unavailable"
+                body = bytearray()
+                for chunk in response.iter_bytes():
+                    body.extend(chunk)
+                    if len(body) > 16384 or time.monotonic() > deadline:
+                        return kind, "offline", "Unavailable"
+                payload = json.loads(body)
+        expected = "asd-marketplace-mcp" if kind == "MCP" else "asd-marketplace-rag"
+        if not isinstance(payload, dict) or payload.get("service") != expected or payload.get("status") != "healthy":
+            return kind, "offline", "Unavailable"
+        if kind == "RAG" and (
+            payload.get("enabled") is not True
+            or not isinstance(payload.get("available_scopes"), list)
+            or ACCOUNTS_LOYALTY_RAG_SCOPE not in payload["available_scopes"]
+        ):
+            return kind, "offline", "Guide scope unavailable"
+        return kind, "online", "Reachable"
+    except (httpx.HTTPError, ValueError, TypeError, OSError):
+        return kind, "offline", "Unavailable"
+
+
+@app.get("/api/admin/assistant/service-status")
+@admin_required
+def get_assistant_service_status():
+    """HTML fragment for HTMX; health does not guarantee tool/model success."""
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        statuses = list(executor.map(assistant_service_health, ("MCP", "RAG")))
+    badges = " ".join(
+        f'<span class="assistantService assistantService--{state}">{escape(kind)}: {escape(label)}</span>'
+        for kind, state, label in statuses
+    )
+    checked = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
+    return Response(
+        badges + f'<small>Checked {checked}. Service connection only; requests may still fail.</small>',
+        mimetype="text/html",
+        headers={"Cache-Control": "no-store", "Vary": "Cookie", "X-Content-Type-Options": "nosniff"},
+    )
 
 
 @app.post("/api/admin/rag/refresh")

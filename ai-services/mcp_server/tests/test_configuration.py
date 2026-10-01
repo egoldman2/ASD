@@ -12,6 +12,7 @@ def test_settings_read_and_normalise_environment(monkeypatch):
     monkeypatch.setenv("PRODUCT_DATABASE_API_URL", "http://localhost:7001/api/")
     monkeypatch.setenv("MCP_REQUEST_TIMEOUT_SECONDS", "2.5")
     monkeypatch.setenv("MCP_LOG_LEVEL", "debug")
+    monkeypatch.setenv("MCP_CUSTOMER_API_URL", "http://localhost:7602/")
 
     settings = MCPSettings.from_environment()
 
@@ -21,6 +22,7 @@ def test_settings_read_and_normalise_environment(monkeypatch):
     assert settings.product_database_api_url == "http://localhost:7001/api"
     assert settings.request_timeout_seconds == 2.5
     assert settings.log_level == "DEBUG"
+    assert settings.customer_api_url == "http://localhost:7602"
     assert settings.endpoint_url == "http://127.0.0.1:9123/custom-mcp"
 
 
@@ -31,6 +33,7 @@ def test_settings_read_and_normalise_environment(monkeypatch):
         ("MCP_PORT", "not-a-port", "must be an integer"),
         ("MCP_REQUEST_TIMEOUT_SECONDS", "0", "greater than zero"),
         ("MCP_PATH", "   ", "must not be empty"),
+        ("MCP_CUSTOMER_API_URL", "   ", "must not be empty"),
         ("MCP_LOG_LEVEL", "verbose", "must be one of"),
     ],
 )

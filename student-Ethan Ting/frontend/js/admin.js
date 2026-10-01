@@ -17,34 +17,11 @@ const adminMessage = document.querySelector("#adminMessage");
 const customerIdInput = document.querySelector("#customerId");
 const customerNameInput = document.querySelector("#customerName");
 const customerEmailInput = document.querySelector("#customerEmail");
-const customerInsightForm = document.querySelector("#customerInsightForm");
-const customerInsightQuestion = document.querySelector("#customerInsightQuestion");
-const askCustomerInsightButton = document.querySelector("#askCustomerInsightButton");
-const customerInsightMessage = document.querySelector("#customerInsightMessage");
-const customerInsightResult = document.querySelector("#customerInsightResult");
-const customerInsightAnalysis = document.querySelector("#customerInsightAnalysis");
-const customerInsightAnswer = document.querySelector("#customerInsightAnswer");
-const customerInsightMeta = document.querySelector("#customerInsightMeta");
-const customerInsightLabel = document.querySelector("#customerInsightLabel");
-const customerInsightHistory = document.querySelector("#customerInsightHistory");
-const customerInsightHistoryBody = document.querySelector("#customerInsightHistoryBody");
-const customerChangeProposal = document.querySelector("#customerChangeProposal");
-const confirmCustomerChangeButton = document.querySelector("#confirmCustomerChangeButton");
-const cancelCustomerChangeButton = document.querySelector("#cancelCustomerChangeButton");
-const ragGuideForm = document.querySelector("#ragGuideForm");
-const ragGuideQuestion = document.querySelector("#ragGuideQuestion");
-const askRagGuideButton = document.querySelector("#askRagGuideButton");
-const refreshRagGuideButton = document.querySelector("#refreshRagGuideButton");
-const ragGuideMessage = document.querySelector("#ragGuideMessage");
-const ragGuideResult = document.querySelector("#ragGuideResult");
-const ragGuideAnswer = document.querySelector("#ragGuideAnswer");
-const ragGuideMeta = document.querySelector("#ragGuideMeta");
-const ragGuideSources = document.querySelector("#ragGuideSources");
-const ragGuideCitationList = document.querySelector("#ragGuideCitationList");
+
 
 let customers = [];
 let administrators = [];
-let pendingCustomerChange = null;
+
 
 
 async function authRequest(path, options = {}) {
@@ -74,87 +51,6 @@ function showMessage(message, success = false) {
 }
 
 
-function showCustomerInsightMessage(message, success = false) {
-  customerInsightMessage.textContent = message;
-  customerInsightMessage.classList.toggle("success", success);
-}
-
-
-function renderCustomerInsight(result) {
-  pendingCustomerChange = result.proposal || null;
-  customerInsightAnswer.textContent = result.answer;
-  customerInsightLabel.textContent = result.source === "mcp" ? "Customer loyalty history" : "AI response";
-  customerInsightMeta.textContent = result.source === "mcp" ? (
-    result.clarification_required ? "Select one customer · No records changed" : "MCP · Live recorded transactions · Read-only"
-  ) : (
-    `${result.model} · ${result.customers_analyzed} customer records · Read-only analysis`
-  );
-  customerInsightHistoryBody.replaceChildren();
-  const transactions = result.history?.transactions || [];
-  for (const transaction of transactions) {
-    const row = document.createElement("tr");
-    const timestamp = transaction.created_at.replace(" ", "T");
-    const date = new Date(/(?:Z|[+-]\d{2}:\d{2})$/.test(timestamp) ? timestamp : `${timestamp}Z`);
-    const values = [
-      Number.isNaN(date.getTime()) ? transaction.created_at : date.toLocaleString(),
-      `${transaction.points_change > 0 ? "+" : ""}${transaction.points_change}`,
-      transaction.reason,
-    ];
-    for (const value of values) {
-      const cell = document.createElement("td");
-      cell.textContent = value;
-      row.appendChild(cell);
-    }
-    customerInsightHistoryBody.appendChild(row);
-  }
-  customerInsightHistory.hidden = transactions.length === 0;
-  customerInsightAnalysis.hidden = Boolean(pendingCustomerChange);
-  customerInsightResult.classList.toggle(
-    "aiInsightResult--proposal",
-    Boolean(pendingCustomerChange)
-  );
-
-  if (pendingCustomerChange) {
-    const current = pendingCustomerChange.current;
-    const changes = pendingCustomerChange.changes;
-    document.querySelector("#proposalCustomerSummary").textContent = (
-      `${current.full_name} · ${current.email}`
-    );
-    const nameRow = document.querySelector("#proposalNameRow");
-    const emailRow = document.querySelector("#proposalEmailRow");
-
-    nameRow.hidden = !changes.full_name;
-    emailRow.hidden = !changes.email;
-
-    if (changes.full_name) {
-      document.querySelector("#proposalCurrentName").textContent = current.full_name;
-      document.querySelector("#proposalNewName").textContent = changes.full_name;
-    }
-    if (changes.email) {
-      document.querySelector("#proposalCurrentEmail").textContent = current.email;
-      document.querySelector("#proposalNewEmail").textContent = changes.email;
-    }
-
-    document.querySelector("#proposalAiMeta").textContent = (
-      `${result.model} analysed ${result.customers_analyzed} allow-listed customer records. `
-      + "The proposal endpoint did not write to the database."
-    );
-    customerChangeProposal.hidden = false;
-  } else {
-    customerChangeProposal.hidden = true;
-  }
-
-  customerInsightResult.hidden = false;
-}
-
-
-function cancelCustomerChangeProposal(message = "Change proposal cancelled. Nothing was saved.") {
-  pendingCustomerChange = null;
-  customerChangeProposal.hidden = true;
-  customerInsightResult.hidden = true;
-  customerInsightResult.classList.remove("aiInsightResult--proposal");
-  showCustomerInsightMessage(message, true);
-}
 
 
 function updateSummary() {
@@ -345,6 +241,7 @@ async function loadCustomers() {
   updateSummary();
   renderCustomers();
   renderAdministrators();
+  document.dispatchEvent(new Event("customer-accounts:updated"));
 }
 
 
@@ -435,165 +332,6 @@ customerForm.addEventListener("submit", async (event) => {
 });
 
 
-customerInsightForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const question = customerInsightQuestion.value.trim();
-  if (!question) {
-    customerInsightResult.hidden = true;
-    showCustomerInsightMessage("Enter a customer or loyalty question.");
-    return;
-  }
-
-  askCustomerInsightButton.disabled = true;
-  askCustomerInsightButton.textContent = "Analysing...";
-  pendingCustomerChange = null;
-  customerChangeProposal.hidden = true;
-  customerInsightResult.hidden = true;
-  showCustomerInsightMessage(
-    "Checking customer information...",
-    true
-  );
-
-  try {
-    const result = await authRequest("/api/admin/ai/customer-insight", {
-      method: "POST",
-      body: JSON.stringify({ question }),
-    });
-    renderCustomerInsight(result);
-    showCustomerInsightMessage(
-      result.proposal
-        ? ""
-        : result.source === "mcp"
-          ? (result.clarification_required ? "Include one customer in your question." : "History loaded. No customer records were changed.")
-        : "Analysis complete. Review the evidence before taking any action.",
-      true
-    );
-  } catch (error) {
-    customerInsightResult.hidden = true;
-    showCustomerInsightMessage(error.message);
-  } finally {
-    askCustomerInsightButton.disabled = false;
-    askCustomerInsightButton.textContent = "Ask AI";
-  }
-});
-
-
-confirmCustomerChangeButton.addEventListener("click", async () => {
-  if (!pendingCustomerChange) {
-    return;
-  }
-
-  confirmCustomerChangeButton.disabled = true;
-  confirmCustomerChangeButton.textContent = "Saving...";
-
-  try {
-    await authRequest(
-      `/api/admin/customers/${pendingCustomerChange.customer_id}`,
-      {
-        method: "PUT",
-        body: JSON.stringify(pendingCustomerChange.changes),
-      }
-    );
-    await loadCustomers();
-    pendingCustomerChange = null;
-    customerChangeProposal.hidden = true;
-    customerInsightResult.hidden = true;
-    customerInsightResult.classList.remove("aiInsightResult--proposal");
-    showCustomerInsightMessage(
-      "Customer changes saved.",
-      true
-    );
-    showMessage("Customer updated from an approved AI proposal.", true);
-  } catch (error) {
-    showCustomerInsightMessage(error.message);
-  } finally {
-    confirmCustomerChangeButton.disabled = false;
-    confirmCustomerChangeButton.textContent = "Save customer changes";
-  }
-});
-
-
-cancelCustomerChangeButton.addEventListener("click", () => {
-  cancelCustomerChangeProposal();
-});
-
-
-for (const promptButton of document.querySelectorAll("[data-insight-question]")) {
-  promptButton.addEventListener("click", () => {
-    customerInsightQuestion.value = promptButton.dataset.insightQuestion;
-    customerInsightQuestion.focus();
-  });
-}
-
-
-function showRagGuideMessage(message, success = false) {
-  ragGuideMessage.textContent = message;
-  ragGuideMessage.classList.toggle("success", success);
-}
-
-
-ragGuideForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const question = ragGuideQuestion.value.trim();
-  if (!question) {
-    showRagGuideMessage("Enter a question about the feature guide.");
-    return;
-  }
-  askRagGuideButton.disabled = true;
-  askRagGuideButton.textContent = "Checking sources...";
-  ragGuideResult.hidden = true;
-  showRagGuideMessage("Looking for approved account and loyalty guidance...", true);
-  try {
-    const result = await authRequest("/api/admin/rag/answer", {
-      method: "POST",
-      body: JSON.stringify({ question }),
-    });
-    ragGuideAnswer.textContent = result.answer;
-    ragGuideMeta.textContent = result.insufficient_context
-      ? "Insufficient context · No sources used"
-      : `${result.model} · ${result.confidence} retrieval confidence`;
-    ragGuideCitationList.replaceChildren();
-    for (const citation of result.citations) {
-      const item = document.createElement("li");
-      item.textContent = `[${citation.rank}] ${citation.label} (${citation.source_id})`;
-      ragGuideCitationList.append(item);
-    }
-    ragGuideSources.hidden = result.citations.length === 0;
-    ragGuideResult.hidden = false;
-    showRagGuideMessage(result.insufficient_context
-      ? "The approved guide does not contain enough evidence to answer."
-      : "Answer includes citations from the approved guide. Review the sources before acting.", true);
-  } catch (error) {
-    showRagGuideMessage(error.message);
-  } finally {
-    askRagGuideButton.disabled = false;
-    askRagGuideButton.textContent = "Ask guide";
-  }
-});
-
-
-refreshRagGuideButton.addEventListener("click", async () => {
-  refreshRagGuideButton.disabled = true;
-  refreshRagGuideButton.textContent = "Refreshing...";
-  try {
-    const result = await authRequest("/api/admin/rag/refresh", { method: "POST" });
-    showRagGuideMessage(`${result.message} ${result.document_count} knowledge sections indexed.`, true);
-  } catch (error) {
-    showRagGuideMessage(error.message);
-  } finally {
-    refreshRagGuideButton.disabled = false;
-    refreshRagGuideButton.textContent = "Refresh guide";
-  }
-});
-
-
-for (const promptButton of document.querySelectorAll("[data-rag-question]")) {
-  promptButton.addEventListener("click", () => {
-    ragGuideQuestion.value = promptButton.dataset.ragQuestion;
-    ragGuideQuestion.focus();
-  });
-}
 
 
 document.querySelector("#newCustomerButton").addEventListener("click", () => {
@@ -632,4 +370,5 @@ async function startAdminPage() {
 }
 
 
+document.addEventListener("customer-assistant:updated", () => loadCustomers().catch(error => showMessage(error.message)));
 startAdminPage();

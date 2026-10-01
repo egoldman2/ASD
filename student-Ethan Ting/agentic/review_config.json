@@ -85,6 +85,7 @@
     "student-Ethan Ting/frontend/js/login.js",
     "student-Ethan Ting/frontend/js/customer.js",
     "student-Ethan Ting/frontend/js/admin.js",
+    "student-Ethan Ting/frontend/js/customer-assistant.js",
     "student-Ethan Ting/tests/test_login_system.py",
     "student-Ethan Ting/tests/test_loyalty_edge_cases.py",
     "student-Ethan Ting/tests/test_customer_insight_ai.py",
@@ -99,6 +100,7 @@
     "shared/loyalty_history.py",
     "student-Ethan Ting/backend/app.py",
     "student-Ethan Ting/frontend/js/admin-loyalty.js",
+    "student-Ethan Ting/frontend/js/customer-assistant.js",
     "student-Ethan Ting/frontend/js/admin.js",
     "student-Ethan Ting/tests/test_mcp_loyalty.py",
     "student-Ethan Ting/tests/test_mcp_history_chat.py",
@@ -113,7 +115,7 @@
       "server": "ai-services/mcp_server/server.py",
       "tools": "ai-services/mcp_server/tools/ethan_ting_customer.py",
       "client": "student-Ethan Ting/backend/app.py",
-      "frontend": "student-Ethan Ting/frontend/js/admin-loyalty.js",
+      "frontend": "student-Ethan Ting/frontend/js/customer-assistant.js",
       "routes": "student-Ethan Ting/backend/app.py",
       "compose": "docker-compose.yml"
     },
@@ -135,6 +137,7 @@
     "ai-services/rag_server/knowledge/ethan_ting/accounts_and_loyalty.md",
     "student-Ethan Ting/backend/app.py",
     "student-Ethan Ting/frontend/js/admin.js",
+    "student-Ethan Ting/frontend/js/customer-assistant.js",
     "student-Ethan Ting/tests/test_rag_accounts_loyalty.py",
     "docker-compose.yml",
     ".github/workflows/EthanTing.yml"
@@ -149,7 +152,7 @@
       "registry": "ai-services/rag_server/rag_pipeline.py",
       "source": "ai-services/rag_server/sources/markdown_knowledge.py",
       "client": "student-Ethan Ting/backend/app.py",
-      "frontend": "student-Ethan Ting/frontend/js/admin.js",
+      "frontend": "student-Ethan Ting/frontend/js/customer-assistant.js",
       "routes": "student-Ethan Ting/backend/app.py",
       "compose": "docker-compose.yml"
     },

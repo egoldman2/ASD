@@ -87,6 +87,11 @@ def test_streamable_http_initialise_list_and_call(
                             "next_tier": "Gold",
                             "points_to_next_tier": 280,
                         }
+                        history_tool = tools["ethan_ting_get_loyalty_history"]
+                        assert set(history_tool.inputSchema["properties"]) == {"customer_id", "limit"}
+                        history = await session.call_tool("ethan_ting_get_loyalty_history", {"customer_id": 2})
+                        assert history.isError is False
+                        assert history.structuredContent["error"]["code"] == "AUTHENTICATION_REQUIRED"
 
     asyncio.run(exercise_protocol())
 

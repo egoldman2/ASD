@@ -6,16 +6,18 @@
     <title>Loyalty Management | ASD 2026</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=15">
-    <link rel="stylesheet" href="css/dashboard.css?v=13">
+    <link rel="stylesheet" href="css/dashboard.css?v=14">
     <script src="http://localhost:8000/js/site-header.js?v=10" defer></script>
     <script src="http://localhost:8000/js/account-menu.js?v=12" defer></script>
-    <script src="js/admin-loyalty.js?v=3" defer></script>
+    <script src="http://localhost:8000/js/htmx.min.js" defer></script>
+  <script src="js/customer-assistant.js?v=3" defer></script>
+    <script src="js/admin-loyalty.js?v=4" defer></script>
   </head>
 
   <body>
     <header class="navbar appleNav" data-site-header data-active="account"></header>
 
-    <main class="dashboardPage">
+    <main class="dashboardPage adminOverviewPage">
       <section class="dashboardHero">
         <div>
           <p class="dashboardEyebrow">Administrator dashboard</p>
@@ -47,33 +49,7 @@
         </article>
       </section>
 
-      <section class="dashboardPanel" aria-labelledby="mcpTierTitle">
-        <div class="panelHeading">
-          <div>
-            <p class="dashboardEyebrow">MCP tool</p>
-            <h2 id="mcpTierTitle">Check a loyalty tier</h2>
-            <p class="panelDescription">
-              Select a customer to check their current points with the shared MCP service.
-              Only the points balance is sent to the tool.
-            </p>
-          </div>
-        </div>
-
-        <form id="mcpTierForm" class="mcpTierForm">
-          <div class="formField">
-            <label for="mcpTierCustomer">Customer</label>
-            <select id="mcpTierCustomer" class="searchField" required>
-              <option value="">Loading customers...</option>
-            </select>
-          </div>
-          <button id="mcpTierButton" class="primaryButton" type="submit">Check tier</button>
-        </form>
-        <p id="mcpTierMessage" class="dashboardMessage" role="status" aria-live="polite"></p>
-        <div id="mcpTierResult" class="mcpTierResult" hidden>
-          <span id="mcpTierBadge" class="loyaltyTierBadge"></span>
-          <p id="mcpTierDetails"></p>
-        </div>
-      </section>
+      <section id="customerAssistant" class="dashboardPanel aiInsightPanel customerAssistant" aria-labelledby="customerInsightTitle"></section>
 
       <section id="loyaltyAdjustmentPanel" class="dashboardPanel scrollTargetPanel" hidden>
         <div class="panelHeading">

@@ -448,6 +448,45 @@
   background: linear-gradient(145deg, #ffffff 0%, #f4f8fc 100%);
 }
 
+/* Shared customer assistant: task navigation, not a second admin dashboard. */
+.customerAssistant .assistantStatusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .8rem 0;
+  border-top: 1px solid #dce6f0;
+}
+.assistantStatus { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+.assistantStatus small { flex-basis: 100%; color: #53677d; font-size: .78rem; }
+.assistantService { border: 1px solid #cbd5e1; background: #f1f5f9; border-radius: 999px; padding: .25rem .65rem; font-size: .82rem; font-weight: 650; color: #475569; }
+.assistantService--online { color: #166534; background: #ecfdf3; border-color: #86cda1; }
+.assistantService--offline { color: #9a3412; background: #fff7ed; border-color: #f3bb84; }
+.assistantTabs { display: flex; flex-wrap: wrap; gap: .25rem; margin: .65rem 0 1.2rem; padding: .25rem; border-radius: .6rem; background: #f1f5f9; }
+.assistantTabs button { flex: 1; border: 1px solid transparent; border-radius: .45rem; padding: .65rem .8rem; background: transparent; color: #334155; cursor: pointer; font: inherit; font-weight: 650; white-space: nowrap; }
+.assistantTabs button[aria-selected="true"] { background: white; color: #205da2; border-color: #cbd8e7; box-shadow: 0 1px 3px #1233; }
+.customerAssistant button:focus-visible, .customerAssistant select:focus-visible { outline: 3px solid #3684d5; outline-offset: 3px; }
+.customerAssistant button:disabled { opacity: .6; cursor: wait; }
+.customerAssistant .assistantQuickActions { display: flex; flex-wrap: wrap; align-items: end; gap: .8rem; margin: .75rem 0; }
+.customerAssistant .assistantQuickActions .formField { flex: 1 1 300px; margin-bottom: 0; }
+.customerAssistant .formField select { width: 100%; min-width: 0; }
+.assistantCustomerFields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; align-items: end; gap: .8rem; margin: .8rem 0; }
+.assistantCustomerFields .formField { margin: 0; min-width: 0; }
+.customerAssistant .assistantGuide { border-top: 0; margin-top: 0; padding-top: 0; }
+.customerAssistant .aiInsightResult { overflow-wrap: anywhere; }
+.customerAssistant .tableWrapper { max-width: 100%; }
+.customerAssistant [hidden] { display: none !important; }
+@media (max-width: 600px) {
+  .adminOverviewPage .summaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
+  .adminOverviewPage .summaryCard { padding: .9rem; }
+  .adminOverviewPage .summaryLabel { font-size: .8rem; }
+  .adminOverviewPage .summaryCard strong { font-size: 1.8rem; }
+  .assistantCustomerFields { grid-template-columns: minmax(0, 1fr); }
+  .customerAssistant .assistantStatusRow { align-items: start; flex-direction: column; }
+  .customerAssistant .assistantQuickActions .formField { flex-basis: 100%; }
+  .customerAssistant .assistantTabs button { padding: .6rem .4rem; font-size: .85rem; }
+}
+
 .aiInsightPanel .dashboardMessage:empty {
   display: none;
 }

@@ -9,11 +9,7 @@ const loyaltyCustomerId = document.querySelector("#loyaltyCustomerId");
 const pointsChangeInput = document.querySelector("#pointsChange");
 const pointsReasonInput = document.querySelector("#pointsReason");
 const loyaltyHistoryBody = document.querySelector("#adminLoyaltyHistoryBody");
-const mcpTierForm = document.querySelector("#mcpTierForm");
-const mcpTierCustomer = document.querySelector("#mcpTierCustomer");
-const mcpTierButton = document.querySelector("#mcpTierButton");
-const mcpTierMessage = document.querySelector("#mcpTierMessage");
-const mcpTierResult = document.querySelector("#mcpTierResult");
+
 
 let loyaltyAccounts = [];
 
@@ -80,29 +76,6 @@ function updateSummary() {
 }
 
 
-function updateMcpCustomerOptions() {
-  const previousSelection = mcpTierCustomer.value;
-  mcpTierCustomer.replaceChildren();
-
-  const prompt = document.createElement("option");
-  prompt.value = "";
-  prompt.textContent = loyaltyAccounts.length
-    ? "Select a customer"
-    : "No customers available";
-  mcpTierCustomer.append(prompt);
-
-  for (const account of loyaltyAccounts) {
-    const option = document.createElement("option");
-    option.value = String(account.user_id);
-    option.textContent = `${account.full_name} (${account.points_balance.toLocaleString("en-AU")} points)`;
-    mcpTierCustomer.append(option);
-  }
-
-  if (loyaltyAccounts.some((account) => String(account.user_id) === previousSelection)) {
-    mcpTierCustomer.value = previousSelection;
-  }
-  mcpTierButton.disabled = loyaltyAccounts.length === 0;
-}
 
 
 function renderHistory(transactions) {
@@ -223,49 +196,11 @@ async function loadLoyaltyAccounts() {
   const result = await authRequest("/api/admin/loyalty");
   loyaltyAccounts = result.loyalty_accounts;
   updateSummary();
-  updateMcpCustomerOptions();
+  document.dispatchEvent(new Event("customer-accounts:updated"));
   renderAccounts();
 }
 
 
-mcpTierForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const userId = Number(mcpTierCustomer.value);
-  if (!Number.isInteger(userId) || userId <= 0) {
-    mcpTierMessage.textContent = "Select a customer first.";
-    return;
-  }
-
-  mcpTierResult.hidden = true;
-  mcpTierMessage.classList.remove("success");
-  mcpTierMessage.classList.add("pending");
-  mcpTierMessage.textContent = "Checking the shared MCP tool...";
-  mcpTierButton.disabled = true;
-
-  try {
-    const response = await authRequest("/api/admin/mcp/loyalty-tier", {
-      method: "POST",
-      body: JSON.stringify({user_id: userId}),
-    });
-    const tier = response.result;
-    const badge = document.querySelector("#mcpTierBadge");
-    const details = document.querySelector("#mcpTierDetails");
-    badge.textContent = tier.tier;
-    badge.dataset.tier = tier.tier.toLowerCase();
-    details.textContent = tier.next_tier
-      ? `${tier.points_balance.toLocaleString("en-AU")} points. ${tier.points_to_next_tier.toLocaleString("en-AU")} more to reach ${tier.next_tier}.`
-      : `${tier.points_balance.toLocaleString("en-AU")} points. This is the highest tier.`;
-    mcpTierResult.hidden = false;
-    mcpTierMessage.textContent = "Tier checked with the shared MCP service.";
-    mcpTierMessage.classList.remove("pending");
-    mcpTierMessage.classList.add("success");
-  } catch (error) {
-    mcpTierMessage.classList.remove("pending");
-    mcpTierMessage.textContent = error.message;
-  } finally {
-    mcpTierButton.disabled = loyaltyAccounts.length === 0;
-  }
-});
 
 
 loyaltyAdjustmentForm.addEventListener("submit", async (event) => {
@@ -337,4 +272,5 @@ async function startLoyaltyPage() {
 }
 
 
+document.addEventListener("customer-assistant:updated", () => loadLoyaltyAccounts().catch(error => showMessage(error.message)));
 startLoyaltyPage();
