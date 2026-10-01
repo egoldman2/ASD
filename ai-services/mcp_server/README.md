@@ -39,6 +39,7 @@ The service can be configured with these environment variables:
 | `MCP_PATH` | `/mcp` |
 | `PRODUCT_DATABASE_API_URL` | `http://127.0.0.1:6001/api/database` |
 | `MCP_SUPPORT_API_URL` | `http://127.0.0.1:6005` |
+| `MCP_CUSTOMER_API_URL` | `http://127.0.0.1:6002` |
 | `MCP_REQUEST_TIMEOUT_SECONDS` | `10` |
 | `MCP_LOG_LEVEL` | `INFO` |
 
@@ -177,6 +178,7 @@ against both catalogue and support configurations.
 ## Registered Ethan Ting tools
 
 - `ethan_ting_calculate_loyalty_tier`
+- `ethan_ting_get_loyalty_history`
 
 This read-only tool accepts a non-negative `points_balance` and returns the
 Bronze, Silver, or Gold tier and progress to the next tier. It uses the same
@@ -186,3 +188,18 @@ or expose customer account records. An administrator chooses a customer on
 `POST /api/admin/mcp/loyalty-tier` fetches their current balance from its own
 database API and sends only that integer to this shared tool. The result is
 shown in the page without exposing the account record to the MCP service.
+
+The history tool accepts a positive `customer_id` and a `limit` from 1 to 20
+(default 5). It forwards the requesting administrator's `ethan_session` cookie
+through HTTP transport, never tool arguments, to the protected Ethan backend.
+The backend rechecks the administrator's current role and active status, then
+reads the customer's latest transactions through the database API. The tool
+returns only transaction ID, point change, reason and timestamp; it checks the
+customer identity, count and row types and does not follow redirects.
+
+Use the existing assistant on `http://localhost:8003/admin.html`, for example
+"Show the last 5 point changes for Customer #2". An exact full name or email
+also works; missing or ambiguous customers need clarification. History is
+displayed directly as a table, not rewritten by the model. Session expiry,
+service failure and disabled MCP mode produce safe errors. The original
+AI analysis/edit-proposal and RAG guide remain separate actions in the same UI.

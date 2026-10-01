@@ -11,6 +11,7 @@ DEFAULT_MCP_PORT = 8765
 DEFAULT_MCP_PATH = "/mcp"
 DEFAULT_PRODUCT_DATABASE_API_URL = "http://127.0.0.1:6001/api/database"
 DEFAULT_SUPPORT_API_URL = "http://127.0.0.1:6005"
+DEFAULT_CUSTOMER_API_URL = "http://127.0.0.1:6002"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 10.0
 DEFAULT_LOG_LEVEL = "INFO"
 VALID_LOG_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
@@ -81,6 +82,7 @@ class MCPSettings:
     request_timeout_seconds: float
     log_level: str
     support_api_url: str = DEFAULT_SUPPORT_API_URL
+    customer_api_url: str = DEFAULT_CUSTOMER_API_URL
 
     @property
     def endpoint_url(self) -> str:
@@ -127,6 +129,9 @@ class MCPSettings:
             log_level=log_level,
             support_api_url=_required_text(
                 os.getenv("MCP_SUPPORT_API_URL", DEFAULT_SUPPORT_API_URL), "MCP_SUPPORT_API_URL",
+            ).rstrip("/"),
+            customer_api_url=_required_text(
+                os.getenv("MCP_CUSTOMER_API_URL", DEFAULT_CUSTOMER_API_URL), "MCP_CUSTOMER_API_URL",
             ).rstrip("/"),
         )
 

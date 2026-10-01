@@ -96,15 +96,19 @@
     "ai-services/mcp_server/server.py",
     "ai-services/mcp_server/tools/ethan_ting_customer.py",
     "shared/mcp_client.py",
+    "shared/loyalty_history.py",
     "student-Ethan Ting/backend/app.py",
     "student-Ethan Ting/frontend/js/admin-loyalty.js",
+    "student-Ethan Ting/frontend/js/admin.js",
     "student-Ethan Ting/tests/test_mcp_loyalty.py",
+    "student-Ethan Ting/tests/test_mcp_history_chat.py",
     "docker-compose.yml",
     ".github/workflows/EthanTing.yml"
   ],
   "mcp_server_url": "http://127.0.0.1:8765/mcp",
   "mcp_rules": {
-    "required_tools": ["ethan_ting_calculate_loyalty_tier"],
+    "required_tools": ["ethan_ting_calculate_loyalty_tier", "ethan_ting_get_loyalty_history"],
+    "request_context": {"cookie_name": "ethan_session", "cookie_env": "ETHAN_VALIDATION_SESSION"},
     "source_files": {
       "server": "ai-services/mcp_server/server.py",
       "tools": "ai-services/mcp_server/tools/ethan_ting_customer.py",
@@ -120,7 +124,8 @@
       {"name": "bronze-boundary", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 499}, "expect": [{"path": "result.tier", "value": "Bronze"}, {"path": "result.next_tier", "value": "Silver"}, {"path": "result.points_to_next_tier", "value": 1}]},
       {"name": "silver-start", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 500}, "expect": [{"path": "result.tier", "value": "Silver"}, {"path": "result.next_tier", "value": "Gold"}, {"path": "result.points_to_next_tier", "value": 500}]},
       {"name": "silver-boundary", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 999}, "expect": [{"path": "result.tier", "value": "Silver"}, {"path": "result.next_tier", "value": "Gold"}, {"path": "result.points_to_next_tier", "value": 1}]},
-      {"name": "gold-start", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 1000}, "expect": [{"path": "result.tier", "value": "Gold"}, {"path": "result.next_tier", "value": null}, {"path": "result.points_to_next_tier", "value": 0}]}
+      {"name": "gold-start", "tool": "ethan_ting_calculate_loyalty_tier", "arguments": {"points_balance": 1000}, "expect": [{"path": "result.tier", "value": "Gold"}, {"path": "result.next_tier", "value": null}, {"path": "result.points_to_next_tier", "value": 0}]},
+      {"name": "authenticated-history", "tool": "ethan_ting_get_loyalty_history", "arguments": {"customer_id": 2, "limit": 5}, "expect": [{"path": "result.customer_id", "value": 2}, {"path": "result.limit", "value": 5}, {"path": "metadata.read_only", "value": true}]}
     ]
   },
   "rag_files": [

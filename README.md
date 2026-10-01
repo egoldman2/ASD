@@ -80,7 +80,7 @@ The Customer Accounts and Loyalty feature provides customer registration, login,
 
 The feature also includes the Customer Insight AI assistant powered by Ollama and `llama3.1:8b`. An administrator can ask questions about customer accounts and loyalty information, find the customer linked to an email address and prepare changes to a customer's name or email. Proposed account changes are not saved automatically. The administrator must review the current and proposed values and explicitly confirm the update.
 
-Release 1 adds an administrator-only MCP tier check on the loyalty page. The backend reads a selected customer's current points and sends only that number to the shared, read-only `ethan_ting_calculate_loyalty_tier` tool. The administrator assistant page also contains an Accounts and loyalty guide backed by the shared RAG server. It answers from approved feature documentation, shows source citations and retrieval confidence, and reports insufficient context for unsupported questions. The guide does not read live customer records.
+Release 1 adds an administrator-only MCP tier check on the loyalty page. The backend reads a selected customer's current points and sends only that number to the shared, read-only `ethan_ting_calculate_loyalty_tier` tool. A second tool, `ethan_ting_get_loyalty_history`, shows recent recorded point changes in the existing admin assistant. It uses the administrator's transport session, rechecks access through the protected backend and returns bounded transaction fields without account mutations. The administrator assistant page also contains an Accounts and loyalty guide backed by the shared RAG server. It answers from approved feature documentation, shows source citations and retrieval confidence, and reports insufficient context for unsupported questions. The guide does not read live customer records.
 
 The frontend is available through Docker on: http://localhost:8003
 
@@ -102,6 +102,7 @@ The database API is available internally through Docker Compose at `ethan-databa
 - Find and summarise customer information using the administrator AI assistant
 - Prepare AI-assisted account changes for human review and confirmation
 - Check a selected customer's current tier through the shared MCP server
+- Ask the same admin assistant for a customer's latest 1 to 20 recorded point changes through MCP
 - Ask the approved Accounts and loyalty guide through the shared RAG server
 - Demonstrate the Plan, Act, Observe and Adapt review workflow
 
@@ -115,7 +116,7 @@ Nginx Frontend
 Flask Customer Accounts API
     ├── HTTP → Flask Database API → SQLite users and loyalty data
     ├── HTTP → host Ollama / Llama 3.1 8B
-    ├── MCP → host shared MCP server (read-only tier tool)
+    ├── MCP → host shared MCP server (read-only tier and authenticated history tools)
     └── HTTP → host shared RAG server (approved guide)
 ```
 

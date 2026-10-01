@@ -16,6 +16,8 @@ from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 from werkzeug.security import check_password_hash
 from shared.feature_flags import feature_enabled
+from shared.loyalty_history import validate_history_result
+from shared.mcp_client import MCPClient, MCPClientError
 
 
 app = Flask(__name__)
@@ -38,6 +40,7 @@ OLLAMA_URL = os.environ.get(
 ).rstrip("/")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1:8b")
 LOYALTY_TIER_MCP_TOOL = "ethan_ting_calculate_loyalty_tier"
+LOYALTY_HISTORY_MCP_TOOL = "ethan_ting_get_loyalty_history"
 ACCOUNTS_LOYALTY_RAG_SCOPE = "ethan_ting_accounts_loyalty"
 MAX_INSIGHT_QUESTION_LENGTH = 400
 MAX_INSIGHT_RESPONSE_WORDS = 180
@@ -187,6 +190,99 @@ def call_loyalty_tier_mcp(points_balance):
                     return response.structuredContent
 
     return asyncio.run(request_tier())
+
+
+def call_loyalty_history_mcp(customer_id, limit):
+    """Forward the requesting admin's cookie through transport, never tool arguments."""
+    cookie = request.cookies.get(app.config["SESSION_COOKIE_NAME"])
+    if not cookie:
+        raise MCPClientError("Sign in again.", code="AUTHENTICATION_REQUIRED", status_code=401)
+    return MCPClient(allowed_tools=frozenset({LOYALTY_HISTORY_MCP_TOOL})).call_tool(
+        LOYALTY_HISTORY_MCP_TOOL,
+        {"customer_id": customer_id, "limit": limit},
+        request_headers={"Cookie": f"ethan_session={cookie}"},
+    )
+
+
+def is_loyalty_history_question(question):
+    return bool(
+        re.search(r"\b(?:loyalty|points?)\b", question, re.I)
+        and re.search(r"\b(?:history|transactions?|changes?|activity)\b", question, re.I)
+        and not is_customer_change_request(question)
+    )
+
+
+def create_loyalty_history_insight(question):
+    """Resolve a customer explicitly and display recorded history without model generation."""
+    if not feature_enabled("MCP_ENABLED"):
+        return jsonify({"error": "MCP mode is disabled."}), 503
+    limit_match = re.search(r"\b(?:last|latest|recent|past)\s+(-?\d+(?:\.\d+)?)\b", question, re.I)
+    if limit_match and not re.fullmatch(r"\d+", limit_match.group(1)):
+        return jsonify({"error": "Request between 1 and 20 recent point changes."}), 400
+    limit = int(limit_match.group(1)) if limit_match else 5
+    if not 1 <= limit <= 20:
+        return jsonify({"error": "Request between 1 and 20 recent point changes."}), 400
+    try:
+        customer_result = database_request("/internal/users?role=customer")
+    except (HTTPError, URLError, TimeoutError) as error:
+        return database_error_response(error)
+    customers = customer_result.get("users") if isinstance(customer_result, dict) else None
+    if not isinstance(customers, list) or any(not isinstance(item, dict) for item in customers):
+        return jsonify({"error": "Customer information is unavailable."}), 502
+    text = question.casefold()
+    ids = {int(value) for value in re.findall(r"\bcustomer\s*#?\s*(\d+)\b", text)}
+    emails = set(re.findall(EMAIL_PATTERN, text))
+    named_matches = [item for item in customers if clean_text(item.get("full_name")) and re.search(
+        r"(?<!\w)" + re.escape(clean_text(item["full_name"]).casefold()) + r"(?!\w)", text
+    )]
+    matches = [item for item in customers if item.get("id") in ids
+               or clean_text(item.get("email")).casefold() in emails
+               or item in named_matches]
+    known_ids = {item.get("id") for item in matches}
+    known_emails = {clean_text(item.get("email")).casefold() for item in matches}
+    if len(matches) != 1 or not ids.issubset(known_ids) or not emails.issubset(known_emails):
+        answer = (
+            "More than one customer matches. Include one customer's email address or Customer #ID."
+            if len(matches) > 1 else
+            "Which customer? Include their exact full name, email address or Customer #ID, for example: Show point history for Customer #2."
+        )
+        return jsonify({"answer": answer, "source": "mcp", "clarification_required": True,
+                        "model": None, "read_only": True})
+    customer = matches[0]
+    customer_id = customer.get("id")
+    if type(customer_id) is not int or not 1 <= customer_id <= 2147483647:
+        return jsonify({"error": "The customer record is invalid."}), 502
+    try:
+        payload = call_loyalty_history_mcp(customer_id, limit)
+    except MCPClientError as error:
+        return jsonify({"error": error.message, "code": error.code}), error.status_code
+    except Exception:
+        return jsonify({"error": "The local MCP service is unavailable. Try again."}), 503
+    if isinstance(payload, dict) and payload.get("success") is False and payload.get("tool") == LOYALTY_HISTORY_MCP_TOOL:
+        code = (payload.get("error") or {}).get("code") if isinstance(payload.get("error"), dict) else None
+        failures = {
+            "AUTHENTICATION_REQUIRED": ("Your administrator session has expired. Sign in again.", 401),
+            "TOOL_NOT_ALLOWED": ("Administrator access is required.", 403),
+            "RECORD_NOT_FOUND": ("Customer history is unavailable. The account may have changed.", 404),
+            "UPSTREAM_UNAVAILABLE": ("The customer history service is unavailable. Try again.", 503),
+        }
+        message, status = failures.get(code, ("The MCP service returned invalid history.", 502))
+        return jsonify({"error": message}), status
+    try:
+        if (not isinstance(payload, dict) or payload.get("success") is not True
+                or payload.get("tool") != LOYALTY_HISTORY_MCP_TOOL
+                or not isinstance(payload.get("metadata"), dict)
+                or payload["metadata"].get("read_only") is not True):
+            raise ValueError("Invalid MCP response.")
+        history = validate_history_result(payload.get("result"), customer_id, limit)
+    except (ValueError, TypeError):
+        return jsonify({"error": "The MCP service returned invalid history."}), 502
+    name = clean_text(customer.get("full_name"))
+    change_word = "change" if history["count"] == 1 else "changes"
+    answer = (f"{name} (Customer #{customer_id}): {history['count']} recent point {change_word}, newest first."
+              if history["count"] else f"{name} (Customer #{customer_id}) has no recorded point changes.")
+    return jsonify({"answer": answer, "source": "mcp", "tool": LOYALTY_HISTORY_MCP_TOOL,
+                    "model": None, "read_only": True, "history": history})
 
 
 def ollama_chat(system_prompt, prompt, num_predict):
@@ -1274,6 +1370,9 @@ def create_customer_insight():
             )
         }), 400
 
+    if is_loyalty_history_question(question):
+        return create_loyalty_history_insight(question)
+
     try:
         customer_result = database_request("/internal/users?role=customer")
         loyalty_result = database_request("/internal/loyalty")
@@ -1359,6 +1458,38 @@ def create_customer_insight():
         "read_only": True,
         "workflow": workflow,
     })
+
+
+@app.get("/api/admin/mcp/tool-data/loyalty/<int:user_id>/history")
+@admin_required
+def get_customer_history_tool_data(user_id):
+    """Bounded authenticated read used by the host MCP history tool."""
+    if not feature_enabled("MCP_ENABLED"):
+        return jsonify({"error": "MCP mode is disabled."}), 503
+    raw_limit = request.args.get("limit", "5")
+    if not re.fullmatch(r"[0-9]{1,2}", raw_limit):
+        return jsonify({"error": "limit must be an integer from 1 to 20."}), 400
+    limit = int(raw_limit)
+    if not 1 <= limit <= 20 or not 1 <= user_id <= 2147483647:
+        return jsonify({"error": "Invalid customer or history limit."}), 400
+    try:
+        customer_result = database_request(f"/internal/users/{user_id}")
+        customer = customer_result.get("user") if isinstance(customer_result, dict) else None
+        if not isinstance(customer, dict):
+            return jsonify({"error": "The database returned an invalid customer."}), 502
+        if customer.get("role") != "customer":
+            return jsonify({"error": "Customer not found."}), 404
+        result = database_request(f"/internal/loyalty/{user_id}/transactions?limit={limit}")
+    except (HTTPError, URLError, TimeoutError) as error:
+        return database_error_response(error)
+    try:
+        history = validate_history_result({
+            "customer_id": user_id, "limit": limit,
+            "count": result.get("count"), "transactions": result.get("transactions"),
+        }, user_id, limit)
+    except (AttributeError, ValueError, TypeError):
+        return jsonify({"error": "The database returned invalid history."}), 502
+    return jsonify(history)
 
 
 @app.get("/api/admin/loyalty/<int:user_id>/history")

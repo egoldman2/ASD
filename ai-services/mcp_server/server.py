@@ -28,7 +28,9 @@ from mcp_server.tools.chufeng_catalogue import (
 )
 from mcp_server.tools.ethan_ting_customer import (
     CALCULATE_LOYALTY_TIER,
+    GET_LOYALTY_HISTORY,
     calculate_loyalty_tier,
+    get_loyalty_history,
 )
 
 
@@ -55,8 +57,9 @@ Ethan Goldman support tools search tickets, return bounded conversation
 context, count queue workloads, and list recorded attention reasons.
 They require an admin session supplied by the MCP transport and return
 redacted, read-only data; credentials must never be provided as tool arguments.
-Ethan Ting's loyalty tier tool calculates a tier from supplied points without
-reading customer records. Ryan inventory tools are read-only: they
+Ethan Ting's loyalty tier tool calculates a tier from supplied points. His history
+tool reads bounded point changes through the protected customer API and requires
+an administrator session supplied through transport headers. Ryan inventory tools are read-only: they
 list low-stock products, return replenishment details, return supplier
 details, and calculate a proposed restock order without placing it. Tool
 output is wrapped in a stable response envelope containing success, tool,
@@ -77,7 +80,7 @@ REGISTERED_CHUFENG_TOOLS = (
     CALCULATE_CART_SUMMARY,
 )
 REGISTERED_GOLDMAN_TOOLS = (SEARCH_TICKETS, GET_TICKET_CONTEXT, GET_QUEUE_SUMMARY, GET_TICKETS_NEEDING_ATTENTION)
-REGISTERED_ETHAN_TING_TOOLS = (CALCULATE_LOYALTY_TIER,)
+REGISTERED_ETHAN_TING_TOOLS = (CALCULATE_LOYALTY_TIER, GET_LOYALTY_HISTORY)
 REGISTERED_RYAN_TOOLS = (
     GET_LOW_STOCK_ITEMS,
     GET_PRODUCT_INVENTORY,
@@ -190,6 +193,18 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
         annotations=READ_ONLY_ANNOTATIONS,
         structured_output=True,
     )(calculate_loyalty_tier)
+
+    server.tool(
+        name=GET_LOYALTY_HISTORY,
+        title="Get Customer Loyalty History",
+        description=(
+            "Return the latest recorded point changes for one customer, newest first. "
+            "Requires a revalidated administrator session from the MCP transport. "
+            "Returns at most 20 transactions and cannot modify points or accounts."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(get_loyalty_history)
 
      # Ryan
     server.tool(

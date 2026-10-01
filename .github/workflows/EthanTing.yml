@@ -179,6 +179,10 @@ jobs:
 
           test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
             --cookie /tmp/ethan-ting-admin.cookies \
+            http://localhost:6002/api/admin/mcp/tool-data/loyalty/2/history)" = "503"
+
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            --cookie /tmp/ethan-ting-admin.cookies \
             --header 'Content-Type: application/json' \
             --data '{"question":"How many points for Gold?"}' \
             http://localhost:6002/api/admin/rag/answer)" = "503"

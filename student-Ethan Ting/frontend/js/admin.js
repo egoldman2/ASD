@@ -25,6 +25,9 @@ const customerInsightResult = document.querySelector("#customerInsightResult");
 const customerInsightAnalysis = document.querySelector("#customerInsightAnalysis");
 const customerInsightAnswer = document.querySelector("#customerInsightAnswer");
 const customerInsightMeta = document.querySelector("#customerInsightMeta");
+const customerInsightLabel = document.querySelector("#customerInsightLabel");
+const customerInsightHistory = document.querySelector("#customerInsightHistory");
+const customerInsightHistoryBody = document.querySelector("#customerInsightHistoryBody");
 const customerChangeProposal = document.querySelector("#customerChangeProposal");
 const confirmCustomerChangeButton = document.querySelector("#confirmCustomerChangeButton");
 const cancelCustomerChangeButton = document.querySelector("#cancelCustomerChangeButton");
@@ -80,9 +83,31 @@ function showCustomerInsightMessage(message, success = false) {
 function renderCustomerInsight(result) {
   pendingCustomerChange = result.proposal || null;
   customerInsightAnswer.textContent = result.answer;
-  customerInsightMeta.textContent = (
+  customerInsightLabel.textContent = result.source === "mcp" ? "Customer loyalty history" : "AI response";
+  customerInsightMeta.textContent = result.source === "mcp" ? (
+    result.clarification_required ? "Select one customer · No records changed" : "MCP · Live recorded transactions · Read-only"
+  ) : (
     `${result.model} · ${result.customers_analyzed} customer records · Read-only analysis`
   );
+  customerInsightHistoryBody.replaceChildren();
+  const transactions = result.history?.transactions || [];
+  for (const transaction of transactions) {
+    const row = document.createElement("tr");
+    const timestamp = transaction.created_at.replace(" ", "T");
+    const date = new Date(/(?:Z|[+-]\d{2}:\d{2})$/.test(timestamp) ? timestamp : `${timestamp}Z`);
+    const values = [
+      Number.isNaN(date.getTime()) ? transaction.created_at : date.toLocaleString(),
+      `${transaction.points_change > 0 ? "+" : ""}${transaction.points_change}`,
+      transaction.reason,
+    ];
+    for (const value of values) {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.appendChild(cell);
+    }
+    customerInsightHistoryBody.appendChild(row);
+  }
+  customerInsightHistory.hidden = transactions.length === 0;
   customerInsightAnalysis.hidden = Boolean(pendingCustomerChange);
   customerInsightResult.classList.toggle(
     "aiInsightResult--proposal",
@@ -426,7 +451,7 @@ customerInsightForm.addEventListener("submit", async (event) => {
   customerChangeProposal.hidden = true;
   customerInsightResult.hidden = true;
   showCustomerInsightMessage(
-    "Ollama is reviewing the allow-listed customer records...",
+    "Checking customer information...",
     true
   );
 
@@ -439,6 +464,8 @@ customerInsightForm.addEventListener("submit", async (event) => {
     showCustomerInsightMessage(
       result.proposal
         ? ""
+        : result.source === "mcp"
+          ? (result.clarification_required ? "Include one customer in your question." : "History loaded. No customer records were changed.")
         : "Analysis complete. Review the evidence before taking any action.",
       true
     );

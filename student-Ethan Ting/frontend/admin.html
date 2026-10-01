@@ -234,6 +234,11 @@
             <button
               class="aiPromptButton"
               type="button"
+              data-insight-question="Show the last 5 point changes for customer@asd.local."
+            >Point history</button>
+            <button
+              class="aiPromptButton"
+              type="button"
               data-insight-question="Summarise the disabled customer accounts in the supplied records."
             >Disabled accounts</button>
             <button
@@ -254,9 +259,16 @@
 
         <div id="customerInsightResult" class="aiInsightResult" aria-live="polite" hidden>
           <div id="customerInsightAnalysis">
-            <p class="dashboardEyebrow">Verified AI response</p>
+            <p id="customerInsightLabel" class="dashboardEyebrow">AI response</p>
             <p id="customerInsightAnswer" class="aiInsightAnswer"></p>
             <p id="customerInsightMeta" class="aiInsightMeta"></p>
+            <div id="customerInsightHistory" class="tableWrapper" hidden>
+              <table class="dataTable">
+                <caption>Recent point changes, newest first</caption>
+                <thead><tr><th scope="col">Date</th><th scope="col">Points</th><th scope="col">Reason</th></tr></thead>
+                <tbody id="customerInsightHistoryBody"></tbody>
+              </table>
+            </div>
           </div>
 
           <section id="customerChangeProposal" class="aiChangeProposal" aria-labelledby="customerChangeProposalTitle" hidden>
