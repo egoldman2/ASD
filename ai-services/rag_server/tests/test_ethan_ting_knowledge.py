@@ -33,6 +33,8 @@ def test_feature_prompt_requires_sources_and_abstention():
     assert "Cite each factual paragraph" in prompt
     assert "Insufficient context to answer this question." in prompt
     assert "live customer's identity" in prompt
+    assert "one plain-text paragraph" in prompt
+    assert "Never describe administrator-only tools" in prompt
 
 
 @pytest.fixture
@@ -56,6 +58,7 @@ def guide_pipeline(rag_settings):
     ("How many points are needed for Gold?", "Gold begins at 1,000 points"),
     ("Can a customer request a forgotten-password recovery email?", "cannot send a password reset email"),
     ("Can disabled accounts sign in?", "Disabled accounts cannot sign in"),
+    ("Can customers use the administrator Customer assistant Point history tool?", "not available to customer-role accounts"),
 ])
 def test_guide_questions_retrieve_real_relevant_passages(guide_pipeline, question, fact):
     found = guide_pipeline.retrieve_context(SCOPE, question, 5)

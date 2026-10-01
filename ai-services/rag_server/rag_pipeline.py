@@ -106,6 +106,10 @@ Never perform or promise account changes or points adjustments. If a requested f
 missing, respond exactly: Insufficient context to answer this question.
 Cite each factual paragraph using supplied source numbers such as [1]. Do not invent
 citations, policies, rewards, earning rules, or URLs. Answer in at most 150 words.
+Return one plain-text paragraph, with citations attached to the supported claims.
+Do not add a heading, introduction, numbered steps, bullet list or closing offer.
+State the correct role for each action. Never describe administrator-only tools,
+account administration or manual points adjustments as actions customers can use.
 """
 
 

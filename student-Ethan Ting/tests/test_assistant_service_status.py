@@ -165,6 +165,18 @@ def test_admin_pages_share_one_component_and_existing_htmx_asset():
     assert 'event.key === "ArrowRight"' in source
 
 
+def test_shared_guide_examples_cover_account_and_loyalty_help():
+    source = (FRONTEND / "js/customer-assistant.js").read_text()
+    for label, question in (
+        ("Change password", "How can a customer change their password, and what are the requirements?"),
+        ("Profile changes", "How can a customer update their profile name and email?"),
+        ("Getting points", "How do customers get loyalty points, and are purchases rewarded automatically?"),
+        ("Viewing history", "Where can a customer check their loyalty point history?"),
+    ):
+        assert f'data-rag-question="{question}">{label}</button>' in source
+    assert 'This does not look up live customers or change data.' in source
+
+
 def test_component_markup_has_unique_ids_and_resolved_labels():
     source = (FRONTEND / "js/customer-assistant.js").read_text()
     markup = source.split('host.innerHTML = `', 1)[1].split('`;', 1)[0]

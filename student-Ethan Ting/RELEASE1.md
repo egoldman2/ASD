@@ -46,18 +46,78 @@ RAG. A Gold-tier question should show a cited answer and retrieval confidence.
 An unrelated astronomy question should show insufficient context with no
 citations. The assistant's original Customer Insight AI must still work.
 
+Accounts and Loyalty now reuse `frontend/js/customer-assistant.js` rather than
+copying the assistant into each page. Select a customer once; the selection is
+retained within the browser tab when moving between the two pages. The compact
+tabs separate Customer tools, Ask AI and Ask the guide. Customer tools provide
+Check progress and Point history, with loading messages, empty states and retry.
+Only an edit proposal displays a confirmation step. Suggested customer questions
+use the selected account rather than a hard-coded demo address.
+
+The same RAG guide covers registration, profile edits, password-change requirements,
+sign-in limitations, tier thresholds, manual point adjustments and viewing history.
+Guide example buttons help administrators find those instructions. It explicitly
+distinguishes password changes from unimplemented password recovery, and manual
+points from unimplemented purchase rewards. It contains no customer records or
+passwords. After changing approved Markdown, use Refresh guide to re-index it.
+Retrieval confidence describes source matching, not a guarantee of answer accuracy.
+
+HTMX uses the existing `shared/js/htmx.min.js` asset to fetch an administrator-only
+HTML fragment every 30 seconds and when Check connections is pressed. The feature
+Nginx configuration proxies `/api/admin/assistant/service-status` to Ethan's
+backend on the same origin, preserving the signed session cookie. The backend
+performs bounded, read-only health checks without sending customer data or
+cookies to MCP/RAG. Badges show Reachable, Unavailable or Disabled. Reachable
+means the service responded; it does not guarantee tool execution, model
+availability, retrieval quality or answer correctness. Status requests are
+not cached and background-tab polls are skipped.
+
+The same assistant now supports a second MCP tool: ask "Show the last 5 point
+changes for Customer #2", or identify a customer by exact full name or email.
+It shows the recorded history in a read-only table. The history tool needs an
+active admin session, forwards it only through HTTP transport, and exposes
+only dates, point changes and reasons. It does not generate transactions with
+Ollama. The MCP host uses `MCP_CUSTOMER_API_URL=http://127.0.0.1:6002` by default.
+
+The Point history quick action uses `POST /api/admin/mcp/loyalty-history` with
+`user_id` and an optional bounded `limit` (1 to 20; default 5). It shares the
+chat's history validation and admin checks, but works without AI Mode when MCP
+is enabled. Explicit history questions in the original AI chat still work.
+
 ## Reproduce validation
 
 ```bash
 .venv311/bin/python -m pytest 'student-Ethan Ting/tests' ai-services/mcp_server/tests ai-services/rag_server/tests -q
+```
+
+The MCP review includes an authenticated history probe for the seeded Customer
+#2. Supply an active administrator cookie through `ETHAN_VALIDATION_SESSION`
+in the review process environment, never in committed files or tool arguments.
+For the local demo seed account, this command signs in and captures the cookie
+without printing it (replace credentials if the local seed password changed):
+
+```bash
+export ETHAN_VALIDATION_SESSION="$(.venv311/bin/python - <<'PY'
+import http.cookiejar, json, urllib.request
+jar = http.cookiejar.CookieJar()
+client = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+request = urllib.request.Request('http://127.0.0.1:6002/api/login',
+    data=json.dumps({'email': 'admin@asd.local', 'password': 'AdminPass!2026'}).encode(),
+    headers={'Content-Type': 'application/json'})
+with client.open(request, timeout=10):
+    pass
+print(next(cookie.value for cookie in jar if cookie.name == 'ethan_session'))
+PY
+)"
 OLLAMA_MODEL=llama3.1:8b .venv311/bin/python ai-services/agentic_loop.py \
   --feature 'student-Ethan Ting' --mode mcp
+unset ETHAN_VALIDATION_SESSION
 OLLAMA_MODEL=llama3.1:8b .venv311/bin/python ai-services/agentic_loop.py \
   --feature 'student-Ethan Ting' --mode rag
 ```
 
 The loop saves its reports to `docs/evidence/agentic/`. Check the MCP report
-for all five threshold probes and the RAG report for a real cited answer plus
+for all five threshold probes and the authenticated history probe, and the RAG report for a real cited answer plus
 a model-free insufficient-context response. These direct service checks and
 browser interactions are separate evidence. Both checks read approved sources;
 neither changes customer balances or account data. The confidence label is a

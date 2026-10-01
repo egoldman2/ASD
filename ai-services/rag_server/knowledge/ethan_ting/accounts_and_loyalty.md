@@ -40,11 +40,15 @@ Administrators can also ask the existing customer assistant for point history. T
 
 Customers get loyalty points when an administrator manually adds points with a recorded reason. The feature does not automatically award points for purchases. Purchases are not rewarded automatically, and there is no implemented points-per-dollar earning rate. Customers cannot add points themselves. New customer balances start at zero points. Ask an administrator to review recorded adjustments rather than assuming a purchase has earned points.
 
-## Checking loyalty points and history
+## Customer loyalty balance and history
 
 Signed-in customers open My account to view their current loyalty balance, tier, progress to the next tier and recent point history. A positive history entry adds points; a negative entry removes points. Each recorded entry includes a date, point change and reason. No recorded adjustments means the history can be empty; it does not mean the request failed. Customers cannot award themselves points through the account page.
 
+## Administrator loyalty tools
+
 Administrators open Loyalty to review customer balances and make a manual points adjustment with a reason. In Customer assistant, select the customer and use Check progress for their live tier or Point history for their latest 5 recorded adjustments. These MCP tools are read-only. Ask the guide explains the documented rules instead of reading the selected customer's live balance or history. For a point dispute, review the recorded adjustments; this guide does not promise refunds or automatically correct a balance.
+
+Only administrators can access Customer assistant, Check progress, Point history and Ask the guide. These administrator tools are not available to customer-role accounts. Customers use their own My account page to see their balance and history instead.
 
 ## Not implemented by this feature
 
