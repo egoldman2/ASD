@@ -44,6 +44,12 @@ from mcp_server.tools.ryan_inventory import (
     get_product_inventory,
     get_supplier_details,
 )
+from mcp_server.tools.howard_orders import (
+    GET_ORDER_STATUS,
+    GET_RETURN_DETAILS,
+    get_order_status,
+    get_return_details,
+)
 
 SERVER_NAME = "ASD Marketplace MCP"
 SERVER_INSTRUCTIONS = """
@@ -87,11 +93,13 @@ REGISTERED_RYAN_TOOLS = (
     GET_SUPPLIER_DETAILS,
     CALCULATE_RESTOCK_ORDER,
 )
+REGISTERED_HOWARD_TOOLS = (GET_ORDER_STATUS, GET_RETURN_DETAILS)
 REGISTERED_TOOLS = (
     REGISTERED_CHUFENG_TOOLS
     + REGISTERED_GOLDMAN_TOOLS
     + REGISTERED_ETHAN_TING_TOOLS
     + REGISTERED_RYAN_TOOLS
+    + REGISTERED_HOWARD_TOOLS
 )
 
 
@@ -251,6 +259,28 @@ def create_server(settings: MCPSettings | None = None) -> FastMCP:
         annotations=READ_ONLY_ANNOTATIONS,
         structured_output=True,
     )(calculate_restock_order)
+
+    server.tool(
+        name=GET_ORDER_STATUS,
+        title="Get Order Status",
+        description=(
+            "Get the status and summary of one order by its positive order ID, "
+            "including order date, status, total and item count. This tool is read-only."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(get_order_status)
+
+    server.tool(
+        name=GET_RETURN_DETAILS,
+        title="Get Return Details",
+        description=(
+            "Get the details of one return by its positive return ID, including "
+            "reason, status and the related order's status and total. This tool is read-only."
+        ),
+        annotations=READ_ONLY_ANNOTATIONS,
+        structured_output=True,
+    )(get_return_details)
 
     @server.custom_route("/health", methods=["GET"], name="health")
     async def health(_: Request) -> JSONResponse:
