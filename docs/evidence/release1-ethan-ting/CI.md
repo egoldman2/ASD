@@ -1,5 +1,21 @@
 # Ethan Ting: GitHub Actions validation
 
+## Final patch: 4 October 2026, 15:06 AEDT (Sydney)
+
+- Assigned workflow: `.github/workflows/student-3.yml`
+- Visible name: **Ethan Ting - Customer Accounts and Loyalty CI**
+- Push on `main`, commit `2d261b0e038161aa5b50c9ab31f15f5b55edad3c` (implementation commit `be42f1e` included)
+- [Successful run #66](https://github.com/egoldman2/ASD/actions/runs/37176044671): **Success**, 3 minutes 8 seconds
+- [Test job](https://github.com/egoldman2/ASD/actions/runs/37176044671/job/111358735807): passed, 1 minute 14 seconds
+- [Build and smoke-test job](https://github.com/egoldman2/ASD/actions/runs/37176044671/job/111358924649): passed, 1 minute 47 seconds
+- [Final success screenshot](screenshots/ci-final-66.jpg)
+
+Both jobs use disabled AI/MCP/RAG flags. The Docker invocation passes the flags explicitly, builds the four feature targets, starts the three application services, validates ordinary account operations and disabled integration endpoints, and cleans up. This is CI build/deployment validation on an ephemeral runner, not deployment to permanent hosting. GitHub's action-runtime and runner-image warnings were non-failing.
+
+Fresh local RAG evidence is [captured here](screenshots/rag-final-validation.jpg), with full redacted [API results](final-local-validation.json). Review-loop reports and local suite counts are linked from the [evidence index](README.md).
+
+## Historical run: 1 October
+
 Verified on 1 October 2026 against the published `main` commit `9b793ac2b405b758ee14374a1a085b8c7a96ebeb`.
 
 - Workflow: `.github/workflows/EthanTing.yml`
