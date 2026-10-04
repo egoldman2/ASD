@@ -1,0 +1,15 @@
+# Shared application check, 30 September 2026
+
+CI update, 1 October 2026: Ethan Ting's published [workflow run #25](https://github.com/egoldman2/ASD/actions/runs/36736278891) passed both test and Docker deployment-check jobs on `main` commit `9b793ac`. [CI details](CI.md) record the observed results. The teammate inventory below remains the 30 September snapshot.
+
+This is an integration inventory from the **current `main` checkout and running local services**, not a judgement of teammates' unmerged branches. After syncing 18 remote commits, shared registry/test expectations were aligned with Ryan's merged tools and scope. No Ryan feature-specific code was changed.
+
+| Owner / feature | Existing app | MCP in current shared server | RAG in current shared server | Next owner check |
+|---|---|---|---|---|
+| Chufeng, catalogue | Frontend on 8001 returns 200. | Four catalogue tools registered and a feature backend adapter exists. | `chufeng_catalogue` scope and catalogue RAG UI exist. | Owner should demonstrate both interactions and CI on the final integrated commit. |
+| Ryan, inventory | Frontend on 8002 returns 200 and inventory backend is running. Current `main` includes inventory MCP/RAG frontend and backend paths. | Four Ryan inventory tools are registered in the restarted host server. | `ryan_inventory` scope is registered in the restarted host RAG service. | Owner should demonstrate both browser interactions and CI on the final integrated commit. |
+| Ethan Ting, accounts and loyalty | Frontend on 8003, backend and database are running. Browser MCP and RAG checks passed. | `ethan_ting_calculate_loyalty_tier` registered and exercised. | `ethan_ting_accounts_loyalty` scope exercised. | Publish this revision, then attach real CI run URL and include it in group demo/report. |
+| Howard, orders and returns | Frontend on 8004 redirects to sign-in, which is expected for protected data. | No Howard-named tool is registered in the shared server. | No Howard scope is registered in the shared RAG pipeline. | Owner needs to merge or show feature-specific MCP/RAG UI and backend paths, then validate them. |
+| Ethan Goldman, support | Frontend on 8005 redirects to sign-in; backend and database are healthy. | Four support tools are registered; MCP backend and UI templates exist. | `ethan_goldman_support` scope and backend/UI code exist. | Owner should demonstrate both interactions and CI on the final integrated commit. |
+
+The restarted host MCP service reports **13** tools: four catalogue, four inventory, four support and one loyalty. The host RAG service reports **four** scopes: catalogue, inventory, support and accounts/loyalty. The focused Ethan, MCP and RAG suites pass on this combined checkout, but this does not prove that every teammate's browser path works. Howard's feature-specific MCP/RAG paths are not present in this `main` snapshot. The group still needs to verify protected flows while signed in, the published workflows, the combined video, report links, and each member's contribution at the showcase. The final repository may change after this inventory; re-run it before submission.

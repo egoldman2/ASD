@@ -1,0 +1,85 @@
+{
+  "checked_at": "2026-10-04T14:55:29.166080+11:00",
+  "admin_login_status": 200,
+  "history_before": {
+    "count": 1,
+    "transactions": [
+      {
+        "created_at": "2026-09-28 15:48:48",
+        "created_by_admin_id": 1,
+        "id": 14,
+        "points_change": 720,
+        "reason": "Release 1 MCP browser verification",
+        "user_id": 187
+      }
+    ]
+  },
+  "mcp_progress": {
+    "error": null,
+    "metadata": {
+      "read_only": true
+    },
+    "result": {
+      "next_tier": "Gold",
+      "points_balance": 720,
+      "points_to_next_tier": 280,
+      "tier": "Silver"
+    },
+    "success": true,
+    "tool": "ethan_ting_calculate_loyalty_tier"
+  },
+  "mcp_history": {
+    "history": {
+      "count": 1,
+      "customer_id": 187,
+      "limit": 5,
+      "transactions": [
+        {
+          "created_at": "2026-09-28 15:48:48",
+          "id": 14,
+          "points_change": 720,
+          "reason": "Release 1 MCP browser verification"
+        }
+      ]
+    },
+    "model": null,
+    "read_only": true,
+    "source": "mcp",
+    "tool": "ethan_ting_get_loyalty_history"
+  },
+  "rag_refresh": {
+    "document_count": 16,
+    "message": "Accounts and loyalty guide refreshed."
+  },
+  "rag_answer": {
+    "answer": "The Gold threshold is 1,000 points [1]. This is the balance required to reach the Gold tier, not the points remaining for a particular customer [1].",
+    "citations": [
+      {
+        "label": "Customer accounts and loyalty: implemented guide: Loyalty tiers",
+        "rank": 1,
+        "source_id": "ethan_ting_accounts_loyalty/accounts_and_loyalty.md"
+      }
+    ],
+    "confidence": "medium",
+    "insufficient_context": false,
+    "model": "llama3.1:8b"
+  },
+  "rag_insufficient": {
+    "answer": "Insufficient context to answer this question.",
+    "citations": [],
+    "confidence": "insufficient",
+    "insufficient_context": true,
+    "model": null
+  },
+  "history_unchanged": true,
+  "docker_host_configuration": {
+    "DATABASE_API_URL": "http://ethan-database:6003",
+    "OLLAMA_URL": "http://host.docker.internal:11434",
+    "OLLAMA_MODEL": "llama3.1:8b",
+    "MCP_SERVER_URL": "http://host.docker.internal:8765/mcp",
+    "RAG_SERVER_URL": "http://host.docker.internal:5003",
+    "MCP_ENABLED": "true",
+    "RAG_ENABLED": "true"
+  },
+  "host_services_not_containerised": true
+}
