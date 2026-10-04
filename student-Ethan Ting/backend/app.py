@@ -289,10 +289,10 @@ def create_loyalty_history_insight(question):
                     "model": None, "read_only": True, "history": history})
 
 
-def ollama_chat(system_prompt, prompt, num_predict):
+def ollama_chat(system_prompt, prompt, num_predict, *, timeout=90, response_format=None):
     if not feature_enabled():
         raise OllamaUnavailableError
-    body = json.dumps({
+    body_data = {
         "model": OLLAMA_MODEL,
         "stream": False,
         "messages": [
@@ -303,7 +303,10 @@ def ollama_chat(system_prompt, prompt, num_predict):
             "temperature": 0.1,
             "num_predict": num_predict,
         },
-    }).encode("utf-8")
+    }
+    if response_format is not None:
+        body_data["format"] = response_format
+    body = json.dumps(body_data).encode("utf-8")
     ollama_request = URLRequest(
         f"{OLLAMA_URL}/api/chat",
         data=body,
@@ -312,7 +315,7 @@ def ollama_chat(system_prompt, prompt, num_predict):
     )
 
     try:
-        with urlopen(ollama_request, timeout=90) as response:
+        with urlopen(ollama_request, timeout=timeout) as response:
             result = json.loads(response.read().decode("utf-8"))
     except (HTTPError, URLError, TimeoutError, OSError) as error:
         raise OllamaUnavailableError from error
@@ -332,6 +335,44 @@ def ollama_customer_insight(prompt):
         prompt,
         num_predict=320,
     )
+
+
+def ai_loyalty_calculation(tool_result):
+    """Independently calculate with AI; never trust unverified arithmetic."""
+    if not feature_enabled():
+        return {"status": "disabled", "model": None}
+    schema = {
+        "type": "object", "additionalProperties": False,
+        "required": ["points_balance", "tier", "next_tier", "points_to_next_tier"],
+        "properties": {
+            "points_balance": {"type": "integer", "minimum": 0},
+            "tier": {"type": "string", "enum": ["Bronze", "Silver", "Gold"]},
+            "next_tier": {"enum": ["Silver", "Gold", None]},
+            "points_to_next_tier": {"type": "integer", "minimum": 0},
+        },
+    }
+    try:
+        answer = ollama_chat(
+            "Calculate loyalty progress. Bronze is 0-499 points; Silver is 500-999; "
+            "Gold is 1000 or more. Next tier is Silver for Bronze, Gold for Silver, "
+            "and null for Gold. Subtract the current balance from the next threshold "
+            "to find points remaining; Gold has zero remaining. Return only JSON. "
+            "Do not award points or change the balance.",
+            json.dumps({"points_balance": tool_result["points_balance"]}),
+            num_predict=160, timeout=30, response_format=schema,
+        )
+        calculated = json.loads(answer)
+        expected = {key: tool_result[key] for key in schema["required"]}
+        if (not isinstance(calculated, dict) or set(calculated) != set(expected)
+                or type(calculated.get("points_balance")) is not int
+                or type(calculated.get("points_to_next_tier")) is not int
+                or calculated != expected):
+            raise ValueError("Unverified AI calculation")
+        return {"status": "verified", "model": OLLAMA_MODEL, "result": calculated}
+    except OllamaUnavailableError:
+        return {"status": "unavailable", "model": OLLAMA_MODEL}
+    except (OllamaResponseError, ValueError, TypeError):
+        return {"status": "rejected", "model": OLLAMA_MODEL}
 
 
 def ollama_customer_change(prompt):
@@ -1206,6 +1247,9 @@ def get_customer_loyalty_tier_from_mcp():
     """Check a customer's current points via MCP without sending identity data."""
 
     data = request.get_json(silent=True)
+    use_ai = data.get("use_ai", False) if isinstance(data, dict) else False
+    if type(use_ai) is not bool:
+        return jsonify({"error": "AI calculation must be true or false."}), 400
     user_id = data.get("user_id") if isinstance(data, dict) else None
     if isinstance(user_id, bool) or not isinstance(user_id, int) or user_id <= 0:
         return jsonify({"error": "Select a valid customer."}), 400
@@ -1262,6 +1306,8 @@ def get_customer_loyalty_tier_from_mcp():
     ):
         return jsonify({"error": "The MCP service returned an invalid result."}), 502
 
+    if use_ai:
+        payload["ai_calculation"] = ai_loyalty_calculation(result)
     return jsonify(payload)
 
 

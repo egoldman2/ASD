@@ -53,7 +53,7 @@ COPY ["student-Ethan Ting/tests/", "/app/tests/"]
 COPY ["student-Ethan Ting/", "/app/student-Ethan Ting/"]
 COPY ["ai-services/", "/app/ai-services/"]
 COPY ["docker-compose.yml", "/app/docker-compose.yml"]
-COPY [".github/workflows/EthanTing.yml", "/app/.github/workflows/EthanTing.yml"]
+COPY [".github/workflows/student-3.yml", "/app/.github/workflows/student-3.yml"]
 COPY ["student-Ethan Ting/agentic/customer_insight_prompt.txt", "/app/agentic/customer_insight_prompt.txt"]
 COPY ["student-Ethan Ting/agentic/customer_change_prompt.txt", "/app/agentic/customer_change_prompt.txt"]
 

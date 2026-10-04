@@ -105,7 +105,7 @@
     "student-Ethan Ting/tests/test_mcp_loyalty.py",
     "student-Ethan Ting/tests/test_mcp_history_chat.py",
     "docker-compose.yml",
-    ".github/workflows/EthanTing.yml"
+    ".github/workflows/student-3.yml"
   ],
   "mcp_server_url": "http://127.0.0.1:8765/mcp",
   "mcp_rules": {
@@ -140,7 +140,7 @@
     "student-Ethan Ting/frontend/js/customer-assistant.js",
     "student-Ethan Ting/tests/test_rag_accounts_loyalty.py",
     "docker-compose.yml",
-    ".github/workflows/EthanTing.yml"
+    ".github/workflows/student-3.yml"
   ],
   "rag_server_url": "http://127.0.0.1:5003",
   "rag_rules": {

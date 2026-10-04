@@ -26,7 +26,7 @@ The customer password-change form requires the current password. This feature ha
 
 ## Loyalty tiers
 
-Customer loyalty balances start at zero points. Bronze covers 0 to 499 points. Silver covers 500 to 999 points. Gold begins at 1,000 points. Bronze customers reach Silver at 500 points; Silver customers reach Gold at 1,000 points. Gold has no next tier. The points needed for the next tier equal the next threshold minus the current balance.
+Bronze covers 0 to 499 points. Silver covers 500 to 999 points. Gold begins at 1,000 points. Bronze customers reach Silver at 500 points; Silver customers reach Gold at 1,000 points. Gold has no next tier. The points needed for the next tier equal the next threshold minus the current balance. A question about the Gold threshold asks for the required total balance, not the points remaining for a particular customer. This guide does not supply a live customer balance; do not assume that a selected customer has zero points. Use the live MCP progress tool for the points remaining.
 
 These are balance-based tiers, not a separate lifetime-spending total. For example, a balance of 720 points is Silver, with Gold next and 280 points remaining. Removing points can lower the tier when the balance falls below a threshold. No expiry schedule, annual reset or additional Gold tier is defined by this feature.
 

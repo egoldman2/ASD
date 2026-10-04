@@ -132,7 +132,7 @@ Run the Customer Accounts and Loyalty tests from the repository root:
 python -m pytest "student-Ethan Ting/tests" -q
 ```
 
-The Ethan Ting GitHub Actions workflow is `.github/workflows/EthanTing.yml`; its displayed name is Ethan Ting - Customer Accounts and Loyalty CI. It:
+The Ethan Ting GitHub Actions workflow is the assigned `.github/workflows/student-3.yml`; its displayed name is Ethan Ting - Customer Accounts and Loyalty CI. It:
 
 - Sets up Python 3.11 and installs the project dependencies
 - Initialises and verifies the customer database

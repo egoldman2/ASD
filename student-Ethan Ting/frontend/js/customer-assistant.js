@@ -20,7 +20,7 @@ host.innerHTML = `
 <section id="assistantPane0" role="tabpanel" aria-labelledby="assistantTab0">
   <p class="panelDescription">Check loyalty progress or the latest 5 point changes. Both tools are read-only.</p>
   <form id="mcpTierForm" class="assistantQuickActions">
-          <button id="mcpTierButton" class="primaryButton" type="submit" disabled>Check progress</button>
+          <button id="mcpTierButton" class="primaryButton" type="submit" disabled>Check progress with AI</button>
           <button id="assistantHistoryButton" class="secondaryButton" type="button" disabled>Point history</button>
         </form>
         <p id="mcpTierMessage" class="dashboardMessage" role="status" aria-live="polite"></p>
@@ -617,11 +617,13 @@ async function runCustomerTool(kind) {
   if (!account) { toolMessage.textContent = "Select a customer first."; return; }
   lastTool = kind; clearCustomerResults(); setToolBusy(true);
   toolMessage.classList.remove("success");
-  toolMessage.textContent = kind === "tier" ? "Checking current points through MCP..." : "Loading recorded point changes through MCP...";
+  toolMessage.textContent = kind === "tier" ? "Checking points through MCP and asking AI to calculate progress..." : "Loading recorded point changes through MCP...";
+  let completionMessage = "Loaded through MCP. Nothing was changed.";
+  let calculationVerified = true;
   try {
     if (kind === "tier") {
       const response = await authRequest("/api/admin/mcp/loyalty-tier", {
-        method: "POST", body: JSON.stringify({user_id: account.user_id}),
+        method: "POST", body: JSON.stringify({user_id: account.user_id, use_ai: true}),
       });
       const tier = response.result;
       const expected = tier?.points_balance >= 1000 ? ["Gold", null, 0]
@@ -637,6 +639,16 @@ async function runCustomerTool(kind) {
         ? `${tier.points_balance.toLocaleString("en-AU")} points. ${tier.points_to_next_tier.toLocaleString("en-AU")} more to reach ${tier.next_tier}.`
         : `${tier.points_balance.toLocaleString("en-AU")} points. Highest tier reached.`);
       tierResult.hidden = false;
+      const calculation = response.ai_calculation;
+      const verified = calculation?.status === "verified" && typeof calculation.model === "string"
+        && calculation.model.length > 0 && calculation.result?.points_balance === tier.points_balance
+        && calculation.result?.tier === tier.tier && calculation.result?.next_tier === tier.next_tier
+        && calculation.result?.points_to_next_tier === tier.points_to_next_tier;
+      calculationVerified = verified;
+      completionMessage = verified
+        ? `AI calculated this progress using ${calculation.model}; checked against the MCP rules. Nothing was changed.`
+        : "AI calculation was disabled, unavailable or failed validation. Showing the rule-based MCP result only. Nothing was changed.";
+      if (!verified && calculation?.status !== "disabled") toolRetry.hidden = false;
     } else {
       const result = await authRequest("/api/admin/mcp/loyalty-history", {
         method: "POST", body: JSON.stringify({user_id: account.user_id, limit: 5}),
@@ -645,8 +657,8 @@ async function runCustomerTool(kind) {
         || result.source !== "mcp" || result.read_only !== true) throw new Error("History could not be matched to this customer. Try again.");
       renderCustomerInsight(result);
     }
-    toolMessage.textContent = "Loaded through MCP. Nothing was changed.";
-    toolMessage.classList.add("success");
+    toolMessage.textContent = completionMessage;
+    toolMessage.classList.toggle("success", calculationVerified);
   } catch (error) {
     toolMessage.textContent = error.message;
     toolRetry.hidden = false;

@@ -22,6 +22,8 @@ def test_guide_source_contains_implemented_rules_without_customer_records(rag_se
     assert all(document.scope == SCOPE for document in documents)
     assert all(document.source_id.startswith(f"{SCOPE}/") for document in documents)
     assert "Bronze covers 0 to 499 points" in text
+    assert "do not assume that a selected customer has zero points" in text
+    assert "required total balance, not the points remaining" in text
     assert "1,000,000 points" in text
     assert "does not automatically award points" in text
     assert "customer@asd.local" not in text

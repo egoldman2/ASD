@@ -84,6 +84,16 @@ The Point history quick action uses `POST /api/admin/mcp/loyalty-history` with
 chat's history validation and admin checks, but works without AI Mode when MCP
 is enabled. Explicit history questions in the original AI chat still work.
 
+Check progress with AI sends `use_ai: true` to the existing MCP tier endpoint.
+After the MCP result passes validation, local Ollama independently calculates
+the tier, next tier and points remaining from the balance and fixed rules.
+Only the balance is sent to the model, not customer identity or session data.
+The backend accepts the AI calculation only when its strict integer values
+match the validated rule-based result. The UI identifies a verified calculation
+and actual model; disabled, unavailable or incorrect AI clearly falls back to
+the MCP result and offers retry where appropriate. Point history remains a
+read-only database lookup, not AI-generated records. No points are awarded.
+
 ## Reproduce validation
 
 ```bash
@@ -124,6 +134,6 @@ neither changes customer balances or account data. The confidence label is a
 retrieval similarity category, not a guarantee that every generated sentence
 is true.
 
-CI uses `.github/workflows/EthanTing.yml`, displayed as Ethan Ting - Customer
+CI uses the assigned `.github/workflows/student-3.yml`, displayed as Ethan Ting - Customer
 Accounts and Loyalty CI. It disables live AI, MCP and RAG calls while still
 running deterministic contract tests and building all three feature images.
