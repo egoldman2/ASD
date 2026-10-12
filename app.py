@@ -17,6 +17,7 @@ PROTECTED_API_PREFIXES = (
     "/api/cart-items",
     "/api/order-returns",
     "/api/inventory", # can remove >
+    "/api/chufeng/multi-agent",
 )
 MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
@@ -95,6 +96,9 @@ def create_app():
     rag_routes = import_module(
         "student-Chufeng.backend.routes.rag_routes"
     )
+    multi_agent_routes = import_module(
+        "student-Chufeng.backend.routes.multi_agent_routes"
+    )
     order_routes = import_module(
         "student-Howard.backend.routes.order_routes"
     )
@@ -105,6 +109,7 @@ def create_app():
     app.register_blueprint(ai_routes.ai_blueprint)
     app.register_blueprint(mcp_routes.mcp_blueprint)
     app.register_blueprint(rag_routes.rag_blueprint)
+    app.register_blueprint(multi_agent_routes.multi_agent_blueprint)
     app.register_blueprint(order_routes.order_blueprint)
 
 
