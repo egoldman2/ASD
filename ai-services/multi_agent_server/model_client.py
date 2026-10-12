@@ -12,6 +12,9 @@ import requests
 from multi_agent_server.config import MultiAgentSettings
 
 
+DEFAULT_TEMPERATURE = 0.1
+
+
 class AgentRole(str, Enum):
     """Model-using roles in the shared multi-agent workflow."""
 
@@ -154,6 +157,7 @@ class OllamaModelClient:
                     "model": model,
                     "prompt": prompt,
                     "stream": False,
+                    "options": {"temperature": DEFAULT_TEMPERATURE},
                 },
                 timeout=self._settings.timeout_seconds,
             )
