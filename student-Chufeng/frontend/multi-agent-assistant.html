@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Multi-Agent Product Review | ASD 2026</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=12">
+    <link rel="stylesheet" href="css/styles.css?v=13">
+    <script src="http://localhost:8000/js/site-header.js?v=3" defer></script>
+    <script src="http://localhost:8000/js/account-menu.js?v=6" defer></script>
+    <script src="js/multi-agent-tools.js?v=1" defer></script>
+  </head>
+  <body>
+    <header class="navbar appleNav" data-site-header data-active="catalogue">
+      <div class="navContainer">
+        <div class="navLogo">
+          <a href="http://localhost:8000" class="logoLink">
+            <span class="logoMain">ASD 2026</span>
+          </a>
+        </div>
+        <nav class="navLinks" aria-label="Main navigation">
+          <a href="index.html" class="navLink active">Product Catalogue</a>
+          <a href="http://localhost:8002" class="navLink">Inventory Management</a>
+          <a href="http://localhost:8003" class="navLink">Customer &amp; Loyalty</a>
+          <a href="http://localhost:8005" class="navLink">Customer Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="cataloguePage mcpPage multiAgentPage">
+      <section class="catalogueHero catalogueHero--compact mcpHero">
+        <div>
+          <p class="sectionEyebrow">Planner · Worker · Reviewer · Human</p>
+          <h1>Multi-Agent Product Review</h1>
+          <p class="heroDescription">
+            Ask a catalogue question, inspect database-backed evidence, and make
+            the final human decision after three coordinated agents finish.
+          </p>
+        </div>
+        <a class="cartLink cartLink--secondary" href="index.html">Back to Catalogue</a>
+      </section>
+
+      <section class="mcpStatusPanel" aria-labelledby="multiAgentStatusTitle">
+        <div class="mcpStatusIdentity">
+          <span id="multiAgentStatusDot" class="mcpStatusDot" aria-hidden="true"></span>
+          <div>
+            <p class="sectionEyebrow">Connection</p>
+            <h2 id="multiAgentStatusTitle">Checking Multi-Agent status...</h2>
+            <p id="multiAgentStatusMessage" class="mcpStatusMessage" aria-live="polite">
+              Contacting the Chufeng backend.
+            </p>
+          </div>
+        </div>
+        <div class="mcpStatusActions">
+          <span id="multiAgentFeatureBadge" class="mcpToolCount">product_catalogue</span>
+          <button id="refreshMultiAgentStatusButton" class="mcpSecondaryButton" type="button">
+            Refresh status
+          </button>
+        </div>
+      </section>
+
+      <section class="mcpWorkspace multiAgentWorkspace" aria-label="Multi-Agent product workflow">
+        <aside class="mcpToolMenu" aria-labelledby="multiAgentStepsTitle">
+          <p class="sectionEyebrow">Review Workflow</p>
+          <h2 id="multiAgentStepsTitle">Evidence before approval</h2>
+          <p class="mcpMenuDescription">
+            Product evidence is fetched by the backend. The browser cannot
+            choose the feature or supply its own evidence.
+          </p>
+          <ol class="multiAgentStepList">
+            <li><strong>Planner</strong><span>Defines the evidence-bound plan</span></li>
+            <li><strong>Worker</strong><span>Answers from catalogue evidence</span></li>
+            <li><strong>Reviewer</strong><span>Checks claims and risks</span></li>
+            <li><strong>Human</strong><span>Makes the final decision</span></li>
+          </ol>
+        </aside>
+
+        <div class="mcpToolStage">
+          <section class="mcpToolPanel">
+            <div class="mcpPanelHeading">
+              <p class="sectionEyebrow">Start a workflow</p>
+              <h2>Ask about the product catalogue</h2>
+              <p>Select one product for focused evidence, or use a full catalogue snapshot.</p>
+            </div>
+            <form id="multiAgentWorkflowForm" class="mcpForm">
+              <label class="mcpField mcpField--wide">
+                <span>Catalogue question</span>
+                <textarea name="question" rows="4" maxlength="1000" required>Is this product ready to be displayed in the catalogue, and are there any stock or status concerns?</textarea>
+              </label>
+              <label class="mcpField mcpField--wide">
+                <span>Evidence scope</span>
+                <select id="multiAgentProductSelect" name="product_id">
+                  <option value="">All catalogue products</option>
+                </select>
+                <small id="multiAgentProductHint">Loading live products...</small>
+              </label>
+              <button id="runMultiAgentWorkflowButton" class="mcpPrimaryButton" type="submit">
+                Run coordinated review
+              </button>
+              <button id="loadLatestWorkflowButton" class="mcpSecondaryButton" type="button">
+                Get latest workflow
+              </button>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section id="multiAgentResultSection" class="mcpResultSection" aria-labelledby="multiAgentResultTitle" hidden>
+        <div class="mcpResultHeader">
+          <div>
+            <p class="sectionEyebrow">Coordinated Result</p>
+            <h2 id="multiAgentResultTitle">Multi-Agent workflow</h2>
+          </div>
+          <span id="multiAgentResultStatus" class="mcpResultStatus"></span>
+        </div>
+
+        <dl class="mcpEvidenceSummary multiAgentSummary">
+          <div><dt>Workflow ID</dt><dd id="multiAgentWorkflowId">-</dd></div>
+          <div><dt>Feature</dt><dd id="multiAgentWorkflowFeature">product_catalogue</dd></div>
+          <div><dt>Created</dt><dd id="multiAgentWorkflowTime">-</dd></div>
+        </dl>
+
+        <div id="multiAgentAgentGrid" class="multiAgentAgentGrid" aria-live="polite"></div>
+
+        <section class="multiAgentEvidencePanel" aria-labelledby="multiAgentEvidenceTitle">
+          <div class="multiAgentSectionHeading">
+            <div>
+              <p class="sectionEyebrow">Database-backed context</p>
+              <h3 id="multiAgentEvidenceTitle">Evidence used</h3>
+            </div>
+          </div>
+          <div id="multiAgentEvidenceList" class="multiAgentEvidenceList"></div>
+        </section>
+
+        <section id="multiAgentHumanReviewPanel" class="multiAgentReviewPanel" aria-labelledby="multiAgentReviewTitle">
+          <div class="multiAgentSectionHeading">
+            <div>
+              <p class="sectionEyebrow">Human oversight</p>
+              <h3 id="multiAgentReviewTitle">Final review</h3>
+            </div>
+          </div>
+          <div id="multiAgentReviewSummary" class="multiAgentReviewSummary" hidden></div>
+          <form id="multiAgentReviewForm" class="mcpForm">
+            <label class="mcpField">
+              <span>Decision</span>
+              <select name="decision" required>
+                <option value="accept">Accept</option>
+                <option value="partially_accept">Partially accept</option>
+                <option value="reject">Reject</option>
+              </select>
+            </label>
+            <label class="mcpField mcpField--wide">
+              <span>Reason</span>
+              <textarea name="reason" rows="3" maxlength="2000" required placeholder="Explain which evidence and agent findings informed your decision."></textarea>
+            </label>
+            <button id="submitMultiAgentReviewButton" class="mcpPrimaryButton" type="submit">
+              Submit human decision
+            </button>
+          </form>
+        </section>
+
+        <details class="mcpRawEvidence">
+          <summary>View complete workflow JSON</summary>
+          <div class="mcpRawGrid multiAgentRawGrid">
+            <div>
+              <h3>Workflow response</h3>
+              <pre id="multiAgentRawOutput"></pre>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="mcpResultSection" aria-labelledby="multiAgentHistoryTitle">
+        <div class="mcpResultHeader">
+          <div>
+            <p class="sectionEyebrow">Product Catalogue Only</p>
+            <h2 id="multiAgentHistoryTitle">Workflow history</h2>
+          </div>
+          <button id="refreshMultiAgentHistoryButton" class="mcpSecondaryButton" type="button">
+            Refresh history
+          </button>
+        </div>
+        <p id="multiAgentHistoryMessage" class="ragResultNote" aria-live="polite">
+          Loading Product Catalogue workflows...
+        </p>
+        <div id="multiAgentHistoryList" class="multiAgentHistoryList"></div>
+      </section>
+    </main>
+
+    <footer class="footer">asd(2026)-group7</footer>
+  </body>
+</html>

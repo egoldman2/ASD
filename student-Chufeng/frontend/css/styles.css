@@ -921,7 +921,8 @@ body {
   grid-column: 1 / -1;
 }
 
-.mcpField input {
+.mcpField input,
+.mcpField select {
   width: 100%;
   min-height: 44px;
   padding: 0.65rem 0.8rem;
@@ -933,9 +934,16 @@ body {
   font-weight: 400;
 }
 
-.mcpField input:focus {
+.mcpField input:focus,
+.mcpField select:focus {
   border-color: #1d5b9e;
   outline: 3px solid rgba(29, 91, 158, 0.16);
+}
+
+.mcpField small {
+  color: #61788e;
+  font-weight: 400;
+  line-height: 1.45;
 }
 
 .mcpField textarea {
@@ -1246,6 +1254,231 @@ body {
   display: block;
 }
 
+.multiAgentWorkspace .mcpToolStage {
+  min-height: 0;
+}
+
+.multiAgentStepList {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+  list-style: none;
+  counter-reset: multi-agent-step;
+}
+
+.multiAgentStepList li {
+  padding: 0.75rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.15rem 0.7rem;
+  border: 1px solid #d5e2ec;
+  border-radius: 8px;
+  background: #ffffff;
+  counter-increment: multi-agent-step;
+}
+
+.multiAgentStepList li::before {
+  width: 1.75rem;
+  height: 1.75rem;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1d5b9e;
+  color: #ffffff;
+  content: counter(multi-agent-step);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.multiAgentStepList strong {
+  color: #0b2545;
+}
+
+.multiAgentStepList span {
+  color: #61788e;
+  font-size: 0.82rem;
+}
+
+.multiAgentFieldError,
+.multiAgentError {
+  color: #a33a2b !important;
+}
+
+.multiAgentSummary {
+  margin-bottom: 1.25rem;
+}
+
+.multiAgentAgentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.multiAgentAgentCard {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #d5e2ec;
+  border-top: 4px solid #1d5b9e;
+  border-radius: 8px;
+  background: #f8fbfd;
+}
+
+.multiAgentAgentCard:nth-child(2) {
+  border-top-color: #18864b;
+}
+
+.multiAgentAgentCard:nth-child(3) {
+  border-top-color: #8b5bb5;
+}
+
+.multiAgentAgentHeading,
+.multiAgentSectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.multiAgentAgentHeading h3,
+.multiAgentSectionHeading h3 {
+  color: #0b2545;
+}
+
+.multiAgentAgentStatus {
+  padding: 0.25rem 0.45rem;
+  border-radius: 999px;
+  background: #e5f5ec;
+  color: #176b3a;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.multiAgentAgentOutput {
+  margin-top: 0.85rem;
+  color: #203a54;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.multiAgentAgentMeta,
+.multiAgentEvidenceSource {
+  margin-top: 0.7rem;
+  color: #61788e;
+  font-size: 0.8rem;
+}
+
+.multiAgentEvidencePanel,
+.multiAgentReviewPanel {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid #d5e2ec;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.multiAgentEvidenceList {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.multiAgentEvidenceCard {
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f5f9fc;
+}
+
+.multiAgentEvidenceCard h4 {
+  color: #1d5b9e;
+}
+
+.multiAgentEvidenceCard pre {
+  max-height: 280px;
+  margin-top: 0.8rem;
+  padding: 0.85rem;
+  overflow: auto;
+  border-radius: 6px;
+  background: #10243a;
+  color: #dceafa;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.multiAgentReviewPanel {
+  border-color: #bca6d4;
+  background: #faf7fd;
+}
+
+.multiAgentReviewSummary {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-left: 4px solid #8b5bb5;
+  background: #ffffff;
+  color: #2c3e5c;
+}
+
+.multiAgentReviewSummary strong,
+.multiAgentReviewSummary p,
+.multiAgentReviewSummary small {
+  display: block;
+}
+
+.multiAgentReviewSummary p {
+  margin-top: 0.45rem;
+  line-height: 1.55;
+}
+
+.multiAgentReviewSummary small {
+  margin-top: 0.65rem;
+  color: #61788e;
+}
+
+.multiAgentRawGrid {
+  grid-template-columns: 1fr;
+}
+
+.multiAgentHistoryList {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.multiAgentHistoryCard {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid #d5e2ec;
+  border-radius: 8px;
+  background: #f8fbfd;
+}
+
+.multiAgentHistoryCard strong,
+.multiAgentHistoryCard p,
+.multiAgentHistoryCard small {
+  display: block;
+}
+
+.multiAgentHistoryCard strong {
+  color: #0b2545;
+}
+
+.multiAgentHistoryCard p,
+.multiAgentHistoryCard small {
+  margin-top: 0.25rem;
+  color: #61788e;
+}
+
+.multiAgentHistoryCard small {
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 900px) {
   .navContainer {
     align-items: flex-start;
@@ -1326,6 +1559,15 @@ body {
 
   .ragMetricGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .multiAgentAgentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .multiAgentHistoryCard {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .mcpRemoveButton {
