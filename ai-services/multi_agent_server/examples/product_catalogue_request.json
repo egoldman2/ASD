@@ -1,0 +1,22 @@
+{
+  "user_request": "Summarise whether product 12 is ready to display in the catalogue.",
+  "feature": "product_catalogue",
+  "evidence": [
+    {
+      "evidence_id": "catalogue-product-12",
+      "source": {
+        "service": "product-catalogue-backend",
+        "endpoint": "/api/database/products/12",
+        "retrieved_at": "2026-10-12T10:00:00Z"
+      },
+      "data": {
+        "product_id": 12,
+        "name": "Wireless Mouse",
+        "category": "Accessories",
+        "description": "Ergonomic wireless mouse",
+        "price": 29.99,
+        "status": "active"
+      }
+    }
+  ]
+}
