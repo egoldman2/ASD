@@ -30,12 +30,12 @@ jobs:
       fail-fast: false
       matrix:
         suite:
-          - 'student-Chufeng/tests'
-          - 'student-Ryan_Nolan/tests/inventory_tests.py student-Ryan_Nolan/tests/mcp_route_test.py student-Ryan_Nolan/tests/rag_route_test.py student-Ryan_Nolan/tests/test_authentication.py'
-          - 'student-Ethan Ting/tests'
-          - 'student-Howard/tests'
-          - 'student-Ethan Goldman/tests'
-          - 'shared/tests cloud/tests ai-services/mcp_server/tests ai-services/rag_server/tests'
+          - ['student-Chufeng/tests']
+          - ['student-Ryan_Nolan/tests/inventory_tests.py', 'student-Ryan_Nolan/tests/mcp_route_test.py', 'student-Ryan_Nolan/tests/rag_route_test.py', 'student-Ryan_Nolan/tests/test_authentication.py']
+          - ['student-Ethan Ting/tests']
+          - ['student-Howard/tests']
+          - ['student-Ethan Goldman/tests']
+          - ['shared/tests', 'cloud/tests', 'ai-services/mcp_server/tests', 'ai-services/rag_server/tests']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -44,8 +44,14 @@ jobs:
         run: python -m pip install -r requirements.txt -r ai-services/rag_server/requirements.txt
       - name: Validate assigned feature tests
         env:
-          SUITE: ${{ matrix.suite }}
-        run: python -m pytest $SUITE -q --junitxml=results.xml
+          SUITE: ${{ toJSON(matrix.suite) }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pytest
+          raise SystemExit(pytest.main([*json.loads(os.environ["SUITE"]), "-q", "--junitxml=results.xml"]))
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:

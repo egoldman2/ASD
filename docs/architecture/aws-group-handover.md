@@ -164,6 +164,8 @@ See `docs/evidence/release2-aws/` for reports. Do not claim a successful GitHub 
 
 ## 8. Give group members independent access
 
+On 12 October, AWS confirmed that invitations were sent to all four teammates for the existing `Console Dot Dream` project. They were pending acceptance at verification. The cloud port and this guide were pushed directly to the shared repository's `main` branch. Teammates can pull the code now and operate AWS after accepting their own invitation and signing in.
+
 There are three different kinds of access. An application administrator login operates marketplace data. GitHub repository access lets a teammate edit code and open PRs. AWS project access lets them operate infrastructure. One does not automatically provide the other two.
 
 In this project's new AWS experience, the project owner invites members through **AWS Settings → Team → Invite new team member**, chooses the existing project and sends invitations. AWS says members get broad resource administrator access, including resource creation and deletion, while owner-level billing, plan changes and team management remain restricted. Each teammate accepts using their own AWS Builder ID. Use each person's own identity and local temporary credentials; do not distribute the owner's `.aws` directory, tokens or access keys. [AWS invitation documentation](https://docs.aws.amazon.com/accounts/latest/reference/invite-team-members.html)
@@ -214,6 +216,8 @@ Independent access does not mean five isolated deployments. Every manual deploym
 OIDC lets GitHub obtain short-lived AWS permissions using a role trusted for `repo:egoldman2/ASD:environment:aws-cloud`. The proposed role can write release objects and send commands to this host. SSM command access is powerful host access, so treat deployment permission accordingly. It does not grant a teammate billing ownership.
 
 The managed project policy denied OIDC provider creation, read and listing on 9 October. The role is optional in the template and disabled by default; GitHub automatic deployment is therefore prepared but not operating. Do not try to solve an explicit project-policy deny by sharing owner keys or merely adding another Allow policy. The owner must resolve supported project capabilities in AWS Settings, then the group can create the provider/role, set `AWS_DEPLOY_ROLE_ARN` in `aws-cloud` and verify a real workflow run. We have not changed the project plan or enabled advanced capabilities. [AWS managed project policies](https://docs.aws.amazon.com/accounts/latest/reference/scps-and-rcps-for-projects.html)
+
+The first real cloud workflow run after publication passed the image build and four validation jobs, but the two feature paths containing spaces were split by the shell before pytest ran. The workflow was corrected to pass each suite as a JSON array of exact paths. This illustrates why a local test result and a successful GitHub invocation are separate evidence. A workflow also cannot deploy until its AWS role is configured, even when tests and builds pass.
 
 The current alternative is manual deployment by any invited and authenticated teammate. The host must be started and ready first; this workflow currently does not automatically start a stopped instance.
 
