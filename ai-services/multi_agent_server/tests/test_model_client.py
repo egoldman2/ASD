@@ -68,6 +68,7 @@ def test_generate_sends_one_non_streaming_request(settings):
             "model": "worker:test",
             "prompt": "Analyse this evidence",
             "stream": False,
+            "options": {"temperature": 0.1},
         },
         timeout=12.5,
     )
