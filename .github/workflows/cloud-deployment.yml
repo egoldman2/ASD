@@ -1,0 +1,95 @@
+name: AWS Cloud Deployment
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/**'
+      - 'shared/**'
+      - 'student-*/**'
+      - 'app.py'
+      - 'requirements.txt'
+      - '.github/workflows/cloud-deployment.yml'
+permissions:
+  contents: read
+concurrency:
+  group: aws-cloud-deployment
+  cancel-in-progress: false
+env:
+  AI_MODE_ENABLED: 'false'
+  MCP_ENABLED: 'false'
+  RAG_ENABLED: 'false'
+  MULTI_AGENT_ENABLED: 'false'
+  RUN_LIVE_AI: '0'
+  RUN_LIVE_MCP_AI: '0'
+  RUN_LIVE_RAG_AI: '0'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite:
+          - 'student-Chufeng/tests'
+          - 'student-Ryan_Nolan/tests/inventory_tests.py student-Ryan_Nolan/tests/mcp_route_test.py student-Ryan_Nolan/tests/rag_route_test.py student-Ryan_Nolan/tests/test_authentication.py'
+          - 'student-Ethan Ting/tests'
+          - 'student-Howard/tests'
+          - 'student-Ethan Goldman/tests'
+          - 'shared/tests cloud/tests ai-services/mcp_server/tests ai-services/rag_server/tests'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install test dependencies
+        run: python -m pip install -r requirements.txt -r ai-services/rag_server/requirements.txt
+      - name: Validate assigned feature tests
+        env:
+          SUITE: ${{ matrix.suite }}
+        run: python -m pytest $SUITE -q --junitxml=results.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ strategy.job-index }}
+          path: results.xml
+  cloud-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare and validate cloud build
+        env:
+          PUBLIC_ORIGIN: https://validation.cloudfront.net
+          DATA_ROOT: /tmp/asd-cloud-data
+          SESSION_SECRET: ci-only-session-secret
+          SEED_PASSWORD: CIOnlyGeneratedPassword1234567890
+          ORIGIN_TOKEN: ci-only-origin-token
+        run: |
+          python3 cloud/prepare.py .cloud-build/ci
+          docker compose --file .cloud-build/ci/cloud/compose.yml config --quiet
+          docker compose --file .cloud-build/ci/cloud/compose.yml build
+  deploy:
+    needs: [validate, cloud-build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: aws-cloud
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require configured deployment role
+        env:
+          ROLE_ARN: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+        run: test -n "$ROLE_ARN" || { echo 'Configure AWS_DEPLOY_ROLE_ARN in the aws-cloud environment.' >&2; exit 1; }
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-southeast-2
+      - name: Publish and deploy validated release
+        env:
+          RELEASE_ID: ${{ github.sha }}-${{ github.run_attempt }}
+          STACK_NAME: ${{ vars.AWS_STACK_NAME || 'asd-release2' }}
+        run: python3 cloud/deploy.py --stack "$STACK_NAME" --release "$RELEASE_ID" --report deployment-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aws-deployment-evidence
+          path: deployment-report.json

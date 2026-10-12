@@ -1,0 +1,42 @@
+map $uri $feature_url {
+    /navigate/8001 /catalogue/;
+    /navigate/8002 /inventory/;
+    /navigate/8003 /account/;
+    /navigate/8004 /orders/;
+    /navigate/8005 /support/;
+}
+server {
+    listen 80;
+    server_tokens off;
+    client_max_body_size 1m;
+    # The EC2 security group also accepts only CloudFront origin-facing addresses.
+    if ($http_x_origin_verify != "${ORIGIN_TOKEN}") { return 403; }
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy same-origin always;
+    add_header X-Frame-Options SAMEORIGIN always;
+    add_header Cache-Control "no-store" always;
+    proxy_set_header Host $host;
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_read_timeout 30s;
+    proxy_redirect off;
+    location /navigate/ { add_header HX-Redirect $feature_url; return 204; }
+    location = /catalogue { return 302 /catalogue/; }
+    location = /inventory { return 302 /inventory/; }
+    location = /account { return 302 /account/; }
+    location = /orders { return 302 /orders/; }
+    location = /support { return 302 /support/; }
+    location /catalogue/ { proxy_pass http://product-catalogue:80/; }
+    location /inventory/ { proxy_pass http://inventory-frontend:80/; }
+    location /account/ { proxy_pass http://ethan-frontend:80/; }
+    location /orders/ { proxy_pass http://order-returns-frontend:80/; }
+    location /support/ { proxy_pass http://customer-support:80/; }
+    location /assets/ { proxy_pass http://shared-home:80/; }
+    location /account-api/ { proxy_pass http://ethan-backend:6002/; }
+    location = /api/admin/assistant/service-status { proxy_pass http://ethan-backend:6002; }
+    location /inventory-api/ { proxy_pass http://inventory-backend:8102/; }
+    location /api/support/ { proxy_pass http://customer-support-backend:6005; }
+    location /api/ { proxy_pass http://shared-backend:5000; }
+    location / { proxy_pass http://shared-home:80; }
+}

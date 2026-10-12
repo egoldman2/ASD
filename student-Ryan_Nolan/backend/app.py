@@ -10,14 +10,9 @@ from routes.products import products_blueprint
 from routes.suppliers import suppliers_blueprint
 from routes.assistant import assistant_blueprint
 
-ALLOWED_ORIGINS = {
-    "http://localhost:8000",
-    "http://localhost:8001",
-    "http://localhost:8002",
-    "http://localhost:8003",
-    "http://localhost:8004",
-    "http://localhost:8005",
-}
+from shared.runtime_config import allowed_origins
+
+ALLOWED_ORIGINS = allowed_origins()
 
 AUTH_SERVICE_URL = os.environ.get(
     "AUTH_SERVICE_URL",
@@ -70,13 +65,16 @@ def _authenticated_user():
     )
     if (
         authenticated is not True
-        or role != "admin"
+        or role not in {"admin", "customer"}
         or isinstance(user_id, bool)
         or not isinstance(user_id, int)
     ):
         return None, _authentication_error(
             "The authentication service returned an invalid session.", 503,
         )
+
+    if role != "admin":
+        return None, _authentication_error("Administrator access required.", 403)
 
     return user, None
 

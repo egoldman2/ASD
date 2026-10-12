@@ -19,6 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python-base AS backend
 
 COPY shared/feature_flags.py /app/shared/feature_flags.py
+COPY shared/runtime_config.py /app/shared/runtime_config.py
 
 COPY student-Ryan_Nolan/ ./student-Ryan_Nolan/
 

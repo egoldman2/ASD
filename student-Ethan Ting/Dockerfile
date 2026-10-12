@@ -20,6 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python-base AS backend
 
 COPY shared/feature_flags.py /app/shared/feature_flags.py
+COPY shared/runtime_config.py /app/shared/runtime_config.py
 COPY shared/mcp_client.py /app/shared/mcp_client.py
 COPY shared/loyalty_history.py /app/shared/loyalty_history.py
 
@@ -44,6 +45,7 @@ CMD ["python", "app.py"]
 FROM python-base AS test
 
 COPY shared/feature_flags.py /app/shared/feature_flags.py
+COPY shared/runtime_config.py /app/shared/runtime_config.py
 COPY shared/mcp_client.py /app/shared/mcp_client.py
 COPY shared/loyalty_history.py /app/shared/loyalty_history.py
 

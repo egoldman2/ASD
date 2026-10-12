@@ -1,0 +1,9 @@
+{
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "state": "stopped",
+  "confirmed_at": "2026-10-09T04:39:18.612684+00:00",
+  "reason": "User requested EC2 stopped after successful final verification.",
+  "retained_resources": "20GB root disk, 30GB data disk, Elastic IP, release bucket and two secrets",
+  "estimated_stopped_monthly_usd": 9.25
+}

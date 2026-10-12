@@ -20,6 +20,7 @@ from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 from werkzeug.security import check_password_hash
 from shared.feature_flags import feature_enabled
+from shared.runtime_config import allowed_origins
 from shared.loyalty_history import validate_history_result
 from shared.mcp_client import MCPClient, MCPClientError
 
@@ -33,6 +34,7 @@ app.config["SECRET_KEY"] = os.environ.get(
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_NAME"] = "ethan_session"
+app.config["SESSION_COOKIE_SECURE"] = os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
 
 DATABASE_API_URL = os.environ.get(
     "DATABASE_API_URL",
@@ -96,14 +98,7 @@ def load_customer_change_prompt():
 
 CUSTOMER_CHANGE_SYSTEM_PROMPT = load_customer_change_prompt()
 
-ALLOWED_ORIGINS = {
-    "http://localhost:8000",
-    "http://localhost:8001",
-    "http://localhost:8002",
-    "http://localhost:8003",
-    "http://localhost:8004",
-    "http://localhost:8005",
-}
+ALLOWED_ORIGINS = allowed_origins()
 
 
 class OllamaUnavailableError(Exception):

@@ -23,7 +23,21 @@ function safeReturnForRole(user) {
   if (!rawReturnUrl) return null;
 
   try {
-    const requested = new URL(rawReturnUrl);
+    const requested = new URL(rawReturnUrl, window.location.origin);
+    if (document.querySelector('meta[name="asd-cloud"]')) {
+      const cloudPaths = new Set([
+        "/catalogue/", "/catalogue/index.html", "/catalogue/cart.html",
+        "/orders/", "/orders/index.html",
+        "/support/", "/support/index.html", "/support/customer.html", "/support/staff.html",
+      ]);
+      if (requested.origin !== window.location.origin || requested.username || requested.password || !cloudPaths.has(requested.pathname)) return null;
+      if (requested.pathname.startsWith("/support/")) {
+        requested.pathname = user.role === "admin" ? "/support/staff.html" : "/support/customer.html";
+        requested.search = "";
+        requested.hash = "";
+      }
+      return requested.href;
+    }
     const trustedHost = ["localhost", "127.0.0.1"].includes(requested.hostname);
     if (requested.protocol !== "http:" || !trustedHost) {
       return null;

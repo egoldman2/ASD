@@ -1,0 +1,226 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/catalogue/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/inventory/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/assets/js/site-header.js",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/assets/css/styles.css",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/profile",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/order-returns/orders",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/inventory-api/api/inventory/products",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/profile",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/loyalty",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/admin/customers",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/inventory-api/api/inventory/products",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/orders/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/support/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/support/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/inventory-api/api/inventory/suppliers",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/order-returns/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/customer/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/admin/ai/customer-insight",
+      "status": 503
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/admin/mcp/loyalty-tier",
+      "status": 503
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/admin/rag/answer",
+      "status": 503
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/admin/customers",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "path": "/account-api/api/admin/customers/23",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/inventory-api/api/inventory/products",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "path": "/inventory-api/api/inventory/products/14",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/products",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/cart-items",
+      "status": 201
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cart-items/1",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/cart-items",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/order-returns/orders",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/order-returns/orders/13",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/order-returns/orders/13/status",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/customer/tickets",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets/2013",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/support/admin/tickets/2013",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/support/admin/tickets/2013",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/order-returns/orders/13",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/cart-items/1",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/inventory-api/api/inventory/products/14",
+      "status": 204
+    },
+    {
+      "method": "DELETE",
+      "path": "/account-api/api/admin/customers/23",
+      "status": 200
+    }
+  ],
+  "note": "Temporary account is deactivated by the application's existing DELETE behaviour; other temporary records are deleted."
+}

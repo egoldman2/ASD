@@ -48,6 +48,9 @@ def initialise_database():
         connection.executescript(schema)
 
         for email, password, full_name, role in USERS:
+            password = os.environ.get("SEED_PASSWORD", password)
+            if "SEED_PASSWORD" in os.environ and len(password) < 24:
+                raise ValueError("Cloud seed passwords must have at least 24 characters.")
             connection.execute(
                 """
                 INSERT OR IGNORE INTO users

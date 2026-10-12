@@ -164,7 +164,7 @@ function createProductCard(product) {
 }
 
 async function loadProducts(searchTerm = "") {
-  const requestUrl = new URL(PRODUCTS_API_URL);
+  const requestUrl = new URL(PRODUCTS_API_URL, window.location.origin);
   if (searchTerm) {
     requestUrl.searchParams.set("search", searchTerm);
   }

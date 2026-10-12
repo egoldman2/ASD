@@ -8,3 +8,8 @@ venv
 tmp
 RELEASE_1_MASTER_PLAN.md
 RELEASE_1_ETHAN_GOLDMAN_WORK_LOG.md
+.cloud-build
+.aws-deployment
+**/*.db
+**/.env
+**/.env.*

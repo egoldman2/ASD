@@ -48,7 +48,7 @@ function ensureSharedSiteStyles() {
   const hasSharedStyles = [...document.querySelectorAll('link[rel="stylesheet"]')]
     .some((link) => {
       const url = new URL(link.href, window.location.href);
-      return url.origin === "http://localhost:8000"
+      return url.origin === new URL("http://localhost:8000", window.location.origin).origin
         && url.pathname === "/css/styles.css";
     });
 
@@ -79,7 +79,7 @@ function installAuthenticatedSharedFetch() {
         : resource.url;
     const url = new URL(resourceUrl, window.location.href);
     const isPrivateSharedApi = (
-      url.origin === "http://localhost:5000"
+      url.origin === new URL("http://localhost:5000", window.location.origin).origin
       && PRIVATE_SHARED_API_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))
     );
 
@@ -91,7 +91,7 @@ function installAuthenticatedSharedFetch() {
     );
 
     if (isPrivateSharedApi && response.status === 401) {
-      const loginUrl = new URL("http://localhost:8003/index.html");
+      const loginUrl = new URL("http://localhost:8003/index.html", window.location.origin);
       loginUrl.searchParams.set("return_url", window.location.href);
       window.location.replace(loginUrl);
     }
@@ -107,6 +107,14 @@ installAuthenticatedSharedFetch();
 
 
 function currentSiteSection(fallbackSection) {
+  if (document.querySelector('meta[name="asd-cloud"]')) {
+    const section = window.location.pathname.split("/")[1];
+    if (section === "account") {
+      if (window.location.pathname.endsWith("/admin-loyalty.html")) return "loyalty";
+      if (window.location.pathname.endsWith("/admin.html")) return "account-management";
+    }
+    return {catalogue: "catalogue", inventory: "inventory", account: "account", orders: "order-returns", support: "support"}[section] || fallbackSection;
+  }
   if (window.location.port === "8003") {
     if (window.location.pathname.endsWith("/admin-loyalty.html")) {
       return "loyalty";

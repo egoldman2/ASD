@@ -1,0 +1,315 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Release 2 marketplace on a single EC2 Compose host behind HTTPS CloudFront, with retained encrypted database storage and GitHub OIDC deployment.
+Metadata:
+  AWSToolsMetrics:
+    AWSAgentToolkit: aws-cloudformation@3
+  com.aws.cloudformation.Context:
+    ref: [{at: docs/architecture/aws-deployment.md, has: cloud architecture and deployment constraints, scope: shared}]
+Parameters:
+  ImageId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+  InstanceType:
+    Type: String
+    Default: t3.small
+    AllowedValues: [t3.small, t3.medium, t3.large]
+  CloudFrontPrefixList:
+    Type: String
+    AllowedPattern: 'pl-[a-f0-9]+'
+    Description: Selected Region's com.amazonaws.global.cloudfront.origin-facing prefix list.
+  GitHubRepository:
+    Type: String
+    Default: egoldman2/ASD
+    AllowedPattern: '[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+'
+  ExistingGitHubProviderArn:
+    Type: String
+    Default: ''
+    AllowedPattern: '^$|arn:aws:iam::[0-9]{12}:oidc-provider/token.actions.githubusercontent.com'
+  EnableGitHubOidc:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Enable after confirming the project permits IAM OIDC providers.
+Conditions:
+  GitHubOidcEnabled: !Equals [!Ref EnableGitHubOidc, 'true']
+  CreateGitHubProvider: !And [!Condition GitHubOidcEnabled, !Equals [!Ref ExistingGitHubProviderArn, '']]
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.33.0.0/24
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags: [{Key: Name, Value: !Sub '${AWS::StackName}-vpc'}]
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties: {VpcId: !Ref Vpc, InternetGatewayId: !Ref InternetGateway}
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.33.0.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties: {VpcId: !Ref Vpc}
+  InternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties: {RouteTableId: !Ref RouteTable, DestinationCidrBlock: 0.0.0.0/0, GatewayId: !Ref InternetGateway}
+  RouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: {SubnetId: !Ref Subnet, RouteTableId: !Ref RouteTable}
+  OriginSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: only the CDN can reach the web gateway; administration uses outbound SSM
+        must: [no public SSH or database/API ports, preserve CloudFront prefix-list restriction]
+    Properties:
+      GroupDescription: CloudFront origin traffic only
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - {IpProtocol: tcp, FromPort: 80, ToPort: 80, SourcePrefixListId: !Ref CloudFrontPrefixList}
+  ReleaseBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: private versioned deployment bundles; retain history for recovery
+        must: [no public access, no credentials or database files in release bundles]
+    Properties:
+      PublicAccessBlockConfiguration: {BlockPublicAcls: true, BlockPublicPolicy: true, IgnorePublicAcls: true, RestrictPublicBuckets: true}
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: [{ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}}]
+      VersioningConfiguration: {Status: Enabled}
+      LifecycleConfiguration:
+        Rules:
+          - {Id: ExpireOldVersions, Status: Enabled, NoncurrentVersionExpiration: {NoncurrentDays: 14}}
+  ReleaseBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ReleaseBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: [!GetAtt ReleaseBucket.Arn, !Sub '${ReleaseBucket.Arn}/*']
+            Condition: {Bool: {'aws:SecureTransport': false}}
+  OriginSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: CloudFront origin verification token
+      GenerateSecretString: {PasswordLength: 48, ExcludePunctuation: true}
+  DemoPassword:
+    Type: AWS::SecretsManager::Secret
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: replace the repository's published seed passwords in fresh cloud databases
+        must: [never output the password, changing this secret does not rotate existing database passwords]
+    Properties:
+      Description: Initial marketplace seed password; change administrator password after first login
+      GenerateSecretString: {PasswordLength: 32, ExcludePunctuation: true}
+  HostRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: host downloads only this stack's releases and secrets; SSM replaces SSH
+        must: [no static AWS credentials, no role granted to the application containers]
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: [{Effect: Allow, Principal: {Service: ec2.amazonaws.com}, Action: 'sts:AssumeRole'}]
+      ManagedPolicyArns: [!Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore']
+      Policies:
+        - PolicyName: ReleaseRead
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: 's3:GetObject', Resource: !Sub '${ReleaseBucket.Arn}/releases/*'}
+              - {Effect: Allow, Action: 'secretsmanager:GetSecretValue', Resource: [!Ref OriginSecret, !Ref DemoPassword]}
+  HostProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: {Roles: [!Ref HostRole]}
+  DataVolume:
+    Type: AWS::EC2::Volume
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: databases and session secret survive release and EC2 replacement
+        must: [encrypt at rest, never format an existing filesystem, take a database-consistent backup before replacement]
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Size: 30
+      VolumeType: gp3
+      Encrypted: true
+      Tags: [{Key: Name, Value: !Sub '${AWS::StackName}-data'}]
+  HostTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: one host reuses Release 1 Compose; no managed database migration needed for assessment baseline
+        must: [AI services disabled in cloud, enforce IMDSv2, containers cannot obtain the host IAM credentials]
+    Properties:
+      LaunchTemplateData:
+        ImageId: !Ref ImageId
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile: {Arn: !GetAtt HostProfile.Arn}
+        SecurityGroupIds: [!Ref OriginSecurityGroup]
+        # Host-only AWS calls: hop limit 1 intentionally denies bridge containers metadata access.
+        MetadataOptions: {HttpTokens: required, HttpEndpoint: enabled, HttpPutResponseHopLimit: 1}
+        CreditSpecification: {CpuCredits: standard}
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs: {VolumeSize: 20, VolumeType: gp3, Encrypted: true, DeleteOnTermination: true}
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            set -euo pipefail
+            dnf install -y docker python3
+            systemctl enable --now amazon-ssm-agent
+            serial=$(echo '${DataVolume}' | tr -d '-')
+            disk=''
+            for attempt in $(seq 1 120); do
+              disk=$(lsblk -ndo NAME,SERIAL | awk -v serial="$serial" '$2 == serial {print "/dev/" $1}')
+              [ -n "$disk" ] && break
+              sleep 2
+            done
+            [ -n "$disk" ]
+            if ! blkid "$disk" >/dev/null 2>&1; then mkfs.ext4 "$disk"; fi
+            mkdir -p /srv/asd
+            mount "$disk" /srv/asd
+            uuid=$(blkid -s UUID -o value "$disk")
+            echo "UUID=$uuid /srv/asd ext4 defaults,nofail 0 2" >> /etc/fstab
+            mkdir -p /srv/asd/docker /srv/asd/data /srv/asd/releases /usr/local/lib/docker/cli-plugins
+            echo '{"data-root":"/srv/asd/docker"}' > /etc/docker/daemon.json
+            curl --fail --location --retry 3 https://github.com/docker/compose/releases/download/v2.39.4/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+            curl --fail --location --retry 3 https://github.com/docker/compose/releases/download/v2.39.4/docker-compose-linux-x86_64.sha256 -o /tmp/compose.sha256
+            cd /usr/local/lib/docker/cli-plugins
+            echo "$(cut -d ' ' -f 1 /tmp/compose.sha256)  docker-compose" | sha256sum --check
+            chmod +x docker-compose
+            systemctl enable --now docker
+            docker compose version
+            touch /srv/asd/bootstrap-ready
+  Host:
+    Type: AWS::EC2::Instance
+    DependsOn: InternetRoute
+    Properties:
+      LaunchTemplate: {LaunchTemplateId: !Ref HostTemplate, Version: !GetAtt HostTemplate.LatestVersionNumber}
+      SubnetId: !Ref Subnet
+      Tags: [{Key: Name, Value: !Sub '${AWS::StackName}-host'}]
+  DataAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties: {Device: /dev/sdf, InstanceId: !Ref Host, VolumeId: !Ref DataVolume}
+  Address:
+    Type: AWS::EC2::EIP
+    DependsOn: GatewayAttachment
+    Properties: {Domain: vpc}
+  AddressAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties: {AllocationId: !GetAtt Address.AllocationId, InstanceId: !Ref Host}
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: AddressAssociation
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: one HTTPS origin keeps session cookies and frontend API calls same-origin without buying a domain
+        must: [never cache authenticated responses, forward cookies and Origin/HTMX headers, origin requires a secret header]
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        IPV6Enabled: true
+        Comment: !Sub '${AWS::StackName} marketplace'
+        Origins:
+          - Id: marketplace
+            DomainName: !GetAtt Host.PublicDnsName
+            CustomOriginConfig: {HTTPPort: 80, OriginProtocolPolicy: http-only}
+            OriginCustomHeaders:
+              - HeaderName: X-Origin-Verify
+                HeaderValue: !Sub '{{resolve:secretsmanager:${OriginSecret}:SecretString}}'
+        DefaultCacheBehavior:
+          TargetOriginId: marketplace
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+          CachedMethods: [GET, HEAD]
+          DefaultTTL: 0
+          MinTTL: 0
+          MaxTTL: 0
+          ForwardedValues: {QueryString: true, Cookies: {Forward: all}, Headers: ['*']}
+          Compress: true
+        # Auth and service errors must not remain cached after login/recovery.
+        CustomErrorResponses:
+          - {ErrorCode: 403, ErrorCachingMinTTL: 0}
+          - {ErrorCode: 404, ErrorCachingMinTTL: 0}
+          - {ErrorCode: 500, ErrorCachingMinTTL: 0}
+          - {ErrorCode: 502, ErrorCachingMinTTL: 0}
+          - {ErrorCode: 503, ErrorCachingMinTTL: 0}
+          - {ErrorCode: 504, ErrorCachingMinTTL: 0}
+        ViewerCertificate: {CloudFrontDefaultCertificate: true}
+  GitHubProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateGitHubProvider
+    Properties: {Url: 'https://token.actions.githubusercontent.com', ClientIdList: [sts.amazonaws.com]}
+  DeployRole:
+    Type: AWS::IAM::Role
+    Condition: GitHubOidcEnabled
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: GitHub's protected deployment environment gets temporary release-publish and SSM permissions
+        must: [restrict trust to this repository's aws-cloud environment, configure environment branch protection for main, no GitHub long-lived keys]
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !If [CreateGitHubProvider, !Ref GitHubProvider, !Ref ExistingGitHubProviderArn]
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub 'repo:${GitHubRepository}:environment:aws-cloud'
+      Policies:
+        - PolicyName: PublishAndDeploy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: 's3:PutObject', Resource: !Sub '${ReleaseBucket.Arn}/releases/*'}
+              - Effect: Allow
+                Action: ssm:SendCommand
+                Resource: [!Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}::document/AWS-RunShellScript', !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${Host}']
+              # GetCommandInvocation doesn't support resource-scoped authorization.
+              - {Effect: Allow, Action: 'ssm:GetCommandInvocation', Resource: '*'}
+              - {Effect: Allow, Action: 'cloudformation:DescribeStacks', Resource: !Ref 'AWS::StackId'}
+Outputs:
+  PublicUrl:
+    Description: Integrated HTTPS marketplace
+    Value: !Sub 'https://${Distribution.DomainName}'
+  InstanceId:
+    Description: Systems Manager deployment target
+    Value: !Ref Host
+  ReleaseBucket:
+    Description: Private source bundle bucket
+    Value: !Ref ReleaseBucket
+  DataVolumeId:
+    Description: Retained database and session storage; continues billing after stack deletion
+    Value: !Ref DataVolume
+  OriginSecretArn:
+    Description: Origin header secret fetched only on the EC2 host
+    Value: !Ref OriginSecret
+  DemoPasswordArn:
+    Description: Initial seed password; retrieve privately through Secrets Manager
+    Value: !Ref DemoPassword
+  GitHubDeployRoleArn:
+    Condition: GitHubOidcEnabled
+    Description: Set GitHub environment variable AWS_DEPLOY_ROLE_ARN to this role
+    Value: !GetAtt DeployRole.Arn

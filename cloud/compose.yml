@@ -1,0 +1,186 @@
+name: asd-cloud
+
+x-api: &api
+  image: asd-cloud-api:${RELEASE_ID:-local}
+  build:
+    context: ..
+    dockerfile: cloud/Dockerfile.backend
+  restart: unless-stopped
+  environment: &api-env
+    AI_MODE_ENABLED: "false"
+    MCP_ENABLED: "false"
+    RAG_ENABLED: "false"
+    MULTI_AGENT_ENABLED: "false"
+    PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set the HTTPS cloud origin}
+    AUTH_SERVICE_URL: http://ethan-backend:6002
+    PRODUCT_DATABASE_API_URL: http://product-database:6001/api/database
+  logging: &logging
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+x-web: &web
+  restart: unless-stopped
+  logging: *logging
+
+x-health: &health
+  interval: 5s
+  timeout: 3s
+  start_period: 30s
+  retries: 30
+
+services:
+  shared-home:
+    <<: *web
+    image: asd-cloud-home:${RELEASE_ID:-local}
+    build: {context: .., dockerfile: cloud/Dockerfile.home}
+
+  product-catalogue:
+    <<: *web
+    image: asd-cloud-catalogue:${RELEASE_ID:-local}
+    build: {context: .., dockerfile: student-Chufeng/Dockerfile, target: frontend}
+    volumes:
+      - ../shared/nginx/product-catalogue.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      ethan-backend: {condition: service_healthy}
+      shared-backend: {condition: service_healthy}
+
+  inventory-frontend:
+    <<: *web
+    image: asd-cloud-inventory:${RELEASE_ID:-local}
+    build: {context: .., dockerfile: student-Ryan_Nolan/Dockerfile, target: frontend}
+
+  ethan-frontend:
+    <<: *web
+    image: asd-cloud-account:${RELEASE_ID:-local}
+    build: {context: .., dockerfile: student-Ethan Ting/Dockerfile, target: frontend}
+
+  order-returns-frontend:
+    <<: *web
+    image: asd-cloud-orders:${RELEASE_ID:-local}
+    build: {context: .., dockerfile: student-Howard/Dockerfile, target: frontend}
+    volumes:
+      - ../shared/nginx/order-returns.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      ethan-backend: {condition: service_healthy}
+
+  customer-support:
+    <<: *web
+    image: asd-cloud-support:${RELEASE_ID:-local}
+    build: {context: .., dockerfile: student-Ethan Goldman/Dockerfile, target: frontend}
+    depends_on:
+      customer-support-backend: {condition: service_healthy}
+      ethan-backend: {condition: service_healthy}
+
+  shared-backend:
+    <<: *api
+    environment:
+      <<: *api-env
+      ORDERS_DATABASE_PATH: /data/orders.db
+    volumes:
+      - ${DATA_ROOT:?Set the persistent data directory}/orders:/data
+    depends_on:
+      product-database: {condition: service_healthy}
+      ethan-backend: {condition: service_healthy}
+    healthcheck:
+      <<: *health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/products', timeout=2)"]
+
+  ethan-backend:
+    <<: *api
+    working_dir: /app/student-Ethan Ting/backend
+    command: [gunicorn, --bind, "0.0.0.0:6002", --workers, "1", --threads, "4", "app:app"]
+    environment:
+      <<: *api-env
+      DATABASE_API_URL: http://ethan-database:6003
+      SESSION_SECRET: ${SESSION_SECRET:?Set a generated session secret}
+      SESSION_COOKIE_SECURE: "true"
+    depends_on:
+      ethan-database: {condition: service_healthy}
+    healthcheck:
+      <<: *health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6002/ready', timeout=2)"]
+
+  inventory-backend:
+    <<: *api
+    working_dir: /app/student-Ryan_Nolan/backend
+    command: [gunicorn, --bind, "0.0.0.0:8102", --workers, "1", --threads, "4", "app:app"]
+    depends_on:
+      product-database: {condition: service_healthy}
+      ethan-backend: {condition: service_healthy}
+    healthcheck:
+      <<: *health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/health', timeout=2)"]
+
+  customer-support-backend:
+    <<: *api
+    working_dir: /app/student-Ethan Goldman
+    command: [gunicorn, --bind, "0.0.0.0:6005", --workers, "1", --threads, "4", "support_backend.app:app"]
+    environment:
+      <<: *api-env
+      SUPPORT_DATABASE_API_URL: http://customer-support-database:6006
+      SUPPORT_FRONTEND_ORIGIN: ${PUBLIC_ORIGIN}
+      ACCOUNT_PUBLIC_URL: /account
+      SUPPORT_PUBLIC_URL: /support
+    depends_on:
+      customer-support-database: {condition: service_healthy}
+      ethan-backend: {condition: service_healthy}
+    healthcheck:
+      <<: *health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)"]
+
+  product-database:
+    <<: *api
+    working_dir: /app/student-Chufeng/database
+    command: [gunicorn, --bind, "0.0.0.0:6001", --workers, "1", --threads, "4", "api:create_app()"]
+    environment:
+      DATABASE_PATH: /data/products.db
+    volumes:
+      - ${DATA_ROOT}/products:/data
+    healthcheck:
+      <<: *health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6001/health', timeout=2)"]
+
+  ethan-database:
+    <<: *api
+    working_dir: /app/student-Ethan Ting/database
+    command: [gunicorn, --bind, "0.0.0.0:6003", --workers, "1", --threads, "4", "app:app"]
+    environment:
+      DATABASE_PATH: /data/users.db
+      SEED_PASSWORD: ${SEED_PASSWORD:?Set a generated seed password}
+    volumes:
+      - ${DATA_ROOT}/accounts:/data
+    healthcheck:
+      <<: *health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6003/health', timeout=2)"]
+
+  customer-support-database:
+    <<: *api
+    working_dir: /app/student-Ethan Goldman
+    command: [sh, -c, "python -m database_service.init_db && exec gunicorn --bind 0.0.0.0:6006 --workers 1 --threads 4 database_service.app:app"]
+    environment:
+      DATABASE_PATH: /data/support_tickets.db
+    volumes:
+      - ${DATA_ROOT}/support:/data
+    healthcheck:
+      <<: *health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6006/health', timeout=2)"]
+
+  gateway:
+    <<: *web
+    image: nginx:1.27-alpine
+    environment:
+      ORIGIN_TOKEN: ${ORIGIN_TOKEN:?Set the CloudFront origin verification token}
+    ports:
+      - "${GATEWAY_BIND:-127.0.0.1}:${GATEWAY_PORT:-8080}:80"
+    volumes:
+      - ./gateway.conf.template:/etc/nginx/templates/default.conf.template:ro
+    depends_on:
+      - shared-home
+      - product-catalogue
+      - inventory-frontend
+      - ethan-frontend
+      - order-returns-frontend
+      - customer-support
+      - inventory-backend

@@ -15,6 +15,16 @@ The application uses technologies including:
 - GitHub Actions
 - Ollama and approved open-source language models
 
+## Release 2 AWS cloud baseline
+
+The existing marketplace also runs on one AWS EC2 Docker Compose host behind CloudFront. AI assistants are disabled in the cloud configuration; the local Release 1 services remain available.
+
+- [Cloud architecture, request flow, showcase Q&A and group handover](docs/architecture/aws-group-handover.md)
+- [Provisioning, deployment, start/stop and recovery runbook](docs/architecture/aws-deployment.md)
+- [Validation evidence and cost comparison](docs/evidence/release2-aws/README.md)
+
+The cloud workflow is prepared, but its GitHub OIDC access remains blocked by the project's managed policy. Manual deployment through each authorised team member's own AWS profile is available. AWS project invitations are separate from GitHub repository and application logins.
+
 ## Team Features
 
 ### 1. Product Catalogue and Shopping Cart

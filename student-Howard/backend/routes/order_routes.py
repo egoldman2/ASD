@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import subprocess
+import sys
 import requests
 from flask import Blueprint, current_app, g, jsonify, request
 from shared.feature_flags import feature_enabled
@@ -11,7 +12,9 @@ order_blueprint = Blueprint(
     url_prefix="/api/order-returns",
 )
 
-DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "database", "orders.db")
+DB = os.environ.get("ORDERS_DATABASE_PATH") or os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "database", "orders.db"
+)
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434") + "/api/generate"
 MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:0.5b")
@@ -20,10 +23,11 @@ MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:0.5b")
 def _ensure_db():
     """Seed the database if it does not exist (shared backend doesn't run seed.py)."""
     if not os.path.exists(DB):
-        schema_dir = os.path.dirname(DB)
+        schema_dir = os.path.join(os.path.dirname(__file__), "..", "..", "database")
         seed_path = os.path.join(schema_dir, "seed.py")
         if os.path.exists(seed_path):
-            subprocess.run(["python", "seed.py"], cwd=schema_dir, check=False)
+            os.makedirs(os.path.dirname(os.path.abspath(DB)), exist_ok=True)
+            subprocess.run([sys.executable, "seed.py"], cwd=schema_dir, check=True)
 
 
 _ensure_db()

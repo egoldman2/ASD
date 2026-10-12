@@ -6,6 +6,11 @@ __pycache__/
 venv/
 .vscode/
 .DS_Store
+.cloud-build/
+.aws-deployment/
+.env
+.env.*
+!.env.example
 
 # Ignore local SQLite databases. Schema and seed files recreate them.
 *.db

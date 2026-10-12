@@ -1,0 +1,38 @@
+# Assessment baseline invariants; these are targeted checks, not a full compliance audit.
+let groups = Resources.*[ Type == 'AWS::EC2::SecurityGroup' ]
+rule origin_only when %groups !empty {
+    %groups.Properties.SecurityGroupIngress.* {
+        FromPort == 80
+        ToPort == 80
+        SourcePrefixListId exists
+        CidrIp !exists
+        CidrIpv6 !exists
+    }
+}
+let volumes = Resources.*[ Type == 'AWS::EC2::Volume' ]
+rule persistent_data when %volumes !empty {
+    %volumes {
+        DeletionPolicy == 'Retain'
+        UpdateReplacePolicy == 'Retain'
+        Properties.Encrypted == true
+    }
+}
+let buckets = Resources.*[ Type == 'AWS::S3::Bucket' ]
+rule private_bundles when %buckets !empty {
+    %buckets.Properties.PublicAccessBlockConfiguration {
+        BlockPublicAcls == true
+        BlockPublicPolicy == true
+        IgnorePublicAcls == true
+        RestrictPublicBuckets == true
+    }
+}
+let cdns = Resources.*[ Type == 'AWS::CloudFront::Distribution' ]
+rule authenticated_https when %cdns !empty {
+    %cdns.Properties.DistributionConfig.DefaultCacheBehavior {
+        ViewerProtocolPolicy == 'redirect-to-https'
+        MinTTL == 0
+        DefaultTTL == 0
+        MaxTTL == 0
+        ForwardedValues.Cookies.Forward == 'all'
+    }
+}

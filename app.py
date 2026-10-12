@@ -3,15 +3,9 @@ from importlib import import_module
 
 import requests
 from flask import Flask, g, jsonify, request
+from shared.runtime_config import allowed_origins
 
-ALLOWED_ORIGINS = {
-    "http://localhost:8000",
-    "http://localhost:8001",
-    "http://localhost:8002",
-    "http://localhost:8003",
-    "http://localhost:8004",
-    "http://localhost:8005",
-}
+ALLOWED_ORIGINS = allowed_origins()
 
 AUTH_SERVICE_URL = os.environ.get(
     "AUTH_SERVICE_URL",

@@ -1,7 +1,7 @@
 import sqlite3, os
 from datetime import datetime, timedelta
 
-DB = os.path.join(os.path.dirname(__file__), "orders.db")
+DB = os.environ.get("ORDERS_DATABASE_PATH") or os.path.join(os.path.dirname(__file__), "orders.db")
 
 conn = sqlite3.connect(DB)
 with open(os.path.join(os.path.dirname(__file__), "schema.sql")) as f:

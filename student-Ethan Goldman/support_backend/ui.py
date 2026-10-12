@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+import os
 from typing import Any
 from urllib.parse import urlencode
 
@@ -56,8 +57,8 @@ def create_ui_blueprint(
             else "The support request could not be completed."
         )
         page = "staff.html" if "/admin/" in request.path else "customer.html"
-        login_url = "http://localhost:8003/index.html?" + urlencode(
-            {"return_url": f"http://localhost:8005/{page}"}
+        login_url = os.getenv("ACCOUNT_PUBLIC_URL", "http://localhost:8003").rstrip("/") + "/index.html?" + urlencode(
+            {"return_url": os.getenv("SUPPORT_PUBLIC_URL", "http://localhost:8005").rstrip("/") + f"/{page}"}
         )
         return render_template(
             "support_ui/error.html",
@@ -107,8 +108,8 @@ def create_ui_blueprint(
         if failure:
             _body, status = failure if isinstance(failure, tuple) else (failure, 500)
             if status == 401:
-                login_url = "http://localhost:8003/index.html?" + urlencode(
-                    {"return_url": "http://localhost:8005/"}
+                login_url = os.getenv("ACCOUNT_PUBLIC_URL", "http://localhost:8003").rstrip("/") + "/index.html?" + urlencode(
+                    {"return_url": os.getenv("SUPPORT_PUBLIC_URL", "http://localhost:8005").rstrip("/") + "/"}
                 )
                 if request.headers.get("HX-Request") != "true":
                     return redirect(login_url)
@@ -120,6 +121,8 @@ def create_ui_blueprint(
         destination = (
             "/staff.html" if (user.role or "").casefold() == "admin" else "/customer.html"
         )
+        if os.getenv("SUPPORT_PUBLIC_URL"):
+            destination = os.environ["SUPPORT_PUBLIC_URL"].rstrip("/") + destination
         if request.headers.get("HX-Request") == "true":
             response.headers["HX-Redirect"] = destination
             return response
