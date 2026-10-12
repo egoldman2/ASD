@@ -1,0 +1,20 @@
+{
+  "user_request": "Determine whether product 12 needs restocking.",
+  "feature": "inventory",
+  "evidence": [
+    {
+      "evidence_id": "inventory-product-12",
+      "source": {
+        "service": "inventory-backend",
+        "endpoint": "/api/inventory/products/12",
+        "retrieved_at": "2026-10-12T10:00:00Z"
+      },
+      "data": {
+        "product_id": 12,
+        "product_name": "Wireless Mouse",
+        "stock_quantity": 3,
+        "minimum_stock": 10
+      }
+    }
+  ]
+}
