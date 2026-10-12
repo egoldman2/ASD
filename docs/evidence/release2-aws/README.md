@@ -25,3 +25,11 @@ Chrome verified that the homepage and catalogue load and browser links point at 
 After final verification, EC2 was confirmed **stopped** at the user's request. `environment-state.json` records that state. The public site is offline until the host starts again; data and setup remain. A stop/start recovery cycle and load testing have not yet been verified. Temporary local `asd-cloud` test containers were removed; other local Docker projects were preserved.
 
 GitHub workflow execution and OIDC role setup are not yet verified. `CreateOpenIDConnectProvider`, `GetOpenIDConnectProvider` and `ListOpenIDConnectProviders` were explicitly denied by the project's managed service control policy. No access keys or alternative identity were introduced. See [deployment design and runbook](../../architecture/aws-deployment.md).
+
+## Group handover and first GitHub execution — 12 October
+
+The AWS source, infrastructure, workflow, evidence and [group explanation guide](../../architecture/aws-group-handover.md) were published directly to `main`. AWS Settings confirmed that project invitations were sent to all four teammates; acceptance was pending. Invitation addresses and credential values are intentionally omitted from this public evidence.
+
+The first cloud workflow run split the two feature paths containing spaces before pytest ran. The corrected workflow passes JSON arrays of exact paths. [The corrected run](https://github.com/egoldman2/ASD/actions/runs/38200811684) passed **all six validation jobs and the cloud image build**. Its deployment job failed at **Require configured deployment role**, because `AWS_DEPLOY_ROLE_ARN` is not configured. This verifies GitHub validation/build execution, not a GitHub-to-AWS deployment. Manual AWS deployments remain the previously verified path.
+
+Read-only checks on 12 October found the existing host running, the project still on its active Free plan and US$97.49 in reported remaining credits. The handover did not start, stop, redeploy or upgrade AWS infrastructure.

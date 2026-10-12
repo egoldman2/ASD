@@ -219,6 +219,8 @@ The managed project policy denied OIDC provider creation, read and listing on 9 
 
 The first real cloud workflow run after publication passed the image build and four validation jobs, but the two feature paths containing spaces were split by the shell before pytest ran. The workflow was corrected to pass each suite as a JSON array of exact paths. This illustrates why a local test result and a successful GitHub invocation are separate evidence. A workflow also cannot deploy until its AWS role is configured, even when tests and builds pass.
 
+The [corrected 12 October run](https://github.com/egoldman2/ASD/actions/runs/38200811684) passed all six validation jobs and the cloud image build. It then failed the deployment role configuration check. Use it as validation/build evidence and evidence of the remaining deployment blocker, not as a successful automatic AWS deployment.
+
 The current alternative is manual deployment by any invited and authenticated teammate. The host must be started and ready first; this workflow currently does not automatically start a stopped instance.
 
 ## 10. Short answers for the showcase
