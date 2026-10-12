@@ -256,6 +256,29 @@ def test_markdown_bold_headings_are_normalised_without_retry():
     assert "**" not in result.review
 
 
+def test_harmless_preamble_and_code_fence_are_normalised_without_retry():
+    request = workflow_request()
+    valid = completed_generation()
+    wrapped = ModelGeneration(
+        role=valid.role,
+        model=valid.model,
+        text="Here is the review:\n\n```text\n" + valid.text + "\n```",
+        elapsed_ms=valid.elapsed_ms,
+    )
+    client = Mock()
+    client.generate.return_value = wrapped
+
+    result = ReviewerAgent(client, instructions="Review independently.").review(
+        request, planner_result(request), worker_result(request)
+    )
+
+    client.generate.assert_called_once()
+    assert result.review == valid.text
+    assert result.review.startswith("Risk:")
+    assert "Here is the review" not in result.review
+    assert "```" not in result.review
+
+
 def test_non_accept_review_requires_correction_and_retest():
     request = workflow_request()
     inconsistent = ModelGeneration(

@@ -278,11 +278,16 @@ def _response_issues(
 
 
 def _normalise_review_headings(response_text: str) -> str:
-    """Remove harmless Markdown bolding from the four required headings."""
+    """Remove harmless wrappers while preserving the strict review template."""
 
     normalised = response_text
     for heading in ("Risk", "Correction", "Retest", "Recommendation"):
         normalised = normalised.replace(f"**{heading}:**", f"{heading}:")
+    risk_heading = re.search(r"(?im)^\s*Risk:", normalised)
+    if risk_heading is not None:
+        normalised = normalised[risk_heading.start() :].lstrip()
+    if normalised.rstrip().endswith("```"):
+        normalised = normalised.rstrip()[:-3].rstrip()
     return normalised
 
 
