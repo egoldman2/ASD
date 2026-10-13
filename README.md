@@ -1,5 +1,24 @@
 # ASD 2026 Group 33 - Online Marketplace
 
+## Local pre-commit security checks
+
+Install the pinned development tools and Git hook once from the repository
+root:
+
+```bash
+python -m pip install -r requirements-dev.txt
+pre-commit install
+```
+
+Every `git commit` then runs Ruff security rules and detect-secrets against the
+staged files, plus pip-audit across all application requirement files. Any
+finding blocks the local commit until it is fixed or explicitly reviewed. Run
+the checks manually against the currently staged files with:
+
+```bash
+pre-commit run
+```
+
 ## Project Overview
 
 This project is an integrated online marketplace developed by Group 7 for ASD 2026.
