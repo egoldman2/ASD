@@ -20,12 +20,13 @@ if str(AI_SERVICES_ROOT) not in sys.path:
     sys.path.insert(0, str(AI_SERVICES_ROOT))
 from mcp_validation import probe_runtime, public_evidence, local_url
 from rag_validation import probe_runtime as probe_rag_runtime, configured_probes as configured_rag_probes
+from multi_agent_validation import probe_runtime as probe_multi_agent_runtime
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
 MAX_STATIC_REVIEW_FILE_CHARS = 400
 SENSITIVE_COLUMN_TERMS = ("password", "secret", "token")
-FILE_REVIEW_MODES = ("implementation", "devops", "mcp", "rag")
+FILE_REVIEW_MODES = ("implementation", "devops", "mcp", "rag", "multi-agent")
 
 SYSTEM_PROMPT = """You are the read-only software review agent for the ASD 2026 project.
 
@@ -69,10 +70,13 @@ def _project_path(relative_path):
 
 
 def discover_features():
-    return sorted(
+    features = {
         path.parent.parent.name
         for path in PROJECT_ROOT.glob("student-*/agentic/review_config.json")
-    )
+    }
+    if (PROJECT_ROOT / "shared" / "agentic" / "review_config.json").is_file():
+        features.add("shared")
+    return sorted(features)
 
 
 def load_feature(feature_directory):
@@ -86,13 +90,7 @@ def load_feature(feature_directory):
     except (json.JSONDecodeError, OSError) as exc:
         raise AgenticLoopError(f"Unable to read feature config: {config_path}") from exc
 
-    required = {
-        "feature_name",
-        "prompt_file",
-        "database",
-        "endpoints",
-        "architecture_files",
-    }
+    required = {"feature_name", "prompt_file"}
     missing = sorted(required - set(config))
     if missing:
         raise AgenticLoopError(
@@ -103,7 +101,7 @@ def load_feature(feature_directory):
     try:
         prompt_path.relative_to(feature_path.resolve())
     except ValueError as exc:
-        raise AgenticLoopError("Feature prompt must remain inside its student directory.") from exc
+        raise AgenticLoopError("Feature prompt must remain inside its review directory.") from exc
 
     if not prompt_path.is_file():
         raise AgenticLoopError(f"Feature prompt not found: {prompt_path}")
@@ -115,7 +113,7 @@ def load_feature(feature_directory):
             mode_prompt_path.relative_to(feature_path.resolve())
         except ValueError as exc:
             raise AgenticLoopError(
-                "Mode prompts must remain inside their student directory."
+                "Mode prompts must remain inside their review directory."
             ) from exc
         if not mode_prompt_path.is_file():
             raise AgenticLoopError(f"Mode prompt not found: {mode_prompt_path}")
@@ -704,6 +702,83 @@ def collect_rag_evidence(config, runtime_probe=None):
     return evidence
 
 
+def _multi_agent_runtime_enabled():
+    return feature_enabled("MULTI_AGENT_ENABLED") and feature_enabled()
+
+
+def _probe_multi_agent_runtime(config):
+    return probe_multi_agent_runtime(config)
+
+
+def collect_multi_agent_evidence(config, runtime_probe=None):
+    """Collect shared workflow boundaries and a read-only live workflow snapshot."""
+    evidence = collect_file_evidence(config, "multi-agent")
+    rules = config.get("multi_agent_rules", {})
+    required_agents = rules.get("required_agents", [])
+    required_features = rules.get("required_features", [])
+    required_endpoints = rules.get("required_endpoints", [])
+    roles = rules.get("source_files", {})
+    sources = {}
+    for role, path in roles.items():
+        file_path = _project_path(path)
+        if file_path.is_file():
+            sources[role] = file_path.read_text(encoding="utf-8", errors="replace")
+
+    coordinator = sources.get("coordinator", "")
+    contracts = sources.get("contracts", "")
+    server = sources.get("server", "")
+    store = sources.get("store", "")
+    compose = sources.get("compose", "")
+    checks = evidence["verified_checks"]
+    agent_calls = [
+        f"self._{agent}." for agent in required_agents
+    ]
+    checks.update({
+        "required_agents": required_agents,
+        "required_features": required_features,
+        "required_endpoints": required_endpoints,
+        "all_required_agents_wired": bool(required_agents)
+            and all(marker in coordinator for marker in agent_calls),
+        "all_group_features_supported": bool(required_features)
+            and all(feature in contracts for feature in required_features),
+        "all_required_endpoints_registered": bool(required_endpoints)
+            and all(endpoint in server for endpoint in required_endpoints),
+        "human_review_gate_present": all(marker in store for marker in (
+            "awaiting_human_review", "human_review_recorded", "human_approval_required")),
+        "multi_agent_server_not_in_compose": bool(compose) and not bool(re.search(
+            r"(?m)^\s{2}(?:multi-agent|multi_agent|multi-agent-server|multi_agent_server):\s*$",
+            compose,
+        )),
+    })
+
+    runtime = {"attempted": False, "available": False}
+    try:
+        runtime["server_url"] = local_url(os.getenv(
+            "MULTI_AGENT_SERVER_URL",
+            config.get("multi_agent_server_url", "http://127.0.0.1:5004"),
+        ))
+    except ValueError as exc:
+        runtime["configuration_error"] = type(exc).__name__
+    if not _multi_agent_runtime_enabled():
+        runtime["skip_reason"] = (
+            "MULTI_AGENT_ENABLED disables live validation."
+            if not feature_enabled("MULTI_AGENT_ENABLED")
+            else "AI_MODE_ENABLED disables live Multi-Agent validation."
+        )
+    elif "configuration_error" not in runtime:
+        runtime["attempted"] = True
+        try:
+            runtime.update((runtime_probe or _probe_multi_agent_runtime)(config))
+        except Exception as exc:
+            runtime["error"] = type(exc).__name__
+    runtime.setdefault("latest_workflow_available", False)
+    runtime.setdefault("latest_workflow_verified", False)
+    runtime.setdefault("three_agents_completed", False)
+    runtime.setdefault("human_review_recorded", False)
+    evidence["runtime"] = public_evidence(runtime)
+    return evidence
+
+
 def collect_evidence(mode, config):
     collectors = {
         "database": collect_database_evidence,
@@ -714,6 +789,8 @@ def collect_evidence(mode, config):
         return collect_mcp_evidence(config)
     if mode == "rag":
         return collect_rag_evidence(config)
+    if mode == "multi-agent":
+        return collect_multi_agent_evidence(config)
     if mode in FILE_REVIEW_MODES:
         return collect_file_evidence(config, mode)
     return collectors[mode](config)
@@ -724,7 +801,21 @@ def _runtime_review_summary(mode, runtime):
     def mapping(value):
         return value if isinstance(value, dict) else {}
     summary = {key: value for key, value in runtime.items() if key not in {"tools", "probe", "probes", "assistant_probes", "refresh"}}
-    if mode == "mcp":
+    if mode == "multi-agent":
+        latest = mapping(runtime.get("latest_workflow"))
+        summary["latest_workflow"] = {
+            key: latest.get(key)
+            for key in (
+                "workflow_id",
+                "feature",
+                "status",
+                "timestamp",
+                "evidence_count",
+                "agents",
+                "human_review",
+            )
+        }
+    elif mode == "mcp":
         summary["probes"] = runtime.get("probes", [])
         summary["assistant_probes"] = []
         for probe in runtime.get("assistant_probes", []):
@@ -788,7 +879,7 @@ def _evidence_digest(mode, evidence):
             evidence, indent=2, ensure_ascii=False
         )
 
-    if mode in {"mcp", "rag"}:
+    if mode in {"mcp", "rag", "multi-agent"}:
         return json.dumps({"mode": mode, "verified_checks": evidence.get("verified_checks", {}),
             "runtime": _runtime_review_summary(mode, evidence.get("runtime", {})),
             "files": evidence.get("files", []),
@@ -898,14 +989,16 @@ def _grounding_summary(mode, evidence):
         )
         return "\n".join(lines)
 
-    if mode in {"mcp", "rag"}:
+    if mode in {"mcp", "rag", "multi-agent"}:
         return (
             f"Use the verified {mode.upper()} checks and runtime outcomes in the evidence digest. "
             "Do not repeat them as additional observations. Every configured probe's outcome "
             "must remain explicit; source markers and review prose cannot prove application "
             "inference, successful tests, CI, or deployment. A failed, skipped or unavailable "
             "probe cannot become a passing result. Full payloads stay in saved evidence; "
-            "review excerpts do not establish omitted implementation or universal answer truth."
+            "review excerpts do not establish omitted implementation or universal answer truth. "
+            "For Multi-Agent review, a health response proves only service availability and a "
+            "latest-workflow response proves only that single stored workflow."
         )
 
     if mode == "architecture" or mode in FILE_REVIEW_MODES:
@@ -1030,6 +1123,52 @@ def _deterministic_issues(mode, evidence, candidate):
         ):
             issues.append("The response claims verified unsupported-question behaviour without a model-free insufficient-context probe.")
 
+    if mode == "multi-agent":
+        checks = evidence.get("verified_checks", {})
+        runtime = evidence.get("runtime", {})
+        required_agents = checks.get("required_agents", [])
+        mentioned_agents = [
+            agent for agent in required_agents if agent.lower() in candidate_lower
+        ]
+        if len(mentioned_agents) < len(required_agents):
+            issues.append(
+                "The Multi-Agent response does not name every configured required agent."
+            )
+        if not runtime.get("available") and re.search(
+            r"(?:live|runtime|multi-agent server|health)[^.\n]{0,140}"
+            r"(?:succeed(?:ed|s)?|pass(?:ed|es)?|available|confirmed|healthy)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response claims successful live Multi-Agent evidence, but the "
+                "runtime collector did not connect to the server."
+            )
+        if not runtime.get("latest_workflow_verified") and re.search(
+            r"(?:latest|stored|recorded|live)[^.\n]{0,80}workflow[^.\n]{0,120}"
+            r"(?:succeed(?:ed|s)?|pass(?:ed|es)?|verified|completed|valid)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response claims a verified latest workflow without a complete "
+                "read-only workflow observation."
+            )
+        if not runtime.get("three_agents_completed") and re.search(
+            r"(?:all three|planner[^.\n]{0,40}worker[^.\n]{0,40}reviewer)"
+            r"[^.\n]{0,100}(?:completed|passed|succeeded|verified)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response claims all three agents completed without matching live evidence."
+            )
+        if not runtime.get("human_review_recorded") and re.search(
+            r"human (?:approval|review)[^.\n]{0,100}"
+            r"(?:recorded|completed|passed|verified|accepted)",
+            candidate_lower,
+        ):
+            issues.append(
+                "The response claims a recorded human decision without matching live evidence."
+            )
+
     is_generic_file_review = mode in FILE_REVIEW_MODES or (
         mode == "architecture" and evidence.get("profile") != "ethan-ting"
     )
@@ -1061,7 +1200,7 @@ def _deterministic_issues(mode, evidence, candidate):
             issues.append(
                 "The read-only review cannot claim that files or configuration were updated."
             )
-        if mode not in {"mcp", "rag"} and re.search(
+        if mode not in {"mcp", "rag", "multi-agent"} and re.search(
             r"(?:verified|confirmed)[^.\n]{0,100}(?:fully functional|succeeded|passes)",
             candidate_lower,
         ):
@@ -1641,6 +1780,137 @@ def _grounded_fallback(mode, evidence, issues, config=None):
             + ("; ".join(issues) if issues else "none")
         )
 
+    if mode == "multi-agent":
+        checks = evidence.get("verified_checks", {})
+        runtime = evidence.get("runtime", {})
+        source_checks = checks.get("source_checks", {})
+        observations = [
+            f"- {checks.get('present_files', 0)} of "
+            f"{checks.get('configured_files', 0)} configured Multi-Agent files were present.",
+            "- Required agents: " + ", ".join(checks.get("required_agents", [])) + ".",
+            "- All required agents are wired into the coordinator: "
+            f"{checks.get('all_required_agents_wired')}.",
+            "- All five group feature identifiers are supported by the shared contract: "
+            f"{checks.get('all_group_features_supported')}.",
+            "- All required HTTP endpoints are registered: "
+            f"{checks.get('all_required_endpoints_registered')}.",
+            "- The persisted human-review gate is present: "
+            f"{checks.get('human_review_gate_present')}.",
+            "- No Multi-Agent Server service is defined in Docker Compose: "
+            f"{checks.get('multi_agent_server_not_in_compose')}.",
+            "- Live Multi-Agent validation available: "
+            f"{runtime.get('available', False)}; attempted: "
+            f"{runtime.get('attempted', False)}.",
+            "- Latest workflow available: "
+            f"{runtime.get('latest_workflow_available', False)}; verified: "
+            f"{runtime.get('latest_workflow_verified', False)}.",
+            "- Planner, Worker, and Reviewer completed in the observed workflow: "
+            f"{runtime.get('three_agents_completed', False)}; human decision recorded: "
+            f"{runtime.get('human_review_recorded', False)}.",
+        ]
+        observations.extend(
+            f"- Source evidence: `{item['path']}`; present: {'error' not in item}; "
+            f"excerpt bounded: {item.get('truncated', False)}."
+            for item in evidence.get("files", [])
+        )
+        observations.extend(
+            f"- Configured source check `{name}`: {str(passed).lower()}."
+            for name, passed in source_checks.items()
+        )
+        if runtime.get("latest_workflow_available"):
+            observations.append(
+                "- Latest workflow summary: "
+                + json.dumps(
+                    _runtime_review_summary("multi-agent", runtime).get(
+                        "latest_workflow", {}
+                    ),
+                    ensure_ascii=False,
+                )
+                + "."
+            )
+
+        findings = []
+        missing = checks.get("missing_files", [])
+        if missing:
+            findings.append(
+                "- High: Configured Multi-Agent evidence files were missing: "
+                + ", ".join(missing)
+                + "."
+            )
+        failed_checks = [
+            name for name, passed in source_checks.items() if not passed
+        ]
+        if failed_checks:
+            findings.append(
+                "- Medium: Static Multi-Agent checks did not pass: "
+                + ", ".join(failed_checks)
+                + "."
+            )
+        for field, label in (
+            ("all_required_agents_wired", "required agent coordination"),
+            ("all_group_features_supported", "shared feature coverage"),
+            ("all_required_endpoints_registered", "required HTTP endpoints"),
+            ("human_review_gate_present", "the persisted human-review gate"),
+            ("multi_agent_server_not_in_compose", "the non-containerised topology"),
+        ):
+            if checks.get(field) is not True:
+                findings.append(f"- High: Static evidence did not verify {label}.")
+        if not runtime.get("available"):
+            findings.append(
+                "- Evidence limitation: no successful live Multi-Agent connection was "
+                "collected; static checks do not prove runtime availability."
+            )
+        elif not runtime.get("latest_workflow_available"):
+            findings.append(
+                "- Evidence limitation: the service was healthy, but no latest stored "
+                "workflow was available for read-only inspection."
+            )
+        elif not runtime.get("latest_workflow_verified"):
+            findings.append(
+                "- High: the latest stored workflow did not satisfy the bounded shared "
+                "workflow contract."
+            )
+        if runtime.get("latest_workflow_verified") and not runtime.get(
+            "human_review_recorded"
+        ):
+            findings.append(
+                "- Evidence limitation: the observed workflow still awaits a recorded "
+                "human decision."
+            )
+        if not findings:
+            findings.append(
+                "- The collected static and live evidence did not prove a shared "
+                "Multi-Agent workflow defect."
+            )
+
+        recommendations = [
+            "- Keep the shared server feature-neutral and retain Planner, Worker, Reviewer, and human-review boundaries.",
+            "- Keep the server and Agentic Loop host-local and outside Docker Compose.",
+            "- Retain focused server tests as deterministic evidence separate from this model review.",
+        ]
+        if not runtime.get("available"):
+            recommendations.append(
+                "- Start local Ollama and the host Multi-Agent Server, then rerun this "
+                "shared mode to collect read-only health and latest-workflow evidence."
+            )
+        elif not runtime.get("latest_workflow_available"):
+            recommendations.append(
+                "- Run one workflow through any group feature, then rerun this review; "
+                "the Agentic Loop itself will remain read-only."
+            )
+        return (
+            "OBSERVATIONS\n"
+            + "\n".join(observations)
+            + "\n\nFINDINGS\n"
+            + "\n".join(findings)
+            + "\n\nRECOMMENDATIONS\n"
+            + "\n".join(recommendations)
+            + "\n\nADAPTATION APPLIED\n"
+            "- Replaced unsupported model claims with a deterministic shared Multi-Agent evidence summary.\n"
+            "- Grounding issues removed: "
+            + ("; ".join(issues) if issues else "none")
+        )
+
     if mode in FILE_REVIEW_MODES or (
         mode == "architecture" and evidence.get("profile") != "ethan-ting"
     ):
@@ -2133,6 +2403,7 @@ def _choose_mode():
     print("5 = DevOps")
     print("6 = MCP")
     print("7 = RAG")
+    print("8 = Shared Multi-Agent Workflow")
     choices = {
         "1": "database",
         "2": "endpoints",
@@ -2141,10 +2412,11 @@ def _choose_mode():
         "5": "devops",
         "6": "mcp",
         "7": "rag",
+        "8": "multi-agent",
     }
     selection = input("Selection: ").strip()
     if selection not in choices:
-        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, 5, 6, or 7.")
+        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, 5, 6, 7, or 8.")
     return choices[selection]
 
 
@@ -2154,7 +2426,7 @@ def build_parser():
     )
     parser.add_argument(
         "--feature",
-        help="Student feature directory, for example student-Chufeng.",
+        help="Review directory, for example student-Chufeng or shared.",
     )
     parser.add_argument(
         "--mode",
