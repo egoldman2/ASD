@@ -1,0 +1,46 @@
+minimum_pre_commit_version: "4.7.0"
+default_install_hook_types: [pre-commit]
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.0
+    hooks:
+      - id: ruff-check
+        name: Ruff security rules
+        args: [--select, S]
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        name: Detect committed secrets
+        args: [--baseline, .secrets.baseline]
+        exclude: >-
+          (?x)^(
+            docs/evidence/.*|
+            ai-services/multi_agent_server/(coordination_audit|workflow_history)\.jsonl|
+            .*\.min\.js
+          )$
+
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.10.1
+    hooks:
+      - id: pip-audit
+        name: Audit all Python dependencies
+        # ChromaDB 1.5.9 is the newest release and has no fixed version for
+        # these four advisories as of 2026-10-13. Keep the exceptions explicit.
+        args:
+          - -r
+          - requirements-audit.txt
+          - --progress-spinner
+          - "off"
+          - --ignore-vuln
+          - PYSEC-2026-311
+          - --ignore-vuln
+          - PYSEC-2026-3813
+          - --ignore-vuln
+          - PYSEC-2026-3814
+          - --ignore-vuln
+          - PYSEC-2026-3815
+        pass_filenames: false
+        always_run: true
