@@ -1,0 +1,17 @@
+This is a bounded Release 2 Multi-Agent Workflow Review.
+
+Review the shared, non-containerised Multi-Agent Server used by all five feature teams.
+Check that Planner, Worker, and Reviewer agents are coordinated in order, evidence is
+feature-neutral, human approval is required and persisted, the HTTP contract is bounded,
+and the service is kept outside Docker Compose. Distinguish source markers from a live
+health response and from the latest stored workflow. A read-only live check may inspect
+GET /health and GET /api/workflows/latest only; it must not create a workflow or submit a
+human decision. If no latest workflow is available, report that limitation instead of
+inventing runtime success.
+
+Use these headings exactly:
+PLAN REVIEWED
+OBSERVATIONS
+FINDINGS
+RECOMMENDATIONS
+PROPOSED ADAPTATION

@@ -36,12 +36,13 @@ docker compose logs shared-backend
 
 ## Shared Agentic Review Loop
 
-The shared review loop loads a feature-specific prompt, collects read-only
+The shared review loop loads a configured review prompt, collects read-only
 evidence, asks Qwen for an initial review, reviews that response, and adapts it
-when required. Student prompts and evidence scopes remain in each student's
-feature directory.
+when required. Release 1 feature prompts remain in each student's directory.
+Release 2 group-wide modes use the central `shared/agentic/` configuration so
+every team member runs the same checks.
 
-List the configured student features:
+List the configured student features and shared group target:
 
 ```bash
 python ai-services/agentic_loop.py --list-features
@@ -73,6 +74,23 @@ The MCP mode requires the host MCP server and Product Database API. The RAG
 mode requires the Product Database API, host RAG server, local Ollama, and the
 configured `qwen2.5:0.5b` model. Both modes retain static evidence if their
 runtime integration is disabled, as it is during CI.
+
+### Shared Release 2 Multi-Agent review
+
+Start local Ollama and the non-containerised Multi-Agent Server, then run the
+group-wide review from any team member's checkout:
+
+```bash
+python -m multi_agent_server.app
+python ai-services/agentic_loop.py --feature shared --mode multi-agent
+```
+
+Run the first command from `ai-services/`, or set `PYTHONPATH=ai-services` when
+running it from the project root. The mode performs static checks even when the
+runtime flags are disabled. Its optional live validation is deliberately
+read-only: it calls only `GET /health` and `GET /api/workflows/latest`. Run a
+workflow through any group's feature first if a stored workflow observation is
+required. Reports are written to `docs/evidence/agentic/`.
 
 ## Ethan Goldman - Customer Support
 
