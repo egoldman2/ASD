@@ -202,7 +202,11 @@ def test_invalid_first_response_is_corrected_once():
     invalid = ModelGeneration(
         role=AgentRole.WORKER,
         model="qwen2.5:0.5b",
-        text="An answer without evidence references.",
+        text=(
+            "Output:\n"
+            "Evidence Used: inventory-record-12.\n"
+            "Limitations: None identified."
+        ),
         elapsed_ms=100,
     )
     client = Mock()
@@ -227,15 +231,60 @@ def test_preamble_before_output_is_corrected_once():
         elapsed_ms=100,
     )
     client = Mock()
-    client.generate.side_effect = [with_preamble, valid]
+    client.generate.return_value = with_preamble
 
     result = WorkerAgent(client, instructions="Work safely.").execute(
         request, planner_result(request)
     )
 
-    assert client.generate.call_count == 2
-    assert "content before Output:" in client.generate.call_args.args[1]
+    client.generate.assert_called_once()
     assert result.output.startswith("Output:")
+    assert "Here is the answer" not in result.output
+
+
+def test_missing_metadata_sections_are_supplied_without_retry():
+    request = workflow_request()
+    client = Mock()
+    client.generate.return_value = ModelGeneration(
+        role=AgentRole.WORKER,
+        model="qwen2.5:0.5b",
+        text="The supplied values show that restocking is needed.",
+        elapsed_ms=100,
+    )
+
+    result = WorkerAgent(client, instructions="Work safely.").execute(
+        request, planner_result(request)
+    )
+
+    client.generate.assert_called_once()
+    assert result.output.startswith(
+        "Output: The supplied values show that restocking is needed."
+    )
+    assert 'Evidence Used: "inventory-record-12".' in result.output
+    assert "Limitations: Not stated by the Worker model." in result.output
+
+
+def test_model_supplied_evidence_metadata_is_replaced_by_validated_ids():
+    request = workflow_request()
+    client = Mock()
+    client.generate.return_value = ModelGeneration(
+        role=AgentRole.WORKER,
+        model="qwen2.5:0.5b",
+        text=(
+            "Output: Restocking is needed.\n"
+            "Evidence Used: invented-external-source.\n"
+            "Limitations: None identified."
+        ),
+        elapsed_ms=100,
+    )
+
+    result = WorkerAgent(client, instructions="Work safely.").execute(
+        request, planner_result(request)
+    )
+
+    client.generate.assert_called_once()
+    assert 'Evidence Used: "inventory-record-12".' in result.output
+    assert "invented-external-source" not in result.output
 
 
 def test_copied_prompt_context_is_corrected_once():
@@ -272,7 +321,7 @@ def test_repeated_invalid_response_is_not_reported_as_success():
     invalid = ModelGeneration(
         role=AgentRole.WORKER,
         model="qwen2.5:0.5b",
-        text="Unsupported answer.",
+        text="",
         elapsed_ms=100,
     )
     client = Mock()
@@ -285,7 +334,7 @@ def test_repeated_invalid_response_is_not_reported_as_success():
 
     assert client.generate.call_count == 2
     assert caught.value.code == "worker_response_error"
-    assert "missing Output:" in caught.value.issues
+    assert "content before Output:" in caught.value.issues
 
 
 def test_execution_does_not_modify_inputs_and_result_is_immutable():

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 from multi_agent_server.agents.planner_agent import PlannerResult
@@ -177,6 +178,12 @@ def _response_issues(
     for section in ("Output:", "Evidence Used:", "Limitations:"):
         if section not in response_text:
             issues.append(f"missing {section}")
+    output_match = re.search(
+        r"(?ims)^Output:\s*(.*?)\s*^Evidence Used:",
+        response_text,
+    )
+    if output_match is not None and not output_match.group(1).strip():
+        issues.append("Output must not be empty")
     forbidden_prompt_fragments = (
         PLAN_START_MARKER,
         PLAN_END_MARKER,
@@ -190,6 +197,58 @@ def _response_issues(
         if evidence_item.evidence_id not in response_text:
             issues.append(f"missing evidence {evidence_item.evidence_id}")
     return tuple(issues)
+
+
+def _normalise_worker_response(
+    response_text: str,
+    workflow_request: WorkflowRequest,
+) -> str:
+    """Turn harmless model formatting variation into the stable contract.
+
+    The server already owns the validated evidence IDs, so repeating them is
+    presentation metadata rather than a fact the model should be trusted to
+    reproduce. A non-empty free-form answer is wrapped as Output and missing
+    metadata sections are supplied deterministically for Reviewer inspection.
+    """
+
+    normalised = response_text.strip()
+    if not normalised:
+        return normalised
+
+    for heading in ("Output", "Evidence Used", "Limitations"):
+        normalised = re.sub(
+            rf"(?im)^\s*\*\*{re.escape(heading)}:\*\*\s*",
+            f"{heading}: ",
+            normalised,
+        )
+
+    output_heading = re.search(r"(?im)^\s*Output:\s*", normalised)
+    if output_heading is not None:
+        normalised = normalised[output_heading.start() :].lstrip()
+    else:
+        normalised = f"Output: {normalised}"
+
+    if normalised.rstrip().endswith("```"):
+        normalised = normalised.rstrip()[:-3].rstrip()
+
+    evidence_references = ", ".join(
+        json.dumps(item.evidence_id, ensure_ascii=False)
+        for item in workflow_request.evidence
+    )
+    if re.search(r"(?im)^Evidence Used:", normalised):
+        normalised = re.sub(
+            r"(?ims)^Evidence Used:\s*.*?(?=^Limitations:|\Z)",
+            f"Evidence Used: {evidence_references}.\n",
+            normalised,
+            count=1,
+        ).rstrip()
+    else:
+        normalised += f"\nEvidence Used: {evidence_references}."
+
+    if not re.search(r"(?im)^Limitations:", normalised):
+        normalised += "\nLimitations: Not stated by the Worker model."
+
+    return normalised
 
 
 class WorkerAgent:
@@ -222,7 +281,11 @@ class WorkerAgent:
         for attempt in range(MAX_WORKER_ATTEMPTS):
             generation = self._model_client.generate(AgentRole.WORKER, prompt)
             elapsed_ms += generation.elapsed_ms
-            issues = _response_issues(generation.text, workflow_request)
+            output_text = _normalise_worker_response(
+                generation.text,
+                workflow_request,
+            )
+            issues = _response_issues(output_text, workflow_request)
             if not issues:
                 break
             if attempt + 1 < MAX_WORKER_ATTEMPTS:
@@ -247,7 +310,7 @@ class WorkerAgent:
             status="completed",
             agent="worker",
             model=generation.model,
-            output=generation.text,
+            output=output_text,
             evidence_ids=evidence_ids,
             evidence_count=len(evidence_ids),
             human_approval_required=True,

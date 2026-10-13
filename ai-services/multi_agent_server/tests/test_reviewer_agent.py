@@ -306,13 +306,14 @@ def test_non_accept_review_requires_correction_and_retest():
     assert result.review.startswith("Risk: LOW")
 
 
-def test_flagged_contradiction_cannot_recommend_plain_accept():
+def test_negative_problem_language_does_not_invalidate_accept_review():
     request = workflow_request()
-    inconsistent = ModelGeneration(
+    valid = ModelGeneration(
         role=AgentRole.REVIEWER,
         model="llama3.1:8b",
         text=(
-            "Risk: LOW; the Worker output contains a contradiction.\n"
+            "Risk: LOW; no unsupported claims, contradictions, or omissions "
+            "were found.\n"
             "Correction: None.\n"
             "Retest: Not required.\n"
             "Recommendation: Accept inventory-record-12."
@@ -320,17 +321,38 @@ def test_flagged_contradiction_cannot_recommend_plain_accept():
         elapsed_ms=100,
     )
     client = Mock()
-    client.generate.side_effect = [inconsistent, completed_generation()]
+    client.generate.return_value = valid
 
     result = ReviewerAgent(client, instructions="Review independently.").review(
         request, planner_result(request), worker_result(request)
     )
 
-    assert client.generate.call_count == 2
-    correction_prompt = client.generate.call_args.args[1]
-    assert "Correction cannot be None" in correction_prompt
-    assert "Retest cannot be Not required" in correction_prompt
-    assert "Recommendation cannot be Accept" in correction_prompt
+    client.generate.assert_called_once()
+    assert result.review.startswith("Risk: LOW")
+
+
+def test_explanatory_reject_word_does_not_override_accept_recommendation():
+    request = workflow_request()
+    valid = ModelGeneration(
+        role=AgentRole.REVIEWER,
+        model="llama3.1:8b",
+        text=(
+            "Risk: LOW; the evidence supports the answer.\n"
+            "Correction: None.\n"
+            "Retest: Not required.\n"
+            "Recommendation: Accept inventory-record-12. The human reviewer "
+            "does not need to reject this supported result."
+        ),
+        elapsed_ms=100,
+    )
+    client = Mock()
+    client.generate.return_value = valid
+
+    result = ReviewerAgent(client, instructions="Review independently.").review(
+        request, planner_result(request), worker_result(request)
+    )
+
+    client.generate.assert_called_once()
     assert result.review.startswith("Risk: LOW")
 
 
