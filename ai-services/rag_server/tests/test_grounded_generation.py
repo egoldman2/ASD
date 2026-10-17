@@ -3,7 +3,6 @@
 from dataclasses import replace
 import json
 import os
-from pathlib import Path
 import threading
 
 import pytest
@@ -212,7 +211,7 @@ def test_live_support_rag_generation_and_missing_model(rag_settings, tmp_path, m
         assert unavailable.status_code == 503 and unavailable.json()['error']['code'] == 'OLLAMA_UNAVAILABLE'
         assert unavailable.json()['data'] is None and unavailable.json()['citations'] == []
     finally:
-        Path('/tmp/asd-support-rag-generation-live.json').write_text(json.dumps(evidence, indent=2))
+        (tmp_path / 'support-rag-generation-live.json').write_text(json.dumps(evidence, indent=2))
         server.shutdown(); thread.join(timeout=5); server.server_close(); pipeline.close()
 
 
@@ -237,7 +236,7 @@ def test_generation_supplies_only_complete_bounded_numbered_chunks(support_pipel
 
 
 @pytest.mark.skipif(os.getenv('RUN_LIVE_RAG_AI') != '1', reason='Opt-in actual catalogue regression model check')
-def test_live_catalogue_retains_product_grounding(rag_settings, monkeypatch):
+def test_live_catalogue_retains_product_grounding(rag_settings, tmp_path, monkeypatch):
     from rag_server.sources import KnowledgeDocument, KnowledgeSource
     monkeypatch.setenv('AI_MODE_ENABLED', 'true')
     class Catalogue(KnowledgeSource):
@@ -255,7 +254,7 @@ def test_live_catalogue_retains_product_grounding(rag_settings, monkeypatch):
     with RAGPipeline(settings=settings, sources={source.scope: source}) as pipeline:
         assert pipeline.refresh_corpus(source.scope)['success']
         result = pipeline.answer_question(source.scope, 'What is the Mechanical Keyboard price?', 1)
-        Path('/tmp/asd-catalogue-rag-generation-live.json').write_text(json.dumps(result, indent=2))
+        (tmp_path / 'catalogue-rag-generation-live.json').write_text(json.dumps(result, indent=2))
         assert result['success'] and not result['insufficient_context'], result
         assert '109' in result['data']['answer'] and '[1]' in result['data']['answer']
         assert '123' not in result['data']['answer']
