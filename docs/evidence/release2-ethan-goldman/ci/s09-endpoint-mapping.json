@@ -1,0 +1,58 @@
+{
+  "stage": "S09",
+  "owner": "Ethan Goldman",
+  "feature": "customer_support",
+  "captured_at": "2026-10-16T22:11:55.047414+00:00",
+  "source_parent_sha": "1ff2c5076bf5332a247ebed8736af80205a7bea5",
+  "environment": "Local Python 3.11.16 and separately built Python 3.11 Docker test target; every AI/live opt-in disabled",
+  "workflow": ".github/workflows/EthanGoldman.yml",
+  "official_student_number": "pending user confirmation; no rename performed",
+  "endpoint_junit": "ci/s09-endpoint-functions-local.xml",
+  "endpoint_functions": [
+    {
+      "function": "customer_create",
+      "method": "POST",
+      "path": "/api/support/customer/tickets",
+      "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract",
+      "assertions": [
+        "201 and database-persisted subject/initial message",
+        "session-derived customer identity despite forged fields",
+        "body/type/length limits",
+        "anonymous and forbidden-origin rejection"
+      ]
+    },
+    {
+      "function": "admin_update",
+      "method": "PUT",
+      "path": "/api/support/admin/tickets/<int:ticket_id>",
+      "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract",
+      "assertions": [
+        "200 and all four allowed fields persisted",
+        "invalid body/enum/assignee values do not mutate records",
+        "missing ticket 404",
+        "anonymous/customer/wrong-origin denial",
+        "messages and ownership unchanged"
+      ]
+    }
+  ],
+  "result": "local_pass_post_commit_CI_pending",
+  "command": "python -m pytest 'student-Ethan Goldman/tests/test_release2_endpoint_functions.py' -q --junitxml=/private/tmp/asd-release2-s09-endpoint-functions.xml",
+  "exit_code": 0,
+  "limitations": [
+    "Local JUnit is not post-commit CI proof",
+    "Eight live-model and two proxy checks skipped in broad support suite; proxy tests executed in S08",
+    "Two MCP/RAG live-model checks skipped",
+    "No workflow/student number guessed",
+    "Local hostnames and synthetic invalid credential URL userinfo removed from copied JUnit; outcomes/timestamps unchanged"
+  ],
+  "source_inputs": [
+    {
+      "path": ".github/workflows/EthanGoldman.yml",
+      "sha256": "8714281187b703f8149d726796a010a7561e9cbd66626901858048ea342ad687"
+    },
+    {
+      "path": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py",
+      "sha256": "ad3c299e4995473687aa129dcc51bf946aaaac94b90da405dc4e21fb467e26c8"
+    }
+  ]
+}
