@@ -52,6 +52,10 @@
       "worker": "ai-services/multi_agent_server/agents/worker_agent.py",
       "reviewer": "ai-services/multi_agent_server/agents/reviewer_agent.py",
       "compose": "docker-compose.yml"
+    },
+    "log_files": {
+      "history": "ai-services/multi_agent_server/workflow_history.jsonl",
+      "audit": "ai-services/multi_agent_server/coordination_audit.jsonl"
     }
   },
   "source_checks": {

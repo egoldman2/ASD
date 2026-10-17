@@ -4,10 +4,14 @@ Review the shared, non-containerised Multi-Agent Server used by all five feature
 Check that Planner, Worker, and Reviewer agents are coordinated in order, evidence is
 feature-neutral, human approval is required and persisted, the HTTP contract is bounded,
 and the service is kept outside Docker Compose. Distinguish source markers from a live
-health response and from the latest stored workflow. A read-only live check may inspect
-GET /health and GET /api/workflows/latest only; it must not create a workflow or submit a
-human decision. If no latest workflow is available, report that limitation instead of
-inventing runtime success.
+health response and from one stored workflow. A read-only live check may inspect
+GET /health and GET /api/workflows/latest, or GET /api/workflows/<workflow_id> when
+MULTI_AGENT_REVIEW_WORKFLOW_ID is selected. Compare the selected snapshot with the
+configured project-local history and coordination audit, including ordered agents,
+evidence IDs, models, timestamps and the human decision. It must not create a workflow
+or submit a human decision. Report missing/malformed logs or a missing decision.
+Rejection is valid recorded review evidence, not human approval; ticket review never
+grants release approval. A fixture cannot prove real models or human participation.
 
 Use these headings exactly:
 PLAN REVIEWED

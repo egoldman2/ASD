@@ -283,6 +283,25 @@ python -m pytest "student-Ethan Goldman/tests" -v
 
 The live inference test is enabled with `RUN_LIVE_AI=1` and requires a reachable host Ollama runtime containing `qwen2.5:0.5b`. Local tests default to `http://127.0.0.1:11434`; backend containers use `http://host.docker.internal:11434`. Start Ollama and install the required models before launching Docker Compose; CI keeps live AI disabled.
 
+The staff ticket detail includes a Multi-Agent review panel when `AI_MODE_ENABLED`
+and `MULTI_AGENT_ENABLED` are true. Planner, Worker and Reviewer propose a reply/action
+for that ticket; the human decision records the review only. Use the existing reply
+and ticket update controls to act. To review a completed support workflow through
+the read-only Agentic Loop, start the host Multi-Agent Server, then run:
+
+```bash
+MULTI_AGENT_REVIEW_WORKFLOW_ID='<actual workflow ID>' AI_MODE_ENABLED=true MULTI_AGENT_ENABLED=true python ai-services/agentic_loop.py --feature 'student-Ethan Goldman' --mode multi-agent
+```
+
+The review requires the selected `customer_support` workflow and matching local
+`workflow_history.jsonl` and `coordination_audit.jsonl`. Their default paths are under
+`ai-services/multi_agent_server/`; adjust `multi_agent_rules.log_files` in the review
+config when using a different project-local log directory. Files are read only,
+limited to 2 MiB/5,000 records each. Missing or oversized logs leave evidence
+incomplete; archive logs deliberately rather than truncating active server data.
+The shared mode retains latest-workflow inspection when no ID is selected. A
+recorded rejection is valid review evidence; a ticket decision is not release approval.
+
 The Ethan Goldman GitHub Actions workflow:
 
 - Installs Python 3.11 dependencies, runs the support tests and checks Python compilation

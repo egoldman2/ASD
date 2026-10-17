@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 import sqlite3
 import sys
-from urllib import error, request
+import requests
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +21,7 @@ if str(AI_SERVICES_ROOT) not in sys.path:
 from mcp_validation import probe_runtime, public_evidence, local_url
 from rag_validation import probe_runtime as probe_rag_runtime, configured_probes as configured_rag_probes
 from multi_agent_validation import probe_runtime as probe_multi_agent_runtime
+from multi_agent_validation import public_runtime as public_multi_agent_runtime
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
@@ -243,7 +244,7 @@ def collect_database_evidence(config):
                         }
                     )
                 count = connection.execute(
-                    f"SELECT COUNT(*) FROM {quoted_table}"
+                    f"SELECT COUNT(*) FROM {quoted_table}"  # noqa: S608 - Identifier is quoted/escaped by _quoted_identifier; values cannot be bound as identifiers.
                 ).fetchone()[0]
                 create_sql = connection.execute(
                     "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?",
@@ -252,7 +253,7 @@ def collect_database_evidence(config):
                 samples = [
                     _redacted_sample(config, table_name, dict(row))
                     for row in connection.execute(
-                        f"SELECT * FROM {quoted_table} LIMIT 3"
+                        f"SELECT * FROM {quoted_table} LIMIT 3"  # noqa: S608 - Table name comes from sqlite_master and is quoted/escaped above.
                     )
                 ]
                 evidence["tables"][table_name] = {
@@ -292,20 +293,22 @@ def collect_endpoint_evidence(config):
     for endpoint in config["endpoints"]:
         endpoint_evidence = {
             "name": endpoint["name"],
-            "url": endpoint["url"],
+            "url": "<unvalidated local URL>",
             "method": "GET",
         }
         if "expected_status" in endpoint:
             endpoint_evidence["expected_status"] = endpoint["expected_status"]
-        http_request = request.Request(
-            endpoint["url"],
-            headers={"Accept": "application/json", "User-Agent": "ASD-Agentic-Review/1.0"},
-            method="GET",
-        )
         try:
-            with request.urlopen(http_request, timeout=10) as response:
-                body = response.read().decode("utf-8", errors="replace")
-                endpoint_evidence["status"] = response.status
+            endpoint_evidence["url"] = local_url(endpoint["url"])
+            with requests.get(endpoint_evidence["url"], headers={"Accept": "application/json", "User-Agent": "ASD-Agentic-Review/1.0"},
+                              timeout=10, stream=True, allow_redirects=False) as response:
+                raw = bytearray()
+                for chunk in response.iter_content(4096):
+                    raw.extend(chunk)
+                    if len(raw) > 65536:
+                        raise ValueError("Endpoint response exceeds its size limit.")
+                body = raw.decode("utf-8", errors="replace")
+                endpoint_evidence["status"] = response.status_code
                 endpoint_evidence["content_type"] = response.headers.get(
                     "Content-Type", ""
                 )
@@ -315,11 +318,8 @@ def collect_endpoint_evidence(config):
                     )
                 except json.JSONDecodeError:
                     endpoint_evidence["response_preview"] = body[:2000]
-        except error.HTTPError as exc:
-            endpoint_evidence["status"] = exc.code
-            endpoint_evidence["error"] = str(exc)
-        except (error.URLError, TimeoutError, OSError) as exc:
-            endpoint_evidence["error"] = str(exc)
+        except (requests.RequestException, ValueError, OSError) as exc:
+            endpoint_evidence["error"] = type(exc).__name__
 
         evidence["endpoints"].append(endpoint_evidence)
 
@@ -707,7 +707,7 @@ def _multi_agent_runtime_enabled():
 
 
 def _probe_multi_agent_runtime(config):
-    return probe_multi_agent_runtime(config)
+    return probe_multi_agent_runtime(config, project_root=PROJECT_ROOT)
 
 
 def collect_multi_agent_evidence(config, runtime_probe=None):
@@ -733,12 +733,15 @@ def collect_multi_agent_evidence(config, runtime_probe=None):
     agent_calls = [
         f"self._{agent}." for agent in required_agents
     ]
+    stage_calls = ["self._planner.plan(", "self._worker.execute(", "self._reviewer.review("]
     checks.update({
         "required_agents": required_agents,
         "required_features": required_features,
         "required_endpoints": required_endpoints,
         "all_required_agents_wired": bool(required_agents)
             and all(marker in coordinator for marker in agent_calls),
+        "agent_order_in_coordinator": all(marker in coordinator for marker in stage_calls)
+            and [coordinator.index(marker) for marker in stage_calls] == sorted(coordinator.index(marker) for marker in stage_calls),
         "all_group_features_supported": bool(required_features)
             and all(feature in contracts for feature in required_features),
         "all_required_endpoints_registered": bool(required_endpoints)
@@ -751,7 +754,9 @@ def collect_multi_agent_evidence(config, runtime_probe=None):
         )),
     })
 
-    runtime = {"attempted": False, "available": False}
+    runtime = {"attempted": False, "available": False,
+               "expected_feature": rules.get("expected_feature"),
+               "selected_workflow_required": bool(rules.get("require_selected_workflow"))}
     try:
         runtime["server_url"] = local_url(os.getenv(
             "MULTI_AGENT_SERVER_URL",
@@ -775,7 +780,10 @@ def collect_multi_agent_evidence(config, runtime_probe=None):
     runtime.setdefault("latest_workflow_verified", False)
     runtime.setdefault("three_agents_completed", False)
     runtime.setdefault("human_review_recorded", False)
-    evidence["runtime"] = public_evidence(runtime)
+    runtime.setdefault("history_verified", False)
+    runtime.setdefault("audit_chain_verified", False)
+    runtime.setdefault("review_evidence_complete", False)
+    evidence["runtime"] = public_multi_agent_runtime(runtime)
     return evidence
 
 
@@ -924,22 +932,23 @@ def _call_ollama(prompt):
                 "num_predict": 1024,
             },
         }
-    ).encode("utf-8")
-    ollama_request = request.Request(
-        f"{model_url}/api/chat",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
     )
 
     try:
-        with request.urlopen(ollama_request, timeout=120) as response:
-            raw = response.read(65537)
-            if len(raw) > 65536:
-                raise OllamaError("Ollama review response exceeds its size limit.")
+        with requests.post(f"{model_url}/api/chat", data=payload,
+                           headers={"Content-Type": "application/json"}, timeout=120,
+                           stream=True, allow_redirects=False) as response:
+            response.raise_for_status()
+            if response.status_code != 200:
+                raise OllamaError("Ollama review did not return HTTP 200.")
+            raw = bytearray()
+            for chunk in response.iter_content(4096):
+                raw.extend(chunk)
+                if len(raw) > 65536:
+                    raise OllamaError("Ollama review response exceeds its size limit.")
             result = json.loads(raw.decode("utf-8"))
-    except (error.HTTPError, error.URLError, TimeoutError, OSError) as exc:
-        raise OllamaError(f"Unable to reach Ollama at {OLLAMA_URL}: {exc}") from exc
+    except (requests.RequestException, OSError) as exc:
+        raise OllamaError(f"Unable to reach the local review model: {type(exc).__name__}") from exc
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise OllamaError("Ollama returned invalid JSON.") from exc
 
@@ -1144,7 +1153,7 @@ def _deterministic_issues(mode, evidence, candidate):
                 "runtime collector did not connect to the server."
             )
         if not runtime.get("latest_workflow_verified") and re.search(
-            r"(?:latest|stored|recorded|live)[^.\n]{0,80}workflow[^.\n]{0,120}"
+            r"(?:latest|selected|stored|recorded|live)[^.\n]{0,80}workflow[^.\n]{0,120}"
             r"(?:succeed(?:ed|s)?|pass(?:ed|es)?|verified|completed|valid)",
             candidate_lower,
         ):
@@ -1168,6 +1177,16 @@ def _deterministic_issues(mode, evidence, candidate):
             issues.append(
                 "The response claims a recorded human decision without matching live evidence."
             )
+        if not runtime.get("audit_chain_verified") and re.search(
+            r"(?:audit|history)[^.\n]{0,80}(?:verified|matches|passed)", candidate_lower,
+        ):
+            issues.append("The response claims matching workflow logs without verified history/audit evidence.")
+        if not runtime.get("human_review_approved") and re.search(
+            r"human[^.\n]{0,50}(?:approved|approval granted)", candidate_lower,
+        ):
+            issues.append("A recorded rejection or partial decision does not establish human approval.")
+        if re.search(r"release[^.\n]{0,50}(?:approved|approval granted)", candidate_lower):
+            issues.append("A ticket workflow cannot establish a human release approval.")
 
     is_generic_file_review = mode in FILE_REVIEW_MODES or (
         mode == "architecture" and evidence.get("profile") != "ethan-ting"
@@ -1790,6 +1809,7 @@ def _grounded_fallback(mode, evidence, issues, config=None):
             "- Required agents: " + ", ".join(checks.get("required_agents", [])) + ".",
             "- All required agents are wired into the coordinator: "
             f"{checks.get('all_required_agents_wired')}.",
+            f"- Planner -> Worker -> Reviewer source order: {checks.get('agent_order_in_coordinator')}.",
             "- All five group feature identifiers are supported by the shared contract: "
             f"{checks.get('all_group_features_supported')}.",
             "- All required HTTP endpoints are registered: "
@@ -1801,12 +1821,17 @@ def _grounded_fallback(mode, evidence, issues, config=None):
             "- Live Multi-Agent validation available: "
             f"{runtime.get('available', False)}; attempted: "
             f"{runtime.get('attempted', False)}.",
-            "- Latest workflow available: "
+            f"- Workflow selection: {runtime.get('selection', 'unavailable')}; expected feature: "
+            f"{runtime.get('expected_feature')}; selected ID: {runtime.get('selected_workflow_id')}.",
+            "- Observed workflow available: "
             f"{runtime.get('latest_workflow_available', False)}; verified: "
             f"{runtime.get('latest_workflow_verified', False)}.",
             "- Planner, Worker, and Reviewer completed in the observed workflow: "
             f"{runtime.get('three_agents_completed', False)}; human decision recorded: "
             f"{runtime.get('human_review_recorded', False)}.",
+            f"- Matching history: {runtime.get('history_verified', False)}; ordered coordination audit: "
+            f"{runtime.get('audit_chain_verified', False)}; complete review evidence: "
+            f"{runtime.get('review_evidence_complete', False)}. A ticket decision is not a release approval.",
         ]
         observations.extend(
             f"- Source evidence: `{item['path']}`; present: {'error' not in item}; "
@@ -1819,7 +1844,7 @@ def _grounded_fallback(mode, evidence, issues, config=None):
         )
         if runtime.get("latest_workflow_available"):
             observations.append(
-                "- Latest workflow summary: "
+                "- Observed workflow summary: "
                 + json.dumps(
                     _runtime_review_summary("multi-agent", runtime).get(
                         "latest_workflow", {}
@@ -1848,6 +1873,7 @@ def _grounded_fallback(mode, evidence, issues, config=None):
             )
         for field, label in (
             ("all_required_agents_wired", "required agent coordination"),
+            ("agent_order_in_coordinator", "Planner -> Worker -> Reviewer source order"),
             ("all_group_features_supported", "shared feature coverage"),
             ("all_required_endpoints_registered", "required HTTP endpoints"),
             ("human_review_gate_present", "the persisted human-review gate"),
@@ -1867,8 +1893,8 @@ def _grounded_fallback(mode, evidence, issues, config=None):
             )
         elif not runtime.get("latest_workflow_verified"):
             findings.append(
-                "- High: the latest stored workflow did not satisfy the bounded shared "
-                "workflow contract."
+                "- High: the observed workflow did not satisfy the configured scope, "
+                "completed agent/evidence contract or matching history/audit chain."
             )
         if runtime.get("latest_workflow_verified") and not runtime.get(
             "human_review_recorded"
@@ -1895,7 +1921,7 @@ def _grounded_fallback(mode, evidence, issues, config=None):
             )
         elif not runtime.get("latest_workflow_available"):
             recommendations.append(
-                "- Run one workflow through any group feature, then rerun this review; "
+                "- Record a workflow in the configured feature and select its ID when required, then rerun this review; "
                 "the Agentic Loop itself will remain read-only."
             )
         return (

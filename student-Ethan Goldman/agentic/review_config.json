@@ -8,7 +8,8 @@
     "architecture": "architecture_prompt.txt",
     "devops": "devops_prompt.txt",
     "mcp": "mcp_prompt.txt",
-    "rag": "rag_prompt.txt"
+    "rag": "rag_prompt.txt",
+    "multi-agent": "multi_agent_prompt.txt"
   },
   "database": "student-Ethan Goldman/database_service/support_tickets.db",
   "database_rules": {
@@ -346,6 +347,78 @@
           "AI_MODE_ENABLED: \"false\""
         ]
       }
+    ],
+    "multi-agent": [
+      {
+        "name": "coordinator_runs_three_agents_in_order",
+        "file": "ai-services/multi_agent_server/coordinator.py",
+        "contains": [
+          "self._planner.plan(",
+          "self._worker.execute(",
+          "self._reviewer.review("
+        ]
+      },
+      {
+        "name": "contracts_support_all_group_features",
+        "file": "ai-services/multi_agent_server/contracts.py",
+        "contains": [
+          "product_catalogue",
+          "inventory",
+          "customer_loyalty",
+          "order_returns",
+          "customer_support"
+        ]
+      },
+      {
+        "name": "server_exposes_workflow_and_human_review_routes",
+        "file": "ai-services/multi_agent_server/app.py",
+        "contains": [
+          "@app.get(\"/health\")",
+          "@app.post(\"/api/workflows\")",
+          "@app.get(\"/api/workflows/latest\")",
+          "@app.post(\"/api/workflows/<workflow_id>/review\")"
+        ]
+      },
+      {
+        "name": "store_requires_and_records_human_review",
+        "file": "ai-services/multi_agent_server/workflow_store.py",
+        "contains": [
+          "awaiting_human_review",
+          "human_review_recorded",
+          "must require human approval"
+        ]
+      },
+      {
+        "name": "tests_cover_coordinator_and_http_contract",
+        "file": "ai-services/multi_agent_server/tests/test_app.py",
+        "contains": [
+          "test_health_is_lightweight_and_does_not_run_workflow",
+          "/api/workflows",
+          "/review"
+        ]
+      },
+      {
+        "name": "support_review_records_decision_without_ticket_actions",
+        "file": "student-Ethan Goldman/support_backend/multi_agent.py",
+        "contains": [
+          "def submit_review(",
+          "user:",
+          "_selected_workflow("
+        ],
+        "excludes": [
+          "db_client.update_ticket",
+          "db_client.add_message"
+        ]
+      },
+      {
+        "name": "support_tests_cover_all_three_decisions",
+        "file": "student-Ethan Goldman/tests/test_support_multi_agent_routes.py",
+        "contains": [
+          "partially_accept",
+          "reject",
+          "accept"
+        ]
+      }
     ]
   },
   "mcp_files": [
@@ -622,5 +695,70 @@
         "expected": "insufficient"
       }
     ]
+  },
+  "multi-agent_files": [
+    "ai-services/multi_agent_server/app.py",
+    "ai-services/multi_agent_server/config.py",
+    "ai-services/multi_agent_server/contracts.py",
+    "ai-services/multi_agent_server/coordinator.py",
+    "ai-services/multi_agent_server/evidence_context.py",
+    "ai-services/multi_agent_server/model_client.py",
+    "ai-services/multi_agent_server/workflow_store.py",
+    "ai-services/multi_agent_server/workflow_runner.py",
+    "ai-services/multi_agent_server/agents/planner_agent.py",
+    "ai-services/multi_agent_server/agents/worker_agent.py",
+    "ai-services/multi_agent_server/agents/reviewer_agent.py",
+    "ai-services/multi_agent_server/tests/test_coordinator.py",
+    "ai-services/multi_agent_server/tests/test_app.py",
+    "docker-compose.yml",
+    "shared/multi_agent_client.py",
+    "ai-services/multi_agent_validation.py",
+    "student-Ethan Goldman/support_backend/multi_agent.py",
+    "student-Ethan Goldman/support_backend/multi_agent_routes.py",
+    "student-Ethan Goldman/support_backend/ui.py",
+    "student-Ethan Goldman/support_backend/templates/support_ui/admin/multi_agent_panel.html",
+    "student-Ethan Goldman/support_backend/templates/support_ui/admin/multi_agent_result.html",
+    "student-Ethan Goldman/tests/test_support_multi_agent_routes.py",
+    "student-Ethan Goldman/tests/test_support_multi_agent_ui.py",
+    "student-Ethan Goldman/tests/test_agentic_multi_agent_validation.py"
+  ],
+  "multi_agent_server_url": "http://127.0.0.1:5004",
+  "multi_agent_timeout_seconds": 10,
+  "multi_agent_rules": {
+    "required_agents": [
+      "planner",
+      "worker",
+      "reviewer"
+    ],
+    "required_features": [
+      "product_catalogue",
+      "inventory",
+      "customer_loyalty",
+      "order_returns",
+      "customer_support"
+    ],
+    "required_endpoints": [
+      "/health",
+      "/api/workflows",
+      "/api/workflows/latest",
+      "/api/workflows/<workflow_id>",
+      "/api/workflows/<workflow_id>/review"
+    ],
+    "source_files": {
+      "server": "ai-services/multi_agent_server/app.py",
+      "contracts": "ai-services/multi_agent_server/contracts.py",
+      "coordinator": "ai-services/multi_agent_server/coordinator.py",
+      "store": "ai-services/multi_agent_server/workflow_store.py",
+      "planner": "ai-services/multi_agent_server/agents/planner_agent.py",
+      "worker": "ai-services/multi_agent_server/agents/worker_agent.py",
+      "reviewer": "ai-services/multi_agent_server/agents/reviewer_agent.py",
+      "compose": "docker-compose.yml"
+    },
+    "log_files": {
+      "history": "ai-services/multi_agent_server/workflow_history.jsonl",
+      "audit": "ai-services/multi_agent_server/coordination_audit.jsonl"
+    },
+    "expected_feature": "customer_support",
+    "require_selected_workflow": true
   }
 }

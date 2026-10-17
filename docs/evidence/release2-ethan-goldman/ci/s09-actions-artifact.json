@@ -1,0 +1,18 @@
+{
+  "artifact_id": 12079175047,
+  "archive_sha256": "b38b193332aed2bcca8a24d0743d076dfb4a14f126adf95102732813d527d8f6",
+  "source_sha": "50fe5ade0a05497ecbfba136f4ec2fde675e8205",
+  "run_id": 38974830702,
+  "entries": [
+    "endpoint-functions.xml",
+    "frontend-events.txt",
+    "mcp-rag-contracts.xml",
+    "node-version.txt",
+    "python-versions.txt",
+    "shared-access.xml",
+    "shared-multi-agent.xml",
+    "support-regression.xml",
+    "test-context.json"
+  ],
+  "endpoint_test_count": 2
+}
