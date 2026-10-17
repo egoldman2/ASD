@@ -19,8 +19,9 @@ Parameters:
     Description: Selected Region's com.amazonaws.global.cloudfront.origin-facing prefix list.
   GitHubRepository:
     Type: String
-    Default: egoldman2/ASD
-    AllowedPattern: '[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+'
+    Default: egoldman2@200193881/ASD@1326270780
+    AllowedPattern: '[A-Za-z0-9_.-]+@[1-9][0-9]*/[A-Za-z0-9_.-]+@[1-9][0-9]*'
+    Description: Verified immutable owner@owner-id/repository@repository-id from GitHub's OIDC subject configuration.
   ExistingGitHubProviderArn:
     Type: String
     Default: ''
@@ -264,8 +265,8 @@ Resources:
     Condition: GitHubOidcEnabled
     Metadata:
       com.aws.cloudformation.Context:
-        why: GitHub's protected deployment environment gets temporary release-publish and SSM permissions
-        must: [restrict trust to this repository's aws-cloud environment, configure environment branch protection for main, no GitHub long-lived keys]
+        why: GitHub's protected deployment environment gets temporary release-publish and SSM permissions; immutable repository IDs prevent name-reuse trust
+        must: [restrict trust to the verified immutable repository identity and aws-cloud environment, configure environment branch protection for main, no GitHub long-lived keys]
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'

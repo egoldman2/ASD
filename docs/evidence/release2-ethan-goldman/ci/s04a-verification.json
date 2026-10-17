@@ -1,0 +1,65 @@
+{
+  "stage": "S04a",
+  "owner": "Ethan Goldman",
+  "source_parent_sha": "bec5890451f6010ec794ca7d190abb2e7b7203e3",
+  "captured_at": "2026-10-17T01:59:34.827144+00:00",
+  "github_subject_configuration": "use_default=true, use_immutable_subject=true, sub_claim_prefix=repo:egoldman2@200193881/ASD@1326270780",
+  "expected_environment_subject": "repo:egoldman2@200193881/ASD@1326270780:environment:aws-cloud",
+  "environment_main_only_verified": true,
+  "native_oidc_token_or_aws_assumption": "not captured; not claimed",
+  "checks": {
+    "baseline_failed": 7,
+    "baseline_passed": 6,
+    "shared_cloud_passed": 287,
+    "new_oidc_cases": 13,
+    "bash_syntax": "passed",
+    "focused_ruff": "passed",
+    "cfn_lint": {
+      "version": "1.57.2",
+      "exit_code": 0,
+      "findings": 0,
+      "region": "ap-southeast-2"
+    },
+    "cfn_guard": {
+      "binding": "guardpycfn 0.1.0",
+      "success": true,
+      "top_level_rules_passed": 4,
+      "complete_native_result_preserved": true,
+      "serialization": "compact JSON, no fields removed",
+      "original_pretty_capture_sha256": "e38b50301b9a45dd9ebc8634a4940a7ff797e872bb674c4082ffec1a10947ba2"
+    },
+    "aws_service_validation": {
+      "exit_code": 255,
+      "error": "session_expired"
+    },
+    "template_bytes_before": 14233,
+    "template_bytes_after": 14476
+  },
+  "source_sha256": {
+    "cloud/infrastructure.yml": "6ef771ab5d1af9b1b88bde45504dbda0aebeeb80ff7657d1ee3761ecc8758cb6",
+    "cloud/provision.sh": "51ff3bbaceba6228e44831afd3a3e72243abbedffb71ae1c1fbd929ce3aff47d",
+    "cloud/tests/test_oidc_identity.py": "87dc59cc2dac4606fc3e0df1a737bce66cec12a5153f8df92dded8e36a89a5b7"
+  },
+  "tool_environment": "isolated /private/tmp/asd-release2-cfn-venv; runtime/project dependencies unchanged",
+  "limitations": [
+    "No AWS resource, IAM provider/role, paid capability, main branch or human decision changed",
+    "OIDC remains disabled by default; role-variable authenticated lookup returned 404, no verified role ARN",
+    "AWS service validation, capability check and actual role assumption/deployment remain blocked on access and authorized integration",
+    "Native source validation and four targeted Guard rules do not establish complete security or live deployment",
+    "Existing 64 global Ruff findings and four ChromaDB advisory exceptions remain; report must not claim all-source pass",
+    "The first four sandbox localhost-bind regression failures are retained separately; authorized rerun passes unchanged tests",
+    "Test uses BaseLoader for static CFN strings/lists/maps only; one scoped S506 rationale follows primary PyYAML documentation"
+  ],
+  "commands": {
+    "shared_cloud": "AI_MODE_ENABLED=false MCP_ENABLED=false RAG_ENABLED=false MULTI_AGENT_ENABLED=false RUN_LIVE_AI=0 RUN_LIVE_MCP_AI=0 RUN_LIVE_RAG_AI=0 RUN_LIVE_VALIDATION=0 RUN_LIVE_RELEASE1_VALIDATION=0 RUN_LIVE_MULTI_AGENT=0 RUN_NGINX_PROXY_CHECK=0 python -m pytest shared/tests cloud/tests -q",
+    "local_schema": "cfn-lint --format json --regions ap-southeast-2 --template cloud/infrastructure.yml",
+    "guard_api": "guardpycfn.validate_with_guard(json.dumps(cfnlint.decode.decode(template_path)[0]), rules_content, verbose=True)",
+    "syntax": "bash -n cloud/provision.sh",
+    "ruff": "ruff check --select S,F821 cloud/tests/test_oidc_identity.py"
+  },
+  "resource_properties_conditions_outputs_and_permissions_unchanged": true,
+  "original_log_sha256": {
+    "s04a-baseline.txt": "4d0c3b07f7659275a11d42de864046339d5f81b99aece75a63ab50363df2d1e1",
+    "s04a-sandbox-failure.txt": "889231fe28985a8bc546b851b9dc38bc5f87e9c40e419c22de5869601e501d1d"
+  }
+}

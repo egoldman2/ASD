@@ -102,6 +102,19 @@ the GitHub token; an unavailable API fails acceptance. This handles stale queued
 from an untrusted workflow_run. A stable current main and real five-student
 Actions/SSM evidence remain required in S16. Configure a GitHub environment named `aws-cloud`, with `AWS_DEPLOY_ROLE_ARN` and optionally `AWS_STACK_NAME` environment variables. The AWS role trusts only this repository and that environment using OIDC; no long-lived access keys are needed.
 
+On 17 October, GitHub's public subject configuration verified immutable prefix
+`repo:egoldman2@200193881/ASD@1326270780`. The template's `GitHubRepository` parameter
+therefore uses `egoldman2@200193881/ASD@1326270780`, not the old name-only value.
+`cloud/provision.sh` explicitly passes this parameter, defaults to profile
+`aws-toolkit`, and rejects malformed identities before AWS calls. For an intended
+repository change, first verify its current OIDC prefix and supply
+`GITHUB_OIDC_REPOSITORY_IDENTITY`; do not guess IDs or widen subject matching.
+The aws-cloud environment now has an actual main-only branch policy. The role
+variable endpoint returned 404, and AWS template service validation still fails
+on expired credentials. [Native S04a evidence](../evidence/release2-ethan-goldman/ci/s04a-verification.json)
+records zero local lint findings and four targeted Guard passes; it does not prove
+role assumption or deploy acceptance. GitHub documents [immutable OIDC subjects](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws).
+
 The template's `EnableGitHubOidc` parameter defaults to `false`. This project's managed policies explicitly denied IAM OIDC provider creation, read and list operations during setup. The actual GitHub role and a successful GitHub deployment run remain to be established; preparing a workflow does not verify CI/CD. If the project permits OIDC, enable the template option with `ENABLE_GITHUB_OIDC=true`; supply `GITHUB_OIDC_PROVIDER_ARN` when reusing an existing provider. Project capability changes belong in AWS Settings and require the project owner's decision. AWS documents these restrictions in its [project capability guide](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
 
 ## Validation and limitations

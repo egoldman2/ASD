@@ -1,0 +1,18 @@
+{
+  "stage": "S04a",
+  "captured_at": "2026-10-17T01:56:39.247360+00:00",
+  "command": [
+    "aws",
+    "cloudformation",
+    "validate-template",
+    "--profile",
+    "aws-toolkit",
+    "--region",
+    "ap-southeast-2",
+    "--template-body",
+    "file:///Users/ethan/Desktop/ASD/assignment 1/ASD/cloud/infrastructure.yml"
+  ],
+  "exit_code": 255,
+  "resource_mutations": 0,
+  "error": "session_expired"
+}
