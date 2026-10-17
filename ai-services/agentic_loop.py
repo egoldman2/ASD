@@ -1,6 +1,7 @@
 import argparse
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
+from hashlib import sha256
 import importlib.util
 import json
 import os
@@ -22,12 +23,14 @@ from mcp_validation import probe_runtime, public_evidence, local_url
 from rag_validation import probe_runtime as probe_rag_runtime, configured_probes as configured_rag_probes
 from multi_agent_validation import probe_runtime as probe_multi_agent_runtime
 from multi_agent_validation import public_runtime as public_multi_agent_runtime
+from report_validation import collect_testing_evidence as validate_testing_evidence
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
 MAX_STATIC_REVIEW_FILE_CHARS = 400
 SENSITIVE_COLUMN_TERMS = ("password", "secret", "token")
 FILE_REVIEW_MODES = ("implementation", "devops", "mcp", "rag", "multi-agent")
+REPORT_REVIEW_MODES = ("testing",)
 
 SYSTEM_PROMPT = """You are the read-only software review agent for the ASD 2026 project.
 
@@ -787,11 +790,34 @@ def collect_multi_agent_evidence(config, runtime_probe=None):
     return evidence
 
 
+def collect_testing_evidence(config):
+    rules = config.get("testing_rules", {})
+    rules = rules if isinstance(rules, dict) else {}
+    source_sha = os.getenv("RELEASE_REVIEW_SOURCE_SHA", rules.get("source_sha", ""))
+    manifest = os.getenv("TESTING_REVIEW_MANIFEST", rules.get("manifest", ""))
+    try:
+        evidence = validate_testing_evidence(
+            PROJECT_ROOT, manifest, source_sha, rules.get("required_features", []),
+            expected_endpoints=rules.get("expected_endpoints", {}),
+            accepted_advisories=rules.get("accepted_dependency_advisories", []),
+        )
+    except (ValueError, TypeError, OSError):
+        evidence = {"kind": "testing", "read_only": True, "status": "incomplete",
+                    "source_sha": source_sha if isinstance(source_sha, str) and re.fullmatch(r"[a-f0-9]{40}", source_sha) else None,
+                    "security": [], "students": [], "inputs": [],
+                    "issues": ["missing_or_invalid_review_configuration"],
+                    "limitations": ["Select an explicit source SHA and a confined evidence manifest before review."]}
+    evidence["remote_authenticity_verified"] = False
+    evidence.setdefault("limitations", []).append("Official workflow/endpoint allocation is not verified by offline captures.")
+    return evidence
+
+
 def collect_evidence(mode, config):
     collectors = {
         "database": collect_database_evidence,
         "endpoints": collect_endpoint_evidence,
         "architecture": collect_architecture_evidence,
+        "testing": collect_testing_evidence,
     }
     if mode == "mcp":
         return collect_mcp_evidence(config)
@@ -854,6 +880,12 @@ def _runtime_review_summary(mode, runtime):
 
 
 def _evidence_digest(mode, evidence):
+    if mode in REPORT_REVIEW_MODES:
+        return json.dumps({**{key: value for key, value in evidence.items() if key != "inputs"},
+                           "input_count": len(evidence.get("inputs", [])),
+                           "input_manifest": evidence.get("inputs", [])[:1],
+                           "input_reference_limit": "All input hashes are retained in the saved deterministic validation log."},
+                          ensure_ascii=False)
     if mode == "database" and "tables" in evidence:
         lines = ["MODE: DATABASE", "Verified SQLite facts:"]
         for table_name, table in evidence["tables"].items():
@@ -962,6 +994,7 @@ def _call_ollama(prompt):
 
 
 def _analysis_prompt(feature_prompt, feature_name, mode, evidence_text):
+    first_heading = "DETERMINISTIC STATUS: <exact collected status>" if mode in REPORT_REVIEW_MODES else "PLAN REVIEWED"
     return f"""FEATURE REVIEW PROMPT
 {feature_prompt}
 
@@ -974,7 +1007,7 @@ COLLECTED EVIDENCE DIGEST
 ```
 
 Perform the first review. Use these headings exactly:
-PLAN REVIEWED
+{first_heading}
 OBSERVATIONS
 FINDINGS
 RECOMMENDATIONS
@@ -985,6 +1018,11 @@ Review only {feature_name}. Base every claim on the collected evidence.
 
 
 def _grounding_summary(mode, evidence):
+    if mode in REPORT_REVIEW_MODES:
+        return (f"Deterministic status: {evidence['status']}. Preserve every failed/incomplete gate, "
+                "finding, accepted exception and skipped test. Supplied captures are checked offline; "
+                "remote authenticity is not independently verified. Prose cannot change this status, "
+                "establish missing student coverage, approve release or claim application changes.")
     if mode == "endpoints":
         lines = ["Endpoint status allow-list:"]
         for endpoint in evidence.get("endpoints", []):
@@ -1045,6 +1083,27 @@ def _deterministic_issues(mode, evidence, candidate):
 
     if len(candidate.split()) < 30:
         issues.append("The model response is too short to contain a complete evidence review.")
+
+    if mode in REPORT_REVIEW_MODES:
+        if not re.search(r"(?mi)^DETERMINISTIC STATUS: " + re.escape(evidence['status']) + r"\s*$", candidate):
+            issues.append("The report does not preserve the exact deterministic status.")
+        if evidence["status"] not in {"pass", "pass_with_exceptions"} and re.search(
+            r"(?:tests?|ci|security|gates?|release)[^.\n]{0,60}(?:all passed|passed|green|approved|successful)", candidate_lower,
+        ):
+            issues.append("Report prose claims passing gates without passing deterministic evidence.")
+        if evidence["status"] == "pass_with_exceptions" and "exception" not in candidate_lower:
+            issues.append("The report omits accepted dependency exceptions.")
+        if "offline" not in candidate_lower or "authenticity" not in candidate_lower:
+            issues.append("The report omits the offline capture authenticity limitation.")
+        if re.search(r"remote authenticity (?:is|was|has been) (?:independently )?(?:verified|confirmed|proven)", candidate_lower):
+            issues.append("Offline report parsing cannot independently verify remote authenticity.")
+        if re.search(r"(?:zero|no) (?:findings|vulnerabilities)", candidate_lower) and any(
+            entry.get("finding_count", 0) for entry in evidence.get("security", [])
+        ):
+            issues.append("Scanner execution or accepted exceptions cannot erase findings.")
+        if re.search(r"release[^.\n]{0,40}(?:approved|approval granted)", candidate_lower):
+            issues.append("A report review cannot grant a human release approval.")
+        return list(dict.fromkeys(issues))
 
     if mode == "mcp":
         checks = evidence.get("verified_checks", {})
@@ -1518,6 +1577,24 @@ def _deterministic_issues(mode, evidence, candidate):
 
 def _grounded_fallback(mode, evidence, issues, config=None):
     config = config or {}
+    if mode in REPORT_REVIEW_MODES:
+        lines = [f"DETERMINISTIC STATUS: {evidence['status']}", "OBSERVATIONS",
+                 f"- Selected code SHA: {evidence.get('source_sha')}; read-only captured evidence review."]
+        for scan in evidence.get("security", []):
+            lines.append(f"- {scan['tool']}: {scan['status']}; executed successfully: {scan['execution_ok']}; "
+                         f"findings: {scan['finding_count']}; unexcepted: {scan['unexcepted_findings']}; "
+                         f"accepted advisories: {', '.join(scan['accepted_advisories']) or 'none'}.")
+        for student in evidence.get("students", []):
+            lines.append(f"- {student['feature']}: {student['status']}; captured CI: {student['ci_passed']}; "
+                         f"tests: {student['test_count']}; failures/errors/skips: "
+                         f"{student['failures']}/{student['errors']}/{student['skipped']}; {student['run_url']}.")
+            lines.extend(f"- {endpoint['function']}: passed={endpoint['passed']}; {endpoint['test_node_id']}."
+                         for endpoint in student["endpoints"])
+        lines += ["FINDINGS", "- Deterministic issues: " + (", ".join(evidence.get("issues", [])) or "none"),
+                  "- Offline captures: remote authenticity is not independently verified.",
+                  "RECOMMENDATIONS", "- Verify current exact-SHA Actions runs and resolve failed/missing evidence before release.",
+                  "ADAPTATION APPLIED", "- Preserved deterministic results; no application change or human release approval is recorded."]
+        return "\n".join(lines)
     if mode == "endpoints":
         observations = []
         mismatches = []
@@ -2262,7 +2339,7 @@ def _safe_filename(value):
 def save_evidence_report(config, mode, evidence, first_review, feedback, final_review):
     output_directory = PROJECT_ROOT / "docs" / "evidence" / "agentic"
     output_directory.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     output_path = output_directory / (
         f"{_safe_filename(config['feature_name'])}-{mode}-{timestamp}.md"
     )
@@ -2317,6 +2394,8 @@ def run_agentic_loop(feature_directory, mode, ollama_call=None, save=True):
 
     _stage("ACT", f"Collecting {mode} evidence without modifying the application.")
     evidence = collect_evidence(mode, config)
+    if mode in REPORT_REVIEW_MODES:
+        _stage("VALIDATE", f"Deterministic {mode} status: {evidence['status']}; supplied captures checked offline.")
     evidence_text = _evidence_digest(mode, evidence)
 
     _stage(
@@ -2385,15 +2464,16 @@ def run_agentic_loop(feature_directory, mode, ollama_call=None, save=True):
         all_grounding_issues,
         config,
     )
-    if final_issues and fallback_review:
+    if fallback_review and (final_issues or (mode in REPORT_REVIEW_MODES and evidence['status'] in {'fail', 'incomplete'})):
         _stage(
             "ADAPT",
-            "The revised model response still failed grounding checks; using the verified evidence summary.",
+            "Using the deterministic evidence summary to preserve validation results.",
         )
         final_review = fallback_review
         print(final_review)
 
     output_path = None
+    validation_path = None
     if save:
         output_path = save_evidence_report(
             config,
@@ -2403,6 +2483,18 @@ def run_agentic_loop(feature_directory, mode, ollama_call=None, save=True):
             feedback,
             final_review,
         )
+        if mode in REPORT_REVIEW_MODES:
+            validation_path = Path(output_path).with_suffix(".validation.json")
+            with Path(output_path).open("a", encoding="utf-8") as report:
+                report.write(f"\nDeterministic validation: [{validation_path.name}]({validation_path.name})\n")
+            validation = {"schema_version": 1, "mode": mode, "status": evidence['status'],
+                          "source_sha": evidence.get('source_sha'),
+                          "captured_at": datetime.now(timezone.utc).isoformat(),
+                          "review_file": Path(output_path).name,
+                          "review_sha256": sha256(Path(output_path).read_bytes()).hexdigest(),
+                          "model_grounding_issues": all_grounding_issues, "evidence": evidence}
+            validation_path.write_text(json.dumps(validation, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            _stage("VALIDATE", f"Saved deterministic status {evidence['status']} to {validation_path}")
 
     done_message = "Agentic review completed."
     if output_path:
@@ -2417,6 +2509,7 @@ def run_agentic_loop(feature_directory, mode, ollama_call=None, save=True):
         "feedback": feedback,
         "final_review": final_review,
         "output_path": str(output_path) if output_path else None,
+        "validation_path": str(validation_path) if validation_path else None,
     }
 
 
@@ -2430,6 +2523,7 @@ def _choose_mode():
     print("6 = MCP")
     print("7 = RAG")
     print("8 = Shared Multi-Agent Workflow")
+    print("9 = Testing Report")
     choices = {
         "1": "database",
         "2": "endpoints",
@@ -2439,10 +2533,11 @@ def _choose_mode():
         "6": "mcp",
         "7": "rag",
         "8": "multi-agent",
+        "9": "testing",
     }
     selection = input("Selection: ").strip()
     if selection not in choices:
-        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, 5, 6, 7, or 8.")
+        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, 5, 6, 7, 8, or 9.")
     return choices[selection]
 
 
@@ -2456,7 +2551,7 @@ def build_parser():
     )
     parser.add_argument(
         "--mode",
-        choices=("database", "endpoints", "architecture", *FILE_REVIEW_MODES),
+        choices=("database", "endpoints", "architecture", *FILE_REVIEW_MODES, *REPORT_REVIEW_MODES),
         help="Review mode. Omit to choose interactively.",
     )
     parser.add_argument(
@@ -2486,11 +2581,13 @@ def main(argv=None):
 
     try:
         mode = arguments.mode or _choose_mode()
-        run_agentic_loop(
+        result = run_agentic_loop(
             arguments.feature,
             mode,
             save=not arguments.no_save,
         )
+        if mode in REPORT_REVIEW_MODES and result['evidence']['status'] not in {'pass', 'pass_with_exceptions'}:
+            return 1
     except AgenticLoopError as exc:
         print(f"Agentic loop failed: {exc}", file=sys.stderr)
         return 1

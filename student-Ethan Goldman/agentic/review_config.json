@@ -9,7 +9,8 @@
     "devops": "devops_prompt.txt",
     "mcp": "mcp_prompt.txt",
     "rag": "rag_prompt.txt",
-    "multi-agent": "multi_agent_prompt.txt"
+    "multi-agent": "multi_agent_prompt.txt",
+    "testing": "testing_prompt.txt"
   },
   "database": "student-Ethan Goldman/database_service/support_tickets.db",
   "database_rules": {
@@ -760,5 +761,33 @@
     },
     "expected_feature": "customer_support",
     "require_selected_workflow": true
+  },
+  "testing_rules": {
+    "manifest": "docs/evidence/release2-ethan-goldman/testing-manifest.json",
+    "required_features": [
+      "customer_support"
+    ],
+    "expected_endpoints": {
+      "customer_support": [
+        {
+          "function": "customer_create",
+          "method": "POST",
+          "path": "/api/support/customer/tickets",
+          "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract"
+        },
+        {
+          "function": "admin_update",
+          "method": "PUT",
+          "path": "/api/support/admin/tickets/<int:ticket_id>",
+          "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract"
+        }
+      ]
+    },
+    "accepted_dependency_advisories": [
+      "PYSEC-2026-311",
+      "PYSEC-2026-3813",
+      "PYSEC-2026-3814",
+      "PYSEC-2026-3815"
+    ]
   }
 }

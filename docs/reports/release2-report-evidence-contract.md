@@ -1,7 +1,7 @@
 # Release 2 report evidence contract
 
 S12a supplies `ai-services/report_validation.py`, a read-only structured Testing
-Report validator. S12b connects it to the existing Agentic Loop. This document
+Report validator. S12b connects it to the existing Agentic Loop's `testing` mode. This document
 defines inputs; it is not a passing release report or a human decision.
 
 Call `collect_testing_evidence(root, manifest_path, source_sha, required_features,
@@ -73,3 +73,31 @@ their remote authenticity, current GitHub status, official endpoint allocation o
 a human release decision. Preserve run/artifact URLs and original archive digests,
 verify current exact-SHA Actions results separately, and disclose that limitation
 in generated reviews. YAML source markers and model prose never prove passing CI.
+
+## Run a Testing Report Review
+
+Prepare the real manifest and artifacts first; the configured default paths are
+not pre-populated with placeholder success evidence. Select the actual code SHA
+independently, then run the existing host loop with Ollama available:
+
+```bash
+export RELEASE_REVIEW_SOURCE_SHA='<40-character code SHA to review>'
+export TESTING_REVIEW_MANIFEST='docs/evidence/release2-ethan-goldman/testing-manifest.json'
+AI_MODE_ENABLED=true python ai-services/agentic_loop.py --feature 'student-Ethan Goldman' --mode testing
+```
+
+For the five-owner review, select `--feature shared` and its actual manifest.
+The interactive menu also offers `9 = Testing Report`. The manifest override is
+optional when using `testing_rules.manifest`; the selected SHA may alternatively
+be set explicitly in `testing_rules.source_sha`. Missing configuration or captures
+produce an incomplete result. Paths stay relative to the repository root.
+
+The loop prints deterministic status before model review and saves the generated
+Markdown under `docs/evidence/agentic/`, alongside `*.validation.json`. The JSON
+retains status, selected SHA, all input hashes/results, model grounding issues and
+the linked review's SHA-256. The Markdown links back to it. Model prose cannot
+convert failed/incomplete evidence into a pass; findings and accepted exceptions
+remain visible. `--no-save` creates neither artifact. Fixture tests use scripted
+model replies and do not establish real model or human participation.
+The CLI exits 1 for failed/incomplete deterministic report evidence; pass and
+pass-with-exceptions exit 0. A zero exit still does not grant release approval.
