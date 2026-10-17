@@ -1,0 +1,37 @@
+{
+  "captured_at": "2026-10-17T00:53:01.715625+00:00",
+  "fixture_only": true,
+  "project": "asd-release2-local",
+  "old_sessions": {
+    "admin": {
+      "status": 200,
+      "authenticated": true,
+      "role": "admin"
+    },
+    "customer": {
+      "status": 200,
+      "authenticated": true,
+      "role": "customer"
+    }
+  },
+  "workflows": {
+    "ui": {
+      "workflow_id": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+      "request_and_model_outputs_preserved": true,
+      "status": "awaiting_human_review",
+      "human_review_recorded": false
+    },
+    "terminal": {
+      "workflow_id": "67702aa8-4a5f-4cd0-a311-8bd952ed18d5",
+      "request_and_model_outputs_preserved": true,
+      "status": "awaiting_human_review",
+      "human_review_recorded": false
+    }
+  },
+  "ticket_preserved": true,
+  "private_configuration_unchanged": true,
+  "limitations": [
+    "Restart of this owned local project and Multi-Agent host process only, not AWS/SSM or disaster recovery",
+    "No reseeding, secret rotation or database rollback was performed"
+  ]
+}

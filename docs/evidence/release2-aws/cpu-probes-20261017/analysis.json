@@ -1,0 +1,28 @@
+{
+  "stage": "S03a source repair; final S03 acceptance pending",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-17T12:39:27.784105+00:00",
+  "repository_base_sha": "7b64a0cdb19208f5259ba1da71b48e95f0542fd0",
+  "deployed_source_sha": null,
+  "deployed_path": "/srv/asd/releases/manual-20261009-aws2-d8cd072bf503",
+  "normal_probe_median_cpu_seconds": 0.4845,
+  "skip_site_probe_median_cpu_seconds": 0.543725,
+  "site_startup_experiment": "No consistent improvement; do not add -S",
+  "container_cpu_sample_seconds": 30.02433079399998,
+  "container_total_cpu_seconds": 12.231853,
+  "container_cpu_fraction_of_two_vcpus": 0.20369901137720606,
+  "persistent_cpu_sample_steal_fraction": 0.7763852242744064,
+  "configured_steady_probe_interval_before_seconds": 5,
+  "configured_steady_probe_interval_after_seconds": 30,
+  "configured_periodic_attempt_rate_reduction_factor": 6,
+  "configured_startup_interval_seconds": 5,
+  "configured_failure_interval_budget_before_seconds": 150,
+  "configured_failure_interval_budget_after_seconds": 150,
+  "important_limits": [
+    "Cgroup CPU includes healthcheck children and API calls; attribution to health overhead is an inference supported by six timed actual health calls and low persistent-process CPU",
+    "Sixfold configured frequency reduction is not a measured sixfold overall CPU improvement; probe duration and other work affect actual cadence",
+    "No live AWS health settings or container image changed; no branch deployment",
+    "Historical OOM has multiple contributors; CPU repair does not prove OOM root cause or close S03",
+    "Main-only clean deployment and representative-load 30-minute stability acceptance remain required"
+  ]
+}

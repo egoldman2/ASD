@@ -1,0 +1,23 @@
+This is a bounded, read-only Release 2 Customer Support Multi-Agent Workflow Review.
+
+Review the configured selected customer_support workflow only. The global latest
+catalogue workflow cannot prove support behaviour. Observe GET /health and the
+selected GET /api/workflows/<workflow_id>, then compare that snapshot with the
+project-local workflow history and coordination audit. Never create a workflow,
+submit a human decision, update a ticket or send a reply during this review.
+
+Check Planner -> Worker -> Reviewer completion/order, exact evidence IDs, matching
+models and timestamps, and the final human decision with reason and identity.
+Source markers alone do not prove runtime execution or a genuine human decision.
+Accept, partially_accept and reject are all valid recorded decisions; a rejection
+does not mean human approval. A ticket decision never grants release approval.
+Report missing selection, wrong feature, incomplete chain, missing/malformed logs,
+unavailable services and absent human decisions explicitly. Review synthetic
+fixtures as fixtures, without claiming real models or human participation.
+
+Use these headings exactly:
+PLAN REVIEWED
+OBSERVATIONS
+FINDINGS
+RECOMMENDATIONS
+PROPOSED ADAPTATION

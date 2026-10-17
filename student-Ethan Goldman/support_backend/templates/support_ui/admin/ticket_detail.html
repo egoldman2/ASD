@@ -64,4 +64,5 @@
   </div>
   {% with ticket_id=ticket.id %}{% include "support_ui/admin/mcp_panel.html" %}{% endwith %}
   {% include "support_ui/admin/rag_panel.html" %}
+  {% with ticket_id=ticket.id, loaded=false %}{% include "support_ui/admin/multi_agent_panel.html" %}{% endwith %}
 </main>

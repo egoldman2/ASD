@@ -1,0 +1,44 @@
+[
+  {
+    "name": "support",
+    "command": "/private/tmp/asd-release2-venv/bin/python -m pytest 'student-Ethan Goldman/tests' -q",
+    "started_at": "2026-10-16T21:08:54.099745+00:00",
+    "exit_code": 0,
+    "log": "ci/s00-support.txt"
+  },
+  {
+    "name": "shared-cloud",
+    "command": "/private/tmp/asd-release2-venv/bin/python -m pytest shared/tests cloud/tests -q",
+    "started_at": "2026-10-16T21:09:45.040946+00:00",
+    "exit_code": 1,
+    "log": "ci/s00-shared-cloud.txt"
+  },
+  {
+    "name": "ryan-auth",
+    "command": "/private/tmp/asd-release2-venv/bin/python -m pytest student-Ryan_Nolan/tests/test_authentication.py -q",
+    "started_at": "2026-10-16T21:09:50.502054+00:00",
+    "exit_code": 1,
+    "log": "ci/s00-ryan-auth.txt"
+  },
+  {
+    "name": "mcp-rag",
+    "command": "/private/tmp/asd-release2-venv/bin/python -m pytest ai-services/mcp_server/tests ai-services/rag_server/tests -q",
+    "started_at": "2026-10-16T21:09:51.171956+00:00",
+    "exit_code": 0,
+    "log": "ci/s00-mcp-rag.txt"
+  },
+  {
+    "name": "multi-agent",
+    "command": "/private/tmp/asd-release2-venv/bin/python -m pytest ai-services/multi_agent_server/tests -q",
+    "started_at": "2026-10-16T21:09:56.166070+00:00",
+    "exit_code": 0,
+    "log": "ci/s00-multi-agent.txt"
+  },
+  {
+    "name": "catalogue-multi-agent",
+    "command": "/private/tmp/asd-release2-venv/bin/python -m pytest student-Chufeng/tests/test_multi_agent_client.py student-Chufeng/tests/test_multi_agent_routes.py student-Chufeng/tests/test_multi_agent_frontend.py -q",
+    "started_at": "2026-10-16T21:09:56.734956+00:00",
+    "exit_code": 0,
+    "log": "ci/s00-catalogue-multi-agent.txt"
+  }
+]

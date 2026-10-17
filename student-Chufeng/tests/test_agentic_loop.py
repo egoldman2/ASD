@@ -62,7 +62,7 @@ def test_endpoint_evidence_uses_get_only(agentic_loop, monkeypatch):
     captured_requests = []
 
     class FakeResponse:
-        status = 200
+        status_code = 200
         headers = {"Content-Type": "application/json"}
 
         def __enter__(self):
@@ -71,14 +71,14 @@ def test_endpoint_evidence_uses_get_only(agentic_loop, monkeypatch):
         def __exit__(self, *_args):
             return False
 
-        def read(self):
-            return json.dumps({"count": 1, "products": [{"id": 1}]}).encode()
+        def iter_content(self, size):
+            yield json.dumps({"count": 1, "products": [{"id": 1}]}).encode()
 
-    def fake_urlopen(http_request, timeout):
-        captured_requests.append((http_request, timeout))
+    def fake_get(url, **kwargs):
+        captured_requests.append((url, kwargs))
         return FakeResponse()
 
-    monkeypatch.setattr(agentic_loop.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(agentic_loop.requests, "get", fake_get)
     evidence = agentic_loop.collect_endpoint_evidence(
         {
             "endpoints": [
@@ -87,7 +87,8 @@ def test_endpoint_evidence_uses_get_only(agentic_loop, monkeypatch):
         }
     )
 
-    assert captured_requests[0][0].get_method() == "GET"
+    assert captured_requests[0][0] == "http://localhost:5000/api/products"
+    assert captured_requests[0][1]["allow_redirects"] is False
     assert evidence["method"] == "GET only"
     assert evidence["endpoints"][0]["status"] == 200
     assert evidence["endpoints"][0]["response"]["count"] == 1

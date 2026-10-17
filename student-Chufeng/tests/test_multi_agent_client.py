@@ -14,6 +14,11 @@ MultiAgentClientSettings = module.MultiAgentClientSettings
 MultiAgentDisabledError = module.MultiAgentDisabledError
 
 
+@pytest.fixture(autouse=True)
+def enable_ai_for_isolated_transport_tests(monkeypatch):
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
+
+
 class FakeResponse:
     def __init__(self, payload, status_code=200):
         self.payload = payload

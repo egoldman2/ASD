@@ -1,0 +1,60 @@
+{
+    "VolumeStatuses": [
+        {
+            "Actions": [],
+            "AvailabilityZone": "ap-southeast-2a",
+            "Events": [],
+            "VolumeId": "vol-02087b3eeb07eec99",
+            "VolumeStatus": {
+                "Details": [
+                    {
+                        "Name": "io-enabled",
+                        "Status": "passed"
+                    },
+                    {
+                        "Name": "io-performance",
+                        "Status": "normal"
+                    }
+                ],
+                "Status": "ok"
+            },
+            "AvailabilityZoneId": "apse2-az1",
+            "Operator": {
+                "Managed": false,
+                "HiddenByDefault": false
+            }
+        },
+        {
+            "Actions": [],
+            "AvailabilityZone": "ap-southeast-2a",
+            "Events": [],
+            "VolumeId": "vol-0abdeffdf216c8ed3",
+            "VolumeStatus": {
+                "Details": [
+                    {
+                        "Name": "io-enabled",
+                        "Status": "passed"
+                    },
+                    {
+                        "Name": "io-performance",
+                        "Status": "normal"
+                    },
+                    {
+                        "Name": "initialization-state",
+                        "Status": "completed"
+                    }
+                ],
+                "Status": "ok"
+            },
+            "InitializationStatusDetails": {
+                "InitializationType": "default",
+                "Progress": 100
+            },
+            "AvailabilityZoneId": "apse2-az1",
+            "Operator": {
+                "Managed": false,
+                "HiddenByDefault": false
+            }
+        }
+    ]
+}

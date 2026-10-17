@@ -1,0 +1,16 @@
+{
+  "ticket_id": 2013,
+  "business_unchanged": true,
+  "workflows": {
+    "ui-workflow-detail": {
+      "workflow_id": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+      "status": "awaiting_human_review",
+      "human_review_recorded": false
+    },
+    "terminal-workflow-create": {
+      "workflow_id": "67702aa8-4a5f-4cd0-a311-8bd952ed18d5",
+      "status": "awaiting_human_review",
+      "human_review_recorded": false
+    }
+  }
+}

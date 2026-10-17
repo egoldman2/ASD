@@ -1,0 +1,30 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "backup-databases.sh": "c95ba165d61ab3d0b401c9116d3d83ac745e3bdebf7eff2d86825c9a33c36160",
+    "capture-context.json": "476234fd574a1889e059fa0244c653b406ebd0085fd1dcd353d9cd4c9f7635b1",
+    "database-backup-manifest.json": "364881ac04c391f44001c6cd00358428819d83a567ada146a0dc3f0c36e1989c",
+    "historical-credit-balance.json": "8d826d4f250ecaad228e5320c83716a60f809c9491f3e6e4e077c158c6d8403b",
+    "host-inspection.json": "7b47f770f199c8ed425e3feea6ee634f7d353f0d5df9f9f082a01356239bd3cb",
+    "initial-instance.json": "260deec877b10ee17bed81d33fe246f8ff44958b5a834bb85aabf2acfdfce0ae",
+    "inspect-historical-oom.sh": "b8da4e07ef006e7f1593f9ac8ccb159af78281463ef2460710371502d992fe4a",
+    "inspect-host.sh": "ccb59e3e9effe4acdc17bdaafdd1a6e55621f7a11a53f60db492e937072b2e79",
+    "oidc-capability.json": "7a5bf6317e47407f81e55c90411563dccef5b301bf99c7799b1620d0a71dabc9",
+    "oom-context.json": "88ee6eefd5de52a1c7d547ca4e48a14f5d04009ad1b3246ade2571198bc76cb3",
+    "post-recovery-checks.json": "99dcb7fadb62b30818267adf5900165689d4d6e4adc6e97cce915f97bd691b4b",
+    "pre-recovery-volumes.json": "4a2a7be36618d5ecc0b60c53ccf0ad4b689b4b48ba80510a4cf0811507e4fd16",
+    "project-context.json": "a4c2d63123c1a042aa9ef1e220477e5e9bd8197acdbdfb13a320fbe3564f5758",
+    "recovered-ebs-status.json": "5a834f72298f6638b9d0d22e3a027b306e7e1642202dd74adcee5a7efe5979d8",
+    "recovery-public-head.json": "64c876451a89ac51a3ee1ba2ba333fc9658f2a5710fe443d5de3e08fd7d297ab",
+    "recovery-readiness-summary.json": "773f44af03d13a5404653996d3663ff2ece0bb43b9fa310839e52bbfb40795d7",
+    "snapshot-permissions-data.json": "5dd85773642e8f0d6b09ef4c7e3e7fecb1dd456d937df84ac650736c05702ab6",
+    "snapshot-permissions-root.json": "8968295e96959231c0eb3414dd1556e1a41b0fcb878c29c4ba00c0fdcad6c7c9",
+    "snapshot-status.json": "8b234da78eca937240bcd1f482694e0e2fa18bac9531e09ba474fa0684bc59ae",
+    "ssm-execution.json": "cbd342caff49fc762e1b8b7eea588e84c1a639a8a1369cb98fa594b71e6d8f15",
+    "stack-context.json": "64a2262a449d5298f2c93a10e39b42812a95882cbfd042e68911db23d5accc87",
+    "stack-outputs.jpg": "cfcaf036e7dec58105dea6ecaba884da77a25da2d1cab695d00d4bf6e0cabca2",
+    "start-instances.json": "35c6c5478b71b917837834c4e741f9438808aded9da934914fe3463fddf5c5bb",
+    "template-validation.json": "6543095e67eeab155056e40a72214bb9d9af7b724b23e086d6bda871f7affc47"
+  },
+  "limits": "No self-reference. Additional narrative and subsequent CI records are outside this capture manifest."
+}

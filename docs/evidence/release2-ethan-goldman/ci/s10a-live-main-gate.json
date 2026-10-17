@@ -1,0 +1,89 @@
+{
+  "source_sha": "2b024f43595446a191d8505f350b3e314580e176",
+  "owner": "Ethan Goldman",
+  "command": "python3 cloud/check_workflows.py",
+  "status": "failed",
+  "workflows": [
+    {
+      "owner": "Ethan Goldman",
+      "feature": "customer_support",
+      "id": 38379533441,
+      "path": ".github/workflows/EthanGoldman.yml",
+      "workflow_id": 344339772,
+      "head_sha": "2b024f43595446a191d8505f350b3e314580e176",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/38379533441"
+    },
+    {
+      "owner": "Ryan Nolan",
+      "feature": "inventory",
+      "id": 38379533236,
+      "path": ".github/workflows/Ryan.yml",
+      "workflow_id": 349934041,
+      "head_sha": "2b024f43595446a191d8505f350b3e314580e176",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/38379533236",
+      "jobs": [
+        {
+          "id": 115236210491,
+          "name": "Run Ryan Nolan inventory tests",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/38379533236/job/115236210491"
+        },
+        {
+          "id": 115236476122,
+          "name": "Build Ryan Nolan Docker images",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/38379533236/job/115236476122"
+        }
+      ]
+    },
+    {
+      "owner": "Ethan Ting",
+      "feature": "customer_loyalty",
+      "id": 38379533515,
+      "path": ".github/workflows/student-3.yml",
+      "workflow_id": 334044998,
+      "head_sha": "2b024f43595446a191d8505f350b3e314580e176",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/38379533515",
+      "jobs": [
+        {
+          "id": 115236212344,
+          "name": "Test Ethan Ting customer accounts, loyalty and AI",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/38379533515/job/115236212344"
+        },
+        {
+          "id": 115236780797,
+          "name": "Build and smoke-test Ethan Ting services",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/38379533515/job/115236780797"
+        }
+      ]
+    }
+  ],
+  "issues": [
+    "failed_workflow:344339772",
+    "missing_workflow:335370198",
+    "missing_workflow:340892125"
+  ],
+  "main_sha": "2b024f43595446a191d8505f350b3e314580e176",
+  "captured_at": "2026-10-16T23:59:13.113930+00:00"
+}

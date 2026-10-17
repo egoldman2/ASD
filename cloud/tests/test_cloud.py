@@ -22,9 +22,15 @@ def test_cloud_bundle_routes_all_features_and_excludes_private_local_files(tmp_p
     assert not (bundle / ".git").exists()
     assert not (bundle / "docs").exists()
     assert (bundle / "cloud/install.sh").is_file()
+    assert (bundle / "cloud/provenance.py").is_file()
+    assert (bundle / "cloud/student-workflows.json").is_file()
     assert (bundle / "cloud/gateway.conf.template").is_file()
     assert (bundle / "cloud/Dockerfile.backend").is_file()
     assert (bundle / "cloud/Dockerfile.home").is_file()
+    runtime_pins = (ROOT / "cloud/requirements.txt").read_text().splitlines()
+    requirements = (bundle / "requirements.txt").read_text().splitlines()
+    assert all(pin in requirements for pin in runtime_pins)
+    assert not any(line.lower().startswith("chromadb") for line in requirements)
     for feature, route in (
         ("student-Chufeng", "/catalogue/"), ("student-Ryan_Nolan", "/inventory/"),
         ("student-Ethan Ting", "/account/"), ("student-Howard", "/orders/"),
@@ -79,9 +85,9 @@ def test_orders_bootstrap_uses_persistent_path_and_does_not_reset_existing_data(
     path = tmp_path / "data/orders.db"
     monkeypatch.setenv("ORDERS_DATABASE_PATH", str(path))
     code = "from importlib import import_module; import_module('student-Howard.backend.routes.order_routes')"
-    subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)
+    subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)  # noqa: S603 - Fixed interpreter/import, no shell or external arguments.
     with sqlite3.connect(path) as database:
         database.execute("UPDATE orders SET status='delivered' WHERE order_id=1")
-    subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)
+    subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)  # noqa: S603 - Repeats the same fixed import to verify persistence.
     with sqlite3.connect(path) as database:
         assert database.execute("SELECT status FROM orders WHERE order_id=1").fetchone()[0] == "delivered"

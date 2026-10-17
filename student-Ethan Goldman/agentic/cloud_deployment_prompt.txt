@@ -1,0 +1,14 @@
+Review Ethan Goldman's shared Release 2 Cloud Deployment Report contribution.
+Use the shared cloud evidence contract: selected SHA, actual main Actions deployment,
+five-student same-SHA gate, bundle/release/SSM/target provenance, public feature CRUD
+including support replies, actual disabled AI behaviour, runtime state and health
+window. Do not infer release readiness from manual SSM, a homepage or source flags.
+
+Start with `DETERMINISTIC STATUS: <exact collected status>`. Keep technical deployment
+success separate from the real human release record. Missing/conditional decisions
+remain incomplete and rejection or failed checks stay failed. A model recommendation
+cannot grant human approval or change deterministic results. State the offline capture
+authenticity limitation and missing owner-specific checks. Remain read-only: never
+deploy, change resources, create a human decision or send communications.
+
+Use OBSERVATIONS, FINDINGS, RECOMMENDATIONS and PROPOSED ADAPTATION headings.

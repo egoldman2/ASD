@@ -5,7 +5,6 @@ from hashlib import sha256
 from importlib import import_module
 import json
 import os
-from pathlib import Path
 
 import pytest
 import requests
@@ -142,7 +141,7 @@ def test_live_staff_knowledge_examples_use_actual_model(support_stack, tmp_path,
         assert sum(len(item['generation']) for item in traces) == count
         assert sha256(support_stack.database_path.read_bytes()).hexdigest() == before
     finally:
-        Path('/tmp/asd-support-rag-ui-live.json').write_text(json.dumps(traces, indent=2))
+        (tmp_path / 'rag-ui-live.json').write_text(json.dumps(traces, indent=2))
         host.close()
 
 

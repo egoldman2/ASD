@@ -1,0 +1,525 @@
+{
+  "stage": "S15a",
+  "captured_at": "2026-10-17T01:04:06.750742+00:00",
+  "command": "detect-secrets scan --all-files docs/evidence/release2-ethan-goldman/local docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261017-114350-732739.md",
+  "detector_version": "1.5.0",
+  "detections": 98,
+  "unclassified_findings": 0,
+  "ignored_or_baselined_new_findings": 0,
+  "all_local_artifact_sizes_and_sha256_verified": 58,
+  "private_session_cookie_and_cookie_value_and_session_key_substring_scan": "passed; values excluded",
+  "local_markdown_links": "passed",
+  "application_source_identical_across_pipeline_checkpoint": true,
+  "reviewed": [
+    {
+      "file": "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261017-114350-732739.md",
+      "line": 301,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261017-114350-732739.md",
+      "line": 306,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/advisory-analysis-api.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/disposable-ticket-after-delete.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/disposable-ticket-create.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/disposable-ticket-delete.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/disposable-ticket-read.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/loopback-hardening-plan.json",
+      "line": 9,
+      "classification": "recomputed private synthetic SQLite rows SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/loopback-hardening-plan.json",
+      "line": 13,
+      "classification": "recomputed private synthetic SQLite rows SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/loopback-hardening-plan.json",
+      "line": 17,
+      "classification": "recomputed private synthetic SQLite rows SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/loopback-hardening-verification.json",
+      "line": 77,
+      "classification": "recomputed private synthetic SQLite rows SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/loopback-hardening-verification.json",
+      "line": 81,
+      "classification": "recomputed private synthetic SQLite rows SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/loopback-hardening-verification.json",
+      "line": 85,
+      "classification": "recomputed private synthetic SQLite rows SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/mcp-verified-api.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ollama-tags.json",
+      "line": 8,
+      "classification": "native installed model content digest"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ollama-tags.json",
+      "line": 31,
+      "classification": "native installed model content digest"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ollama-tags.json",
+      "line": 55,
+      "classification": "native installed model content digest"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ollama-tags.json",
+      "line": 78,
+      "classification": "native installed model content digest"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/preliminary-agentic-validation.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/preliminary-agentic-validation.json",
+      "line": 17,
+      "classification": "actual private runtime config SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/preliminary-agentic-validation.json",
+      "line": 21,
+      "classification": "native generated report SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/preliminary-agentic-validation.json",
+      "line": 312,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/preliminary-agentic-validation.json",
+      "line": 317,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/rag-grounded-api.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/rag-insufficient-api.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/readonly-business-verification.json",
+      "line": 4,
+      "classification": "recomputed ticket object SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/runtime-baseline.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 4,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 5,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 30,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 34,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 38,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 42,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 46,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 50,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 54,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 58,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 62,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 66,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 70,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 74,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 78,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 82,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 86,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 90,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 94,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 98,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 102,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 106,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 110,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 114,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 118,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 122,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 126,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 130,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 134,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 138,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 142,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 146,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 150,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 154,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 158,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 162,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 166,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 170,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 174,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 178,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 182,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 186,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 190,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 194,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 198,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 202,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 206,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 210,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 214,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 218,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 222,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 226,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 230,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 234,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 238,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 242,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 246,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 250,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 254,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/s15a-manifest.json",
+      "line": 258,
+      "classification": "recomputed artifact SHA-256"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/startup-plan.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/terminal-workflow-after-restart.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/terminal-workflow-create.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ticket-2013-after-ai.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ticket-2013-after-both-workflows.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ticket-2013-after-restart.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ticket-2013-after-ui-workflow.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ticket-2013-before-ai.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ticket-2013-before-workflow.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ui-workflow-after-restart.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    },
+    {
+      "file": "docs/evidence/release2-ethan-goldman/local/ui-workflow-detail.json",
+      "line": 2,
+      "classification": "verified Git commit"
+    }
+  ],
+  "limitations": [
+    "Evidence is excluded by the normal hook; this is an explicit all-files review, including untracked files",
+    "Only known provenance/content/model/row digests are classified; no detector ignore or finding acceptance is added",
+    "Human decisions and AWS release evidence remain absent"
+  ],
+  "native_whitespace": {
+    "result": "Authored-file diff check passes; raw captured outputs retain original trailing whitespace",
+    "native_files": [
+      "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261017-114350-732739.md",
+      "docs/evidence/release2-ethan-goldman/local/advisory-analysis-ui.txt",
+      "docs/evidence/release2-ethan-goldman/local/mcp-verified-ui.txt",
+      "docs/evidence/release2-ethan-goldman/local/preliminary-agentic-console.txt",
+      "docs/evidence/release2-ethan-goldman/local/rag-grounded-ui.txt",
+      "docs/evidence/release2-ethan-goldman/local/rag-model-abstention-ui.txt",
+      "docs/evidence/release2-ethan-goldman/local/rag-no-generation-ui.txt",
+      "docs/evidence/release2-ethan-goldman/local/ui-workflow-awaiting-human-ui.txt"
+    ],
+    "unchanged_raw_bytes": true,
+    "original_check_exit_code": 2
+  }
+}

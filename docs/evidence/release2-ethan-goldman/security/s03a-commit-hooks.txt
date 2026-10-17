@@ -1,0 +1,37 @@
+Ruff security rules......................................................Passed
+Detect committed secrets.................................................Passed
+Audit all Python dependencies............................................Passed
+[ethan-goldman 78e21b7] fix(cloud): reduce recurring health probe CPU overhead
+ 37 files changed, 2607 insertions(+), 9 deletions(-)
+ create mode 100644 cloud/tests/test_healthchecks.py
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/README.md
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/analysis.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/artifact-hashes.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/before-schedule-tests.txt.gz
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/benchmark-probe.sh
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/cgroup-profile.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/cpu-profile.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/current-CPUCreditBalance.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/current-CPUUtilization.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/final-CPUCreditBalance.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/final-CPUUtilization.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/final-host-readiness.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/final-public-head.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/focused-tests.txt
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/inspect-pressure.sh
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/linux-health-timing.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/pressure-end.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/pressure.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/probe-benchmark.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/profile-cgroups.sh
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/profile-cpu.sh
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/rendered-compose-health.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/shared-cloud-tests.txt
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/ssm-execution.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/staged-review.json
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/support-tests.txt
+ create mode 100644 docs/evidence/release2-aws/cpu-probes-20261017/verification.json
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s02a-actions.json
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s02a-cloud-pr-actions.json
+ create mode 100644 docs/evidence/release2-ethan-goldman/security/s02a-commit-hooks.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/security/s02a-commit-wrapper-note.txt

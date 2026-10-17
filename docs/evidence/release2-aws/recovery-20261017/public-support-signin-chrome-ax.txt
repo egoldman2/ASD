@@ -1,0 +1,22 @@
+Browser tab: 1350837946, Title: "Sign In | ASD 2026", URL: "https://dww8d9hiqp0ce.cloudfront.net/account/index.html?return_url=%2Fsupport%2F".
+1 AXWebArea Sign In | ASD 2026, URL: dww8d9hiqp0ce.cloudfront.net/account/index.html?return_url=%2Fsupport%2F
+	2 container
+		3 link Description: ASD 2026 home, Value: dww8d9hiqp0ce.cloudfront.net/
+		4 container Description: Main navigation, ID: mainNavigation
+			5 link Description: Catalogue, Value: dww8d9hiqp0ce.cloudfront.net/catalogue
+			6 link Description: Support, Value: dww8d9hiqp0ce.cloudfront.net/support
+			7 link Description: Search products, Value: dww8d9hiqp0ce.cloudfront.net/catalogue
+			8 pop up button (collapsed) Account, Secondary Actions: Expand
+	9 container loginPanel
+		10 heading Sign in to your account, Value: 1, ID: loginTitle
+			11 text Sign in to your account
+		12 text Enter your account details to continue.
+		13 container loginForm
+			14 text Email address
+			15 text field (settable) Email address
+			16 text Password
+			17 text field (settable) Password
+			18 button Sign in, ID: loginButton
+	19 text asd(2026)-group7
+
+The focused UI element is 15 text field (settable) Email address

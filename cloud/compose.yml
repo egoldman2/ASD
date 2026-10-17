@@ -25,10 +25,12 @@ x-web: &web
   logging: *logging
 
 x-health: &health
-  interval: 5s
+  # Space steady Python probes to leave CPU credits for application traffic.
+  interval: 30s
+  start_interval: 5s
   timeout: 3s
   start_period: 30s
-  retries: 30
+  retries: 5
 
 services:
   shared-home:

@@ -1,0 +1,27 @@
+{
+  "captured_at": "2026-10-17T00:51:24.371508+00:00",
+  "fixture_only": true,
+  "project": "asd-release2-local",
+  "orders_backup_integrity": "ok",
+  "orders_tables": {
+    "orders": {
+      "rows": 12,
+      "rows_sha256": "ba24d866c97ddbe01b377306dd779cc1a5bb49e308f52fae483d7f2339e25914"
+    },
+    "order_items": {
+      "rows": 12,
+      "rows_sha256": "192540e1480766b7f62861cb784ed9034ca40a01d8ec509329db8eaca06722b2"
+    },
+    "returns": {
+      "rows": 12,
+      "rows_sha256": "33aba8c7f35bcf2ba69dc0decde126acfdf059735e577b082b2b623e68375aff"
+    }
+  },
+  "loopback_override": "/private/tmp/asd-release2-s15/loopback.compose.yml",
+  "private_configuration_unchanged": true,
+  "reason": "Restrict owned demo published ports without losing the pre-existing owned orders data",
+  "limitations": [
+    "Only this fresh local demo is changed; root Compose source and unrelated user containers stay intact",
+    "No AWS resource or credential permission is changed"
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "captured_at": "2026-10-17T00:53:03.073688+00:00",
+  "fixture_only": true,
+  "project": "asd-release2-local",
+  "services": [
+    {
+      "service": "customer-support",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "customer-support-backend",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "customer-support-database",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "ethan-backend",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "ethan-database",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "ethan-frontend",
+      "state": "running",
+      "health": ""
+    },
+    {
+      "service": "inventory-backend",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "inventory-frontend",
+      "state": "running",
+      "health": ""
+    },
+    {
+      "service": "order-returns-frontend",
+      "state": "running",
+      "health": ""
+    },
+    {
+      "service": "product-catalogue",
+      "state": "running",
+      "health": ""
+    },
+    {
+      "service": "product-database",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "shared-backend",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "shared-home",
+      "state": "running",
+      "health": ""
+    }
+  ],
+  "running_flags": {
+    "shared-backend": {
+      "AI_MODE_ENABLED": "true",
+      "MCP_ENABLED": "true",
+      "RAG_ENABLED": "true",
+      "MULTI_AGENT_ENABLED": "true"
+    },
+    "customer-support-backend": {
+      "AI_MODE_ENABLED": "true",
+      "MCP_ENABLED": "true",
+      "RAG_ENABLED": "true",
+      "MULTI_AGENT_ENABLED": "true"
+    },
+    "ethan-backend": {
+      "AI_MODE_ENABLED": "true",
+      "MCP_ENABLED": "true",
+      "RAG_ENABLED": "true",
+      "MULTI_AGENT_ENABLED": null
+    },
+    "inventory-backend": {
+      "AI_MODE_ENABLED": "true",
+      "MCP_ENABLED": "true",
+      "RAG_ENABLED": "true",
+      "MULTI_AGENT_ENABLED": null
+    }
+  },
+  "table_counts": {
+    "customer-support-database": {
+      "support_tickets": 13,
+      "support_ticket_messages": 22
+    },
+    "ethan-database": {
+      "users": 11,
+      "loyalty_accounts": 10,
+      "loyalty_transactions": 10
+    },
+    "product-database": {
+      "suppliers": 5,
+      "products": 13,
+      "cart_items": 10,
+      "customer_cart_items": 0
+    },
+    "shared-backend": {
+      "orders": 12,
+      "order_items": 12,
+      "returns": 12
+    }
+  },
+  "limitations": [
+    "Fresh isolated local demo, not public AWS/main deployment",
+    "Accounts and Inventory do not declare a Multi-Agent flag in current root Compose; no teammate Multi-Agent implementation is inferred",
+    "Supplier seed minimum and current-versus-legacy cart table requirements need owner confirmation; no data was reseeded"
+  ]
+}

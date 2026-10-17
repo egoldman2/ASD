@@ -1,0 +1,75 @@
+{
+  "fixture_only": true,
+  "started_at": "2026-10-16T23:49:41.362216+00:00",
+  "completed_at": "2026-10-16T23:49:42.274188+00:00",
+  "exit_code": 0,
+  "status": "passed",
+  "check_count": 64,
+  "feature_crud": {
+    "customer_loyalty": [
+      "create",
+      "delete",
+      "read",
+      "update"
+    ],
+    "inventory": [
+      "create",
+      "delete",
+      "read",
+      "update"
+    ],
+    "product_catalogue": [
+      "create",
+      "delete",
+      "read",
+      "update"
+    ],
+    "order_returns": [
+      "create",
+      "delete",
+      "read",
+      "update"
+    ],
+    "customer_support": [
+      "create",
+      "delete",
+      "read",
+      "reply",
+      "update"
+    ]
+  },
+  "cleanup_status": "passed",
+  "preexisting_business_rows_preserved": true,
+  "before_table_counts": {
+    "accounts/users.db:users": 15,
+    "accounts/users.db:loyalty_accounts": 14,
+    "accounts/users.db:loyalty_transactions": 10,
+    "orders/orders.db:orders": 12,
+    "orders/orders.db:order_items": 12,
+    "orders/orders.db:returns": 12,
+    "products/products.db:suppliers": 5,
+    "products/products.db:products": 13,
+    "products/products.db:cart_items": 10,
+    "products/products.db:customer_cart_items": 0,
+    "support/support_tickets.db:support_tickets": 12,
+    "support/support_tickets.db:support_ticket_messages": 20
+  },
+  "after_table_counts": {
+    "accounts/users.db:users": 16,
+    "accounts/users.db:loyalty_accounts": 15,
+    "accounts/users.db:loyalty_transactions": 10,
+    "orders/orders.db:orders": 12,
+    "orders/orders.db:order_items": 12,
+    "orders/orders.db:returns": 12,
+    "products/products.db:suppliers": 5,
+    "products/products.db:products": 13,
+    "products/products.db:cart_items": 10,
+    "products/products.db:customer_cart_items": 0,
+    "support/support_tickets.db:support_tickets": 12,
+    "support/support_tickets.db:support_ticket_messages": 20
+  },
+  "limitations": [
+    "Loopback generated-bundle fixture, not public AWS or actual main deployment",
+    "Authentication sessions excluded from business-row comparison; temporary account data is soft deactivated"
+  ]
+}

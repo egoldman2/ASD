@@ -4,11 +4,14 @@ env:
   AI_MODE_ENABLED: "false"
   MCP_ENABLED: "false"
   RAG_ENABLED: "false"
+  MULTI_AGENT_ENABLED: "false"
   RUN_LIVE_AI: "0"
   RUN_LIVE_MCP_AI: "0"
   RUN_LIVE_RAG_AI: "0"
   RUN_LIVE_VALIDATION: "0"
   RUN_LIVE_RELEASE1_VALIDATION: "0"
+  RUN_LIVE_MULTI_AGENT: "0"
+  RUN_NGINX_PROXY_CHECK: "0"
   OLLAMA_URL: "http://127.0.0.1:9"
 
 on:
@@ -49,17 +52,70 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt -r ai-services/rag_server/requirements.txt
 
+      - name: Record test environment and endpoint function mapping
+        run: |
+          mkdir -p artifacts
+          python -m pip freeze > artifacts/python-versions.txt
+          node --version > artifacts/node-version.txt
+          python - <<'PY'
+          from datetime import datetime, timezone
+          import json
+          import os
+          from pathlib import Path
+          import platform
+
+          flags = ("AI_MODE_ENABLED", "MCP_ENABLED", "RAG_ENABLED", "MULTI_AGENT_ENABLED")
+          opt_ins = ("RUN_LIVE_AI", "RUN_LIVE_MCP_AI", "RUN_LIVE_RAG_AI", "RUN_LIVE_VALIDATION", "RUN_LIVE_RELEASE1_VALIDATION", "RUN_LIVE_MULTI_AGENT", "RUN_NGINX_PROXY_CHECK")
+          assert all(os.environ[name] == "false" for name in flags)
+          assert all(os.environ[name] == "0" for name in opt_ins)
+          report = {
+              "owner": "Ethan Goldman", "feature": "customer_support",
+              "source_sha": os.environ["GITHUB_SHA"], "event": os.environ["GITHUB_EVENT_NAME"],
+              "ref": os.environ["GITHUB_REF"], "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "run_url": f'https://github.com/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}',
+              "captured_at": datetime.now(timezone.utc).isoformat(), "python": platform.python_version(),
+              "workflow": ".github/workflows/EthanGoldman.yml",
+              "ai_flags": {name: os.environ[name] for name in flags},
+              "live_opt_ins": {name: os.environ[name] for name in opt_ins},
+              "endpoint_junit": "endpoint-functions.xml",
+              "endpoint_functions": [
+                  {"function": "customer_create", "method": "POST", "path": "/api/support/customer/tickets",
+                   "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract"},
+                  {"function": "admin_update", "method": "PUT", "path": "/api/support/admin/tickets/<int:ticket_id>",
+                   "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract"},
+              ],
+          }
+          Path("artifacts/test-context.json").write_text(json.dumps(report, indent=2) + "\n")
+          PY
+
+      - name: Verify customer_create and admin_update endpoint functions
+        run: python -m pytest 'student-Ethan Goldman/tests/test_release2_endpoint_functions.py' -q --junitxml=artifacts/endpoint-functions.xml
+
       - name: Run Customer Support tests
-        run: python -m pytest 'student-Ethan Goldman/tests' -q
+        run: python -m pytest 'student-Ethan Goldman/tests' -q --junitxml=artifacts/support-regression.xml
+
+      - name: Verify workflow loading and error events
+        run: node --test 'student-Ethan Goldman/tests/check_support_events.js' > artifacts/frontend-events.txt
 
       - name: Run shared MCP and RAG contract tests
-        run: python -m pytest ai-services/mcp_server/tests ai-services/rag_server/tests -q
+        run: python -m pytest ai-services/mcp_server/tests ai-services/rag_server/tests -q --junitxml=artifacts/mcp-rag-contracts.xml
 
-      - name: Run shared access and disabled-runtime checks
-        run: python -m pytest shared/tests -q
+      - name: Run shared Multi-Agent contracts in an isolated process
+        run: python -m pytest ai-services/multi_agent_server/tests -q --junitxml=artifacts/shared-multi-agent.xml
+
+      - name: Run shared access, cloud and disabled-runtime checks
+        run: python -m pytest shared/tests cloud/tests -q --junitxml=artifacts/shared-access.xml
 
       - name: Compile application Python modules
         run: python -m compileall -q 'student-Ethan Goldman' shared ai-services
+
+      - name: Upload endpoint, regression and environment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: goldman-release2-tests-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/
 
   docker-build:
     name: Build and validate Customer Support services
@@ -79,13 +135,21 @@ jobs:
           --tag asd-customer-support-test:ci
           .
 
+      - name: Record Docker test dependency versions
+        run: |
+          mkdir -p artifacts
+          docker run --rm --entrypoint python asd-customer-support-test:ci -m pip freeze > artifacts/docker-python-versions.txt
+
       - name: Run Customer Support test target
         run: >-
           docker run --rm
-          --env AI_MODE_ENABLED --env MCP_ENABLED --env RAG_ENABLED
+          --volume "$PWD/artifacts:/evidence"
+          --env AI_MODE_ENABLED --env MCP_ENABLED --env RAG_ENABLED --env MULTI_AGENT_ENABLED
           --env RUN_LIVE_AI --env RUN_LIVE_MCP_AI --env RUN_LIVE_RAG_AI
-          --env RUN_LIVE_VALIDATION --env RUN_LIVE_RELEASE1_VALIDATION
+          --env RUN_LIVE_VALIDATION --env RUN_LIVE_RELEASE1_VALIDATION --env RUN_LIVE_MULTI_AGENT
+          --env RUN_NGINX_PROXY_CHECK
           --env OLLAMA_URL asd-customer-support-test:ci
+          python -m pytest 'student-Ethan Goldman/tests' -q --junitxml=/evidence/docker-support.xml
 
       - name: Validate Docker Compose
         run: docker compose config --quiet
@@ -95,7 +159,10 @@ jobs:
           test "$AI_MODE_ENABLED" = "false"
           test "$MCP_ENABLED" = "false"
           test "$RAG_ENABLED" = "false"
+          test "$MULTI_AGENT_ENABLED" = "false"
           test "$RUN_LIVE_AI" = "0"
+          test "$RUN_LIVE_MULTI_AGENT" = "0"
+          test "$RUN_NGINX_PROXY_CHECK" = "0"
 
       - name: Start support and authentication services
         run: |
@@ -158,9 +225,9 @@ jobs:
           docker compose exec -T customer-support-backend test ! -e '/app/student-Ethan Goldman/database/support_tickets.db'
           docker compose exec -T customer-support-database sh -c 'test -f "$DATABASE_PATH"'
 
-      - name: Verify disabled AI, MCP and RAG through the frontend
+      - name: Verify disabled AI, MCP, RAG and Multi-Agent through the frontend
         run: |
-          docker compose exec -T customer-support-backend python -c 'import os; assert all(os.environ.get(key) == "false" for key in ("AI_MODE_ENABLED", "MCP_ENABLED", "RAG_ENABLED"))'
+          docker compose exec -T customer-support-backend python -c 'import os; assert all(os.environ.get(key) == "false" for key in ("AI_MODE_ENABLED", "MCP_ENABLED", "RAG_ENABLED", "MULTI_AGENT_ENABLED"))'
           python - <<'PY'
           import json
           from http.cookiejar import MozillaCookieJar
@@ -178,6 +245,10 @@ jobs:
               ("/api/support/admin/mcp/assistant", {"question": "How does our support workload look?"}, "AI_DISABLED"),
               ("/api/support/admin/rag/answer", {"question": "What lengths are allowed for support ticket subjects?"}, "RAG_DISABLED"),
               ("/api/support/admin/tickets/2002/ai-analysis", {}, "AI mode is disabled."),
+              ("/api/support/admin/multi-agent/tickets/2002/workflows", {}, "MULTI_AGENT_DISABLED"),
+              ("/api/support/admin/multi-agent/tickets/2002/workflows", None, "MULTI_AGENT_DISABLED"),
+              ("/api/support/admin/multi-agent/tickets/2002/workflows/missing", None, "MULTI_AGENT_DISABLED"),
+              ("/api/support/admin/multi-agent/tickets/2002/workflows/missing/review", {"decision": "accept", "reason": "Disabled CI fixture"}, "MULTI_AGENT_DISABLED"),
           ):
               request = Request(base + path, headers=headers, data=json.dumps(payload).encode() if payload is not None else None)
               try:
@@ -191,6 +262,8 @@ jobs:
               print(path, 503, code)
           with urlopen(Request(base + "/api/support/admin/tickets", headers=headers), timeout=10) as response:
               assert response.status == 200 and json.load(response)["tickets"]
+          with urlopen(Request(base + "/api/support/ui/admin/tickets/2002", headers=headers), timeout=10) as response:
+              assert response.status == 200 and b'Ticket workflow review' in response.read()
           PY
 
       - name: Show integration logs on failure
@@ -200,3 +273,10 @@ jobs:
       - name: Stop integration services
         if: always()
         run: docker compose down --volumes
+
+      - name: Upload Docker test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: goldman-release2-docker-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/

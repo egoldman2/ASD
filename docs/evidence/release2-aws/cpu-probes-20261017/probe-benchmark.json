@@ -1,0 +1,61 @@
+{
+  "captured_at": "2026-10-17T12:36:18.750238+00:00",
+  "read_only": true,
+  "service": "customer-support-backend",
+  "url": "http://127.0.0.1:6005/health",
+  "measurements": [
+    {
+      "skip_site": false,
+      "wall_seconds": 6.303947890000018,
+      "exit_code": 0,
+      "status": 200,
+      "cpu_seconds": 0.4845,
+      "max_rss_kib": 24156
+    },
+    {
+      "skip_site": true,
+      "wall_seconds": 5.619654432000061,
+      "exit_code": 0,
+      "status": 200,
+      "cpu_seconds": 0.483436,
+      "max_rss_kib": 24192
+    },
+    {
+      "skip_site": true,
+      "wall_seconds": 7.441142146999937,
+      "exit_code": 0,
+      "status": 200,
+      "cpu_seconds": 0.611684,
+      "max_rss_kib": 24016
+    },
+    {
+      "skip_site": false,
+      "wall_seconds": 7.3610167540000475,
+      "exit_code": 0,
+      "status": 200,
+      "cpu_seconds": 0.698128,
+      "max_rss_kib": 24044
+    },
+    {
+      "skip_site": false,
+      "wall_seconds": 5.992339825000045,
+      "exit_code": 0,
+      "status": 200,
+      "cpu_seconds": 0.46693399999999996,
+      "max_rss_kib": 24236
+    },
+    {
+      "skip_site": true,
+      "wall_seconds": 5.919776907999903,
+      "exit_code": 0,
+      "status": 200,
+      "cpu_seconds": 0.543725,
+      "max_rss_kib": 24396
+    }
+  ],
+  "limits": [
+    "Six extra read-only localhost health requests; no container config or source changed",
+    "Process CPU/max RSS include Python startup; wall time includes docker exec and throttling",
+    "Single service sample; final clean main deployment and representative-load window remain required"
+  ]
+}

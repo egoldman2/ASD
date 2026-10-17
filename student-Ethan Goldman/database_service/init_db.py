@@ -171,7 +171,7 @@ def _drop_indexes(connection):
 def _insert_tickets(connection, tickets):
     if tickets:
         columns = ("id", "customer_user_id", "customer_name_snapshot", "customer_email_snapshot", "subject", "category", "priority", "status", "assigned_to", "triage_applied_by", "created_at", "updated_at")
-        connection.executemany(f"INSERT INTO support_tickets ({', '.join(columns)}) VALUES ({', '.join('?' for _ in columns)})", [tuple(ticket[column] for column in columns) for ticket in tickets])
+        connection.executemany(f"INSERT INTO support_tickets ({', '.join(columns)}) VALUES ({', '.join('?' for _ in columns)})", [tuple(ticket[column] for column in columns) for ticket in tickets])  # noqa: S608 - Fixed local columns and ? count; legacy ticket values are bound.
 
 
 def _insert_messages(connection, messages):
@@ -268,12 +268,12 @@ def initialize_database(database_path=None, reset=False):
                 _rebuild_messages(connection); migrated = True
         connection.execute("PRAGMA foreign_keys = ON")
         remapped = _remap_legacy_seed_owners(connection)
-        counts = [connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] for table in ("support_tickets", "support_ticket_messages")]
+        counts = [connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] for table in ("support_tickets", "support_ticket_messages")]  # noqa: S608 - Table identifier comes only from the literal two-table tuple.
         seeded = False
         if counts[0] < 12 or counts[1] < 12:
             connection.executescript(seed); seeded = True
         connection.commit()
-        counts = [connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] for table in ("support_tickets", "support_ticket_messages")]
+        counts = [connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] for table in ("support_tickets", "support_ticket_messages")]  # noqa: S608 - Table identifier comes only from the literal two-table tuple.
         if connection.execute("PRAGMA foreign_keys").fetchone()[0] != 1:
             raise RuntimeError("SQLite foreign key enforcement could not be enabled")
     return {"initialized": reset or migrated or seeded or bool(remapped), "tickets": counts[0], "messages": counts[1], "path": str(path)}

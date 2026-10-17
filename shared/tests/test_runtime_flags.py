@@ -78,6 +78,6 @@ def test_host_rag_and_runner_do_not_contact_models_when_disabled(monkeypatch):
     with pytest.raises(rag.OllamaUnavailableError, match="disabled"):
         client.generate_answer("system", "question")
     runner = import_module("agentic_loop")
-    monkeypatch.setattr(runner.request, "urlopen", lambda *args, **kwargs: pytest.fail("Disabled runner contacted model"))
+    monkeypatch.setattr(runner.requests, "post", lambda *args, **kwargs: pytest.fail("Disabled runner contacted model"))
     with pytest.raises(runner.OllamaError, match="disabled"):
         runner._call_ollama("question")

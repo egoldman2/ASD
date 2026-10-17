@@ -1,0 +1,22 @@
+{
+  "source_sha": "78e21b7c6e63030fb01ea3331f54f845379cbf8a",
+  "run_id": "39033738565",
+  "run_attempt": "1",
+  "captured_at": "2026-10-17T12:48:31.084644+00:00",
+  "artifact_id": 12101451110,
+  "archive_sha256": "2bec7a0c89f1d219b2d5dc8140cf82803752cec586233f0bccdf0695e071dc17",
+  "endpoint_tests_passed": 2,
+  "shared_cloud_tests_passed": 302,
+  "new_healthcheck_tests_passed": 15,
+  "failed": 0,
+  "skipped": 0,
+  "native_files": {
+    "s03a-actions-test-context.json": "04155aff29ea6c6ef19309b5ac9a09208bedb8986d309d526b2e817684cd526d",
+    "s03a-actions-endpoint-functions.xml": "1a5f886bf45091999862771842f1f9550ca5d661563ffea72df81c15300851e2",
+    "s03a-actions-shared-access.xml": "3951f8cb46c65cc6d47d313ff604d4f597aaa724a9d8240575715a2eff534e82"
+  },
+  "limitations": [
+    "Native bytes preserved; credential and signed download URL never persisted or printed",
+    "Named endpoint artifact does not establish overall workflow, final main or AWS deployment success"
+  ]
+}

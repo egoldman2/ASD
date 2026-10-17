@@ -1,0 +1,41 @@
+{
+    "Parameters": [
+        {
+            "ParameterKey": "ExistingGitHubProviderArn",
+            "DefaultValue": "",
+            "NoEcho": false
+        },
+        {
+            "ParameterKey": "ImageId",
+            "DefaultValue": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64",
+            "NoEcho": false
+        },
+        {
+            "ParameterKey": "CloudFrontPrefixList",
+            "NoEcho": false,
+            "Description": "Selected Region's com.amazonaws.global.cloudfront.origin-facing prefix list."
+        },
+        {
+            "ParameterKey": "InstanceType",
+            "DefaultValue": "t3.small",
+            "NoEcho": false
+        },
+        {
+            "ParameterKey": "EnableGitHubOidc",
+            "DefaultValue": "false",
+            "NoEcho": false,
+            "Description": "Enable after confirming the project permits IAM OIDC providers."
+        },
+        {
+            "ParameterKey": "GitHubRepository",
+            "DefaultValue": "egoldman2@200193881/ASD@1326270780",
+            "NoEcho": false,
+            "Description": "Verified immutable owner@owner-id/repository@repository-id from GitHub's OIDC subject configuration."
+        }
+    ],
+    "Description": "Release 2 marketplace on a single EC2 Compose host behind HTTPS CloudFront, with retained encrypted database storage and GitHub OIDC deployment.",
+    "Capabilities": [
+        "CAPABILITY_IAM"
+    ],
+    "CapabilitiesReason": "The following resource(s) require capabilities: [AWS::IAM::Role]"
+}

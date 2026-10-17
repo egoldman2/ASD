@@ -23,6 +23,7 @@ try:
     from .tool_reads import create_tool_reads_blueprint
     from .mcp_routes import create_mcp_blueprint
     from .rag_routes import create_rag_blueprint
+    from .multi_agent_routes import create_multi_agent_blueprint
 except ImportError:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import ai  # type: ignore
@@ -33,6 +34,7 @@ except ImportError:
     from tool_reads import create_tool_reads_blueprint
     from mcp_routes import create_mcp_blueprint
     from rag_routes import create_rag_blueprint
+    from multi_agent_routes import create_multi_agent_blueprint
 
 
 LOGGER = logging.getLogger(__name__)
@@ -360,6 +362,9 @@ def create_app(config: Mapping[str, Any] | None = None, *, database: Any = None)
     ))
     app.register_blueprint(create_mcp_blueprint(principal=_principal))
     app.register_blueprint(create_rag_blueprint(principal=_principal))
+    app.register_blueprint(create_multi_agent_blueprint(
+        principal=_principal, database=_database, db_error=_db_error,
+    ))
     app.register_blueprint(
         create_ui_blueprint(
             principal=_principal,
@@ -376,7 +381,7 @@ app = create_app()
 
 if __name__ == "__main__":
     app.run(
-        host=os.getenv("APP_HOST", "0.0.0.0"),
+        host=os.getenv("APP_HOST", "0.0.0.0"),  # noqa: S104 - Container ingress; private routes authenticate callers.
         port=int(os.getenv("APP_PORT", "6005")),
         debug=False,
         use_reloader=False,

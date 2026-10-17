@@ -1,0 +1,15 @@
+{
+  "captured_at": "2026-10-17T12:40:47.175496+00:00",
+  "instance_state": "running",
+  "instance_type": "t3.small",
+  "instance_status": "ok",
+  "system_status": "ok",
+  "attached_ebs_status": "ok",
+  "ssm": [
+    {
+      "InstanceId": "i-03a217a6a7f61d3ae",
+      "PingStatus": "Online",
+      "LastPingDateTime": "2026-10-17T23:39:30.527000+11:00"
+    }
+  ]
+}

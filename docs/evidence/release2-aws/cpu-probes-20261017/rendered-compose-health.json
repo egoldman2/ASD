@@ -1,0 +1,106 @@
+{
+  "command": [
+    "docker",
+    "compose",
+    "--file",
+    "/private/tmp/asd-release2-s03a-bundle/cloud/compose.yml",
+    "config",
+    "--format",
+    "json"
+  ],
+  "result": "passed",
+  "services": {
+    "customer-support-backend": {
+      "test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)"
+      ],
+      "timeout": "3s",
+      "interval": "30s",
+      "retries": 5,
+      "start_period": "30s",
+      "start_interval": "5s"
+    },
+    "customer-support-database": {
+      "test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6006/health', timeout=2)"
+      ],
+      "timeout": "3s",
+      "interval": "30s",
+      "retries": 5,
+      "start_period": "30s",
+      "start_interval": "5s"
+    },
+    "ethan-backend": {
+      "test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6002/ready', timeout=2)"
+      ],
+      "timeout": "3s",
+      "interval": "30s",
+      "retries": 5,
+      "start_period": "30s",
+      "start_interval": "5s"
+    },
+    "ethan-database": {
+      "test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6003/health', timeout=2)"
+      ],
+      "timeout": "3s",
+      "interval": "30s",
+      "retries": 5,
+      "start_period": "30s",
+      "start_interval": "5s"
+    },
+    "inventory-backend": {
+      "test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/health', timeout=2)"
+      ],
+      "timeout": "3s",
+      "interval": "30s",
+      "retries": 5,
+      "start_period": "30s",
+      "start_interval": "5s"
+    },
+    "product-database": {
+      "test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6001/health', timeout=2)"
+      ],
+      "timeout": "3s",
+      "interval": "30s",
+      "retries": 5,
+      "start_period": "30s",
+      "start_interval": "5s"
+    },
+    "shared-backend": {
+      "test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/products', timeout=2)"
+      ],
+      "timeout": "3s",
+      "interval": "30s",
+      "retries": 5,
+      "start_period": "30s",
+      "start_interval": "5s"
+    }
+  },
+  "limits": "Only public healthcheck config exported; synthetic fixture env excluded"
+}

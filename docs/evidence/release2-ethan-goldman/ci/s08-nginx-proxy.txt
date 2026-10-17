@@ -1,0 +1,4 @@
+Database ready with 11 users, 10 loyalty accounts, and 10 loyalty transactions.
+.nginx slow fixture: HTTP 200, 105.09 seconds
+.
+2 passed in 109.42s (0:01:49)

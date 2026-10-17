@@ -176,7 +176,7 @@ def test_discovery_cannot_verify_missing_probes_or_invented_application_ai(runne
 
 
 @pytest.mark.skipif(os.getenv('RUN_LIVE_MCP_AI') != '1', reason='Opt-in genuine host-model application evidence')
-def test_runner_observes_real_model_selection_execution_and_answer(runner, feature_config, live_mcp, monkeypatch):
+def test_runner_observes_real_model_selection_execution_and_answer(runner, feature_config, live_mcp, monkeypatch, tmp_path):
     monkeypatch.setenv("AI_MODE_ENABLED", "true")
     monkeypatch.setenv('OLLAMA_URL', 'http://127.0.0.1:11434')
     monkeypatch.setenv('MCP_ASSISTANT_MODEL', 'qwen2.5:3b')
@@ -201,7 +201,7 @@ def test_runner_observes_real_model_selection_execution_and_answer(runner, featu
     assert native_answer['facts'] == response['facts']
     assert secret not in json.dumps(evidence) + json.dumps(outputs)
     assert sha256(live_mcp.database_path.read_bytes()).hexdigest() == before
-    Path('/tmp/asd-g5-live-mcp-validation.json').write_text(json.dumps({'evidence': evidence, 'native_model_outputs': outputs}, indent=2))
+    (tmp_path / 'live-mcp-validation.json').write_text(json.dumps({'evidence': evidence, 'native_model_outputs': outputs}, indent=2))
 
 
 def test_runner_safely_reports_unavailable_service(runner, feature_config, monkeypatch):

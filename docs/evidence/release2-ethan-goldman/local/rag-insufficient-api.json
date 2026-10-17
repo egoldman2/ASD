@@ -1,0 +1,38 @@
+{
+  "source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "started_at": "2026-10-17T00:28:14.743131+00:00",
+  "completed_at": "2026-10-17T00:28:14.767327+00:00",
+  "elapsed_seconds": 0.024,
+  "request": {
+    "path": "/api/support/admin/rag/answer",
+    "method": "POST",
+    "payload": {
+      "question": "quasar orbital spectroscopy wavelengths"
+    }
+  },
+  "http_status": 200,
+  "body": {
+    "citations": [],
+    "confidence": "insufficient",
+    "data": {
+      "answer": "Insufficient context to answer this question.",
+      "model": null,
+      "question": "quasar orbital spectroscopy wavelengths",
+      "retrieved_count": 0,
+      "scope": "ethan_goldman_support"
+    },
+    "error": null,
+    "insufficient_context": true,
+    "metadata": {
+      "grounded": true,
+      "minimum_relevance_score": 0.25,
+      "model_invoked": false
+    },
+    "operation": "answer_question",
+    "success": true
+  },
+  "limitations": [
+    "Fresh isolated local dataset and actual local model; no AWS or human approval implied",
+    "Request credentials and response headers excluded"
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "captured_at": "2026-10-17T12:33:04.994606+00:00",
+  "elapsed_seconds": 15.044240764000051,
+  "process_ticks_per_second": 100,
+  "cpu_delta_ticks": [
+    562,
+    0,
+    57,
+    58,
+    0,
+    0,
+    1,
+    2354,
+    0,
+    0
+  ],
+  "largest_persistent_process_cpu": [
+    {
+      "pid": 1981,
+      "name": "dockerd",
+      "cpu_seconds": 0.09,
+      "percent_of_one_cpu": 0.6
+    },
+    {
+      "pid": 1817,
+      "name": "containerd",
+      "cpu_seconds": 0.07,
+      "percent_of_one_cpu": 0.47
+    },
+    {
+      "pid": 2441,
+      "name": "gunicorn",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 2500,
+      "name": "containerd-shim",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 2676,
+      "name": "containerd-shim",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 2904,
+      "name": "containerd-shim",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 2951,
+      "name": "gunicorn",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 3021,
+      "name": "containerd-shim",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 3047,
+      "name": "containerd-shim",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 3604,
+      "name": "gunicorn",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 3624,
+      "name": "gunicorn",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 3631,
+      "name": "gunicorn",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 26065,
+      "name": "ssm-document-wo",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    },
+    {
+      "pid": 26071,
+      "name": "python3",
+      "cpu_seconds": 0.01,
+      "percent_of_one_cpu": 0.07
+    }
+  ],
+  "containers": [
+    {
+      "service": "gateway",
+      "pid": 2623,
+      "health_interval_ns": null,
+      "health_test": []
+    },
+    {
+      "service": "product-catalogue",
+      "pid": 2886,
+      "health_interval_ns": null,
+      "health_test": []
+    },
+    {
+      "service": "customer-support",
+      "pid": 3133,
+      "health_interval_ns": null,
+      "health_test": []
+    },
+    {
+      "service": "shared-backend",
+      "pid": 3257,
+      "health_interval_ns": 5000000000,
+      "health_test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/products', timeout=2)"
+      ]
+    },
+    {
+      "service": "order-returns-frontend",
+      "pid": 2386,
+      "health_interval_ns": null,
+      "health_test": []
+    },
+    {
+      "service": "inventory-backend",
+      "pid": 2951,
+      "health_interval_ns": 5000000000,
+      "health_test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/health', timeout=2)"
+      ]
+    },
+    {
+      "service": "customer-support-backend",
+      "pid": 3155,
+      "health_interval_ns": 5000000000,
+      "health_test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)"
+      ]
+    },
+    {
+      "service": "ethan-backend",
+      "pid": 3284,
+      "health_interval_ns": 5000000000,
+      "health_test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6002/ready', timeout=2)"
+      ]
+    },
+    {
+      "service": "product-database",
+      "pid": 2616,
+      "health_interval_ns": 5000000000,
+      "health_test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6001/health', timeout=2)"
+      ]
+    },
+    {
+      "service": "ethan-database",
+      "pid": 2929,
+      "health_interval_ns": 5000000000,
+      "health_test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6003/health', timeout=2)"
+      ]
+    },
+    {
+      "service": "shared-home",
+      "pid": 3269,
+      "health_interval_ns": null,
+      "health_test": []
+    },
+    {
+      "service": "ethan-frontend",
+      "pid": 3087,
+      "health_interval_ns": null,
+      "health_test": []
+    },
+    {
+      "service": "customer-support-database",
+      "pid": 2441,
+      "health_interval_ns": 5000000000,
+      "health_test": [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6006/health', timeout=2)"
+      ]
+    },
+    {
+      "service": "inventory-frontend",
+      "pid": 2710,
+      "health_interval_ns": null,
+      "health_test": []
+    }
+  ],
+  "actual_health_function_sources": [
+    {
+      "path": "student-Ethan Ting/backend/app.py",
+      "function": "health",
+      "source": "@app.get('/health')\ndef health():\n    return jsonify({'status': 'healthy'})"
+    },
+    {
+      "path": "student-Ethan Ting/backend/app.py",
+      "function": "ready",
+      "source": "@app.get('/ready')\ndef ready():\n    try:\n        database_health = database_request('/health')\n    except (HTTPError, URLError):\n        return (jsonify({'status': 'starting', 'database': 'unavailable'}), 503)\n    return jsonify({'status': 'ready', 'database': database_health.get('status', 'unknown')})"
+    },
+    {
+      "path": "student-Ethan Ting/database/app.py",
+      "function": "health",
+      "source": "@app.get('/health')\ndef health():\n    return jsonify({'status': 'healthy'})"
+    }
+  ],
+  "limits": [
+    "Read-only 15-second sample on older manual release",
+    "Exited short-lived processes are excluded from persistent process list",
+    "No representative CRUD load or final stability result"
+  ]
+}

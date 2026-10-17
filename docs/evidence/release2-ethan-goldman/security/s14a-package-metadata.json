@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-10-16T23:36:44.028331+00:00",
+  "packages": [
+    {
+      "name": "pip",
+      "version": "26.2.1",
+      "requires_python": ">=3.10",
+      "yanked": false,
+      "reported_vulnerabilities": [],
+      "source_url": "https://pypi.org/pypi/pip/26.2.1/json"
+    },
+    {
+      "name": "setuptools",
+      "version": "83.0.0",
+      "requires_python": ">=3.10",
+      "yanked": false,
+      "reported_vulnerabilities": [],
+      "source_url": "https://pypi.org/pypi/setuptools/83.0.0/json"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "artifact_id": 12078248286,
+  "archive_sha256": "4e9d171e9e557b15798cda0d088209ddc594a826fa141707851a81147307495c",
+  "source_sha": "50fe5ade0a05497ecbfba136f4ec2fde675e8205",
+  "run_id": 38974830702,
+  "entries": [
+    "docker-python-versions.txt",
+    "docker-support.xml"
+  ],
+  "test_count": 174,
+  "skipped": 10
+}

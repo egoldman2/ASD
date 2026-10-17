@@ -1,0 +1,76 @@
+{
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-17T12:42:43.022497+00:00",
+  "source_context": "Uncommitted S03a diff on 7b64a0cdb19208f5259ba1da71b48e95f0542fd0; final commit recorded in ledger after push",
+  "source_file_sha256": {
+    "cloud/compose.yml": "d161d9e522d5c0da37c1e69fda38bdd39fe781e87b6397b1a9e69ae89a58c457",
+    "cloud/tests/test_healthchecks.py": "dbc1cb8f3406fadd5f9f22ccb56c4eb7658f3cef052c19bc4b008e61f7ddcf85",
+    "cloud/install.sh": "1ffa6ded8f89830f9f0320334618a52f6954489ad7aefa9a555255707d91f24d",
+    "cloud/provenance.py": "4e79ba9463cd0e128afb5c38f7f237ba0a2ee39948210a1be17737071030559b",
+    "cloud/prepare.py": "88a6b6542f1bc370537a3f02c8af0b3c0e3e100026a4d1c01bf11b7b4f3207db",
+    "cloud/infrastructure.yml": "6ef771ab5d1af9b1b88bde45504dbda0aebeeb80ff7657d1ee3761ecc8758cb6"
+  },
+  "python": "Python 3.11.16",
+  "ai_flags": {
+    "AI_MODE_ENABLED": "false",
+    "MCP_ENABLED": "false",
+    "RAG_ENABLED": "false",
+    "MULTI_AGENT_ENABLED": "false"
+  },
+  "live_opt_ins": {
+    "RUN_LIVE_AI": "0",
+    "RUN_LIVE_MCP_AI": "0",
+    "RUN_LIVE_RAG_AI": "0",
+    "RUN_LIVE_VALIDATION": "0",
+    "RUN_LIVE_RELEASE1_VALIDATION": "0",
+    "RUN_LIVE_MULTI_AGENT": "0",
+    "RUN_NGINX_PROXY_CHECK": "0"
+  },
+  "commands": [
+    {
+      "command": "python -m pytest cloud/tests/test_healthchecks.py -q",
+      "exit_code": 0,
+      "result": "15 passed"
+    },
+    {
+      "command": "python -m pytest shared/tests cloud/tests -q",
+      "exit_code": 0,
+      "result": "302 passed"
+    },
+    {
+      "command": "python -m pytest 'student-Ethan Goldman/tests' -q",
+      "exit_code": 0,
+      "result": "206 passed, 10 skipped"
+    },
+    {
+      "command": "python -m pytest <private original-schedule snapshot>/cloud/tests/test_healthchecks.py -q",
+      "exit_code": 1,
+      "result": "1 schedule failure, 14 HTTP cases passed"
+    },
+    {
+      "command": "python cloud/prepare.py <private fresh bundle>; docker compose --file <bundle>/cloud/compose.yml config --format json",
+      "exit_code": 0,
+      "result": "All seven resolved healthchecks verified; no private env exported"
+    },
+    {
+      "command": "ruff check cloud/tests/test_healthchecks.py --select S,F821",
+      "exit_code": 0,
+      "result": "All checks passed"
+    },
+    {
+      "command": "Private isolated Linux timing harness, exact resolved schedule",
+      "exit_code": 0,
+      "result": "healthy at 6.170s; unhealthy at 157.388s with five failures; created container removed"
+    }
+  ],
+  "limits": [
+    "Local timing uses synthetic HTTP server and existing local image; no source deployment or production load claim",
+    "Configured steady frequency reduction does not prove post-deployment CPU improvement",
+    "Default CI/live skips are explicit; actual AWS samples are separate read-only operations"
+  ],
+  "native_baseline_log": {
+    "path": "before-schedule-tests.txt.gz",
+    "decompressed_sha256": "53d0e2cad16f73623b2f0e1338acf5e04dc67fc7815f757838cb3f11c9d78ef1",
+    "reason": "Native pytest failure output includes trailing spaces; gzip preserves exact bytes without modifying capture or adding a whitespace ignore"
+  }
+}
