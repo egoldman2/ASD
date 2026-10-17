@@ -1,0 +1,1100 @@
+[INFO] Initializing environment for https://github.com/astral-sh/ruff-pre-commit.
+[INFO] Initializing environment for https://github.com/Yelp/detect-secrets.
+[INFO] Initializing environment for https://github.com/pypa/pip-audit.
+[INFO] Installing environment for https://github.com/astral-sh/ruff-pre-commit.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+[INFO] Installing environment for https://github.com/Yelp/detect-secrets.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+[INFO] Installing environment for https://github.com/pypa/pip-audit.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+Ruff security rules......................................................Failed
+- hook id: ruff-check
+- exit code: 1
+
+S608 Possible SQL injection vector through string-based query construction
+   --> ai-services/agentic_loop.py:246:21
+    |
+244 |                     )
+245 |                 count = connection.execute(
+246 |                     f"SELECT COUNT(*) FROM {quoted_table}"
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+247 |                 ).fetchone()[0]
+248 |                 create_sql = connection.execute(
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> ai-services/agentic_loop.py:255:25
+    |
+253 |                     _redacted_sample(config, table_name, dict(row))
+254 |                     for row in connection.execute(
+255 |                         f"SELECT * FROM {quoted_table} LIMIT 3"
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+256 |                     )
+257 |                 ]
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> ai-services/agentic_loop.py:300:24
+    |
+298 |           if "expected_status" in endpoint:
+299 |               endpoint_evidence["expected_status"] = endpoint["expected_status"]
+300 |           http_request = request.Request(
+    |  ________________________^
+301 | |             endpoint["url"],
+302 | |             headers={"Accept": "application/json", "User-Agent": "ASD-Agentic-Review/1.0"},
+303 | |             method="GET",
+304 | |         )
+    | |_________^
+305 |           try:
+306 |               with request.urlopen(http_request, timeout=10) as response:
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> ai-services/agentic_loop.py:306:18
+    |
+304 |         )
+305 |         try:
+306 |             with request.urlopen(http_request, timeout=10) as response:
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+307 |                 body = response.read().decode("utf-8", errors="replace")
+308 |                 endpoint_evidence["status"] = response.status
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> ai-services/agentic_loop.py:928:22
+    |
+926 |           }
+927 |       ).encode("utf-8")
+928 |       ollama_request = request.Request(
+    |  ______________________^
+929 | |         f"{model_url}/api/chat",
+930 | |         data=payload,
+931 | |         headers={"Content-Type": "application/json"},
+932 | |         method="POST",
+933 | |     )
+    | |_____^
+934 |
+935 |       try:
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> ai-services/agentic_loop.py:936:14
+    |
+935 |     try:
+936 |         with request.urlopen(ollama_request, timeout=120) as response:
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+937 |             raw = response.read(65537)
+938 |             if len(raw) > 65536:
+    |
+
+S104 Possible binding to all interfaces
+  --> ai-services/mcp_server/config.py:91:52
+   |
+89 |         """Return the local URL used by host-side MCP clients."""
+90 |
+91 |         display_host = "127.0.0.1" if self.host == "0.0.0.0" else self.host
+   |                                                    ^^^^^^^^^
+92 |         return f"http://{display_host}:{self.port}{self.path}"
+   |
+
+S104 Possible binding to all interfaces
+  --> ai-services/mcp_server/tests/test_configuration.py:9:36
+   |
+ 8 | def test_settings_read_and_normalise_environment(monkeypatch):
+ 9 |     monkeypatch.setenv("MCP_HOST", "0.0.0.0")
+   |                                    ^^^^^^^^^
+10 |     monkeypatch.setenv("MCP_PORT", "9123")
+11 |     monkeypatch.setenv("MCP_PATH", "custom-mcp/")
+   |
+
+S104 Possible binding to all interfaces
+  --> ai-services/mcp_server/tests/test_configuration.py:19:29
+   |
+17 |     settings = MCPSettings.from_environment()
+18 |
+19 |     assert settings.host == "0.0.0.0"
+   |                             ^^^^^^^^^
+20 |     assert settings.port == 9123
+21 |     assert settings.path == "/custom-mcp"
+   |
+
+S102 Use of `exec` detected
+  --> ai-services/mcp_server/tests/test_ethan_ting_customer_tools.py:64:5
+   |
+62 |     namespace = {}
+63 |     isolated_function = ast.Module(body=[loyalty_function], type_ignores=[])
+64 |     exec(compile(isolated_function, str(database_app), "exec"), namespace)
+   |     ^^^^
+65 |     loyalty_status = namespace["loyalty_status"]
+66 |     for points in (0, 1, 499, 500, 501, 999, 1000, 1500):
+   |
+
+S104 Possible binding to all interfaces
+   --> ai-services/mcp_server/tests/test_server_protocol.py:123:36
+    |
+122 | def test_streamable_http_accepts_docker_host_name(monkeypatch):
+123 |     monkeypatch.setenv("MCP_HOST", "0.0.0.0")
+    |                                    ^^^^^^^^^
+124 |
+125 |     async def initialise_from_backend_container_address():
+    |
+
+S104 Possible binding to all interfaces
+   --> ai-services/multi_agent_server/config.py:129:52
+    |
+127 |         """Return the local HTTP endpoint advertised to callers."""
+128 |
+129 |         display_host = "127.0.0.1" if self.host == "0.0.0.0" else self.host
+    |                                                    ^^^^^^^^^
+130 |         return f"http://{display_host}:{self.port}"
+    |
+
+S104 Possible binding to all interfaces
+  --> ai-services/rag_server/config.py:18:20
+   |
+16 | # host-side service through host.docker.internal.  This is still a local
+17 | # development service and must not be exposed on a public network.
+18 | DEFAULT_RAG_HOST = "0.0.0.0"
+   |                    ^^^^^^^^^
+19 | DEFAULT_RAG_PORT = 5003
+20 | DEFAULT_PRODUCT_DATABASE_API_URL = (
+   |
+
+S104 Possible binding to all interfaces
+   --> ai-services/rag_server/config.py:162:52
+    |
+160 |         """Return the host-side URL used to reach the local RAG HTTP server."""
+161 |
+162 |         display_host = "127.0.0.1" if self.host == "0.0.0.0" else self.host
+    |                                                    ^^^^^^^^^
+163 |         return f"http://{display_host}:{self.port}"
+    |
+
+S101 Use of `assert` detected
+   --> ai-services/rag_server/rag_http_server.py:157:9
+    |
+155 |         if failure is not None:
+156 |             return failure
+157 |         assert body is not None
+    |         ^^^^^^
+158 |         payload = _execute(
+159 |             factory,
+    |
+
+S101 Use of `assert` detected
+   --> ai-services/rag_server/rag_http_server.py:170:9
+    |
+168 |         if failure is not None:
+169 |             return failure
+170 |         assert body is not None
+    |         ^^^^^^
+171 |         payload = _execute(
+172 |             factory,
+    |
+
+S101 Use of `assert` detected
+   --> ai-services/rag_server/rag_http_server.py:185:9
+    |
+183 |         if failure is not None:
+184 |             return failure
+185 |         assert body is not None
+    |         ^^^^^^
+186 |         payload = _execute(
+187 |             factory,
+    |
+
+S104 Possible binding to all interfaces
+  --> ai-services/rag_server/tests/conftest.py:33:14
+   |
+31 |     return RAGSettings(
+32 |         enabled=True,
+33 |         host="0.0.0.0",
+   |              ^^^^^^^^^
+34 |         port=5003,
+35 |         product_database_api_url="http://products.test/api/database/products",
+   |
+
+S104 Possible binding to all interfaces
+  --> ai-services/rag_server/tests/test_configuration.py:16:36
+   |
+15 | def test_settings_read_and_normalise_environment(monkeypatch, tmp_path):
+16 |     monkeypatch.setenv("RAG_HOST", "0.0.0.0")
+   |                                    ^^^^^^^^^
+17 |     monkeypatch.setenv("RAG_PORT", "9124")
+18 |     monkeypatch.setenv(
+   |
+
+S104 Possible binding to all interfaces
+  --> ai-services/rag_server/tests/test_configuration.py:31:29
+   |
+29 |     settings = RAGSettings.from_environment()
+30 |
+31 |     assert settings.host == "0.0.0.0"
+   |                             ^^^^^^^^^
+32 |     assert settings.port == 9124
+33 |     assert settings.endpoint_url == "http://127.0.0.1:9124"
+   |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-support-rag-generation-live.json"
+   --> ai-services/rag_server/tests/test_grounded_generation.py:215:14
+    |
+213 |         assert unavailable.json()['data'] is None and unavailable.json()['citations'] == []
+214 |     finally:
+215 |         Path('/tmp/asd-support-rag-generation-live.json').write_text(json.dumps(evidence, indent=2))
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+216 |         server.shutdown(); thread.join(timeout=5); server.server_close(); pipeline.close()
+    |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-catalogue-rag-generation-live.json"
+   --> ai-services/rag_server/tests/test_grounded_generation.py:258:14
+    |
+256 |         assert pipeline.refresh_corpus(source.scope)['success']
+257 |         result = pipeline.answer_question(source.scope, 'What is the Mechanical Keyboard price?', 1)
+258 |         Path('/tmp/asd-catalogue-rag-generation-live.json').write_text(json.dumps(result, indent=2))
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+259 |         assert result['success'] and not result['insufficient_context'], result
+260 |         assert '109' in result['data']['answer'] and '[1]' in result['data']['answer']
+    |
+
+S603 `subprocess` call: check for execution of untrusted input
+  --> cloud/deploy.py:22:14
+   |
+21 | def aws(*arguments):
+22 |     result = subprocess.run(["aws", *arguments, "--region", REGION, "--output", "json"], check=True, capture_output=True, text=True)
+   |              ^^^^^^^^^^^^^^
+23 |     return json.loads(result.stdout) if result.stdout.strip() else None
+   |
+
+S607 Starting a process with a partial executable path
+  --> cloud/deploy.py:22:29
+   |
+21 | def aws(*arguments):
+22 |     result = subprocess.run(["aws", *arguments, "--region", REGION, "--output", "json"], check=True, capture_output=True, text=True)
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+23 |     return json.loads(result.stdout) if result.stdout.strip() else None
+   |
+
+S603 `subprocess` call: check for execution of untrusted input
+  --> cloud/deploy.py:45:9
+   |
+43 |         digest = hashlib.sha256(bundle.read_bytes()).hexdigest()
+44 |         key = f"releases/{release_id}-{digest[:12]}.tar.gz"
+45 |         subprocess.run([
+   |         ^^^^^^^^^^^^^^
+46 |             "aws", "s3", "cp", str(bundle), f"s3://{resources['ReleaseBucket']}/{key}",
+47 |             "--region", REGION, "--sse", "AES256", "--only-show-errors",
+   |
+
+S607 Starting a process with a partial executable path
+  --> cloud/deploy.py:45:24
+   |
+43 |           digest = hashlib.sha256(bundle.read_bytes()).hexdigest()
+44 |           key = f"releases/{release_id}-{digest[:12]}.tar.gz"
+45 |           subprocess.run([
+   |  ________________________^
+46 | |             "aws", "s3", "cp", str(bundle), f"s3://{resources['ReleaseBucket']}/{key}",
+47 | |             "--region", REGION, "--sse", "AES256", "--only-show-errors",
+48 | |         ], check=True)
+   | |_________^
+49 |       remote = f"/srv/asd/releases/{release_id}-{digest[:12]}"
+50 |       commands = [
+   |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+  --> cloud/smoke.py:30:24
+   |
+28 |             headers["Content-Type"] = "application/json"
+29 |         try:
+30 |             response = urlopen(Request(base_url + path, data=data, headers=headers, method=method), timeout=30)
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+31 |         except HTTPError as error:
+32 |             response = error
+   |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+  --> cloud/smoke.py:30:32
+   |
+28 |             headers["Content-Type"] = "application/json"
+29 |         try:
+30 |             response = urlopen(Request(base_url + path, data=data, headers=headers, method=method), timeout=30)
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+31 |         except HTTPError as error:
+32 |             response = error
+   |
+
+S101 Use of `assert` detected
+  --> cloud/smoke.py:43:9
+   |
+41 |     for path in ("/", "/catalogue/", "/inventory/", "/account/", "/assets/js/site-header.js", "/assets/css/styles.css"):
+42 |         body, _ = request(path)
+43 |         assert "http://localhost" not in body, f"Browser-local URL in {path}"
+   |         ^^^^^^
+44 |     request("/account-api/api/profile", expected=401)
+45 |     request("/api/order-returns/orders", expected=401)
+   |
+
+S101 Use of `assert` detected
+  --> cloud/smoke.py:51:9
+   |
+49 |         result, headers = request("/account-api/api/login", "POST", {"email": email, "password": password})
+50 |         session_cookie = headers.get("Set-Cookie", "")
+51 |         assert "Secure" in session_cookie and "HttpOnly" in session_cookie and "SameSite=Lax" in session_cookie
+   |         ^^^^^^
+52 |         return session_cookie.split(";", 1)[0], result["user"]
+   |
+
+S101 Use of `assert` detected
+  --> cloud/smoke.py:91:9
+   |
+89 |         request(product_path, "PUT", {**product_payload, "price": 6.0}, cookie=admin)
+90 |         catalogue, _ = request("/api/products?" + urlencode({"search": identifier}))
+91 |         assert any(row["id"] == product["id"] for row in catalogue["products"])
+   |         ^^^^^^
+92 |
+93 |         cart, _ = request("/api/cart-items", "POST", {"product_id": product["id"], "quantity": 1}, cookie=customer, expected=201)
+   |
+
+S603 `subprocess` call: check for execution of untrusted input
+  --> cloud/tests/test_cloud.py:82:5
+   |
+80 |     monkeypatch.setenv("ORDERS_DATABASE_PATH", str(path))
+81 |     code = "from importlib import import_module; import_module('student-Howard.backend.routes.order_routes')"
+82 |     subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)
+   |     ^^^^^^^^^^^^^^
+83 |     with sqlite3.connect(path) as database:
+84 |         database.execute("UPDATE orders SET status='delivered' WHERE order_id=1")
+   |
+
+S603 `subprocess` call: check for execution of untrusted input
+  --> cloud/tests/test_cloud.py:85:5
+   |
+83 |     with sqlite3.connect(path) as database:
+84 |         database.execute("UPDATE orders SET status='delivered' WHERE order_id=1")
+85 |     subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)
+   |     ^^^^^^^^^^^^^^
+86 |     with sqlite3.connect(path) as database:
+87 |         assert database.execute("SELECT status FROM orders WHERE order_id=1").fetchone()[0] == "delivered"
+   |
+
+S607 Starting a process with a partial executable path
+  --> docs/evidence/release1-ethan-ting/validate_local.py:52:46
+   |
+50 | assert before == after, "Read-only validation changed transaction history"
+51 | results["history_unchanged"] = True
+52 | compose = json.loads(subprocess.check_output(["docker", "compose", "config", "--format", "json"], cwd=ROOT))
+   |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+53 | env = compose["services"]["ethan-backend"]["environment"]
+54 | results["docker_host_configuration"] = {
+   |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> student-Chufeng/backend/controllers/ai_controller.py:130:22
+    |
+128 |           }
+129 |       ).encode("utf-8")
+130 |       ollama_request = request.Request(
+    |  ______________________^
+131 | |         f"{OLLAMA_URL}/api/chat",
+132 | |         data=body,
+133 | |         headers={"Content-Type": "application/json"},
+134 | |         method="POST",
+135 | |     )
+    | |_____^
+136 |
+137 |       try:
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> student-Chufeng/backend/controllers/ai_controller.py:138:14
+    |
+137 |     try:
+138 |         with request.urlopen(ollama_request, timeout=60) as response:
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+139 |             payload = json.loads(response.read().decode("utf-8"))
+140 |     except (error.HTTPError, error.URLError, TimeoutError) as exc:
+    |
+
+S101 Use of `assert` detected
+   --> student-Chufeng/backend/controllers/multi_agent_controller.py:171:5
+    |
+169 |     if failure is not None:
+170 |         return failure
+171 |     assert validated is not None
+    |     ^^^^^^
+172 |
+173 |     try:
+    |
+
+S101 Use of `assert` detected
+   --> student-Chufeng/backend/controllers/multi_agent_controller.py:278:5
+    |
+276 |     if failure is not None:
+277 |         return failure
+278 |     assert review is not None
+    |     ^^^^^^
+279 |     return _execute(
+280 |         lambda client: client.submit_human_review(workflow_id, review)
+    |
+
+S101 Use of `assert` detected
+   --> student-Chufeng/backend/controllers/rag_controller.py:181:5
+    |
+179 |     if failure is not None:
+180 |         return failure
+181 |     assert validated is not None
+    |     ^^^^^^
+182 |     query, top_k = validated
+183 |     return _execute(lambda client: client.retrieve_context(query, top_k))
+    |
+
+S101 Use of `assert` detected
+   --> student-Chufeng/backend/controllers/rag_controller.py:190:5
+    |
+188 |     if failure is not None:
+189 |         return failure
+190 |     assert validated is not None
+    |     ^^^^^^
+191 |     question, top_k = validated
+192 |     return _execute(lambda client: client.answer_question(question, top_k))
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+  --> student-Chufeng/database/api.py:48:13
+   |
+46 |       def one_product(connection, product_id):
+47 |           return connection.execute(
+48 | /             f"""SELECT {PRODUCT_COLUMNS}
+49 | |                 FROM products p LEFT JOIN suppliers s ON s.id = p.supplier_id
+50 | |                 WHERE p.id = ?""",
+   | |_________________________________^
+51 |               (product_id,),
+52 |           ).fetchone()
+   |
+
+S608 Possible SQL injection vector through string-based query construction
+  --> student-Chufeng/database/api.py:56:13
+   |
+54 |       def one_cart_item(connection, item_id):
+55 |           return connection.execute(
+56 | /             f"""SELECT {CART_COLUMNS}
+57 | |                 FROM cart_items ci JOIN products p ON p.id = ci.product_id
+58 | |                 WHERE ci.id = ?""",
+   | |__________________________________^
+59 |               (item_id,),
+60 |           ).fetchone()
+   |
+
+S608 Possible SQL injection vector through string-based query construction
+  --> student-Chufeng/database/api.py:89:17
+   |
+87 |           with closing(connect()) as connection:
+88 |               rows = connection.execute(
+89 | /                 f"""SELECT {PRODUCT_COLUMNS}
+90 | |                     FROM products p LEFT JOIN suppliers s ON s.id = p.supplier_id
+91 | |                     {where} ORDER BY {order}""",
+   | |_______________________________________________^
+92 |                   parameters,
+93 |               ).fetchall()
+   |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Chufeng/database/api.py:189:17
+    |
+187 |         with closing(connect()) as connection:
+188 |             rows = connection.execute(
+189 |                 f"SELECT id, name, contact_name, email, phone, address, created_at FROM suppliers {where} ORDER BY name",
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+190 |                 parameters,
+191 |             ).fetchall()
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Chufeng/database/api.py:245:17
+    |
+243 |         with closing(connect()) as connection:
+244 |             rows = connection.execute(
+245 |                 f"SELECT {CART_COLUMNS} FROM cart_items ci JOIN products p ON p.id=ci.product_id ORDER BY ci.id"
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+246 |             ).fetchall()
+247 |         return jsonify([dict(row) for row in rows])
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Chufeng/database/api.py:259:17
+    |
+257 |         with closing(connect()) as connection:
+258 |             row = connection.execute(
+259 |                 f"SELECT {CART_COLUMNS} FROM cart_items ci JOIN products p ON p.id=ci.product_id WHERE ci.product_id=?",
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+260 |                 (product_id,),
+261 |             ).fetchone()
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Chufeng/database/api.py:304:13
+    |
+302 |       def customer_cart_item(connection, item_id, user_id):
+303 |           return connection.execute(
+304 | /             f"""SELECT {CUSTOMER_CART_COLUMNS}
+305 | |                 FROM customer_cart_items ci JOIN products p ON p.id=ci.product_id
+306 | |                 WHERE ci.id=? AND ci.user_id=?""",
+    | |_________________________________________________^
+307 |               (item_id, user_id),
+308 |           ).fetchone()
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Chufeng/database/api.py:317:17
+    |
+315 |           with closing(connect()) as connection:
+316 |               rows = connection.execute(
+317 | /                 f"""SELECT {CUSTOMER_CART_COLUMNS}
+318 | |                     FROM customer_cart_items ci JOIN products p ON p.id=ci.product_id
+319 | |                     WHERE ci.user_id=? ORDER BY ci.id""",
+    | |________________________________________________________^
+320 |                   (user_id,),
+321 |               ).fetchall()
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Chufeng/database/api.py:329:17
+    |
+327 |           with closing(connect()) as connection:
+328 |               row = connection.execute(
+329 | /                 f"""SELECT {CUSTOMER_CART_COLUMNS}
+330 | |                     FROM customer_cart_items ci JOIN products p ON p.id=ci.product_id
+331 | |                     WHERE ci.user_id=? AND ci.product_id=?""",
+    | |_____________________________________________________________^
+332 |                   (user_id, product_id),
+333 |               ).fetchone()
+    |
+
+S104 Possible binding to all interfaces
+   --> student-Chufeng/database/api.py:388:41
+    |
+386 |     application = create_app()
+387 |     application.run(
+388 |         host=os.environ.get("APP_HOST", "0.0.0.0"),
+    |                                         ^^^^^^^^^
+389 |         port=int(os.environ.get("APP_PORT", "6001")),
+390 |     )
+    |
+
+S104 Possible binding to all interfaces
+   --> student-Ethan Goldman/database_service/app.py:272:36
+    |
+270 |     initialize_database(app.config["DATABASE_PATH"])
+271 |     app.run(
+272 |         host=os.getenv("APP_HOST", "0.0.0.0"),
+    |                                    ^^^^^^^^^
+273 |         port=int(os.getenv("APP_PORT", "6006")),
+274 |         debug=False,
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+  --> student-Ethan Goldman/database_service/database.py:36:9
+   |
+34 |       placeholders = ", ".join("?" for _ in ticket_ids)
+35 |       rows = connection.execute(
+36 | /         f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages "
+37 | |         f"WHERE ticket_id IN ({placeholders}) ORDER BY datetime(created_at), id",
+   | |________________________________________________________________________________^
+38 |           tuple(ticket_ids),
+39 |       ).fetchall()
+   |
+
+S608 Possible SQL injection vector through string-based query construction
+  --> student-Ethan Goldman/database_service/database.py:84:13
+   |
+82 |       with closing(get_database_connection(database_path)) as connection:
+83 |           rows = connection.execute(
+84 | /             f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "
+85 | |             "ORDER BY datetime(ticket.updated_at) DESC, ticket.id DESC",
+   | |_______________________________________________________________________^
+86 |               parameters,
+87 |           ).fetchall()
+   |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:99:13
+    |
+ 97 |     with closing(get_database_connection(database_path)) as connection:
+ 98 |         total = connection.execute(
+ 99 |             f"SELECT COUNT(*) FROM support_tickets AS ticket {where}", parameters,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+100 |         ).fetchone()[0]
+101 |         rows = connection.execute(
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:102:13
+    |
+100 |           ).fetchone()[0]
+101 |           rows = connection.execute(
+102 | /             f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "
+103 | |             "ORDER BY datetime(ticket.updated_at) DESC, ticket.id DESC LIMIT ? OFFSET ?",
+    | |________________________________________________________________________________________^
+104 |               [*parameters, limit, offset],
+105 |           ).fetchall()
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:116:13
+    |
+114 |     with closing(get_database_connection(database_path)) as connection:
+115 |         row = connection.execute(
+116 |             f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+117 |         ).fetchone()
+118 |         if row is None:
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:124:13
+    |
+122 |           ).fetchone()[0]
+123 |           messages = connection.execute(
+124 | /             f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages WHERE ticket_id = ? "
+125 | |             "ORDER BY datetime(created_at) DESC, id DESC LIMIT ?", (ticket_id, message_limit),
+    | |_________________________________________________________________^
+126 |           ).fetchall()
+127 |       return {**dict(row), "messages": [dict(message) for message in reversed(messages)],
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:144:13
+    |
+142 |     with closing(get_database_connection(database_path)) as connection:
+143 |         row = connection.execute(
+144 |             f"SELECT {', '.join(fields)} FROM support_tickets AS ticket {where}", parameters,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+145 |         ).fetchone()
+146 |     return {"total": row["total"], "status_counts": {value: row[f"status_{value}"] for value in statuses},
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:165:11
+    |
+163 |       """Filter and sort recorded review reasons before applying pagination."""
+164 |       where, parameters = _ticket_where(filters)
+165 |       cte = f"""WITH scoped AS (
+    |  ___________^
+166 | |         SELECT ticket.*,
+167 | |             (SELECT sender_role FROM support_ticket_messages WHERE ticket_id = ticket.id
+168 | |              ORDER BY datetime(created_at) DESC, id DESC LIMIT 1) AS latest_sender,
+169 | |             (SELECT created_at FROM support_ticket_messages WHERE ticket_id = ticket.id
+170 | |              ORDER BY datetime(created_at) DESC, id DESC LIMIT 1) AS latest_message_at
+171 | |         FROM support_tickets AS ticket {where}
+172 | |     ), activity AS (
+173 | |         SELECT *, CASE WHEN julianday(latest_message_at) > julianday(updated_at)
+174 | |                        THEN latest_message_at ELSE updated_at END AS last_activity_at FROM scoped
+175 | |     ), reasons AS (
+176 | |         SELECT *, status = 'needs_triage' AS needs_triage, assigned_to IS NULL AS unassigned,
+177 | |             priority IN ('high', 'urgent') AS high_priority,
+178 | |             COALESCE(latest_sender = 'customer', 0) AS awaiting_staff_reply,
+179 | |             julianday(last_activity_at) <= julianday(?, '-' || ? || ' hours') AS inactive
+180 | |         FROM activity WHERE status != 'solved'
+181 | |     ), flagged AS (
+182 | |         SELECT * FROM reasons WHERE needs_triage OR unassigned OR high_priority OR awaiting_staff_reply OR inactive
+183 | |     )"""
+    | |________^
+184 |       parameters = [*parameters, observed_at, inactive_hours]
+185 |       with closing(get_database_connection(database_path)) as connection:
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:186:36
+    |
+184 |     parameters = [*parameters, observed_at, inactive_hours]
+185 |     with closing(get_database_connection(database_path)) as connection:
+186 |         total = connection.execute(cte + " SELECT COUNT(*) FROM flagged", parameters).fetchone()[0]
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+187 |         rows = connection.execute(cte + """ SELECT * FROM flagged
+188 |             ORDER BY CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:187:35
+    |
+185 |       with closing(get_database_connection(database_path)) as connection:
+186 |           total = connection.execute(cte + " SELECT COUNT(*) FROM flagged", parameters).fetchone()[0]
+187 |           rows = connection.execute(cte + """ SELECT * FROM flagged
+    |  ___________________________________^
+188 | |             ORDER BY CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2
+189 | |                      WHEN 'low' THEN 3 ELSE 4 END, julianday(last_activity_at), id LIMIT ? OFFSET ?""",
+    | |______________________________________________________________________________________________________^
+190 |               [*parameters, limit, offset],
+191 |           ).fetchall()
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:206:17
+    |
+204 | def get_ticket(ticket_id, database_path=None, owner_user_id=None):
+205 |     with closing(get_database_connection(database_path)) as connection:
+206 |         query = f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?"
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+207 |         parameters = [ticket_id]
+208 |         if owner_user_id is not None:
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:234:38
+    |
+232 |                 (ticket_id, ticket_values["customer_name_snapshot"], ticket_values["message"], created_at),
+233 |             )
+234 |             row = connection.execute(f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,)).fetchone()
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+235 |             return _ticket_dict(row, _fetch_messages(connection, [ticket_id]))
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:257:38
+    |
+255 | …     )
+256 | …     connection.execute("UPDATE support_tickets SET updated_at = ? WHERE id = ?", (created_at, ticket_id))
+257 | …     row = connection.execute(f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages WHERE id = ?", (cursor.lastrowid,)).fetchone()
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+258 | …     return dict(row)
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:272:41
+    |
+270 |     with closing(get_database_connection(database_path)) as connection:
+271 |         with connection:
+272 |             cursor = connection.execute(f"UPDATE support_tickets SET {', '.join(assignments)} WHERE id = ?", parameters)
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+273 |             if cursor.rowcount == 0:
+274 |                 return None
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/database.py:275:38
+    |
+273 |             if cursor.rowcount == 0:
+274 |                 return None
+275 |             row = connection.execute(f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,)).fetchone()
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+276 |             return _ticket_dict(row, _fetch_messages(connection, [ticket_id]))
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/init_db.py:174:32
+    |
+172 |     if tickets:
+173 |         columns = ("id", "customer_user_id", "customer_name_snapshot", "customer_email_snapshot", "subject", "category", "priority", …
+174 |         connection.executemany(f"INSERT INTO support_tickets ({', '.join(columns)}) VALUES ({', '.join('?' for _ in columns)})", [tup…
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/init_db.py:271:38
+    |
+269 | …     connection.execute("PRAGMA foreign_keys = ON")
+270 | …     remapped = _remap_legacy_seed_owners(connection)
+271 | …     counts = [connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] for table in ("support_tickets", "support_ticket_me…
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+272 | …     seeded = False
+273 | …     if counts[0] < 12 or counts[1] < 12:
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Goldman/database_service/init_db.py:276:38
+    |
+274 | …         connection.executescript(seed); seeded = True
+275 | …     connection.commit()
+276 | …     counts = [connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] for table in ("support_tickets", "support_ticket_me…
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+277 | …     if connection.execute("PRAGMA foreign_keys").fetchone()[0] != 1:
+278 | …         raise RuntimeError("SQLite foreign key enforcement could not be enabled")
+    |
+
+S104 Possible binding to all interfaces
+   --> student-Ethan Goldman/support_backend/app.py:379:36
+    |
+377 | if __name__ == "__main__":
+378 |     app.run(
+379 |         host=os.getenv("APP_HOST", "0.0.0.0"),
+    |                                    ^^^^^^^^^
+380 |         port=int(os.getenv("APP_PORT", "6005")),
+381 |         debug=False,
+    |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-g5-live-mcp-validation.json"
+   --> student-Ethan Goldman/tests/test_agentic_mcp_validation.py:204:10
+    |
+202 |     assert secret not in json.dumps(evidence) + json.dumps(outputs)
+203 |     assert sha256(live_mcp.database_path.read_bytes()).hexdigest() == before
+204 |     Path('/tmp/asd-g5-live-mcp-validation.json').write_text(json.dumps({'evidence': evidence, 'native_model_outputs': outputs}, inden…
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-g6-live-rag-validation.json"
+   --> student-Ethan Goldman/tests/test_agentic_rag_validation.py:216:10
+    |
+214 |     assert all(value in answer for value in ('5', '160', '1', '2000'))
+215 |     assert not evidence['runtime']['probes'][1]['answer']['metadata']['model_invoked']
+216 |     Path('/tmp/asd-g6-live-rag-validation.json').write_text(json.dumps({'evidence': evidence, 'native_model_outputs': outputs}, inden…
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-g6-feature-review-prompt.txt"
+   --> student-Ethan Goldman/tests/test_agentic_rag_validation.py:281:24
+    |
+279 |               'Never claim CI or test success; neither is collected by this review. '
+280 |               'Treat bounded excerpts as excerpts and not missing implementation.')
+281 |     prompt_path = Path('/tmp/asd-g6-feature-review-prompt.txt')
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+282 |     prompt_path.write_text(prompt)
+283 |     before = sha256(live_mcp.database_path.read_bytes()).hexdigest()
+    |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-g6-agentic-output"
+   --> student-Ethan Goldman/tests/test_agentic_rag_validation.py:288:40
+    |
+286 |     def save_local(*args):
+287 |         try:
+288 |             runner.PROJECT_ROOT = Path('/tmp/asd-g6-agentic-output')
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+289 |             return save_original(*args)
+290 |         finally:
+    |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-g6-live-agentic-modes.json"
+   --> student-Ethan Goldman/tests/test_agentic_rag_validation.py:305:10
+    |
+303 |         results.append(result)
+304 |     assert sha256(live_mcp.database_path.read_bytes()).hexdigest() == before
+305 |     Path('/tmp/asd-g6-live-agentic-modes.json').write_text(json.dumps(results, indent=2))
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-support-mcp-model-outputs.json"
+   --> student-Ethan Goldman/tests/test_goldman_mcp_assistant.py:257:10
+    |
+255 |                                   json={"question": "How does our support workload look?"},
+256 |                                   headers=stack.origin_headers, timeout=95)
+257 |     Path('/tmp/asd-support-mcp-model-outputs.json').write_text(json.dumps(outputs, indent=2))
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+258 |     assert response.status_code == 200, response.text
+259 |     result = response.json()
+    |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-support-mcp-assistant-live.json"
+   --> student-Ethan Goldman/tests/test_goldman_mcp_assistant.py:265:10
+    |
+263 |     assert result["answer"] and result["facts"] and 2 <= result["model_requests"] <= 4
+264 |     assert sha256(stack.database_path.read_bytes()).hexdigest() == before
+265 |     Path('/tmp/asd-support-mcp-assistant-live.json').write_text(json.dumps(result, indent=2))
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-support-mcp-ui-live.json"
+   --> student-Ethan Goldman/tests/test_goldman_mcp_ui.py:122:14
+    |
+120 |         response = post(stack, admin, 'assistant', {'question': question, **data})
+121 |         traces[-1].update(status=response.status_code, fragment=response.text)
+122 |         Path('/tmp/asd-support-mcp-ui-live.json').write_text(json.dumps(traces, indent=2))
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+123 |         assert response.status_code == 200 and 'Assistant answer' in response.text, response.text
+124 |         names = [c['function']['name'] for output in traces[-1]['model_outputs'] for c in output.get('tool_calls', [])]
+    |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-support-rag-ui-live.json"
+   --> student-Ethan Goldman/tests/test_goldman_rag_ui.py:145:14
+    |
+143 |         assert sha256(support_stack.database_path.read_bytes()).hexdigest() == before
+144 |     finally:
+145 |         Path('/tmp/asd-support-rag-ui-live.json').write_text(json.dumps(traces, indent=2))
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+146 |         host.close()
+    |
+
+S603 `subprocess` call: check for execution of untrusted input
+   --> student-Ethan Goldman/tests/test_goldman_release1_validation.py:122:18
+    |
+120 |     paths, evidence = {}, {}
+121 |     for mode in ('mcp', 'rag'):
+122 |         result = subprocess.run([sys.executable, str(ROOT / 'ai-services/agentic_loop.py'),
+    |                  ^^^^^^^^^^^^^^
+123 |             '--feature', 'student-Ethan Goldman', '--mode', mode], cwd=ROOT, capture_output=True, text=True, timeout=420)
+124 |         Path(f'/tmp/asd-e6-{mode}-cli.txt').write_text(result.stdout + '\n' + result.stderr)
+    |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-e6-"
+   --> student-Ethan Goldman/tests/test_goldman_release1_validation.py:124:16
+    |
+122 |         result = subprocess.run([sys.executable, str(ROOT / 'ai-services/agentic_loop.py'),
+123 |             '--feature', 'student-Ethan Goldman', '--mode', mode], cwd=ROOT, capture_output=True, text=True, timeout=420)
+124 |         Path(f'/tmp/asd-e6-{mode}-cli.txt').write_text(result.stdout + '\n' + result.stderr)
+    |                ^^^^^^^^^^^^
+125 |         assert result.returncode == 0, result.stdout + result.stderr
+126 |         match = re.search(r'Evidence saved to (.+)', result.stdout)
+    |
+
+S108 Probable insecure usage of temporary file or directory: "/tmp/asd-e6-live-cli-traces.json"
+   --> student-Ethan Goldman/tests/test_goldman_release1_validation.py:149:10
+    |
+147 |     assert sha256(live_mcp.database_path.read_bytes()).hexdigest() == before
+148 |     assert secret not in json.dumps(native_mcp) + json.dumps(native_rag)
+149 |     Path('/tmp/asd-e6-live-cli-traces.json').write_text(json.dumps({'paths': paths, 'mcp': native_mcp, 'rag': native_rag}, indent=2))
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> student-Ethan Ting/backend/app.py:134:27
+    |
+132 |           headers["Content-Type"] = "application/json"
+133 |
+134 |       request_to_database = URLRequest(
+    |  ___________________________^
+135 | |         f"{DATABASE_API_URL}{path}",
+136 | |         data=data,
+137 | |         headers=headers,
+138 | |         method=method,
+139 | |     )
+    | |_____^
+140 |
+141 |       with urlopen(request_to_database, timeout=5) as response:
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> student-Ethan Ting/backend/app.py:141:10
+    |
+139 |     )
+140 |
+141 |     with urlopen(request_to_database, timeout=5) as response:
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+142 |         return json.load(response)
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> student-Ethan Ting/backend/app.py:153:24
+    |
+151 |       if not 0 < timeout <= 120:
+152 |           raise ValueError("RAG_CLIENT_TIMEOUT_SECONDS must be between 0 and 120.")
+153 |       rag_http_request = URLRequest(
+    |  ________________________^
+154 | |         f"{server_url}{path}",
+155 | |         data=json.dumps({**payload, "scope": ACCOUNTS_LOYALTY_RAG_SCOPE}).encode("utf-8"),
+156 | |         headers={"Content-Type": "application/json"},
+157 | |         method="POST",
+158 | |     )
+    | |_____^
+159 |       with urlopen(rag_http_request, timeout=timeout) as response:
+160 |           return json.load(response)
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> student-Ethan Ting/backend/app.py:159:10
+    |
+157 |         method="POST",
+158 |     )
+159 |     with urlopen(rag_http_request, timeout=timeout) as response:
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+160 |         return json.load(response)
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> student-Ethan Ting/backend/app.py:305:22
+    |
+303 |           body_data["format"] = response_format
+304 |       body = json.dumps(body_data).encode("utf-8")
+305 |       ollama_request = URLRequest(
+    |  ______________________^
+306 | |         f"{OLLAMA_URL}/api/chat",
+307 | |         data=body,
+308 | |         headers={"Content-Type": "application/json"},
+309 | |         method="POST",
+310 | |     )
+    | |_____^
+311 |
+312 |       try:
+    |
+
+S310 Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.
+   --> student-Ethan Ting/backend/app.py:313:14
+    |
+312 |     try:
+313 |         with urlopen(ollama_request, timeout=timeout) as response:
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+314 |             result = json.loads(response.read().decode("utf-8"))
+315 |     except (HTTPError, URLError, TimeoutError, OSError) as error:
+    |
+
+S104 Possible binding to all interfaces
+    --> student-Ethan Ting/backend/app.py:1770:14
+     |
+1768 | if __name__ == "__main__":
+1769 |     app.run(
+1770 |         host="0.0.0.0",
+     |              ^^^^^^^^^
+1771 |         port=6002,
+1772 |         debug=os.environ.get("APP_DEBUG", "false").lower() == "true",
+     |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ethan Ting/database/app.py:477:17
+    |
+475 |         with get_connection() as connection:
+476 |             cursor = connection.execute(
+477 |                 f"UPDATE users SET {', '.join(updates)} WHERE id = ?",
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+478 |                 parameters,
+479 |             )
+    |
+
+S104 Possible binding to all interfaces
+   --> student-Ethan Ting/database/app.py:512:14
+    |
+510 | if __name__ == "__main__":
+511 |     app.run(
+512 |         host="0.0.0.0",
+    |              ^^^^^^^^^
+513 |         port=6003,
+514 |         debug=os.environ.get("APP_DEBUG", "false").lower() == "true",
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+  --> student-Howard/tests/test_api.py:27:30
+   |
+25 |     conn = sqlite3.connect(db)
+26 |     for table in ("orders", "order_items", "returns"):
+27 |         count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+28 |         assert count >= 10, f"{table} has only {count} records"
+29 |     conn.close()
+   |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ryan_Nolan/agentic/agentic_review.py:203:17
+    |
+202 |             record_count = conn.execute(
+203 |                 f"SELECT COUNT(*) AS n FROM {table}"
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+204 |             ).fetchone()["n"]
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ryan_Nolan/agentic/agentic_review.py:207:17
+    |
+206 |             sample_rows = conn.execute(
+207 |                 f"SELECT * FROM {table} LIMIT {MAX_SAMPLE_ROWS}"
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+208 |             ).fetchall()
+209 |             sample_records = []
+    |
+
+S104 Possible binding to all interfaces
+   --> student-Ryan_Nolan/backend/app.py:148:36
+    |
+146 | if __name__ == "__main__":
+147 |     app.run(
+148 |         host=os.getenv("APP_HOST", "0.0.0.0"),
+    |                                    ^^^^^^^^^
+149 |         port=int(os.getenv("APP_PORT", "8102")),
+150 |         debug=os.getenv("APP_DEBUG", "false").lower() == "true",
+    |
+
+Found 95 errors.
+
+Detect committed secrets.................................................Passed
+Audit all Python dependencies............................................Passed
