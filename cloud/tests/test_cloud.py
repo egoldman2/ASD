@@ -23,6 +23,7 @@ def test_cloud_bundle_routes_all_features_and_excludes_private_local_files(tmp_p
     assert not (bundle / "docs").exists()
     assert (bundle / "cloud/install.sh").is_file()
     assert (bundle / "cloud/provenance.py").is_file()
+    assert (bundle / "cloud/student-workflows.json").is_file()
     assert (bundle / "cloud/gateway.conf.template").is_file()
     assert (bundle / "cloud/Dockerfile.backend").is_file()
     assert (bundle / "cloud/Dockerfile.home").is_file()

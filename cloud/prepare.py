@@ -51,7 +51,8 @@ def prepare(destination, source=ROOT):
         if (
             not path.is_file() or path.is_symlink()
             or any(part.startswith(".") or part == "__pycache__" for part in relative.parts[:-1])
-            or (path.suffix not in SOURCE_SUFFIXES and not path.name.startswith("Dockerfile") and path.name != ".dockerignore")
+            or (path.suffix not in SOURCE_SUFFIXES and not path.name.startswith("Dockerfile")
+                and path.name != ".dockerignore" and relative.as_posix() != "cloud/student-workflows.json")
             or path.name.startswith(".env")
             or "chroma" in relative.parts
         ):

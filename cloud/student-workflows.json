@@ -1,0 +1,35 @@
+{
+  "repository": "egoldman2/ASD",
+  "workflows": [
+    {
+      "owner": "Ethan Goldman",
+      "feature": "customer_support",
+      "id": 344339772,
+      "path": ".github/workflows/EthanGoldman.yml"
+    },
+    {
+      "owner": "Chufeng",
+      "feature": "product_catalogue",
+      "id": 335370198,
+      "path": ".github/workflows/Chufeng.yml"
+    },
+    {
+      "owner": "Ryan Nolan",
+      "feature": "inventory",
+      "id": 349934041,
+      "path": ".github/workflows/Ryan.yml"
+    },
+    {
+      "owner": "Ethan Ting",
+      "feature": "customer_loyalty",
+      "id": 334044998,
+      "path": ".github/workflows/student-3.yml"
+    },
+    {
+      "owner": "Howard",
+      "feature": "order_returns",
+      "id": 340892125,
+      "path": ".github/workflows/Howard.yml"
+    }
+  ]
+}
