@@ -1,0 +1,334 @@
+{
+  "captured_at": "2026-10-17T12:40:49.235748+00:00",
+  "read_only": true,
+  "uptime_seconds": 1839.98,
+  "kernel": "6.18.51-120.163.amzn2023.x86_64",
+  "docker_version": "\"25.0.16\"",
+  "containerd_version": "containerd github.com/containerd/containerd/v2 2.2.7+unknown",
+  "memory_kib": {
+    "MemTotal": 1955500,
+    "MemFree": 556272,
+    "MemAvailable": 989420,
+    "Cached": 536124,
+    "SwapTotal": 0,
+    "SwapFree": 0,
+    "Shmem": 3636,
+    "Slab": 88916,
+    "SReclaimable": 34276,
+    "SUnreclaim": 54640,
+    "KernelStack": 6576,
+    "PageTables": 11744
+  },
+  "largest_processes": [
+    {
+      "pid": 1981,
+      "name": "dockerd",
+      "rss_kib": 112936,
+      "threads": 34
+    },
+    {
+      "pid": 3624,
+      "name": "gunicorn",
+      "rss_kib": 68944,
+      "threads": 2
+    },
+    {
+      "pid": 3631,
+      "name": "gunicorn",
+      "rss_kib": 66872,
+      "threads": 2
+    },
+    {
+      "pid": 3604,
+      "name": "gunicorn",
+      "rss_kib": 66448,
+      "threads": 2
+    },
+    {
+      "pid": 3643,
+      "name": "gunicorn",
+      "rss_kib": 64168,
+      "threads": 2
+    },
+    {
+      "pid": 1817,
+      "name": "containerd",
+      "rss_kib": 57856,
+      "threads": 11
+    },
+    {
+      "pid": 1147,
+      "name": "systemd-journal",
+      "rss_kib": 40388,
+      "threads": 1
+    },
+    {
+      "pid": 3598,
+      "name": "gunicorn",
+      "rss_kib": 36836,
+      "threads": 3
+    },
+    {
+      "pid": 3603,
+      "name": "gunicorn",
+      "rss_kib": 35544,
+      "threads": 3
+    },
+    {
+      "pid": 3597,
+      "name": "gunicorn",
+      "rss_kib": 35380,
+      "threads": 2
+    },
+    {
+      "pid": 2124,
+      "name": "ssm-agent-worke",
+      "rss_kib": 31696,
+      "threads": 13
+    },
+    {
+      "pid": 33806,
+      "name": "ssm-document-wo",
+      "rss_kib": 28932,
+      "threads": 6
+    },
+    {
+      "pid": 3257,
+      "name": "gunicorn",
+      "rss_kib": 27432,
+      "threads": 1
+    },
+    {
+      "pid": 3155,
+      "name": "gunicorn",
+      "rss_kib": 27420,
+      "threads": 1
+    },
+    {
+      "pid": 2441,
+      "name": "gunicorn",
+      "rss_kib": 27344,
+      "threads": 1
+    },
+    {
+      "pid": 2616,
+      "name": "gunicorn",
+      "rss_kib": 27340,
+      "threads": 1
+    },
+    {
+      "pid": 3284,
+      "name": "gunicorn",
+      "rss_kib": 27340,
+      "threads": 1
+    },
+    {
+      "pid": 2951,
+      "name": "gunicorn",
+      "rss_kib": 27288,
+      "threads": 1
+    },
+    {
+      "pid": 2929,
+      "name": "gunicorn",
+      "rss_kib": 27112,
+      "threads": 1
+    },
+    {
+      "pid": 3047,
+      "name": "containerd-shim",
+      "rss_kib": 21924,
+      "threads": 11
+    },
+    {
+      "pid": 2794,
+      "name": "containerd-shim",
+      "rss_kib": 21780,
+      "threads": 11
+    },
+    {
+      "pid": 2904,
+      "name": "containerd-shim",
+      "rss_kib": 21712,
+      "threads": 11
+    },
+    {
+      "pid": 3021,
+      "name": "containerd-shim",
+      "rss_kib": 21584,
+      "threads": 11
+    },
+    {
+      "pid": 2676,
+      "name": "containerd-shim",
+      "rss_kib": 21496,
+      "threads": 12
+    },
+    {
+      "pid": 2500,
+      "name": "containerd-shim",
+      "rss_kib": 21284,
+      "threads": 11
+    },
+    {
+      "pid": 2385,
+      "name": "containerd-shim",
+      "rss_kib": 21152,
+      "threads": 12
+    },
+    {
+      "pid": 1968,
+      "name": "amazon-ssm-agen",
+      "rss_kib": 20928,
+      "threads": 9
+    },
+    {
+      "pid": 2530,
+      "name": "containerd-shim",
+      "rss_kib": 20008,
+      "threads": 12
+    },
+    {
+      "pid": 2700,
+      "name": "containerd-shim",
+      "rss_kib": 19952,
+      "threads": 11
+    },
+    {
+      "pid": 2910,
+      "name": "containerd-shim",
+      "rss_kib": 19920,
+      "threads": 11
+    }
+  ],
+  "containers": [
+    {
+      "id": "0233f3fe79745ee17f319b91a17a550f4bf4a32ecc98bb69dcab13cf1ddd31a6",
+      "service": "gateway",
+      "pid": 2623,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:18.657490217Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "bd1b186e77d253a40150609352599a862c16a1791b8be335e598582b84b754e9",
+      "service": "product-catalogue",
+      "pid": 2886,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:19.085979065Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "7684ef77919dcfb7a5836bd554b3c55e85a3866ae2c3045299f0083e522927f9",
+      "service": "customer-support",
+      "pid": 3133,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:20.681909285Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "22668e99aeadbf07ee97a006c13877c2576c678267c4ef54109c3acd19509d0b",
+      "service": "shared-backend",
+      "pid": 3257,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:20.877341436Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "623fb661a2476265a49b9d590ff0a871982520cf1c96be77201b518eee8416ad",
+      "service": "order-returns-frontend",
+      "pid": 2386,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:17.569483323Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "84f331d46dd40072fe4e086ac1c64d09c96492e7076d5bafabd0b257b5d06095",
+      "service": "inventory-backend",
+      "pid": 2951,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:19.768296678Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "b1fef26adef625cda356f575023be11b95ec4506d2212a61699e47c31cd9e53e",
+      "service": "customer-support-backend",
+      "pid": 3155,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:20.956745681Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "8739465be24f3b9a1e9256545d0fc9984b9a30cb3ddc0840e5267c7ac4bff13c",
+      "service": "ethan-backend",
+      "pid": 3284,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:21.061031826Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "ecf45af6591603164496e8e5e6d9a93b62f156386de21387e0f96f82b2bbeae2",
+      "service": "product-database",
+      "pid": 2616,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:19.056358675Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "9410116e7e7cd47efe95b19958e621eeba0aa418e31bc71aa059f0dd4e640563",
+      "service": "ethan-database",
+      "pid": 2929,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:19.781168071Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "f021fa3546d4aa52341cecb4aee4ac7033c266bad15e2e29a36177c9328940e3",
+      "service": "shared-home",
+      "pid": 3269,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:21.087483559Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "e687f9762d05ec165db0ca64db5c1286598eba9670ddb07e7ebb63ba690714e0",
+      "service": "ethan-frontend",
+      "pid": 3087,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:19.986433595Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "e2be186edff79a1813ba4720fd8a777fde9dc03d128593a48efd210e50616d8a",
+      "service": "customer-support-database",
+      "pid": 2441,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:18.058824899Z",
+      "restart_count": 0,
+      "oom_killed": false
+    },
+    {
+      "id": "6a0be7c8753fe09e367df6268b79d94fc2a97c8f60bc9dd68edfaae196f1f9d2",
+      "service": "inventory-frontend",
+      "pid": 2710,
+      "status": "running",
+      "started_at": "2026-10-17T12:10:19.119555771Z",
+      "restart_count": 0,
+      "oom_killed": false
+    }
+  ],
+  "current_boot_oom_message_count": 0,
+  "limitations": "Read-only observation of older manual release, no representative CRUD load, no proof of historic root cause or final stability"
+}

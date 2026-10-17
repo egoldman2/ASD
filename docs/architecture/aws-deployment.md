@@ -35,6 +35,14 @@ and [ledger](../evidence/release2-ethan-goldman/progress.md).
 - Accounts, products, support and orders databases live under `/srv/asd/data` on encrypted EBS, outside release directories. The generated session key also survives releases. Initial seed passwords come from Secrets Manager; existing database hashes are not replaced.
 - The EC2 default is `t3.small`, verified eligible for this project's Free plan. Local idle measurements were approximately 550 MiB across the 14 containers. This is an assessment baseline; load and sustained CPU usage still need measurement.
 
+S03a measured recurring Python health-probe CPU overhead on the recovered old
+manual release. Source healthchecks now run every 30 seconds after startup, with
+five-second checks during the existing 30-second startup grace period. Five
+failures preserve the 150-second configured interval budget; actual detection
+time also includes probe execution. All HTTP validations remain enabled. This
+repair is not deployed and does not close the historical OOM diagnosis or final
+S03 stability gate. [Measurements and verification](../evidence/release2-aws/cpu-probes-20261017/README.md).
+
 ## Provision and release
 
 Use the AWS Toolkit profile and confirm the selected Region in **AWS Settings → View all projects → Overview → Additional Info → Region**. All Regional resources in this template are in Sydney.
@@ -119,6 +127,28 @@ records zero local lint findings and four targeted Guard passes; it does not pro
 role assumption or deploy acceptance. GitHub documents [immutable OIDC subjects](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws).
 
 The template's `EnableGitHubOidc` parameter defaults to `false`. This project's managed policies explicitly denied IAM OIDC provider creation, read and list operations during setup. Fresh provider listing on 17 October again fails with an explicit SCP deny; [sanitized result](../evidence/release2-aws/recovery-20261017/oidc-capability.json). The live stack still has OIDC disabled and its old name-only repository parameter; the corrected source trust has not been deployed. The actual GitHub role and a successful GitHub deployment run remain to be established; preparing a workflow does not verify CI/CD. If the project permits OIDC, enable the template option with `ENABLE_GITHUB_OIDC=true`; supply `GITHUB_OIDC_PROVIDER_ARN` when reusing an existing provider. Project capability changes belong in AWS Settings and require the project owner's decision. AWS documents these restrictions in its [project capability guide](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
+
+### Concrete capability decision for the project owner
+
+The published Free and Paid project policies both include `iam:*Provider*` in
+`DenyIAMRestrictedActions`. This matches the observed provider-list denial;
+the published policy is explanatory evidence, not a retrieved copy of this
+project's exact SCP. A paid upgrade alone therefore does not establish OIDC
+access. [AWS managed-policy reference](https://docs.aws.amazon.com/accounts/latest/reference/scps-and-rcps-for-projects.html).
+
+AWS's documented route is **Projects → Actions → Explore advanced features** in
+AWS Settings. It requires a paid upgrade first. Activation is irreversible,
+transfers organization security/governance administration to the owner and
+removes spend limits permanently. The owner must decide separately whether to
+upgrade and whether to activate, review billing/spend first, and personally
+complete any root email/password setup. No such decision or action has occurred.
+[AWS activation requirements and consequences](https://docs.aws.amazon.com/accounts/latest/reference/activate-advanced-features.html).
+
+After an authorized capability change, recheck provider permissions and the
+restricted trust, review a CloudFormation change set for replacement/data risks,
+and verify a main-only Actions role assumption. Keep Sydney, private data,
+short-lived credentials and the existing identity source; do not replace OIDC
+with copied human credentials. PR #16 still needs separate merge authorization.
 
 ## Validation and limitations
 

@@ -1,0 +1,31 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "README.md": "83752a876329c5910ad18bc6b9b53ca280cc6b5d6d2b2ea3ae08a092fa31ca24",
+    "analysis.json": "02f9c67186a7625b31b72468290b648ac039a167077744d6b257de9418ec7b37",
+    "before-schedule-tests.txt.gz": "cab8357142fb5fe780faf990233c1f243eae05569039bb6d36c1945faf483472",
+    "benchmark-probe.sh": "ba766f6ae00b55d89f11c52004fbbc9de45528b7ffc6177ba67af74d6c504b9f",
+    "cgroup-profile.json": "30cb213bf726fd57f7011a5946d0dcc14027fa8c4342ed6cddf733bbe791a47e",
+    "cpu-profile.json": "3b0b5be1561fb3940896fb56826d842a5397f96ecc1021084ecca9c3fae38410",
+    "current-CPUCreditBalance.json": "c9a1e5a4ebab63e8e43d3f2c7c1478b427f68f5b986accfaaf447ab0d90c0df8",
+    "current-CPUUtilization.json": "c739fdbe2ba4ac2a0f59c70c458f1a18ec03e14d67be5a6b1c448c08577b3616",
+    "final-CPUCreditBalance.json": "97ac52c88dba465208c7c6c339396064f655395afae1f529388ba2430a5fe7eb",
+    "final-CPUUtilization.json": "ce46b3a3dd59a861532074a029eea40d5ba6e141c8a0bb6fd42177a720713a12",
+    "final-host-readiness.json": "ecd269528ad055e5473210a1a35a43a09c9921d9a97121328ad6f927852b5480",
+    "final-public-head.json": "0a5dbff7867abf077b254b3637b9500714050a7d413eb3c2176495d7a1c06ec7",
+    "focused-tests.txt": "04303a3ee185c6472ae2441af9a46f0c5fa40142648de9ac8a714fa037af02cc",
+    "inspect-pressure.sh": "cca972746a154ec5e165a741481993ed9f3b1bd969462e9dc8769107e27588c4",
+    "linux-health-timing.json": "87d37e2db80338c00cd53fb33857d1030c1a6ba03b412cb0faeeecb69ddfd693",
+    "pressure-end.json": "2f7485e12c116a9eafb293044d79ccbd00f15b66586d177b29d2b92cc0602cb5",
+    "pressure.json": "17d0e7706cefae53dcebe7bdde7447afe0fb3ddd868302f58e5489ca45c2c58f",
+    "probe-benchmark.json": "5ebff7061f85646bb290bc4676d4d8c5753e5185de0b62cd072a7a4d56435ead",
+    "profile-cgroups.sh": "f544cbd2614b716eedd3403f960388fc1f051bfe6403644366359ef313943766",
+    "profile-cpu.sh": "afe4fa6d2f3b18ed73a8f236774ec2f137550846ceec36bfd447b684555638a3",
+    "rendered-compose-health.json": "924e7b08f494b3578598b2769180940aa52846dfb7d8071ea42ad8a9399de798",
+    "shared-cloud-tests.txt": "41e7fd83cd1900e9ef12ebcf1784345e20b6bb25bbc6273965fb27a2a607f7bd",
+    "ssm-execution.json": "e65edb55dd56e613df9dff3596003b7d357619fe1f833f6f8b75603e2f09b229",
+    "support-tests.txt": "66e8f8194fd86cf2a527987806f5e880aded0525e6225f745bcd52bd6ed54dca",
+    "verification.json": "b6d6b7528590bd5177e95c893a21c37b8d8c37d33e921aed0188135a42567357"
+  },
+  "limits": "No self-reference; later CI metadata is recorded separately"
+}

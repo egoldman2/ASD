@@ -106,3 +106,9 @@ the historical kernel's separate hash references the private encrypted server
 file. Standard secret hooks exclude evidence; a separate staged-file scan is
 required before committing. Stage commit and exact-SHA CI are recorded in the
 [progress ledger](../../release2-ethan-goldman/progress.md).
+
+Subsequent [native Chrome browser check](public-browser-chrome.json) confirms the
+public homepage renders and Support redirects to sign-in. [Homepage](public-home-chrome.jpg),
+[sign-in](public-support-signin-chrome.jpg), [native AX](public-support-signin-chrome-ax.txt).
+No credentials were entered; this remains older-release recovery evidence, not
+S16 authenticated CRUD or confirmation of the group number printed in the footer.

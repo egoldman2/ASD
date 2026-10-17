@@ -1,0 +1,190 @@
+{
+  "captured_at": "2026-10-17T12:38:40.111918+00:00",
+  "environment": "Isolated disposable local Linux container; no network, published ports, credentials or volumes",
+  "image": "asd-cloud-api:release2-s14a",
+  "image_id": "sha256:88c603c338f360b00e40ad1bc262251a23f74ae12a05f1c7e0d9a9e85cf9c3dc",
+  "fixture": "Standard-library synthetic HTTP server, not a deployed application",
+  "healthcheck": {
+    "interval": "30s",
+    "start_interval": "5s",
+    "timeout": "3s",
+    "start_period": "30s",
+    "retries": 5,
+    "test": [
+      "CMD",
+      "python",
+      "-c",
+      "import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)"
+    ]
+  },
+  "observations": [
+    {
+      "elapsed_seconds": 0.022,
+      "status": "starting",
+      "failing_streak": 0,
+      "configured_healthcheck": {
+        "Test": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)\""
+        ],
+        "Interval": 30000000000,
+        "Timeout": 3000000000,
+        "StartPeriod": 30000000000,
+        "StartInterval": 5000000000,
+        "Retries": 5
+      },
+      "recent_exit_codes": []
+    },
+    {
+      "elapsed_seconds": 6.17,
+      "status": "healthy",
+      "failing_streak": 0,
+      "configured_healthcheck": {
+        "Test": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)\""
+        ],
+        "Interval": 30000000000,
+        "Timeout": 3000000000,
+        "StartPeriod": 30000000000,
+        "StartInterval": 5000000000,
+        "Retries": 5
+      },
+      "recent_exit_codes": [
+        0
+      ]
+    },
+    {
+      "elapsed_seconds": 6.279,
+      "status": "healthy",
+      "failing_streak": 0,
+      "configured_healthcheck": {
+        "Test": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)\""
+        ],
+        "Interval": 30000000000,
+        "Timeout": 3000000000,
+        "StartPeriod": 30000000000,
+        "StartInterval": 5000000000,
+        "Retries": 5
+      },
+      "recent_exit_codes": [
+        0
+      ]
+    },
+    {
+      "elapsed_seconds": 36.954,
+      "status": "healthy",
+      "failing_streak": 1,
+      "configured_healthcheck": {
+        "Test": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)\""
+        ],
+        "Interval": 30000000000,
+        "Timeout": 3000000000,
+        "StartPeriod": 30000000000,
+        "StartInterval": 5000000000,
+        "Retries": 5
+      },
+      "recent_exit_codes": [
+        0,
+        1
+      ]
+    },
+    {
+      "elapsed_seconds": 67.498,
+      "status": "healthy",
+      "failing_streak": 2,
+      "configured_healthcheck": {
+        "Test": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)\""
+        ],
+        "Interval": 30000000000,
+        "Timeout": 3000000000,
+        "StartPeriod": 30000000000,
+        "StartInterval": 5000000000,
+        "Retries": 5
+      },
+      "recent_exit_codes": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "elapsed_seconds": 96.059,
+      "status": "healthy",
+      "failing_streak": 3,
+      "configured_healthcheck": {
+        "Test": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)\""
+        ],
+        "Interval": 30000000000,
+        "Timeout": 3000000000,
+        "StartPeriod": 30000000000,
+        "StartInterval": 5000000000,
+        "Retries": 5
+      },
+      "recent_exit_codes": [
+        0,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "elapsed_seconds": 126.694,
+      "status": "healthy",
+      "failing_streak": 4,
+      "configured_healthcheck": {
+        "Test": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)\""
+        ],
+        "Interval": 30000000000,
+        "Timeout": 3000000000,
+        "StartPeriod": 30000000000,
+        "StartInterval": 5000000000,
+        "Retries": 5
+      },
+      "recent_exit_codes": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "elapsed_seconds": 157.388,
+      "status": "unhealthy",
+      "failing_streak": 5,
+      "configured_healthcheck": {
+        "Test": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:6005/health', timeout=2)\""
+        ],
+        "Interval": 30000000000,
+        "Timeout": 3000000000,
+        "StartPeriod": 30000000000,
+        "StartInterval": 5000000000,
+        "Retries": 5
+      },
+      "recent_exit_codes": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "failure_injected_at_seconds": 6.256,
+  "result": "passed",
+  "limits": "Synthetic readiness/failure scheduling proof only; no AWS change or application load acceptance",
+  "cleanup_exit_code": 0
+}

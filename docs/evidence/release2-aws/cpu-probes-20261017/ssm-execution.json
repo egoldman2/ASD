@@ -1,0 +1,56 @@
+{
+  "profile": "aws-toolkit",
+  "region": "ap-southeast-2",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "commands": [
+    {
+      "purpose": "pressure",
+      "id": "9e6e27e8-a62e-4273-9748-814b3f48927d",
+      "requested_at": "2026-10-17T23:28:33.354000+11:00",
+      "status": "Success",
+      "response_code": 0,
+      "execution_start": "2026-10-17T12:28:34.595Z",
+      "execution_end": "2026-10-17T12:28:36.595Z",
+      "stderr_bytes": 0
+    },
+    {
+      "purpose": "cpu-profile",
+      "id": "6291f62d-c83a-45a9-bb69-81d226aa07de",
+      "requested_at": "2026-10-17T23:32:47.033000+11:00",
+      "status": "Success",
+      "response_code": 0,
+      "execution_start": "2026-10-17T12:32:48.200Z",
+      "execution_end": "2026-10-17T12:33:05.200Z",
+      "stderr_bytes": 0
+    },
+    {
+      "purpose": "cgroup-profile",
+      "id": "6bdc4af3-6cea-44b6-ac37-ca89ea0829bc",
+      "requested_at": "2026-10-17T23:34:23.993000+11:00",
+      "status": "Success",
+      "response_code": 0,
+      "execution_start": "2026-10-17T12:34:25.075Z",
+      "execution_end": "2026-10-17T12:34:57.075Z",
+      "stderr_bytes": 0
+    },
+    {
+      "purpose": "probe-benchmark",
+      "id": "91f35749-a5c5-4721-b2d1-873263f0bc1f",
+      "requested_at": "2026-10-17T23:35:38.662000+11:00",
+      "status": "Success",
+      "response_code": 0,
+      "execution_start": "2026-10-17T12:35:39.480Z",
+      "execution_end": "2026-10-17T12:36:18.480Z",
+      "stderr_bytes": 0
+    },
+    {
+      "purpose": "pressure-end",
+      "id": "39bc58b6-c7ea-4583-9255-49282bed99f9",
+      "status": "Success",
+      "response_code": 0,
+      "execution_start": "2026-10-17T12:40:47.234Z",
+      "execution_end": "2026-10-17T12:40:50.234Z",
+      "stderr_bytes": 0
+    }
+  ]
+}
