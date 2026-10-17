@@ -33,7 +33,7 @@ def _fetch_messages(connection, ticket_ids):
         return {}
     placeholders = ", ".join("?" for _ in ticket_ids)
     rows = connection.execute(
-        f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages "
+        f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages "  # noqa: S608 - Fixed column tuple and ? placeholder count; ticket IDs are bound.
         f"WHERE ticket_id IN ({placeholders}) ORDER BY datetime(created_at), id",
         tuple(ticket_ids),
     ).fetchall()
@@ -81,7 +81,7 @@ def get_tickets(filters=None, database_path=None):
     where, parameters = _ticket_where(filters)
     with closing(get_database_connection(database_path)) as connection:
         rows = connection.execute(
-            f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "
+            f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "  # noqa: S608 - Fixed columns and _ticket_where clauses; filter values are bound.
             "ORDER BY datetime(ticket.updated_at) DESC, ticket.id DESC",
             parameters,
         ).fetchall()
@@ -96,10 +96,10 @@ def search_ticket_summaries(filters=None, limit=20, offset=0, database_path=None
     where, parameters = _ticket_where(filters)
     with closing(get_database_connection(database_path)) as connection:
         total = connection.execute(
-            f"SELECT COUNT(*) FROM support_tickets AS ticket {where}", parameters,
+            f"SELECT COUNT(*) FROM support_tickets AS ticket {where}", parameters,  # noqa: S608 - Fixed columns/_ticket_where clauses; values and pagination are bound.
         ).fetchone()[0]
         rows = connection.execute(
-            f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "
+            f"SELECT {TICKET_SELECT_QUALIFIED} FROM support_tickets AS ticket {where} "  # noqa: S608 - Fixed columns/_ticket_where clauses; values and pagination are bound.
             "ORDER BY datetime(ticket.updated_at) DESC, ticket.id DESC LIMIT ? OFFSET ?",
             [*parameters, limit, offset],
         ).fetchall()
@@ -113,7 +113,7 @@ def get_ticket_context(ticket_id, message_limit=20, database_path=None):
     """Return only the latest bounded messages, displayed chronologically."""
     with closing(get_database_connection(database_path)) as connection:
         row = connection.execute(
-            f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,),
+            f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,),  # noqa: S608 - Fixed column tuple; ticket ID and message limit are bound.
         ).fetchone()
         if row is None:
             return None
@@ -121,7 +121,7 @@ def get_ticket_context(ticket_id, message_limit=20, database_path=None):
             "SELECT COUNT(*) FROM support_ticket_messages WHERE ticket_id = ?", (ticket_id,),
         ).fetchone()[0]
         messages = connection.execute(
-            f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages WHERE ticket_id = ? "
+            f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages WHERE ticket_id = ? "  # noqa: S608 - Fixed column tuple; ticket ID and message limit are bound.
             "ORDER BY datetime(created_at) DESC, id DESC LIMIT ?", (ticket_id, message_limit),
         ).fetchall()
     return {**dict(row), "messages": [dict(message) for message in reversed(messages)],
@@ -141,7 +141,7 @@ def get_queue_summary(filters=None, observed_at=None, database_path=None):
                    "COALESCE(SUM(status != 'solved' AND assigned_to IS NULL), 0) AS unresolved_unassigned"))
     with closing(get_database_connection(database_path)) as connection:
         row = connection.execute(
-            f"SELECT {', '.join(fields)} FROM support_tickets AS ticket {where}", parameters,
+            f"SELECT {', '.join(fields)} FROM support_tickets AS ticket {where}", parameters,  # noqa: S608 - Aggregate fields/enums are local constants; filter values are bound.
         ).fetchone()
     return {"total": row["total"], "status_counts": {value: row[f"status_{value}"] for value in statuses},
             "priority_counts": {value: row[f"priority_{value}"] for value in priorities},
@@ -180,13 +180,13 @@ def get_tickets_needing_attention(filters=None, inactive_hours=48, limit=20, off
         FROM activity WHERE status != 'solved'
     ), flagged AS (
         SELECT * FROM reasons WHERE needs_triage OR unassigned OR high_priority OR awaiting_staff_reply OR inactive
-    )"""
+    )"""  # noqa: S608 - Fixed CTE/selection and _ticket_where clauses; all values are bound.
     parameters = [*parameters, observed_at, inactive_hours]
     with closing(get_database_connection(database_path)) as connection:
-        total = connection.execute(cte + " SELECT COUNT(*) FROM flagged", parameters).fetchone()[0]
+        total = connection.execute(cte + " SELECT COUNT(*) FROM flagged", parameters).fetchone()[0]  # noqa: S608 - Fixed CTE/selection and _ticket_where clauses; all values are bound.
         rows = connection.execute(cte + """ SELECT * FROM flagged
             ORDER BY CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2
-                     WHEN 'low' THEN 3 ELSE 4 END, julianday(last_activity_at), id LIMIT ? OFFSET ?""",
+                     WHEN 'low' THEN 3 ELSE 4 END, julianday(last_activity_at), id LIMIT ? OFFSET ?""",  # noqa: S608 - Fixed CTE/selection and _ticket_where clauses; all values are bound.
             [*parameters, limit, offset],
         ).fetchall()
     tickets = []
@@ -203,7 +203,7 @@ def get_tickets_needing_attention(filters=None, inactive_hours=48, limit=20, off
 
 def get_ticket(ticket_id, database_path=None, owner_user_id=None):
     with closing(get_database_connection(database_path)) as connection:
-        query = f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?"
+        query = f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?"  # noqa: S608 - Fixed column tuple; ticket/owner IDs are bound.
         parameters = [ticket_id]
         if owner_user_id is not None:
             query += " AND customer_user_id = ?"
@@ -231,7 +231,7 @@ def create_ticket(ticket_values, created_at, database_path=None):
                 "INSERT INTO support_ticket_messages (ticket_id, sender_role, author_name, message, created_at) VALUES (?, 'customer', ?, ?, ?)",
                 (ticket_id, ticket_values["customer_name_snapshot"], ticket_values["message"], created_at),
             )
-            row = connection.execute(f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,)).fetchone()
+            row = connection.execute(f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,)).fetchone()  # noqa: S608 - Fixed column tuple; generated ticket ID is bound.
             return _ticket_dict(row, _fetch_messages(connection, [ticket_id]))
 
 
@@ -254,7 +254,7 @@ def create_ticket_message(ticket_id, message_values, created_at, database_path=N
                 (ticket_id, message_values["sender_role"], author, message_values["message"], created_at),
             )
             connection.execute("UPDATE support_tickets SET updated_at = ? WHERE id = ?", (created_at, ticket_id))
-            row = connection.execute(f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages WHERE id = ?", (cursor.lastrowid,)).fetchone()
+            row = connection.execute(f"SELECT {MESSAGE_SELECT} FROM support_ticket_messages WHERE id = ?", (cursor.lastrowid,)).fetchone()  # noqa: S608 - Fixed column tuple; generated message ID is bound.
             return dict(row)
 
 
@@ -269,10 +269,10 @@ def update_ticket(ticket_id, ticket_values, updated_at, database_path=None):
     parameters.extend((updated_at, ticket_id))
     with closing(get_database_connection(database_path)) as connection:
         with connection:
-            cursor = connection.execute(f"UPDATE support_tickets SET {', '.join(assignments)} WHERE id = ?", parameters)
+            cursor = connection.execute(f"UPDATE support_tickets SET {', '.join(assignments)} WHERE id = ?", parameters)  # noqa: S608 - Only fixed/allowlisted columns form SQL; ticket values/ID are bound.
             if cursor.rowcount == 0:
                 return None
-            row = connection.execute(f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,)).fetchone()
+            row = connection.execute(f"SELECT {TICKET_SELECT} FROM support_tickets WHERE id = ?", (ticket_id,)).fetchone()  # noqa: S608 - Only fixed/allowlisted columns form SQL; ticket values/ID are bound.
             return _ticket_dict(row, _fetch_messages(connection, [ticket_id]))
 
 
