@@ -1,5 +1,6 @@
 # Aggregate every application dependency manifest for the pre-commit audit.
 -r requirements.txt
+-r cloud/requirements.txt
 -r ai-services/mcp_server/requirements.txt
 -r ai-services/rag_server/requirements.txt
 -r ai-services/multi_agent_server/requirements.txt

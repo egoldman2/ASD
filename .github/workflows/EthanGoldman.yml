@@ -104,8 +104,8 @@ jobs:
       - name: Run shared Multi-Agent contracts in an isolated process
         run: python -m pytest ai-services/multi_agent_server/tests -q --junitxml=artifacts/shared-multi-agent.xml
 
-      - name: Run shared access and disabled-runtime checks
-        run: python -m pytest shared/tests -q --junitxml=artifacts/shared-access.xml
+      - name: Run shared access, cloud and disabled-runtime checks
+        run: python -m pytest shared/tests cloud/tests -q --junitxml=artifacts/shared-access.xml
 
       - name: Compile application Python modules
         run: python -m compileall -q 'student-Ethan Goldman' shared ai-services
