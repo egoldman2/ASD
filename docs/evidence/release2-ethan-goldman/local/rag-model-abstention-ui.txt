@@ -1,0 +1,181 @@
+Browser tab: 1, Title: "Staff Queue | Customer Support", URL: "http://localhost:8005/staff.html".
+1 AXWebArea Staff Queue | Customer Support, URL: localhost:8005/staff.html
+	2 container
+		3 link Description: ASD 2026 home, Value: localhost:8000/
+		4 container Description: Main navigation, ID: mainNavigation
+			5 link Description: Catalogue, Value: localhost:8001/
+			6 link Description: Inventory, Value: localhost:8002/
+			7 link Description: Accounts, Value: localhost:8003/admin.html
+			8 link Description: Loyalty, Value: localhost:8003/admin-loyalty.html
+			9 link Description: Orders & Returns, Value: localhost:8004/
+			10 link Description: Support, Value: localhost:8005/
+			11 link Description: Search products, Value: localhost:8001/
+			12 pop up button (collapsed) Admin, Secondary Actions: Expand
+	13 container admin-workspace
+		14 container
+			15 text STAFF WORKSPACE
+			16 heading Support queue, Value: 1, ID: page-title
+				17 text Support queue
+			18 text Search every ticket, triage the next action, and keep customers moving. Signed in as Marketplace Administrator
+		19 container Support data assistant
+			20 heading Support data assistant, Value: 2, ID: mcp-title
+				21 text Support data assistant
+			22 text Ask about recorded tickets and workload. Answers use current support data; review the evidence before acting.
+			23 container
+				24 text Ask a support question
+				25 text entry area (settable) Ask a support question, ID: mcp-question, Value: How many support tickets are there? Use only the queue summary and give the total with its evidence reference.
+				26 button Ask assistant
+				27 container Example questions
+					28 button Unassigned delivery tickets
+					29 button Queue workload
+					30 button Tickets needing attention
+			106 container mcp-assistant-result
+				107 heading Assistant answer, Value: 3
+					108 text Assistant answer
+				109 text There are 13 support tickets in total.
+				110 text Model: qwen2.5:3b · 1 tool calls · 4.266 seconds.
+				111 container
+					112 button (expanded) Data used: Summary (read 1), Secondary Actions: Collapse
+						113 text Data used: Summary (read 1)
+					114 heading Queue summary, Value: 3
+						115 text Queue summary
+					116 definition list
+						117 container Total tickets
+							118 text Total tickets
+						119 text 13
+						120 container Unresolved
+							121 text Unresolved
+						122 text 10
+						123 container Unresolved and unassigned
+							124 text Unresolved and unassigned
+						125 text 6
+					126 heading Status counts, Value: 4
+						127 text Status counts
+					128 definition list
+						129 container Needs Triage
+							130 text Needs Triage
+						131 text 3
+						132 container Open
+							133 text Open
+						134 text 4
+						135 container Pending
+							136 text Pending
+						137 text 3
+						138 container Solved
+							139 text Solved
+						140 text 3
+					141 heading Priority counts, Value: 4
+						142 text Priority counts
+					143 definition list
+						144 container High
+							145 text High
+						146 text 3
+						147 container Low
+							148 text Low
+						149 text 2
+						150 container Medium
+							151 text Medium
+						152 text 4
+						153 container Unclassified
+							154 text Unclassified
+						155 text 3
+						156 container Urgent
+							157 text Urgent
+						158 text 1
+					159 text Observed: 2026-10-17T00:22:52Z
+				160 container
+					161 button (expanded) Verified fact references, Secondary Actions: Collapse
+						162 text Verified fact references
+					163 content list
+						164 container
+							165 AXListMarker • 
+							166 text Read 1 · total: 13
+						167 container
+							168 AXListMarker • 
+							169 text Read 1 · status_counts.open: 4
+						170 container
+							171 AXListMarker • 
+							172 text Read 1 · status_counts.pending: 3
+						173 container
+							174 AXListMarker • 
+							175 text Read 1 · status_counts.solved: 3
+			32 button (collapsed) Read support data directly, Secondary Actions: Expand
+				33 text Read support data directly
+		34 container Support knowledge assistant
+			35 heading Support knowledge assistant, Value: 2, ID: knowledge-title
+				36 text Support knowledge assistant
+			37 text Ask about ticket workflows, triage and queue metrics. Answers use the documented support guidance.
+			38 container
+				39 text Ask a workflow question
+				40 text entry area (settable) Ask a workflow question, Value: Explain the nuclear fusion stages of Betelgeuse., ID: knowledge-question
+				41 button Ask knowledge assistant
+				42 container Example knowledge questions
+					43 button Ticket field limits
+					44 button Triage states
+					45 button Attention reasons
+			176 container rag-answer-result
+				177 container
+					178 text Insufficient context The support guidance does not provide enough information to answer this question. Try a question about the documented workflow, or consult an approved policy.
+				179 text Confidence: Insufficient · The model reviewed the available guidance and could not answer.
+				180 text Model: qwen2.5:3b · 2 passages reviewed · 1 generation attempt.
+		47 container All tickets
+			48 heading All tickets, Value: 2, ID: queue-title
+				49 text All tickets
+			50 text Search is restricted to signed-in administrators.
+			51 text 13 matching
+			52 container Search and filter support tickets
+				53 text Ticket number or text
+				54 search text field (settable) Ticket number or text
+				55 text Search ticket numbers, customer names, email addresses, and subjects.
+				56 text Status
+				57 pop up button (collapsed, settable) Status, Value: All statuses, ID: filter-status, Secondary Actions: Expand
+					58 menu
+						59 (selected) All statuses
+						60 Needs Triage
+						61 Open
+						62 Pending
+						63 Solved
+				64 text Priority
+				65 pop up button (collapsed, settable) Priority, Value: All priorities, ID: filter-priority, Secondary Actions: Expand
+					66 menu
+						67 (selected) All priorities
+						68 Unclassified
+						69 Low
+						70 Medium
+						71 High
+						72 Urgent
+				73 text Category
+				74 pop up button (collapsed, settable) Category, Value: All categories, ID: filter-category, Secondary Actions: Expand
+					75 menu
+						76 (selected) All categories
+						77 Unclassified
+						78 Order
+						79 Return
+						80 Payment
+						81 Product
+						82 Delivery
+						83 Account
+						84 Other
+				85 text Assignee
+				86 text field (settable) Assignee, ID: filter-assignee
+				87 button Search queue
+				88 button Clear filters
+			89 container
+				90 text 3  Needs Triage 4  Open 3  Pending 3  Solved
+			91 content list Support tickets
+				92 link Value: localhost:8005/staff-ticket.html?ticket=2013, Description: #2013 · Release 2 local demo: damaged item enquiry Demo Customer · customer@asd.local Unclassified Unassigned 2026-10-17T00:20:30Z Needs Triage
+				93 link Value: localhost:8005/staff-ticket.html?ticket=2001, Description: #2001 · Order confirmation has not arrived Mia Wilson · mia@example.test Order Unassigned 2026-08-24T11:32:00Z Open
+				94 link Value: localhost:8005/staff-ticket.html?ticket=2002, Description: #2002 · Parcel marked delivered but not received Demo Customer · customer@asd.local Delivery Alex Morgan 2026-08-24T10:02:00Z Open
+				95 link Value: localhost:8005/staff-ticket.html?ticket=2003, Description: #2003 · Help returning the wrong size Ava Chen · ava@example.test Return Jordan Lee 2026-08-23T16:45:00Z Pending
+				96 link Value: localhost:8005/staff-ticket.html?ticket=2004, Description: #2004 · Duplicate charge on my card Noah Brown · noah@example.test Payment Alex Morgan 2026-08-23T14:30:00Z Solved
+				97 link Value: localhost:8005/staff-ticket.html?ticket=2005, Description: #2005 · Question about product warranty Liam Smith · liam@example.test Product Jordan Lee 2026-08-22T15:10:00Z Solved
+				98 link Value: localhost:8005/staff-ticket.html?ticket=2006, Description: #2006 · Unable to reset account password Zoe Thomas · zoe@example.test Account Unassigned 2026-08-22T10:24:00Z Open
+				99 link Value: localhost:8005/staff-ticket.html?ticket=2007, Description: #2007 · Delivery address needs correction Isla Taylor · isla@example.test Delivery Alex Morgan 2026-08-21T16:18:00Z Pending
+				100 link Value: localhost:8005/staff-ticket.html?ticket=2008, Description: #2008 · Item arrived with a missing part Jack Anderson · jack@example.test Product Jordan Lee 2026-08-21T13:47:00Z Open
+				101 link Value: localhost:8005/staff-ticket.html?ticket=2009, Description: #2009 · Refund confirmed, funds not visible Ava Chen · ava@example.test Payment Alex Morgan 2026-08-20T17:12:00Z Solved
+				102 link Value: localhost:8005/staff-ticket.html?ticket=2010, Description: #2010 · Need an invoice for a recent order Leo Martin · leo@example.test Order Unassigned 2026-08-20T11:06:00Z Pending
+				103 link Value: localhost:8005/staff-ticket.html?ticket=2011, Description: #2011 · Product colour differs from photos Isla Taylor · isla@example.test Unclassified Unassigned 2026-08-19T15:41:00Z Needs Triage
+				104 link Value: localhost:8005/staff-ticket.html?ticket=2012, Description: #2012 · Order is still processing Liam Smith · liam@example.test Unclassified Unassigned 2026-08-19T09:22:00Z Needs Triage
+	105 text ASD 2026 — Customer Support Ticket Management
+
+The focused UI element is 1 AXWebArea Staff Queue | Customer Support, URL: localhost:8005/staff.html

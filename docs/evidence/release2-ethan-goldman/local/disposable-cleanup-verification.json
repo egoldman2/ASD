@@ -1,0 +1,8 @@
+{
+  "captured_at": "2026-10-17T00:43:48.550647+00:00",
+  "created_ticket_id": 2014,
+  "selected_review_ticket_id": 2013,
+  "owned_temporary_ticket_only": true,
+  "delete_acknowledged_and_404_verified": true,
+  "method": "Existing authenticated API controls in fresh asd-release2-local; browser permanent-delete control was not exercised"
+}

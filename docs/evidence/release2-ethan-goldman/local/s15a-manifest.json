@@ -1,0 +1,261 @@
+{
+  "stage": "S15a",
+  "captured_at": "2026-10-17T00:55:54.034917+00:00",
+  "application_source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "pipeline_checkpoint_sha": "d8724d2794ac6d4d92faa3444b1b6a977f89bfa8",
+  "application_sources_identical_across_pipeline_fix": true,
+  "selected_ticket_id": 2013,
+  "ui_workflow_id": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+  "terminal_workflow_id": "67702aa8-4a5f-4cd0-a311-8bd952ed18d5",
+  "data_classification": "Fresh seed fixtures and agent-owned synthetic demo records only",
+  "checks": {
+    "native_api_requests": "actual HTTP, no test doubles",
+    "read_only_business_unchanged": true,
+    "restart_and_recreation_persistence": true,
+    "published_bindings_loopback_only": 11,
+    "human_decisions_recorded": 0,
+    "preliminary_review_complete": false,
+    "private_credential_substring_scan": "passed"
+  },
+  "limitations": [
+    "Actual human decisions remain pending; no approval or final S15/S17 acceptance is inferred",
+    "Browser create/read/triage/reply captured; delete verified using a separately created disposable API ticket, not the browser permanent-delete button",
+    "Root UI retains legacy Release 0/group7 labels; official allocation is not inferred",
+    "Supplier seeds and current-versus-legacy cart table requirements need their owners; unrecorded teammate AI/CRUD operations are not claimed",
+    "Local host/demo data only, not AWS/SSM/main release or capacity evidence"
+  ],
+  "files": {
+    "README.md": {
+      "bytes": 8028,
+      "sha256": "c91b78c1398ef187caf9656267c292bddfcf1c734b187dc599ce16ec48eb2a3b"
+    },
+    "advisory-analysis-api.json": {
+      "bytes": 1836,
+      "sha256": "fc4081662d4b01191c6861a0f4be0a392e07af2545206e5d4b6fa9525a6c458a"
+    },
+    "advisory-analysis-ui.txt": {
+      "bytes": 8201,
+      "sha256": "204a99c715cc7da9533a9b0bf48ac57059940498f6de67e20d3300c5909c06fe"
+    },
+    "advisory-analysis.jpg": {
+      "bytes": 107444,
+      "sha256": "14525720869554e40cf84c80101e3f98972c512fa60d8c36b46634451e82e271"
+    },
+    "both-workflows-business-verification.json": {
+      "bytes": 429,
+      "sha256": "e5734c54dba1aec6eb1c829f623f8874d936a204f7556db140c5f1594f7230f8"
+    },
+    "coordination_audit-before-human.jsonl": {
+      "bytes": 856,
+      "sha256": "c372a0689ae2261dc8992cc04068d7b978cb83df1c2d1b2d562a8dbe1d280a6c"
+    },
+    "customer-created-ticket.jpg": {
+      "bytes": 82614,
+      "sha256": "cf35b8ea5561696e579766fed8a1ae94b79eff3ad21f3a4229ac2da24cfca580"
+    },
+    "disposable-cleanup-verification.json": {
+      "bytes": 340,
+      "sha256": "f9d13c2876f083f3836c6ba5834f0650704f5a534bae11e790d847723331329c"
+    },
+    "disposable-ticket-after-delete.json": {
+      "bytes": 579,
+      "sha256": "cb5d8f67d9e584766479b7de1cff2e3374255ceae655ff4db54b30268351189c"
+    },
+    "disposable-ticket-create.json": {
+      "bytes": 1586,
+      "sha256": "5c94c890a8e88cc09c115265ad1c26a45a5fcc80b2823a3ba81e42197eadf54a"
+    },
+    "disposable-ticket-delete.json": {
+      "bytes": 584,
+      "sha256": "b441fe40650c96ed17fb2f88c4e0d760d18041ada4db803c568c2ef513e8fcd6"
+    },
+    "disposable-ticket-read.json": {
+      "bytes": 1372,
+      "sha256": "b6115c51603aaf173954995b7b01616151ce58a2e84dbf4b61f84265cc93d7d1"
+    },
+    "home.jpg": {
+      "bytes": 78977,
+      "sha256": "10048acf3112af11fb3de5f8477198b5dfe400246c16eecb321c60491489847e"
+    },
+    "host-health-start.json": {
+      "bytes": 980,
+      "sha256": "76e341aa7e1ed6657be3d3b81802e9a986ca801ee4c724dadcb32bc9e4ee06dd"
+    },
+    "loopback-hardening-plan.json": {
+      "bytes": 979,
+      "sha256": "f7c102c80f757b1545aab66cdd598be4dff2e116e3672f915451176586823fdb"
+    },
+    "loopback-hardening-verification.json": {
+      "bytes": 2027,
+      "sha256": "9df4dac24e228778268c3a46ff6913c3d0afbe12f5751f3158cc3276164b18c9"
+    },
+    "loopback.compose.yml": {
+      "bytes": 983,
+      "sha256": "97f6d16c2a68cc6c8730c021e4f5b2b21821bac0767a08401fd1bf46971d8060"
+    },
+    "manual-triage-reply-ui.txt": {
+      "bytes": 6948,
+      "sha256": "e1e99a39f22cc28f903ae0ba971587a2179454316f9ac28ae746fb470887c12d"
+    },
+    "manual-triage-reply.jpg": {
+      "bytes": 120754,
+      "sha256": "3d015ef09f84611d9f6b2ab5ab59635a1774403a0edb05ced9041b8a4ab0a5db"
+    },
+    "mcp-partial-ui.txt": {
+      "bytes": 8369,
+      "sha256": "c8526bbfdc369b7a34d2ade495e9522411c6ff15f25bd0be1aabc1bdf44d7773"
+    },
+    "mcp-partial.jpg": {
+      "bytes": 89397,
+      "sha256": "4ff402e7231a812e0b8908499a4f464790c8b41c48fdea7ce3b73dbaa9eee90a"
+    },
+    "mcp-verified-api.json": {
+      "bytes": 1956,
+      "sha256": "1ecf0f2c27a53e7a27c6f231e78b4738ab1090acb10d3d9243636fa75ae62210"
+    },
+    "mcp-verified-ui.txt": {
+      "bytes": 8969,
+      "sha256": "36006aad929a2a840c78a1b62d59eedf64e85c20b5618d7d529c27eba536c067"
+    },
+    "mcp-verified.jpg": {
+      "bytes": 92243,
+      "sha256": "fdab2c34b41473c54eeb82b8b02eb0219046bbe22301834c92487fefdcaa78c5"
+    },
+    "native-readonly-cases.log": {
+      "bytes": 946,
+      "sha256": "5b885771253286e30161179a956b9a36753f54195dd22ec2b7d2db9a0fbaab02"
+    },
+    "ollama-tags.json": {
+      "bytes": 2498,
+      "sha256": "9cea75b87d6f9bc183d36caa2ce3e3f7669bcd023b1aae3c97da4b375edd7f9d"
+    },
+    "persistence-start.json": {
+      "bytes": 350,
+      "sha256": "142052b7d6d196a9075008213d3d7b62a37d7bdea390b76f68504eb540aaf33a"
+    },
+    "persistence-verification.json": {
+      "bytes": 1055,
+      "sha256": "60fc72c6759b502c6e3c44157663bc8ec8148d814d1fc404cb6c77ede84aa991"
+    },
+    "preliminary-agentic-console.txt": {
+      "bytes": 9586,
+      "sha256": "3fe63b03e5db61f051104a9282bdb2ef8eaaf09c640d33e3300d4e8aee971646"
+    },
+    "preliminary-agentic-validation.json": {
+      "bytes": 20874,
+      "sha256": "caefc8cd8ff4218d0380a9a331d8ad8e90474a4fd3983c128ca8cafe6f4effb1"
+    },
+    "rag-grounded-api.json": {
+      "bytes": 1881,
+      "sha256": "e2d5c93af45559de6eb3af819bff16870a3b452fcd491ddf7774d0f7d38cc180"
+    },
+    "rag-grounded-ui.txt": {
+      "bytes": 9811,
+      "sha256": "3e69858005629efe5b6ccd84518abeac947cae5f94cefa9237ebb8696ecbe941"
+    },
+    "rag-grounded.jpg": {
+      "bytes": 103293,
+      "sha256": "01919552d4c4186c73aee7650b13bed53e1c2b757a167cc23083524e4ab89c5e"
+    },
+    "rag-insufficient-api.json": {
+      "bytes": 1095,
+      "sha256": "ae87feb385e2f3c153a5b11f71e1546a64fd023c80862f522ac6f63d6cdd36a2"
+    },
+    "rag-model-abstention-ui.txt": {
+      "bytes": 9381,
+      "sha256": "eb8798f736048b572ad3bafb023ee57e2ec59a43cd25bf943edf130b73074c1a"
+    },
+    "rag-model-abstention.jpg": {
+      "bytes": 91945,
+      "sha256": "4eade8df9c1eadf12720a8bcbc068bd5e46861798445396250a8c2b93bba8674"
+    },
+    "rag-no-generation-ui.txt": {
+      "bytes": 9287,
+      "sha256": "dd013edbfc02d8e5ea8064b024ae6bbdba372eb5ab902d9c40f4bd8390374386"
+    },
+    "rag-no-generation.jpg": {
+      "bytes": 89507,
+      "sha256": "c359570d1e0b0717b7509a8419a44554eac552139b43bb24cac6101c4a33b3bb"
+    },
+    "rag-refresh.json": {
+      "bytes": 737,
+      "sha256": "7854a8505b707ebec996f977732d374b0942a1b652fe026558505c015f76f7eb"
+    },
+    "readonly-business-verification.json": {
+      "bytes": 378,
+      "sha256": "86ae60b486031dfd4f0db6b6003da19371591aaf0debea6ad31be72a1dcbc5b7"
+    },
+    "runtime-baseline.json": {
+      "bytes": 2989,
+      "sha256": "b6e07332fd00d32123580422011f221d28f1b81e62026bf5205a659fa447c312"
+    },
+    "startup-plan.json": {
+      "bytes": 950,
+      "sha256": "47ba1869cdcecbd989838463d492c60ab0648e1a4edf8ab784bda5d12d851a2a"
+    },
+    "terminal-workflow-after-restart.json": {
+      "bytes": 5737,
+      "sha256": "26b6bb8c85b9ee8754f41e45aee3d6026c8f9ff3208b7a74d3a438dd01c03fc5"
+    },
+    "terminal-workflow-create.json": {
+      "bytes": 5998,
+      "sha256": "338787bae78c35e93d2313c0261a93296ef50dbbe1310a1d99367bba775079af"
+    },
+    "ticket-2013-after-ai.json": {
+      "bytes": 1443,
+      "sha256": "d10649538a0447c453a0a2744fb59e37dca57fb97c775b765fd61d792014cab6"
+    },
+    "ticket-2013-after-both-workflows.json": {
+      "bytes": 1830,
+      "sha256": "1fde50a55f2b7707b5dd5c90805bc715a11d87c1634433b38b16088c3cd1fa08"
+    },
+    "ticket-2013-after-restart.json": {
+      "bytes": 1830,
+      "sha256": "deb06462900610964d70ec30484597177666cd5e35c1e047e43cdfc411712987"
+    },
+    "ticket-2013-after-ui-workflow.json": {
+      "bytes": 1830,
+      "sha256": "90216711b043d0e4aeae8556535d8f6a5b033defa99b830d14d3ac83d0e85b11"
+    },
+    "ticket-2013-before-ai.json": {
+      "bytes": 1444,
+      "sha256": "550a9c2f96d1fbcf1fd7f26ef23a06195d5ec655ec43b05498d35be323511a60"
+    },
+    "ticket-2013-before-workflow.json": {
+      "bytes": 1830,
+      "sha256": "cc34512c4f113c287cb089d03f685faee51db6bba92b8192b86aaea44680cf39"
+    },
+    "ui-reviewer-controls-awaiting-human.jpg": {
+      "bytes": 100430,
+      "sha256": "e041f78d7597572ef6012156adc73ab604ac9a70bde9aa843ba6440a7024e26d"
+    },
+    "ui-worker-reviewer-awaiting-human.jpg": {
+      "bytes": 125328,
+      "sha256": "202f8bf2d6c44fddb317a68d11ae7a5785eab8b5f25acaebf3044165ee3ddfe4"
+    },
+    "ui-workflow-after-restart.json": {
+      "bytes": 5450,
+      "sha256": "28730f22efde9c975a4c1e9461364bbfa13e8fb91cdf3ec218b5167e86a9aa50"
+    },
+    "ui-workflow-awaiting-human-ui.txt": {
+      "bytes": 9905,
+      "sha256": "a20e189fe4dc888bfc4f3791cb74aebbfde8d7223d2e7a859816a3749cc458c1"
+    },
+    "ui-workflow-awaiting-human.jpg": {
+      "bytes": 123453,
+      "sha256": "7105dfde28969b9f136f3a36eb36a247c96999d9f134801e9dc2191fe5b40951"
+    },
+    "ui-workflow-business-verification.json": {
+      "bytes": 159,
+      "sha256": "9195e5d0cd59a02ae594b54eb5962e6d46ea33aac4f3c56043c70ce1243ccd68"
+    },
+    "ui-workflow-detail.json": {
+      "bytes": 5450,
+      "sha256": "8f968eb0d618637400eb5f75245e308a24742870fd958cc32534d6e2bb373d8c"
+    },
+    "workflow_history-before-human.jsonl": {
+      "bytes": 8596,
+      "sha256": "6f16247a7a462e1b489957a479600ec9da4233536ce073f9a9ee63b734b29553"
+    }
+  }
+}

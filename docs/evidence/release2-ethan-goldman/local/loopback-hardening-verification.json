@@ -1,0 +1,91 @@
+{
+  "captured_at": "2026-10-17T00:53:03.368212+00:00",
+  "fixture_only": true,
+  "ports": [
+    {
+      "service": "customer-support",
+      "host": "127.0.0.1",
+      "published": 8005,
+      "target": 80
+    },
+    {
+      "service": "customer-support-backend",
+      "host": "127.0.0.1",
+      "published": 6005,
+      "target": 6005
+    },
+    {
+      "service": "ethan-backend",
+      "host": "127.0.0.1",
+      "published": 6002,
+      "target": 6002
+    },
+    {
+      "service": "ethan-frontend",
+      "host": "127.0.0.1",
+      "published": 8003,
+      "target": 80
+    },
+    {
+      "service": "inventory-backend",
+      "host": "127.0.0.1",
+      "published": 8102,
+      "target": 8102
+    },
+    {
+      "service": "inventory-frontend",
+      "host": "127.0.0.1",
+      "published": 8002,
+      "target": 80
+    },
+    {
+      "service": "order-returns-frontend",
+      "host": "127.0.0.1",
+      "published": 8004,
+      "target": 80
+    },
+    {
+      "service": "product-catalogue",
+      "host": "127.0.0.1",
+      "published": 8001,
+      "target": 80
+    },
+    {
+      "service": "product-database",
+      "host": "127.0.0.1",
+      "published": 6001,
+      "target": 6001
+    },
+    {
+      "service": "shared-backend",
+      "host": "127.0.0.1",
+      "published": 5000,
+      "target": 5000
+    },
+    {
+      "service": "shared-home",
+      "host": "127.0.0.1",
+      "published": 8000,
+      "target": 80
+    }
+  ],
+  "all_published_ports_loopback_only": true,
+  "orders_rows_preserved": true,
+  "orders_tables": {
+    "orders": {
+      "rows": 12,
+      "rows_sha256": "ba24d866c97ddbe01b377306dd779cc1a5bb49e308f52fae483d7f2339e25914"
+    },
+    "order_items": {
+      "rows": 12,
+      "rows_sha256": "192540e1480766b7f62861cb784ed9034ca40a01d8ec509329db8eaca06722b2"
+    },
+    "returns": {
+      "rows": 12,
+      "rows_sha256": "33aba8c7f35bcf2ba69dc0decde126acfdf059735e577b082b2b623e68375aff"
+    }
+  },
+  "limitations": [
+    "Owned local project only; no AWS/public deployment claim"
+  ]
+}

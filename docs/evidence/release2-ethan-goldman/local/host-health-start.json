@@ -1,0 +1,43 @@
+{
+  "captured_at": "2026-10-17T00:18:53.835624+00:00",
+  "services": {
+    "mcp": {
+      "status": 200,
+      "body": {
+        "status": "healthy",
+        "service": "asd-marketplace-mcp",
+        "transport": "streamable-http",
+        "mcp_path": "/mcp",
+        "registered_tools": 16
+      }
+    },
+    "rag": {
+      "status": 200,
+      "body": {
+        "status": "healthy",
+        "service": "asd-marketplace-rag",
+        "enabled": true,
+        "available_scopes": [
+          "chufeng_catalogue",
+          "ethan_goldman_support",
+          "ethan_ting_accounts_loyalty",
+          "howard_order_returns",
+          "ryan_inventory"
+        ],
+        "tools": [
+          "refresh_corpus",
+          "retrieve_context",
+          "answer_question"
+        ],
+        "ollama_model": "qwen2.5:3b"
+      }
+    },
+    "multi-agent": {
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "service": "asd-marketplace-multi-agent"
+      }
+    }
+  }
+}

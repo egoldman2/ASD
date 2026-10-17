@@ -1,0 +1,43 @@
+{
+  "source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "started_at": "2026-10-17T00:28:16.039550+00:00",
+  "completed_at": "2026-10-17T00:28:16.049767+00:00",
+  "elapsed_seconds": 0.01,
+  "request": {
+    "path": "/api/support/admin/tickets/2013",
+    "method": "GET",
+    "payload": null
+  },
+  "http_status": 200,
+  "body": {
+    "ticket": {
+      "assigned_to": null,
+      "category": "unclassified",
+      "created_at": "2026-10-17T00:20:30Z",
+      "customer_email_snapshot": "customer@asd.local",
+      "customer_name_snapshot": "Demo Customer",
+      "customer_user_id": "2",
+      "id": 2013,
+      "message_count": 1,
+      "messages": [
+        {
+          "author_name": "Demo Customer",
+          "created_at": "2026-10-17T00:20:30Z",
+          "id": 3021,
+          "message": "Synthetic assessment demo: an item arrived damaged. Please explain what information staff need to review this ticket; no refund or warranty policy has been provided.",
+          "sender_role": "customer",
+          "ticket_id": 2013
+        }
+      ],
+      "priority": "unclassified",
+      "status": "needs_triage",
+      "subject": "Release 2 local demo: damaged item enquiry",
+      "triage_applied_by": null,
+      "updated_at": "2026-10-17T00:20:30Z"
+    }
+  },
+  "limitations": [
+    "Fresh isolated local dataset and actual local model; no AWS or human approval implied",
+    "Request credentials and response headers excluded"
+  ]
+}

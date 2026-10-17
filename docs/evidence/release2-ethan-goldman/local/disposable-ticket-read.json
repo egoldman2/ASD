@@ -1,0 +1,43 @@
+{
+  "source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "started_at": "2026-10-17T00:43:48.519679+00:00",
+  "completed_at": "2026-10-17T00:43:48.529159+00:00",
+  "elapsed_seconds": 0.009,
+  "request": {
+    "path": "/api/support/customer/tickets/2014",
+    "method": "GET",
+    "payload": null
+  },
+  "http_status": 200,
+  "body": {
+    "ticket": {
+      "assigned_to": null,
+      "category": "unclassified",
+      "created_at": "2026-10-17T00:43:48Z",
+      "customer_email_snapshot": "customer@asd.local",
+      "customer_name_snapshot": "Demo Customer",
+      "customer_user_id": "2",
+      "id": 2014,
+      "message_count": 1,
+      "messages": [
+        {
+          "author_name": "Demo Customer",
+          "created_at": "2026-10-17T00:43:48Z",
+          "id": 3023,
+          "message": "Synthetic disposable record for the explicitly authorised local CRUD and cleanup check.",
+          "sender_role": "customer",
+          "ticket_id": 2014
+        }
+      ],
+      "priority": "unclassified",
+      "status": "needs_triage",
+      "subject": "Disposable Release 2 API cleanup 98498c3e9945",
+      "triage_applied_by": null,
+      "updated_at": "2026-10-17T00:43:48Z"
+    }
+  },
+  "limitations": [
+    "Fresh isolated local dataset and actual local model; no AWS or human approval implied",
+    "Request credentials and response headers excluded"
+  ]
+}

@@ -1,0 +1,5 @@
+{"capture": "mcp-verified-api", "http_status": 200, "elapsed_seconds": 7.607, "top_level_keys": ["answer", "elapsed_seconds", "facts", "model", "model_requests", "needs_clarification", "observations", "status", "ticket_ids", "tool_calls"]}
+{"capture": "rag-grounded-api", "http_status": 200, "elapsed_seconds": 3.214, "top_level_keys": ["citations", "confidence", "data", "error", "insufficient_context", "metadata", "operation", "success"]}
+{"capture": "rag-insufficient-api", "http_status": 200, "elapsed_seconds": 0.024, "top_level_keys": ["citations", "confidence", "data", "error", "insufficient_context", "metadata", "operation", "success"]}
+{"capture": "advisory-analysis-api", "http_status": 200, "elapsed_seconds": 1.271, "top_level_keys": ["analysis", "correlation_id", "model", "retry_used", "suggested_steps", "workflow"]}
+{"capture": "ticket-2013-after-ai", "http_status": 200, "elapsed_seconds": 0.01, "top_level_keys": ["ticket"]}

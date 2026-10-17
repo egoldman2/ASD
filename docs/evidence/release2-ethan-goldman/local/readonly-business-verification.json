@@ -1,0 +1,9 @@
+{
+  "ticket_id": 2013,
+  "unchanged_after_readonly_ai_paths": true,
+  "before_ticket_sha256": "a1b3674a0f5aa42a436dacb11cf1d468415692dcdb0851a26dbd60f59dcbccd7",
+  "after_ticket_sha256": "a1b3674a0f5aa42a436dacb11cf1d468415692dcdb0851a26dbd60f59dcbccd7",
+  "limitations": [
+    "Synthetic owned ticket in a fresh local project; model outcomes remain in separate captures"
+  ]
+}

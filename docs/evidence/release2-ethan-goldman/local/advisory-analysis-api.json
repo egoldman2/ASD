@@ -1,0 +1,56 @@
+{
+  "source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "started_at": "2026-10-17T00:28:14.767787+00:00",
+  "completed_at": "2026-10-17T00:28:16.038905+00:00",
+  "elapsed_seconds": 1.271,
+  "request": {
+    "path": "/api/support/admin/tickets/2013/ai-analysis",
+    "method": "POST",
+    "payload": {}
+  },
+  "http_status": 200,
+  "body": {
+    "analysis": {
+      "category": "order",
+      "evidence": [
+        "subject",
+        "message-1"
+      ],
+      "priority": "medium",
+      "sentiment": "neutral",
+      "suggested_steps": [
+        "verify_order_status",
+        "request_order_details",
+        "request_more_information"
+      ],
+      "summary": "Damaged item enquiry"
+    },
+    "correlation_id": "7fdfbb9d999e4d8a9559b5566abf3021",
+    "model": "qwen2.5:0.5b",
+    "retry_used": false,
+    "suggested_steps": [
+      {
+        "code": "verify_order_status",
+        "label": "Verify the current order status in the order system."
+      },
+      {
+        "code": "request_order_details",
+        "label": "Request the missing order details."
+      },
+      {
+        "code": "request_more_information",
+        "label": "Request the specific information needed to continue."
+      }
+    ],
+    "workflow": {
+      "act": "Request a structured summary and bounded next-step codes from the configured model.",
+      "adapt": "Return validated suggestions for staff review without changing any ticket record.",
+      "observe": "Validate the response against schema, source citations, privacy, bounds, classifications, and action-safety rules.",
+      "plan": "Build a bounded, redacted ticket evidence set for staff review."
+    }
+  },
+  "limitations": [
+    "Fresh isolated local dataset and actual local model; no AWS or human approval implied",
+    "Request credentials and response headers excluded"
+  ]
+}

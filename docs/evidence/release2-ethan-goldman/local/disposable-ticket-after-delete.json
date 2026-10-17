@@ -1,0 +1,19 @@
+{
+  "source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "started_at": "2026-10-17T00:43:48.541174+00:00",
+  "completed_at": "2026-10-17T00:43:48.550181+00:00",
+  "elapsed_seconds": 0.009,
+  "request": {
+    "path": "/api/support/customer/tickets/2014",
+    "method": "GET",
+    "payload": null
+  },
+  "http_status": 404,
+  "body": {
+    "error": "The requested support record was not found."
+  },
+  "limitations": [
+    "Fresh isolated local dataset and actual local model; no AWS or human approval implied",
+    "Request credentials and response headers excluded"
+  ]
+}
