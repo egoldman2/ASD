@@ -17,9 +17,12 @@ flowchart LR
 
 Current status (17 October 2026): shared gates, smoke/provenance and local model
 support are implemented on `ethan-goldman`. Actual local cloud-bundle checks pass;
-current AWS access, host recovery, OIDC, main integration and final public Actions
-deployment remain unverified. The running-state, plan and sizing observations
-below are dated historical evidence. See the [current shared handoff](../reports/release2-shared-cloud-and-testing.md)
+AWS access was renewed through Chrome with explicit human approval. S02a recovered
+the existing host after private encrypted snapshots; SSM, EC2/EBS checks and four
+consistent SQLite backup integrity checks pass. The project remains FREE in
+Sydney. The running app is still the old manual release with unverified full SHA.
+S03 stability, OIDC, main integration and final public Actions deployment remain
+incomplete. See [17 October recovery](../evidence/release2-aws/recovery-20261017/README.md). See the [current shared handoff](../reports/release2-shared-cloud-and-testing.md)
 and [ledger](../evidence/release2-ethan-goldman/progress.md).
 
 ## Design choices
@@ -67,7 +70,7 @@ SSM command IDs and sanitized deployment reports provide evidence. Do not paste 
 
 ## Stop and resume sessions
 
-Historical setup state: the initial environment was stopped after verification at the user's request. Its URL is `https://dww8d9hiqp0ce.cloudfront.net`; it is unavailable while EC2 is stopped. Current EC2/OIDC/availability state must be checked after AWS authentication is restored; the historical stop is not a current-state observation. The instance ID is `i-03a217a6a7f61d3ae`. Start it for the next group session:
+Historical setup state: the environment was stopped after verification at the user's request. On 17 October at 12:10 UTC, S02a started the existing instance after both encrypted snapshots completed. At 12:18 UTC EC2/system/EBS checks were ok, SSM Online, and public HEAD returned 200 at `https://dww8d9hiqp0ce.cloudfront.net`. These are recovery checks of the older manual release, not final acceptance. The instance ID is `i-03a217a6a7f61d3ae`. For a later session, check current state before starting it:
 
 ```bash
 aws ec2 start-instances --profile aws-toolkit --region ap-southeast-2 --instance-ids i-03a217a6a7f61d3ae
@@ -110,12 +113,12 @@ therefore uses `egoldman2@200193881/ASD@1326270780`, not the old name-only value
 repository change, first verify its current OIDC prefix and supply
 `GITHUB_OIDC_REPOSITORY_IDENTITY`; do not guess IDs or widen subject matching.
 The aws-cloud environment now has an actual main-only branch policy. The role
-variable endpoint returned 404, and AWS template service validation still fails
-on expired credentials. [Native S04a evidence](../evidence/release2-ethan-goldman/ci/s04a-verification.json)
+variable endpoint returned 404. After explicit login renewal, AWS template
+service validation passed on 17 October; [native response](../evidence/release2-aws/recovery-20261017/template-validation.json). [Native S04a evidence](../evidence/release2-ethan-goldman/ci/s04a-verification.json)
 records zero local lint findings and four targeted Guard passes; it does not prove
 role assumption or deploy acceptance. GitHub documents [immutable OIDC subjects](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws).
 
-The template's `EnableGitHubOidc` parameter defaults to `false`. This project's managed policies explicitly denied IAM OIDC provider creation, read and list operations during setup. The actual GitHub role and a successful GitHub deployment run remain to be established; preparing a workflow does not verify CI/CD. If the project permits OIDC, enable the template option with `ENABLE_GITHUB_OIDC=true`; supply `GITHUB_OIDC_PROVIDER_ARN` when reusing an existing provider. Project capability changes belong in AWS Settings and require the project owner's decision. AWS documents these restrictions in its [project capability guide](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
+The template's `EnableGitHubOidc` parameter defaults to `false`. This project's managed policies explicitly denied IAM OIDC provider creation, read and list operations during setup. Fresh provider listing on 17 October again fails with an explicit SCP deny; [sanitized result](../evidence/release2-aws/recovery-20261017/oidc-capability.json). The live stack still has OIDC disabled and its old name-only repository parameter; the corrected source trust has not been deployed. The actual GitHub role and a successful GitHub deployment run remain to be established; preparing a workflow does not verify CI/CD. If the project permits OIDC, enable the template option with `ENABLE_GITHUB_OIDC=true`; supply `GITHUB_OIDC_PROVIDER_ARN` when reusing an existing provider. Project capability changes belong in AWS Settings and require the project owner's decision. AWS documents these restrictions in its [project capability guide](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
 
 ## Validation and limitations
 
@@ -123,7 +126,7 @@ Historical initial-port evidence: 677 Python tests passed with ten optional live
 
 This baseline has a single host and SQLite databases. It has no automatic failover, scheduled database backups or centralized application-log collection. Container logs rotate on disk; CloudTrail event history is available but no durable trail was configured. CloudFront provides browser HTTPS, while the restricted origin connection currently uses HTTP. An ALB with origin TLS and managed database/backup services are possible next steps if the group decides it needs stronger availability or end-to-end transport encryption.
 
-Retained EBS, the release bucket and seed-password secret survive stack deletion. Deleting a stack does not fully remove storage charges. Before cleanup, identify these resources and decide whether application data must be preserved or exported. The failed initial stack contained no deployed application data; its unused retained resources were removed with explicit user approval before the eligible-instance retry.
+Two private encrypted pre-recovery snapshots and consistent SQLite/session backups were added on 17 October. Snapshot retention/cleanup awaits the owner; no restore drill is claimed. Retained EBS, the release bucket and seed-password secret survive stack deletion. Deleting a stack does not fully remove storage charges. Before cleanup, identify these resources and decide whether application data must be preserved or exported. The failed initial stack contained no deployed application data; its unused retained resources were removed with explicit user approval before the eligible-instance retry.
 
 ## Group decisions still needed
 

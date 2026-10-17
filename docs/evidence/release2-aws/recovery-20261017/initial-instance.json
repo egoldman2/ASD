@@ -1,0 +1,53 @@
+{
+  "captured_at": "2026-10-17T12:03:10.530474+00:00",
+  "InstanceId": "i-03a217a6a7f61d3ae",
+  "InstanceType": "t3.small",
+  "State": {
+    "Code": 80,
+    "Name": "stopped"
+  },
+  "StateReason": {
+    "Code": "Client.UserInitiatedShutdown",
+    "Message": "Client.UserInitiatedShutdown: User initiated shutdown"
+  },
+  "StateTransitionReason": "User initiated (2026-10-16 04:00:51 GMT)",
+  "MetadataOptions": {
+    "State": "applied",
+    "HttpTokens": "required",
+    "HttpPutResponseHopLimit": 1,
+    "HttpEndpoint": "enabled",
+    "HttpProtocolIpv6": "disabled",
+    "InstanceMetadataTags": "disabled"
+  },
+  "BlockDeviceMappings": [
+    {
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+        "AttachTime": "2026-10-09T04:24:33+00:00",
+        "DeleteOnTermination": true,
+        "Status": "attached",
+        "VolumeId": "vol-0abdeffdf216c8ed3",
+        "EbsCardIndex": 0
+      }
+    },
+    {
+      "DeviceName": "/dev/sdf",
+      "Ebs": {
+        "AttachTime": "2026-10-09T04:24:46.487000+00:00",
+        "DeleteOnTermination": false,
+        "Status": "attached",
+        "VolumeId": "vol-02087b3eeb07eec99",
+        "EbsCardIndex": 0
+      }
+    }
+  ],
+  "initial_ssm": [],
+  "credit_specifications": {
+    "InstanceCreditSpecifications": [
+      {
+        "InstanceId": "i-03a217a6a7f61d3ae",
+        "CpuCredits": "standard"
+      }
+    ]
+  }
+}

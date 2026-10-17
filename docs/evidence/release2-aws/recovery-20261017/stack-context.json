@@ -1,0 +1,39 @@
+{
+  "captured_at": "2026-10-17T12:03:10.530474+00:00",
+  "source": "cloudformation describe-stacks --stack-name asd-release2",
+  "StackName": "asd-release2",
+  "StackStatus": "CREATE_COMPLETE",
+  "CreationTime": "2026-10-09T04:21:32.705000+00:00",
+  "Parameters": [
+    {
+      "ParameterKey": "InstanceType",
+      "ParameterValue": "t3.small"
+    },
+    {
+      "ParameterKey": "EnableGitHubOidc",
+      "ParameterValue": "false"
+    },
+    {
+      "ParameterKey": "GitHubRepository",
+      "ParameterValue": "egoldman2/ASD"
+    }
+  ],
+  "Outputs": [
+    {
+      "OutputKey": "InstanceId",
+      "OutputValue": "i-03a217a6a7f61d3ae",
+      "Description": "Systems Manager deployment target"
+    },
+    {
+      "OutputKey": "PublicUrl",
+      "OutputValue": "https://dww8d9hiqp0ce.cloudfront.net",
+      "Description": "Integrated HTTPS marketplace"
+    },
+    {
+      "OutputKey": "DataVolumeId",
+      "OutputValue": "vol-02087b3eeb07eec99",
+      "Description": "Retained database and session storage; continues billing after stack deletion"
+    }
+  ],
+  "omitted": "Secret resource ARNs omitted from JSON; screenshot displays resource identifiers only, never secret values"
+}

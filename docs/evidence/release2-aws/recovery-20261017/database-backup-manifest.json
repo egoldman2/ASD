@@ -1,0 +1,80 @@
+{
+  "captured_at": "2026-10-17T12:16:11.320762+00:00",
+  "backup_directory": "/srv/asd/recovery/release2-20261017T121611Z",
+  "data_volume_serial": "vol02087b3eeb07eec99",
+  "mount_source": "/dev/nvme1n1",
+  "read_only_sources": true,
+  "current_release": "/srv/asd/releases/manual-20261009-aws2-d8cd072bf503",
+  "databases": [
+    {
+      "source": "/srv/asd/data/accounts/users.db",
+      "backup": "/srv/asd/recovery/release2-20261017T121611Z/accounts-users.db",
+      "backup_bytes": 28672,
+      "backup_sha256": "2da6144fca059c19dcf4b91205f3474d33cc7544e5ba3541a8af69c2738256fe",
+      "integrity_check": [
+        "ok"
+      ],
+      "foreign_key_violation_count": 0,
+      "table_counts": {
+        "users": 15,
+        "loyalty_accounts": 14,
+        "loyalty_transactions": 10
+      },
+      "source_main_file_bytes_unchanged_during_backup": true
+    },
+    {
+      "source": "/srv/asd/data/products/products.db",
+      "backup": "/srv/asd/recovery/release2-20261017T121611Z/products-products.db",
+      "backup_bytes": 36864,
+      "backup_sha256": "9dba0e5a9eb8f122b6be3204b249449dd5110eff09a04b1493beb9c47eb08148",
+      "integrity_check": [
+        "ok"
+      ],
+      "foreign_key_violation_count": 0,
+      "table_counts": {
+        "suppliers": 5,
+        "products": 13,
+        "cart_items": 10,
+        "customer_cart_items": 8
+      },
+      "source_main_file_bytes_unchanged_during_backup": true
+    },
+    {
+      "source": "/srv/asd/data/orders/orders.db",
+      "backup": "/srv/asd/recovery/release2-20261017T121611Z/orders-orders.db",
+      "backup_bytes": 20480,
+      "backup_sha256": "0f88c7df99bd330f3cf10ae662f5398c06c788590a1b655c47897be7c20822e9",
+      "integrity_check": [
+        "ok"
+      ],
+      "foreign_key_violation_count": 0,
+      "table_counts": {
+        "orders": 12,
+        "order_items": 12,
+        "returns": 12
+      },
+      "source_main_file_bytes_unchanged_during_backup": true
+    },
+    {
+      "source": "/srv/asd/data/support/support_tickets.db",
+      "backup": "/srv/asd/recovery/release2-20261017T121611Z/support-support_tickets.db",
+      "backup_bytes": 45056,
+      "backup_sha256": "9a179023bc2bdf468090bb89e056235d1a1afc95f5ee654413b9e3d8e8b227fa",
+      "integrity_check": [
+        "ok"
+      ],
+      "foreign_key_violation_count": 0,
+      "table_counts": {
+        "support_tickets": 12,
+        "support_ticket_messages": 20
+      },
+      "source_main_file_bytes_unchanged_during_backup": true
+    }
+  ],
+  "session_secret_backup": {
+    "copied_privately_on_encrypted_data_volume": true,
+    "bytes_equal": true,
+    "mode": "0o600",
+    "content_and_fingerprint_excluded": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "captured_at": "2026-10-17T12:03:10.530474+00:00",
+  "command": [
+    "aws",
+    "iam",
+    "list-open-id-connect-providers",
+    "--profile",
+    "aws-toolkit",
+    "--region",
+    "ap-southeast-2"
+  ],
+  "exit_code": 254,
+  "stderr_sanitized": "aws: [ERROR]: An error occurred (AccessDenied) when calling the ListOpenIDConnectProviders operation: User: [session principal redacted] is not authorized to perform: iam:ListOpenIDConnectProviders on resource: arn:aws:iam::059643396979:oidc-provider/* with an explicit deny in a service control policy: arn:aws:organizations::651640672058:policy/o-bufghujtiz/service_control_policy/p-4yn8mjzn.",
+  "redactions": [
+    "session principal",
+    "authorization detail URL/ID"
+  ],
+  "limits": "List operation explicitly denied by SCP. This fresh result does not independently test Create/Get/AssumeRole. Historical creation/read denials remain dated history; no verified GitHub deploy role ARN."
+}

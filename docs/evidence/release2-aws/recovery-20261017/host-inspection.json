@@ -1,0 +1,390 @@
+{
+  "captured_at": "2026-10-17T12:12:49.631122+00:00",
+  "read_only": true,
+  "current_release": "/srv/asd/releases/manual-20261009-aws2-d8cd072bf503",
+  "session_secret": {
+    "exists": true,
+    "mode": "0o600",
+    "size": 64,
+    "modified_at": "2026-10-09T04:27:46.162939+00:00"
+  },
+  "mount": {
+    "filesystems": [
+      {
+        "target": "/srv/asd",
+        "source": "/dev/nvme1n1",
+        "fstype": "ext4",
+        "options": "rw,relatime,seclabel"
+      }
+    ]
+  },
+  "block_devices": {
+    "blockdevices": [
+      {
+        "name": "nvme1n1",
+        "size": "30G",
+        "fstype": "ext4",
+        "mountpoints": [
+          "/srv/asd"
+        ],
+        "serial": "vol02087b3eeb07eec99"
+      },
+      {
+        "name": "nvme0n1",
+        "size": "20G",
+        "fstype": null,
+        "mountpoints": [
+          null
+        ],
+        "serial": "vol0abdeffdf216c8ed3",
+        "children": [
+          {
+            "name": "nvme0n1p1",
+            "size": "20G",
+            "fstype": "xfs",
+            "mountpoints": [
+              "/"
+            ],
+            "serial": null
+          },
+          {
+            "name": "nvme0n1p127",
+            "size": "1M",
+            "fstype": null,
+            "mountpoints": [
+              null
+            ],
+            "serial": null
+          },
+          {
+            "name": "nvme0n1p128",
+            "size": "10M",
+            "fstype": "vfat",
+            "mountpoints": [
+              "/boot/efi"
+            ],
+            "serial": null
+          }
+        ]
+      }
+    ]
+  },
+  "memory_kib": {
+    "MemTotal": 1955500,
+    "MemAvailable": 1013756,
+    "SwapTotal": 0,
+    "SwapFree": 0
+  },
+  "uptime_seconds": 160.54,
+  "data_disk_bytes": {
+    "total": 31526391808,
+    "used": 340312064,
+    "free": 29558689792
+  },
+  "containers": [
+    {
+      "name": "asd-cloud-gateway-1",
+      "service": "gateway",
+      "image": "nginx:1.27-alpine",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-product-catalogue-1",
+      "service": "product-catalogue",
+      "image": "asd-cloud-catalogue:manual-20261009-aws2",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-customer-support-1",
+      "service": "customer-support",
+      "image": "asd-cloud-support:manual-20261009-aws2",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-shared-backend-1",
+      "service": "shared-backend",
+      "image": "asd-cloud-api:manual-20261009-aws2",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      }
+    },
+    {
+      "name": "asd-cloud-order-returns-frontend-1",
+      "service": "order-returns-frontend",
+      "image": "asd-cloud-orders:manual-20261009-aws2",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-inventory-backend-1",
+      "service": "inventory-backend",
+      "image": "asd-cloud-api:manual-20261009-aws2",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      }
+    },
+    {
+      "name": "asd-cloud-customer-support-backend-1",
+      "service": "customer-support-backend",
+      "image": "asd-cloud-api:manual-20261009-aws2",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      }
+    },
+    {
+      "name": "asd-cloud-ethan-backend-1",
+      "service": "ethan-backend",
+      "image": "asd-cloud-api:manual-20261009-aws2",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      }
+    },
+    {
+      "name": "asd-cloud-product-database-1",
+      "service": "product-database",
+      "image": "asd-cloud-api:manual-20261009-aws2",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-ethan-database-1",
+      "service": "ethan-database",
+      "image": "asd-cloud-api:manual-20261009-aws2",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-shared-home-1",
+      "service": "shared-home",
+      "image": "asd-cloud-home:manual-20261009-aws2",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-ethan-frontend-1",
+      "service": "ethan-frontend",
+      "image": "asd-cloud-account:manual-20261009-aws2",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-customer-support-database-1",
+      "service": "customer-support-database",
+      "image": "asd-cloud-api:manual-20261009-aws2",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    },
+    {
+      "name": "asd-cloud-inventory-frontend-1",
+      "service": "inventory-frontend",
+      "image": "asd-cloud-inventory:manual-20261009-aws2",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 0,
+      "ai_flags": {}
+    }
+  ],
+  "container_stats": [
+    {
+      "Name": "asd-cloud-gateway-1",
+      "CPUPerc": "0.00%",
+      "MemPerc": "0.20%",
+      "MemUsage": "3.762MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-product-catalogue-1",
+      "CPUPerc": "0.00%",
+      "MemPerc": "0.16%",
+      "MemUsage": "2.98MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-customer-support-1",
+      "CPUPerc": "0.00%",
+      "MemPerc": "0.17%",
+      "MemUsage": "3.16MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-shared-backend-1",
+      "CPUPerc": "0.08%",
+      "MemPerc": "3.66%",
+      "MemUsage": "69.9MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-order-returns-frontend-1",
+      "CPUPerc": "0.00%",
+      "MemPerc": "0.39%",
+      "MemUsage": "7.379MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-inventory-backend-1",
+      "CPUPerc": "0.08%",
+      "MemPerc": "4.09%",
+      "MemUsage": "78.14MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-customer-support-backend-1",
+      "CPUPerc": "15.89%",
+      "MemPerc": "3.62%",
+      "MemUsage": "69.12MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-ethan-backend-1",
+      "CPUPerc": "87.46%",
+      "MemPerc": "4.25%",
+      "MemUsage": "81.2MiB / 1.865GiB",
+      "PIDs": "4"
+    },
+    {
+      "Name": "asd-cloud-product-database-1",
+      "CPUPerc": "0.10%",
+      "MemPerc": "2.31%",
+      "MemUsage": "44.18MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-ethan-database-1",
+      "CPUPerc": "0.14%",
+      "MemPerc": "2.05%",
+      "MemUsage": "39.18MiB / 1.865GiB",
+      "PIDs": "4"
+    },
+    {
+      "Name": "asd-cloud-shared-home-1",
+      "CPUPerc": "0.00%",
+      "MemPerc": "0.16%",
+      "MemUsage": "3.094MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-ethan-frontend-1",
+      "CPUPerc": "0.00%",
+      "MemPerc": "0.16%",
+      "MemUsage": "3.137MiB / 1.865GiB",
+      "PIDs": "3"
+    },
+    {
+      "Name": "asd-cloud-customer-support-database-1",
+      "CPUPerc": "10.86%",
+      "MemPerc": "3.03%",
+      "MemUsage": "57.84MiB / 1.865GiB",
+      "PIDs": "9"
+    },
+    {
+      "Name": "asd-cloud-inventory-frontend-1",
+      "CPUPerc": "0.00%",
+      "MemPerc": "0.16%",
+      "MemUsage": "2.977MiB / 1.865GiB",
+      "PIDs": "3"
+    }
+  ],
+  "database_files": [
+    {
+      "path": "/srv/asd/data/orders/orders.db",
+      "bytes": 20480
+    },
+    {
+      "path": "/srv/asd/data/support/support_tickets.db",
+      "bytes": 45056
+    },
+    {
+      "path": "/srv/asd/data/accounts/users.db",
+      "bytes": 28672
+    },
+    {
+      "path": "/srv/asd/data/products/products.db",
+      "bytes": 36864
+    }
+  ],
+  "kernel_memory_events": {
+    "command_exit_code": 0,
+    "lines": [
+      "Oct 15 13:19:07 ip-10-33-0-123.ap-southeast-2.compute.internal kernel: systemd invoked oom-killer: gfp_mask=0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), order=0, oom_score_adj=0",
+      "Oct 15 13:19:10 ip-10-33-0-123.ap-southeast-2.compute.internal kernel: oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=init.scope,mems_allowed=0,global_oom,task_memcg=/system.slice/docker-22668e99aeadbf07ee97a006c13877c2576c678267c4ef54109c3acd19509d0b.scope,task=gunicorn,pid=4055057,uid=0",
+      "Oct 15 13:19:10 ip-10-33-0-123.ap-southeast-2.compute.internal kernel: Out of memory: Killed process 4055057 (gunicorn) total-vm:159052kB, anon-rss:53540kB, file-rss:68kB, shmem-rss:0kB, UID:0 pgtables:204kB oom_score_adj:0",
+      "-- Boot 480c1cf5e8bf42a595d58bed88267b67 --",
+      "-- Boot 7da099c1686a4e62b8758f9822f2fd3b --",
+      "-- Boot cbc9c51a569f491584f86f02fbd4833f --"
+    ],
+    "limitations": "Available journal history only; no matching line is not proof that an earlier OOM never occurred"
+  }
+}
