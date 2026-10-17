@@ -19,14 +19,14 @@ def create_multi_agent_blueprint(*, principal, database, db_error):
     )
 
     def execute(operation, status=200):
-        _, failure = principal("admin")
+        user, failure = principal("admin")
         if failure is not None:
             return failure
         try:
             multi_agent.ensure_enabled()
             if request.args:
                 raise ValidationError("Workflow routes do not accept query parameters.")
-            return jsonify(operation(database())), status
+            return jsonify(operation(database(), user)), status
         except ValidationError as exc:
             return jsonify({"error": str(exc)}), 400
         except MultiAgentClientError as exc:
@@ -37,7 +37,7 @@ def create_multi_agent_blueprint(*, principal, database, db_error):
     @blueprint.post("/tickets/<int:ticket_id>/workflows")
     def create_ticket_workflow(ticket_id):
         return execute(
-            lambda db: multi_agent.create_workflow(
+            lambda db, _user: multi_agent.create_workflow(
                 db, ticket_id, request.get_json(silent=True)
             ),
             201,
@@ -45,10 +45,24 @@ def create_multi_agent_blueprint(*, principal, database, db_error):
 
     @blueprint.get("/tickets/<int:ticket_id>/workflows")
     def list_ticket_workflows(ticket_id):
-        return execute(lambda db: multi_agent.list_workflows(db, ticket_id))
+        return execute(lambda db, _user: multi_agent.list_workflows(db, ticket_id))
 
     @blueprint.get("/tickets/<int:ticket_id>/workflows/<workflow_id>")
     def get_ticket_workflow(ticket_id, workflow_id):
-        return execute(lambda db: multi_agent.get_workflow(db, ticket_id, workflow_id))
+        return execute(
+            lambda db, _user: multi_agent.get_workflow(db, ticket_id, workflow_id)
+        )
+
+    @blueprint.post("/tickets/<int:ticket_id>/workflows/<workflow_id>/review")
+    def review_ticket_workflow(ticket_id, workflow_id):
+        return execute(
+            lambda db, user: multi_agent.submit_review(
+                db,
+                ticket_id,
+                workflow_id,
+                request.get_json(silent=True),
+                user,
+            )
+        )
 
     return blueprint

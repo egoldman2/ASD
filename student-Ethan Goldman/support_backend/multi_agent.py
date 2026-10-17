@@ -43,7 +43,14 @@ def _context(database, ticket_id):
     if ticket_id < 1:
         raise ValidationError("ticket_id must be a positive integer.")
     context = database.get_ticket_context(ticket_id, message_limit=MESSAGE_LIMIT)
-    if not isinstance(context, dict) or context.get("id") != ticket_id:
+    if (
+        not isinstance(context, dict)
+        or type(context.get("id")) is not int
+        or context["id"] != ticket_id
+        or not isinstance(context.get("messages"), list)
+        or len(context["messages"]) > MESSAGE_LIMIT
+        or any(not isinstance(message, dict) for message in context["messages"])
+    ):
         raise MultiAgentClientError(
             "The support database returned invalid ticket evidence.", status_code=502
         )
@@ -73,11 +80,6 @@ def create_workflow(database, ticket_id, payload):
     context = _context(database, ticket_id)
     try:
         safe_ticket = public_ticket(context)
-        if (
-            not isinstance(safe_ticket.get("messages"), list)
-            or len(safe_ticket["messages"]) > MESSAGE_LIMIT
-        ):
-            raise ValueError("unbounded conversation")
         safe_question = redact_text(question.strip(), _private_values(context))
     except (KeyError, TypeError, AttributeError, ValueError) as exc:
         raise MultiAgentClientError(
@@ -117,13 +119,56 @@ def list_workflows(database, ticket_id):
     return {"count": len(selected), "workflows": selected}
 
 
-def get_workflow(database, ticket_id, workflow_id):
-    _context(database, ticket_id)
-    result = MultiAgentClient(FEATURE).get_workflow(workflow_id)
+def _selected_workflow(client, ticket_id, workflow_id):
+    result = client.get_workflow(workflow_id)
     if not _belongs_to_ticket(result, ticket_id):
         raise MultiAgentClientError(
             "The requested ticket workflow was not found.",
             code="workflow_not_found",
             status_code=404,
+        )
+    return result
+
+
+def get_workflow(database, ticket_id, workflow_id):
+    _context(database, ticket_id)
+    return _selected_workflow(MultiAgentClient(FEATURE), ticket_id, workflow_id)
+
+
+def submit_review(database, ticket_id, workflow_id, payload, principal):
+    ensure_enabled()
+    if not isinstance(payload, dict) or set(payload) != {"decision", "reason"}:
+        raise ValidationError("Provide only decision and reason.")
+    decision, reason = payload["decision"], payload["reason"]
+    if not isinstance(decision, str) or decision not in {
+        "accept",
+        "partially_accept",
+        "reject",
+    }:
+        raise ValidationError("decision must be accept, partially_accept, or reject.")
+    if not isinstance(reason, str) or not reason.strip() or len(reason) > 2_000:
+        raise ValidationError(
+            "reason must be non-empty text of at most 2000 characters."
+        )
+    context = _context(database, ticket_id)
+    reason = redact_text(reason.strip(), _private_values(context))
+    if len(reason) > 2_000:
+        raise ValidationError("reason exceeds 2000 characters after privacy redaction.")
+    reviewed_by = f"user:{principal.id}"
+    if len(reviewed_by) > 128 or any(char in reviewed_by for char in "\r\n"):
+        raise ValidationError("The authenticated reviewer identity is invalid.")
+    client = MultiAgentClient(FEATURE)
+    _selected_workflow(client, ticket_id, workflow_id)
+    result = client.submit_human_review(
+        workflow_id,
+        {
+            "decision": decision,
+            "reason": reason,
+            "reviewed_by": reviewed_by,
+        },
+    )
+    if not _belongs_to_ticket(result, ticket_id):
+        raise MultiAgentClientError(
+            "The Multi-Agent server returned invalid ticket evidence.", status_code=502
         )
     return result

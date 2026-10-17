@@ -260,7 +260,12 @@ def test_disabled_paths_do_not_read_evidence_or_contact_host(
         lambda *args, **kwargs: pytest.fail("disabled evidence read"),
     )
     admin = support_stack.admin()
-    for suffix, method in (("", "post"), ("", "get"), ("/one", "get")):
+    for suffix, method in (
+        ("", "post"),
+        ("", "get"),
+        ("/one", "get"),
+        ("/one/review", "post"),
+    ):
         response = getattr(admin, method)(
             endpoint(support_stack, suffix=suffix),
             **({"json": {}} if method == "post" else {}),
@@ -345,3 +350,229 @@ def test_creation_rejects_wrong_ticket_returned_by_upstream(
         timeout=10,
     )
     assert response.status_code == 502
+
+
+@pytest.mark.parametrize(
+    "decision,status",
+    [
+        ("accept", "accepted"),
+        ("partially_accept", "partially_accepted"),
+        ("reject", "rejected"),
+    ],
+)
+def test_human_decision_is_scoped_single_and_never_mutates_ticket(
+    support_stack, multi_agent_host, decision, status
+):
+    admin = support_stack.admin()
+    before = sha256(support_stack.database_path.read_bytes()).hexdigest()
+    created = admin.post(
+        endpoint(support_stack),
+        json={},
+        headers=support_stack.origin_headers,
+        timeout=10,
+    ).json()
+    url = endpoint(support_stack, suffix="/" + created["workflow_id"] + "/review")
+    response = admin.post(
+        url,
+        json={
+            "decision": decision,
+            "reason": "Fixture: verify order details before replying.",
+        },
+        headers=support_stack.origin_headers,
+        timeout=10,
+    )
+    assert response.status_code == 200, response.text
+    reviewed = response.json()
+    assert reviewed["status"] == status
+    assert reviewed["human_review"]["decision"] == decision
+    assert reviewed["human_review"]["reviewed_by"] == "user:1"
+    assert reviewed["human_review"]["reviewed_at"]
+    for agent in ("planner", "worker", "reviewer"):
+        assert reviewed[f"{agent}_result"] == created[f"{agent}_result"]
+    assert (
+        admin.post(
+            url,
+            json={"decision": decision, "reason": "Fixture duplicate"},
+            headers=support_stack.origin_headers,
+            timeout=10,
+        ).status_code
+        == 409
+    )
+    assert (
+        admin.get(
+            endpoint(support_stack, suffix="/" + created["workflow_id"]), timeout=10
+        ).json()
+        == reviewed
+    )
+    audit = multi_agent_host.store.list_audit_events()
+    assert [item["event"] for item in audit] == [
+        "workflow_completed",
+        "human_review_recorded",
+    ]
+    assert audit[-1]["decision"] == decision and audit[-1]["reviewed_by"] == "user:1"
+    assert sha256(support_stack.database_path.read_bytes()).hexdigest() == before
+
+
+def test_invalid_or_unauthorized_decisions_leave_audit_unchanged(
+    support_stack, multi_agent_host
+):
+    admin = support_stack.admin()
+    created = admin.post(
+        endpoint(support_stack),
+        json={},
+        headers=support_stack.origin_headers,
+        timeout=10,
+    ).json()
+    suffix = "/" + created["workflow_id"] + "/review"
+    url = endpoint(support_stack, suffix=suffix)
+    payload = {"decision": "accept", "reason": "Fixture review."}
+    assert (
+        requests.post(
+            url, json=payload, headers=support_stack.origin_headers, timeout=10
+        ).status_code
+        == 401
+    )
+    assert (
+        support_stack.customer()
+        .post(url, json=payload, headers=support_stack.origin_headers, timeout=10)
+        .status_code
+        == 403
+    )
+    assert admin.post(url, json=payload, timeout=10).status_code == 403
+    for body in (
+        {},
+        [],
+        {"decision": "accept"},
+        {"decision": "maybe", "reason": "Fixture"},
+        {"decision": [], "reason": "Fixture"},
+        {"decision": "accept", "reason": " "},
+        {"decision": "accept", "reason": "x" * 2001},
+        {"decision": "accept", "reason": True},
+        dict(payload, reviewed_by="forged"),
+        dict(payload, feature="inventory"),
+    ):
+        assert (
+            admin.post(
+                url, json=body, headers=support_stack.origin_headers, timeout=10
+            ).status_code
+            == 400
+        )
+    assert (
+        admin.post(
+            endpoint(support_stack, 2003, suffix),
+            json=payload,
+            headers=support_stack.origin_headers,
+            timeout=10,
+        ).status_code
+        == 404
+    )
+    assert (
+        admin.post(
+            endpoint(support_stack, suffix="/missing/review"),
+            json=payload,
+            headers=support_stack.origin_headers,
+            timeout=10,
+        ).status_code
+        == 404
+    )
+    other = requests.post(
+        multi_agent_host.host.url + "/api/workflows",
+        json=dict(multi_agent_host.calls[0], feature="inventory"),
+        timeout=10,
+    ).json()
+    assert (
+        admin.post(
+            endpoint(support_stack, suffix="/" + other["workflow_id"] + "/review"),
+            json=payload,
+            headers=support_stack.origin_headers,
+            timeout=10,
+        ).status_code
+        == 404
+    )
+    assert all(
+        item["event"] == "workflow_completed"
+        for item in multi_agent_host.store.list_audit_events()
+    )
+
+
+def test_review_reason_is_redacted_before_history(support_stack, multi_agent_host):
+    ticket_id = seed_ticket(support_stack)
+    admin = support_stack.admin()
+    created = admin.post(
+        endpoint(support_stack, ticket_id),
+        json={},
+        headers=support_stack.origin_headers,
+        timeout=10,
+    ).json()
+    response = admin.post(
+        endpoint(support_stack, ticket_id, "/" + created["workflow_id"] + "/review"),
+        json={
+            "decision": "partially_accept",
+            "reason": "Fixture: ask Jane Hidden at jane.private@example.test, 0412 345 678, to clarify.",
+        },
+        headers=support_stack.origin_headers,
+        timeout=10,
+    )
+    assert response.status_code == 200
+    history = multi_agent_host.store.history_path.read_text()
+    for private in ("Jane Hidden", "jane.private", "0412"):
+        assert private not in response.text + history
+
+
+def test_review_outage_leaves_workflow_pending(
+    support_stack, multi_agent_host, monkeypatch
+):
+    from shared.multi_agent_client import MultiAgentClient, MultiAgentClientError
+
+    admin = support_stack.admin()
+    created = admin.post(
+        endpoint(support_stack),
+        json={},
+        headers=support_stack.origin_headers,
+        timeout=10,
+    ).json()
+
+    def unavailable(*args, **kwargs):
+        raise MultiAgentClientError(
+            "The Multi-Agent server is unavailable.", status_code=503
+        )
+
+    monkeypatch.setattr(MultiAgentClient, "submit_human_review", unavailable)
+    response = admin.post(
+        endpoint(support_stack, suffix="/" + created["workflow_id"] + "/review"),
+        json={"decision": "accept", "reason": "Fixture review."},
+        headers=support_stack.origin_headers,
+        timeout=10,
+    )
+    assert response.status_code == 503
+    stored = multi_agent_host.store.get_workflow(created["workflow_id"])
+    assert (
+        stored["status"] == "awaiting_human_review" and stored["human_review"] is None
+    )
+    assert len(multi_agent_host.store.list_audit_events()) == 1
+
+
+def test_invalid_review_context_fails_before_decision(
+    support_stack, multi_agent_host, monkeypatch
+):
+    admin = support_stack.admin()
+    created = admin.post(
+        endpoint(support_stack),
+        json={},
+        headers=support_stack.origin_headers,
+        timeout=10,
+    ).json()
+    db = import_module("student-Ethan Goldman.support_backend.db_client")
+    monkeypatch.setattr(
+        db.SupportDatabaseClient,
+        "get_ticket_context",
+        lambda *args, **kwargs: {"id": 2002, "messages": ["invalid message"]},
+    )
+    response = admin.post(
+        endpoint(support_stack, suffix="/" + created["workflow_id"] + "/review"),
+        json={"decision": "accept", "reason": "Fixture decision."},
+        headers=support_stack.origin_headers,
+        timeout=10,
+    )
+    assert response.status_code == 502
+    assert len(multi_agent_host.store.list_audit_events()) == 1
