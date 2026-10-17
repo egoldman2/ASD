@@ -112,3 +112,8 @@ Decide who owns the AWS project and invites team members; whether to keep this s
 Cloud matrix/build validation also runs on relevant PRs. Gate and deployment
 remain main-only; concurrency is separated by ref so PR validation cannot replace
 a pending main deployment. No PR artifact is deployed.
+
+The cloud workflow also runs on every main push, including documentation-only
+commits. Otherwise a new main SHA could supersede a queued candidate while path
+filters prevent its replacement workflow from starting. PR validation retains
+its source-path filters; actual deployment still requires all main-only gates.

@@ -28,7 +28,7 @@ def test_real_workflows_disable_every_ai_flag_and_live_opt_in(path):
     assert all(workflow['env'][key] == '0' for key in OPT_INS)
 
 
-@pytest.mark.parametrize('path', [row['path'] for row in MAPPING])
+@pytest.mark.parametrize('path', [row['path'] for row in MAPPING] + ['.github/workflows/cloud-deployment.yml'])
 def test_each_assigned_workflow_can_supply_every_main_sha(path):
     workflow = load(path)
     push = workflow['on']['push']

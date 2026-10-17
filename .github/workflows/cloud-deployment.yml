@@ -14,15 +14,6 @@ on:
       - 'requirements-audit.txt'
   push:
     branches: [main]
-    paths:
-      - 'cloud/**'
-      - 'shared/**'
-      - 'student-*/**'
-      - 'app.py'
-      - 'requirements.txt'
-      - '.github/workflows/**'
-      - 'ai-services/**'
-      - 'requirements-audit.txt'
 permissions:
   contents: read
 concurrency:
