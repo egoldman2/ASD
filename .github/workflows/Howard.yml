@@ -3,14 +3,27 @@ name: Howard - Order & Returns
 on:
   push:
     branches: [ main, howard-blueprint-integration ]
-    paths:
-      - 'student-Howard/**'
-      - '.github/workflows/Howard.yml'
   pull_request:
     branches: [ main ]
     paths:
       - 'student-Howard/**'
   workflow_dispatch:
+
+env:
+  AI_MODE_ENABLED: "false"
+  MCP_ENABLED: "false"
+  RAG_ENABLED: "false"
+  MULTI_AGENT_ENABLED: "false"
+  RUN_LIVE_AI: "0"
+  RUN_LIVE_MCP_AI: "0"
+  RUN_LIVE_RAG_AI: "0"
+  RUN_LIVE_VALIDATION: "0"
+  RUN_LIVE_RELEASE1_VALIDATION: "0"
+  RUN_LIVE_MULTI_AGENT: "0"
+  RUN_NGINX_PROXY_CHECK: "0"
+
+permissions:
+  contents: read
 
 jobs:
   build-and-validate:

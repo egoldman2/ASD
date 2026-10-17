@@ -16,8 +16,10 @@ from urllib.parse import urlsplit
 
 if __package__:
     from .prepare import prepare
+    from .check_workflows import GitHub, main_sha
 else:
     from prepare import prepare
+    from check_workflows import GitHub, main_sha
 
 REGION = 'ap-southeast-2'
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,6 +29,15 @@ class DeploymentFailure(RuntimeError):
     def __init__(self, report):
         super().__init__('Deployment failed; inspect the sanitized report and private SSM host logs.')
         self.report = report
+
+
+class SupersededRelease(RuntimeError):
+    pass
+
+
+def ensure_current(sha):
+    if main_sha(GitHub(os.environ.get('GITHUB_TOKEN', ''))) != sha:
+        raise SupersededRelease('Candidate superseded by current main.')
 
 
 def aws(*arguments):
@@ -71,7 +82,7 @@ def safe_host_evidence(payload, identity, remote):
             or (result['acceptance'] == 'passed' and current != remote)):
         raise ValueError('Invalid current release.')
     phase = result.get('phase')
-    if phase not in {'configuration', 'build', 'local_smoke', 'public_smoke', 'runtime', 'acceptance'}:
+    if phase not in {'configuration', 'candidate', 'build', 'local_smoke', 'public_smoke', 'runtime', 'acceptance'}:
         raise ValueError('Invalid deployment phase.')
     captured = result['captured_at']
     if datetime.fromisoformat(captured.replace('Z', '+00:00')).tzinfo is None:
@@ -100,6 +111,7 @@ def deploy(stack, release_id):
         report.update(source_identity())
         if report['trigger'] == 'github_actions' and release_id != f"{report['source_sha']}-{report['run_attempt']}":
             raise ValueError('Release ID must match the checked out Actions SHA and attempt.')
+        ensure_current(report['source_sha'])
         resources = outputs(stack)
         url = urlsplit(resources['PublicUrl'])
         if (url.scheme != 'https' or not url.hostname or url.port not in {None, 443}
@@ -138,6 +150,7 @@ def deploy(stack, release_id):
             'python3 ' + shlex.quote(remote + '/cloud/provenance.py') + ' export ' + shlex.quote(remote),
             'exit "$result"',
         ]
+        ensure_current(report['source_sha'])
         response = aws('ssm', 'send-command', '--document-name', 'AWS-RunShellScript', '--instance-ids', resources['InstanceId'],
                        '--parameters', json.dumps({'commands': ['bash -lc ' + shlex.quote('\n'.join(commands))], 'executionTimeout': ['3600']}), '--comment', f'ASD release {release_id}')
         report['command_id'] = response['Command']['CommandId']
@@ -173,6 +186,10 @@ def deploy(stack, release_id):
                 return report
             raise RuntimeError('SSM deployment or acceptance failed.')
         raise TimeoutError('SSM deployment exceeded its observation timeout.')
+    except SupersededRelease:
+        report.update(status='Superseded', acceptance='skipped',
+                      captured_at=datetime.now(timezone.utc).isoformat())
+        return report
     except Exception as error:
         report['acceptance'] = 'failed'
         report['failure_type'] = type(error).__name__
@@ -203,7 +220,7 @@ def main(argv=None):
             report['evidence_files'] = {path.name: {'path': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}}
         args.report.write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
-    return 0 if report['status'] == 'Success' and report['acceptance'] == 'passed' else 1
+    return 0 if report['status'] == 'Superseded' or (report['status'] == 'Success' and report['acceptance'] == 'passed') else 1
 
 
 if __name__ == '__main__':

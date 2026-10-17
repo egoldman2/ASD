@@ -78,7 +78,22 @@ Stopping saves compute charges but retains both disks, the Elastic IP and secret
 
 ## GitHub deployment
 
-`.github/workflows/cloud-deployment.yml` runs six test suites and a cloud container build before deploying a main-branch release. Configure a GitHub environment named `aws-cloud`, with `AWS_DEPLOY_ROLE_ARN` and optionally `AWS_STACK_NAME` environment variables. The AWS role trusts only this repository and that environment using OIDC; no long-lived access keys are needed.
+`.github/workflows/cloud-deployment.yml` runs seven isolated test suites (including
+shared Multi-Agent) and a cloud container build. A bounded read-only gate also
+requires all five [verified named student workflows](../reports/release2-workflow-mapping.md)
+to pass for the exact main push SHA and latest run attempts. Every reported job
+must pass; a PR run, stale SHA, missing/skipped job or old green attempt is
+insufficient. The gate alone receives Actions read permission and uploads its
+sanitized report even on failure. The source deployment remains main-only.
+
+The deployment job rechecks main before requesting AWS credentials. The CLI
+checks it before upload and immediately before SSM, and the locked host checks
+again before replacement and acceptance. Superseded candidates are skipped by
+the workflow/CLI; a host-side change fails acceptance and attempts previous-code
+restoration. The host reads this public repository reference without receiving
+the GitHub token; an unavailable API fails acceptance. This handles stale queued candidates without deploying artifacts
+from an untrusted workflow_run. A stable current main and real five-student
+Actions/SSM evidence remain required in S16. Configure a GitHub environment named `aws-cloud`, with `AWS_DEPLOY_ROLE_ARN` and optionally `AWS_STACK_NAME` environment variables. The AWS role trusts only this repository and that environment using OIDC; no long-lived access keys are needed.
 
 The template's `EnableGitHubOidc` parameter defaults to `false`. This project's managed policies explicitly denied IAM OIDC provider creation, read and list operations during setup. The actual GitHub role and a successful GitHub deployment run remain to be established; preparing a workflow does not verify CI/CD. If the project permits OIDC, enable the template option with `ENABLE_GITHUB_OIDC=true`; supply `GITHUB_OIDC_PROVIDER_ARN` when reusing an existing provider. Project capability changes belong in AWS Settings and require the project owner's decision. AWS documents these restrictions in its [project capability guide](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
 
@@ -93,3 +108,7 @@ Retained EBS, the release bucket and seed-password secret survive stack deletion
 ## Group decisions still needed
 
 Decide who owns the AWS project and invites team members; whether to keep this shared environment running; the acceptable credit budget; how demo credentials are shared privately; who can approve deployments; whether the current availability, logging and backup limits are sufficient; and how OIDC capability will be enabled. The local multi-agent implementation, student endpoint test assignments, review pages, report and showcase remain separate Release 2 work.
+
+Cloud matrix/build validation also runs on relevant PRs. Gate and deployment
+remain main-only; concurrency is separated by ref so PR validation cannot replace
+a pending main deployment. No PR artifact is deployed.

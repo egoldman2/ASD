@@ -38,6 +38,17 @@ python3 cloud/check_workflows.py --sha '<40-character main SHA>' \
 The implementation follows GitHub's primary REST documentation for
 [filtered workflow runs](https://docs.github.com/en/rest/actions/workflow-runs#list-workflow-runs-for-a-repository)
 and [jobs from a run attempt](https://docs.github.com/en/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run-attempt).
-S10a supplies the checker and deterministic tests; S10b connects the gate,
-main-candidate checks and student trigger/disabled-flag consistency. These source
+S10a supplies the checker and deterministic tests. S10b connects the gate,
+main-candidate checks and student trigger/disabled-flag consistency. Main push
+path filters are removed so another feature/cloud change cannot leave the gate
+without a run. PR path filters stay with their owners. Ryan's existing self-file
+filter now references Ryan.yml. Docker test commands receive every disabled flag.
+Both report review configs use these actual verified paths. Only the gate job has
+Actions read access; deployment's reference-only preflight uses Contents read.
+Superseded workflow/CLI candidates skip, while a changed host candidate fails
+acceptance before replacement or final acceptance and attempts code rollback. These source
 checkpoints do not prove a final five-student main release or AWS deployment.
+
+Cloud matrix/build validation also runs on relevant PRs. Gate and deployment
+remain main-only; concurrency is separated by ref so PR validation cannot replace
+a pending main deployment. No PR artifact is deployed.

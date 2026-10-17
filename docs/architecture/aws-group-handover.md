@@ -211,7 +211,17 @@ Independent access does not mean five isolated deployments. Every manual deploym
 
 ## 9. GitHub deployment and its current blocker
 
-`cloud-deployment.yml` defines six parallel test suites and a cloud image-build job. The deployment job waits for both to pass, targets main, uses a GitHub environment named `aws-cloud`, requests an OIDC token and calls the same `cloud/deploy.py` script. This workflow repeats the relevant test suites; it does not wait for separate pre-existing student workflow runs. Reports are uploaded as GitHub artifacts. Configure environment branch rules and any desired review requirements explicitly; they are not created by the YAML.
+`cloud-deployment.yml` now defines seven isolated test suites, a cloud image-build
+job and a bounded five-student workflow gate. Deployment requires all three and
+an exact main candidate. The gate checks the versioned existing workflow IDs/paths,
+main push SHA and latest-attempt jobs; all must succeed. Every named student
+workflow triggers on every main push, with all AI flags/live opt-ins disabled.
+Only the gate receives Actions read access. The deployment job uses `aws-cloud`,
+an OIDC token and `cloud/deploy.py`, after a fresh main-reference check. CLI and
+locked-host checks prevent a queued stale candidate from replacing the intended
+main release. Sanitized gate/deployment reports upload even on failure. These
+source changes are locally verified; actual integrated Actions/SSM acceptance
+remains outstanding. Configure environment branch rules and any desired review requirements explicitly; they are not created by the YAML.
 
 OIDC lets GitHub obtain short-lived AWS permissions using a role trusted for `repo:egoldman2/ASD:environment:aws-cloud`. The proposed role can write release objects and send commands to this host. SSM command access is powerful host access, so treat deployment permission accordingly. It does not grant a teammate billing ownership.
 

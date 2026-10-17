@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Invoked through Systems Manager on the provisioned EC2 host.
-set -euo pipefail
+set -Eeuo pipefail
 umask 077
 release_dir=$(cd "$(dirname "$0")/.." && pwd)
 exec 9>/srv/asd/deploy.lock
@@ -65,6 +65,23 @@ env_path.write_text(''.join(f'{key}={value}\n' for key, value in values.items())
 env_path.chmod(0o600)
 PY
 compose=(docker compose --project-name asd-cloud --env-file "$release_dir/cloud.env" --file "$release_dir/cloud/compose.yml")
+check_candidate() {
+python3 - "$release_dir" <<'PY'
+import json
+from pathlib import Path
+import sys
+
+directory = Path(sys.argv[1])
+sys.path.insert(0, str(directory / 'cloud'))
+from check_workflows import GitHub, main_sha
+
+source_sha = json.loads((directory / 'source-metadata.json').read_text())['source_sha']
+if main_sha(GitHub()) != source_sha:
+    raise SystemExit('Candidate superseded; no application replacement accepted.')
+PY
+}
+phase=candidate
+check_candidate
 phase=build
 "${compose[@]}" up -d --build --wait --wait-timeout 240
 phase=local_smoke
@@ -73,6 +90,8 @@ phase=public_smoke
 python3 "$release_dir/cloud/smoke.py" "$2" --env-file "$release_dir/cloud.env" --report "$release_dir/public-smoke.json" > /dev/null
 phase=runtime
 python3 "$release_dir/cloud/provenance.py" runtime "$release_dir"
+phase=candidate
+check_candidate
 phase=acceptance
 ln -sfn "$release_dir" /srv/asd/current.next
 mv -Tf /srv/asd/current.next /srv/asd/current

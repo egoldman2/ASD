@@ -173,11 +173,14 @@ Offline capture authenticity, unrecorded returns/supplier operations, broader
 capacity and other release checks remain explicit limitations. Verify original
 Actions/public/resource evidence separately before the real release decision.
 
-Configure `cloud_deployment_rules.required_workflows` with the five confirmed
-assigned paths before reviewing final evidence. Both supplied configs deliberately
-start empty while allocation is unconfirmed; fixture names never become defaults.
-Missing allocation/configuration remains incomplete and the summary shows the
-configured count out of five.
+Both `cloud_deployment_rules.required_workflows` lists now use the five existing
+named paths verified through GitHub and recorded in
+[the versioned workflow mapping](release2-workflow-mapping.md). This confirms
+actual path/ID ownership, without guessing Goldman's numeric student filename or
+renaming teammates. An agreed future rename must update the gate mapping and both
+review configs together. Missing/invalid configuration remains incomplete, as
+covered by tests; fixture paths never become defaults. The summary shows the
+configured count out of five. Configured paths do not establish successful runs.
 
 ```bash
 export RELEASE_REVIEW_SOURCE_SHA='<actual integrated main code SHA>'

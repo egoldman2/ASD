@@ -120,6 +120,7 @@ def deployment(monkeypatch, tmp_path):
     (source / 'app.py').write_text('pass\n')
     state = {'status': 'Success', 'payload_fault': None, 'calls': []}
     monkeypatch.setattr(deploy, 'source_identity', lambda: {'source_sha': SHA, 'trigger': 'github_actions', 'run_id': 123, 'run_attempt': 1})
+    monkeypatch.setattr(deploy, 'main_sha', lambda _: SHA)
     monkeypatch.setattr(deploy, 'prepare', lambda _: source)
     monkeypatch.setattr(deploy.subprocess, 'run', lambda *a, **k: None)
     monkeypatch.setattr(deploy.time, 'sleep', lambda _: None)
@@ -218,7 +219,7 @@ def test_source_identity_requires_clean_exact_main_checkout(monkeypatch, fault):
         assert deploy.source_identity() == {'source_sha': SHA, 'trigger': 'github_actions', 'run_id': 123, 'run_attempt': 1}
 
 
-@pytest.mark.parametrize('fault', [None, 'build', 'public_smoke'])
+@pytest.mark.parametrize('fault', [None, 'build', 'public_smoke', 'candidate', 'candidate_late'])
 def test_install_checks_before_acceptance_and_attempts_rollback(tmp_path, fault):
     import os
     import sys
@@ -262,6 +263,16 @@ if __file__.endswith('smoke.py') and sys.argv[1].startswith('https') and os.envi
 '''
     (cloud / 'smoke.py').write_text(helper)
     (cloud / 'provenance.py').write_text(helper)
+    (cloud / 'check_workflows.py').write_text('''import os
+from pathlib import Path
+class GitHub: pass
+def main_sha(_):
+ path=Path(__file__).with_name('candidate-count')
+ count=int(path.read_text())+1 if path.exists() else 1
+ path.write_text(str(count))
+ fault=os.environ.get('FIXTURE_FAULT')
+ return ('b' if fault=='candidate' or (fault=='candidate_late' and count>1) else 'a')*40
+''')
     source = Path(__file__).resolve().parents[1] / 'install.sh'
     install = cloud / 'install.sh'
     install.write_text(source.read_text().replace('/srv/asd', str(root)))
@@ -277,9 +288,19 @@ if __file__.endswith('smoke.py') and sys.argv[1].startswith('https') and os.envi
         assert (root / 'current').resolve() == previous
         assert any(str(previous / 'cloud.env') in row for row in calls if row[0] == 'docker')
         assert not any('--passed' in row for row in calls)
-        assert any('--phase' in row and fault in row for row in calls if row[0].endswith('provenance.py'))
+        phase = 'candidate' if fault.startswith('candidate') else fault
+        assert any('--phase' in row and phase in row for row in calls if row[0].endswith('provenance.py'))
     else:
         assert run.returncode == 0, run.stderr
         assert (root / 'current').resolve() == directory
         assert [row[1] for row in calls if row[0].endswith('smoke.py')] == ['http://127.0.0.1', 'https://fixture.cloudfront.net']
         assert any('--passed' in row and 'acceptance' in row for row in calls)
+
+
+@pytest.mark.parametrize('when', ['before_upload', 'before_ssm'])
+def test_superseded_candidate_is_skipped_without_sending_ssm(deployment, monkeypatch, when):
+    values = iter(['b' * 40] if when == 'before_upload' else [SHA, 'b' * 40])
+    monkeypatch.setattr(deploy, 'main_sha', lambda _: next(values))
+    report = deploy.deploy('fixture-stack', SHA + '-1')
+    assert report['status'] == 'Superseded' and report['acceptance'] == 'skipped'
+    assert not any(call[:2] == ('ssm', 'send-command') for call in deployment['calls'])

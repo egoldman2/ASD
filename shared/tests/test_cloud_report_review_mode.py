@@ -93,7 +93,8 @@ def test_cloud_mode_cli_menu_configs_and_exit_status(cloud_capture, monkeypatch)
         config, _ = runner.load_feature(feature)
         assert "cloud-deployment" in config["mode_prompts"]
         assert "DETERMINISTIC STATUS" in config["mode_prompts"]["cloud-deployment"]
-        assert config["cloud_deployment_rules"]["required_workflows"] == []
+        mapping = json.loads((Path(__file__).resolve().parents[2] / "cloud/student-workflows.json").read_text())
+        assert config["cloud_deployment_rules"]["required_workflows"] == [row["path"] for row in mapping["workflows"]]
     monkeypatch.setattr(
         runner,
         "run_agentic_loop",

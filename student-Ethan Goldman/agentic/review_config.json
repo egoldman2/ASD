@@ -793,6 +793,12 @@
   },
   "cloud_deployment_rules": {
     "manifest": "docs/evidence/release2-ethan-goldman/cloud-deployment-manifest.json",
-    "required_workflows": []
+    "required_workflows": [
+      ".github/workflows/EthanGoldman.yml",
+      ".github/workflows/Chufeng.yml",
+      ".github/workflows/Ryan.yml",
+      ".github/workflows/student-3.yml",
+      ".github/workflows/Howard.yml"
+    ]
   }
 }

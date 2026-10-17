@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 
 FLAGS = ('AI_MODE_ENABLED', 'MCP_ENABLED', 'RAG_ENABLED', 'MULTI_AGENT_ENABLED')
 ARTIFACTS = ('local-smoke.json', 'public-smoke.json', 'runtime.json')
-PHASES = ('configuration', 'build', 'local_smoke', 'public_smoke', 'runtime', 'acceptance')
+PHASES = ('configuration', 'candidate', 'build', 'local_smoke', 'public_smoke', 'runtime', 'acceptance')
 API_SERVICES = {'shared-backend', 'ethan-backend', 'inventory-backend', 'customer-support-backend'}
 AI_SERVICE_PATTERN = r'ollama|multi[-_]?agent|(?:mcp|rag)[-_]?server|(?:^|[-_])(?:mcp|rag)(?:$|[-_])'
 
