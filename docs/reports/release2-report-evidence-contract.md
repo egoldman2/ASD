@@ -105,7 +105,8 @@ pass-with-exceptions exit 0. A zero exit still does not grant release approval.
 ## Cloud Deployment Report captures (S13a)
 
 `collect_cloud_evidence(root, manifest_path, source_sha, required_workflows)` reuses
-the same bounded, hash-checked reader. S13b connects it to the existing loop;
+the same bounded, hash-checked reader. S13b connects it to the existing loop's
+`cloud-deployment` mode and interactive option 10;
 S14 supplies the deployment/smoke provenance fields and S16 supplies real captures.
 This contract and its synthetic tests are not live deployment evidence.
 
@@ -164,3 +165,22 @@ technical checks remain failed. A successful model review cannot create approval
 Offline capture authenticity, unrecorded returns/supplier operations, broader
 capacity and other release checks remain explicit limitations. Verify original
 Actions/public/resource evidence separately before the real release decision.
+
+Configure `cloud_deployment_rules.required_workflows` with the five confirmed
+assigned paths before reviewing final evidence. Both supplied configs deliberately
+start empty while allocation is unconfirmed; fixture names never become defaults.
+Missing allocation/configuration remains incomplete and the summary shows the
+configured count out of five.
+
+```bash
+export RELEASE_REVIEW_SOURCE_SHA='<actual integrated main code SHA>'
+export CLOUD_DEPLOYMENT_REVIEW_MANIFEST='docs/evidence/release2-cloud-deployment-manifest.json'
+AI_MODE_ENABLED=true python ai-services/agentic_loop.py --feature shared --mode cloud-deployment
+```
+
+Goldman's config also registers the mode for his report contribution. Manifest
+overrides are optional when using the configured confined path. The shared report
+infrastructure saves linked Markdown/validation JSON, preserves deterministic
+status and returns nonzero for fail/incomplete evidence. Missing human approval
+can therefore block final release even when `technical_status` is pass. This
+review command never deploys, changes AWS, edits records or creates a decision.

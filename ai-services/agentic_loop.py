@@ -24,13 +24,14 @@ from rag_validation import probe_runtime as probe_rag_runtime, configured_probes
 from multi_agent_validation import probe_runtime as probe_multi_agent_runtime
 from multi_agent_validation import public_runtime as public_multi_agent_runtime
 from report_validation import collect_testing_evidence as validate_testing_evidence
+from report_validation import collect_cloud_evidence as validate_cloud_evidence
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:0.5b")
 MAX_ARCHITECTURE_FILE_CHARS = 2500
 MAX_STATIC_REVIEW_FILE_CHARS = 400
 SENSITIVE_COLUMN_TERMS = ("password", "secret", "token")
 FILE_REVIEW_MODES = ("implementation", "devops", "mcp", "rag", "multi-agent")
-REPORT_REVIEW_MODES = ("testing",)
+REPORT_REVIEW_MODES = ("testing", "cloud-deployment")
 
 SYSTEM_PROMPT = """You are the read-only software review agent for the ASD 2026 project.
 
@@ -790,26 +791,40 @@ def collect_multi_agent_evidence(config, runtime_probe=None):
     return evidence
 
 
-def collect_testing_evidence(config):
-    rules = config.get("testing_rules", {})
+def collect_report_evidence(config, mode):
+    rules = config.get(mode.replace("-", "_") + "_rules", {})
     rules = rules if isinstance(rules, dict) else {}
     source_sha = os.getenv("RELEASE_REVIEW_SOURCE_SHA", rules.get("source_sha", ""))
-    manifest = os.getenv("TESTING_REVIEW_MANIFEST", rules.get("manifest", ""))
+    manifest = os.getenv(mode.upper().replace("-", "_") + "_REVIEW_MANIFEST", rules.get("manifest", ""))
     try:
-        evidence = validate_testing_evidence(
-            PROJECT_ROOT, manifest, source_sha, rules.get("required_features", []),
-            expected_endpoints=rules.get("expected_endpoints", {}),
-            accepted_advisories=rules.get("accepted_dependency_advisories", []),
-        )
+        if mode == "testing":
+            evidence = validate_testing_evidence(
+                PROJECT_ROOT, manifest, source_sha, rules.get("required_features", []),
+                expected_endpoints=rules.get("expected_endpoints", {}),
+                accepted_advisories=rules.get("accepted_dependency_advisories", []),
+            )
+        else:
+            evidence = validate_cloud_evidence(PROJECT_ROOT, manifest, source_sha, rules.get("required_workflows", []))
     except (ValueError, TypeError, OSError):
-        evidence = {"kind": "testing", "read_only": True, "status": "incomplete",
+        evidence = {"kind": mode, "read_only": True, "status": "incomplete",
                     "source_sha": source_sha if isinstance(source_sha, str) and re.fullmatch(r"[a-f0-9]{40}", source_sha) else None,
                     "security": [], "students": [], "inputs": [],
                     "issues": ["missing_or_invalid_review_configuration"],
                     "limitations": ["Select an explicit source SHA and a confined evidence manifest before review."]}
     evidence["remote_authenticity_verified"] = False
+    if mode == "cloud-deployment":
+        paths = rules.get("required_workflows", [])
+        evidence["configured_workflow_count"] = len(paths) if isinstance(paths, list) else 0
     evidence.setdefault("limitations", []).append("Official workflow/endpoint allocation is not verified by offline captures.")
     return evidence
+
+
+def collect_testing_evidence(config):
+    return collect_report_evidence(config, "testing")
+
+
+def collect_cloud_deployment_evidence(config):
+    return collect_report_evidence(config, "cloud-deployment")
 
 
 def collect_evidence(mode, config):
@@ -818,6 +833,7 @@ def collect_evidence(mode, config):
         "endpoints": collect_endpoint_evidence,
         "architecture": collect_architecture_evidence,
         "testing": collect_testing_evidence,
+        "cloud-deployment": collect_cloud_deployment_evidence,
     }
     if mode == "mcp":
         return collect_mcp_evidence(config)
@@ -1590,10 +1606,16 @@ def _grounded_fallback(mode, evidence, issues, config=None):
                          f"{student['failures']}/{student['errors']}/{student['skipped']}; {student['run_url']}.")
             lines.extend(f"- {endpoint['function']}: passed={endpoint['passed']}; {endpoint['test_node_id']}."
                          for endpoint in student["endpoints"])
+        if mode == "cloud-deployment":
+            lines.append(f"- Independently configured student workflow paths: {evidence.get('configured_workflow_count', 0)}/5.")
+            lines.append(f"- Technical status: {evidence.get('technical_status', 'incomplete')}; "
+                         f"recorded human decision: {evidence.get('human_release', {}).get('decision', 'missing')}.")
+            lines.extend("- Captured check: " + json.dumps(check, ensure_ascii=False) for check in evidence.get("checks", []))
+            lines.append("- Recorded release: " + json.dumps(evidence.get("release", {}), ensure_ascii=False))
         lines += ["FINDINGS", "- Deterministic issues: " + (", ".join(evidence.get("issues", [])) or "none"),
                   "- Offline captures: remote authenticity is not independently verified.",
                   "RECOMMENDATIONS", "- Verify current exact-SHA Actions runs and resolve failed/missing evidence before release.",
-                  "ADAPTATION APPLIED", "- Preserved deterministic results; no application change or human release approval is recorded."]
+                  "ADAPTATION APPLIED", "- Preserved deterministic results; this review generates no application change or human release approval."]
         return "\n".join(lines)
     if mode == "endpoints":
         observations = []
@@ -2524,6 +2546,7 @@ def _choose_mode():
     print("7 = RAG")
     print("8 = Shared Multi-Agent Workflow")
     print("9 = Testing Report")
+    print("10 = Cloud Deployment Report")
     choices = {
         "1": "database",
         "2": "endpoints",
@@ -2534,10 +2557,11 @@ def _choose_mode():
         "7": "rag",
         "8": "multi-agent",
         "9": "testing",
+        "10": "cloud-deployment",
     }
     selection = input("Selection: ").strip()
     if selection not in choices:
-        raise AgenticLoopError("Review mode must be 1, 2, 3, 4, 5, 6, 7, 8, or 9.")
+        raise AgenticLoopError("Review mode must be 1 through 10.")
     return choices[selection]
 
 

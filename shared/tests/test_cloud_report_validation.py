@@ -159,6 +159,8 @@ def cloud_capture(capture):
     manifest = {**meta, "schema_version": 1, "kind": "cloud-deployment"}
 
     def collect(**kwargs):
+        manifest.clear()
+        manifest.update({**meta, "schema_version": 1, "kind": "cloud-deployment"})
         for name, report in reports.items():
             manifest[name] = capture.write(name + ".json", report)
         capture.write("cloud-manifest.json", manifest)

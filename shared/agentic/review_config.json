@@ -4,7 +4,8 @@
   "prompt_file": "review_prompt.txt",
   "mode_prompt_files": {
     "multi-agent": "multi_agent_prompt.txt",
-    "testing": "testing_prompt.txt"
+    "testing": "testing_prompt.txt",
+    "cloud-deployment": "cloud_deployment_prompt.txt"
   },
   "multi-agent_files": [
     "ai-services/multi_agent_server/app.py",
@@ -142,5 +143,9 @@
       "PYSEC-2026-3814",
       "PYSEC-2026-3815"
     ]
+  },
+  "cloud_deployment_rules": {
+    "manifest": "docs/evidence/release2-cloud-deployment-manifest.json",
+    "required_workflows": []
   }
 }

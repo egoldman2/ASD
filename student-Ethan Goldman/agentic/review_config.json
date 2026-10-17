@@ -10,7 +10,8 @@
     "mcp": "mcp_prompt.txt",
     "rag": "rag_prompt.txt",
     "multi-agent": "multi_agent_prompt.txt",
-    "testing": "testing_prompt.txt"
+    "testing": "testing_prompt.txt",
+    "cloud-deployment": "cloud_deployment_prompt.txt"
   },
   "database": "student-Ethan Goldman/database_service/support_tickets.db",
   "database_rules": {
@@ -789,5 +790,9 @@
       "PYSEC-2026-3814",
       "PYSEC-2026-3815"
     ]
+  },
+  "cloud_deployment_rules": {
+    "manifest": "docs/evidence/release2-ethan-goldman/cloud-deployment-manifest.json",
+    "required_workflows": []
   }
 }
