@@ -3,6 +3,12 @@
 document.addEventListener("htmx:beforeSwap", (event) => {
   const status = event.detail.xhr.status;
   if (status >= 400 && status < 600) {
+    if (workflowFeedback(event.detail.target)) {
+      showSupportConnectionError(event);
+      event.detail.shouldSwap = false;
+      event.detail.isError = false;
+      return;
+    }
     event.detail.shouldSwap = true;
     event.detail.isError = false;
   }
@@ -32,12 +38,33 @@ document.addEventListener("htmx:sendError", showSupportConnectionError);
 document.addEventListener("htmx:timeout", showSupportConnectionError);
 document.addEventListener("htmx:beforeRequest", (event) => {
   const target = event.detail.target;
+  const feedback = workflowFeedback(target);
+  if (feedback) {
+    target.setAttribute("aria-busy", "true");
+    feedback.textContent = "Working on the selected ticket workflow. This may take several minutes…";
+    feedback.setAttribute("role", "status");
+    return;
+  }
   if (!target || !["mcp-results", "mcp-assistant-result", "rag-answer-result"].includes(target.id)) return;
   target.textContent = target.id === "rag-answer-result" ? "Finding support guidance…" : "Loading support data…";
   target.removeAttribute("role");
 });
+document.addEventListener("htmx:afterRequest", (event) => {
+  const panel = event.detail.elt && event.detail.elt.closest("#multi-agent-panel");
+  if (panel) panel.setAttribute("aria-busy", "false");
+});
+function workflowFeedback(target) {
+  return target && target.id === "multi-agent-panel" ? target.querySelector("#multi-agent-feedback") : null;
+}
 function showSupportConnectionError(event) {
   const target = event.detail.target;
+  const feedback = workflowFeedback(target);
+  if (feedback) {
+    target.setAttribute("aria-busy", "false");
+    feedback.textContent = "The workflow request could not be confirmed. Reload recorded history before retrying; your ticket has not been changed by this workflow.";
+    feedback.setAttribute("role", "alert");
+    return;
+  }
   if (!target || !["mcp-results", "mcp-assistant-result", "rag-answer-result"].includes(target.id)) return;
   target.textContent = "The support request could not complete. Check your connection and try again.";
   target.setAttribute("role", "alert");

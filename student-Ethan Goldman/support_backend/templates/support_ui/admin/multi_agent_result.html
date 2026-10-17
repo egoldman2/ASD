@@ -1,0 +1,28 @@
+<h3>Recorded workflow {{ workflow.workflow_id }}</h3>
+<p role="status">Workflow state: <strong>{{ workflow.status|replace('_', ' ') }}</strong></p>
+<details><summary>Recorded request</summary><p class="supportMcpAnswer">{{ workflow.request.user_request }}</p></details>
+{% for item in workflow.request.evidence %}
+<p>Evidence captured: <time datetime="{{ item.source.retrieved_at }}">{{ item.source.retrieved_at }}</time> from {{ item.source.service }} ({{ item.evidence_id }}).</p>
+<p>{{ item.data.messages|length }} of {{ item.data.message_count }} messages included.{% if item.data.messages_truncated %} Conversation truncated to the latest {{ item.data.message_limit }} messages.{% endif %} This snapshot may be older than the current ticket.</p>
+{% endfor %}
+{% for agent, field in (('planner', 'plan'), ('worker', 'output'), ('reviewer', 'review')) %}
+{% set result = workflow.get(agent ~ '_result') %}
+<section class="supportMcpEvidence" aria-labelledby="workflow-{{ agent }}"><h4 id="workflow-{{ agent }}">{{ agent|title }}</h4><p class="adminFieldHint">Model: {{ result.model }} — {{ result.status }}</p><p class="supportMcpAnswer">{{ result.get(field) }}</p></section>
+{% endfor %}
+{% if workflow.human_review %}
+<h4>Human decision: {{ workflow.human_review.decision|replace('_', ' ')|title }}</h4>
+<p>Recorded by {{ workflow.human_review.reviewed_by }} at {{ workflow.human_review.reviewed_at }}.</p>
+<p class="supportMcpAnswer">{{ workflow.human_review.reason }}</p>
+{% else %}
+<form class="adminFormStack" hx-post="{{ base }}/{{ workflow.workflow_id|urlencode|replace('/', '%2F') }}/review" hx-target="#multi-agent-panel" hx-swap="outerHTML"
+  hx-disabled-elt="find button" hx-sync="#multi-agent-panel:drop" hx-request='{"timeout":380000}'>
+  <label for="multi-agent-reason">Reason and any corrections</label>
+  <textarea id="multi-agent-reason" name="reason" rows="3" maxlength="2000" required></textarea>
+  <div class="adminFormActions">
+    <button class="button" type="submit" name="decision" value="accept">Accept</button>
+    <button class="button button--secondary" type="submit" name="decision" value="partially_accept">Partially accept</button>
+    <button class="button button--secondary" type="submit" name="decision" value="reject">Reject</button>
+    <span class="htmx-indicator adminInlineStatus" role="status">Recording your decision…</span>
+  </div>
+</form>
+{% endif %}
