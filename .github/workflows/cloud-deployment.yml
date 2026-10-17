@@ -65,8 +65,8 @@ jobs:
         env:
           PUBLIC_ORIGIN: https://validation.cloudfront.net
           DATA_ROOT: /tmp/asd-cloud-data
-          SESSION_SECRET: ci-only-session-secret
-          SEED_PASSWORD: CIOnlyGeneratedPassword1234567890
+          SESSION_SECRET: ci-only-session-secret # pragma: allowlist secret - Synthetic Compose build-validation value, never deployed.
+          SEED_PASSWORD: CIOnlyGeneratedPassword1234567890 # pragma: allowlist secret - Synthetic Compose build-validation value, never deployed.
           ORIGIN_TOKEN: ci-only-origin-token
         run: |
           python3 cloud/prepare.py .cloud-build/ci
@@ -96,6 +96,9 @@ jobs:
           STACK_NAME: ${{ vars.AWS_STACK_NAME || 'asd-release2' }}
         run: python3 cloud/deploy.py --stack "$STACK_NAME" --release "$RELEASE_ID" --report deployment-report.json
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: aws-deployment-evidence
-          path: deployment-report.json
+          path: |
+            deployment-report.json
+            deployment-evidence/*.json

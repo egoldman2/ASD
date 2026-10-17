@@ -132,9 +132,9 @@ flowchart LR
 
 `cloud/deploy.py` reads stack outputs instead of requiring each developer to know bucket and secret identifiers. It bundles the current source, uploads it and sends an SSM command. The host downloads the archive using its own role, verifies its checksum and invokes `cloud/install.sh`.
 
-The installer uses a host deployment lock, writes a private `cloud.env`, reuses the persistent session key, builds and starts containers, then runs `cloud/smoke.py`. Successful releases update `/srv/asd/current`. If startup or smoke checks fail, the installer attempts to restore the previous containers. Release-specific image tags avoid overwriting the previous application images.
+The installer uses a host deployment lock, writes a private `cloud.env`, reuses the persistent session key, builds and starts containers, then runs `cloud/smoke.py` against both loopback and the public HTTPS origin and inspects actual runtime flags/listeners. Successful releases update `/srv/asd/current`. If startup or smoke checks fail, the installer attempts to restore the previous containers. Release-specific image tags avoid overwriting the previous application images.
 
-The SHA-256 verifies the archive downloaded by the host matches the uploaded release. It does not prove that the code was reviewed. Manual deployment can include uncommitted code from the developer's working copy; the group should deploy reviewed, identified commits.
+The SHA-256 verifies the archive downloaded by the host matches the uploaded release. It does not prove that the code was reviewed. Deployment now rejects dirty/untracked working copies and non-main source. Actions additionally checks the checked-out SHA/ref/repository and release attempt. A manual main deployment is labelled manual and does not establish final Actions release evidence. See [the current evidence/runbook](aws-deployment.md) for safe failure artifacts and native capture retrieval.
 
 ## 6. Data persistence, security and their limits
 
@@ -194,7 +194,7 @@ aws ec2 start-instances --profile aws-toolkit --region ap-southeast-2 \
 aws ec2 wait instance-running --profile aws-toolkit --region ap-southeast-2 \
   --instance-ids i-03a217a6a7f61d3ae
 
-# Deploy an identified release from the repository root, while EC2 is ready.
+# Deploy only a clean, committed main checkout after normal PR integration, while EC2 is ready.
 AWS_PROFILE=aws-toolkit python3 cloud/deploy.py \
   --release teammate-reviewed-release-id --report deployment-report.json
 

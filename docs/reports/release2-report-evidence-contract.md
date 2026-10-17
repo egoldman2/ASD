@@ -108,6 +108,13 @@ pass-with-exceptions exit 0. A zero exit still does not grant release approval.
 the same bounded, hash-checked reader. S13b connects it to the existing loop's
 `cloud-deployment` mode and interactive option 10;
 S14 supplies the deployment/smoke provenance fields and S16 supplies real captures.
+`cloud/deploy.py` saves a sanitized deployment report and a hash-linked remote
+result in `deployment-evidence/`. Its native local/public smoke and runtime files
+stay in the release directory on EC2. Retrieve these through SSM and verify each
+recorded SHA-256 before supplying manifest descriptors; a remote path/hash alone
+is not the native capture. The collector still requires a separately observed
+resource health window and genuine human release decision. Source/fixture checks
+do not create either record.
 This contract and its synthetic tests are not live deployment evidence.
 
 The manifest uses `schema_version: 1`, `kind: cloud-deployment`, selected

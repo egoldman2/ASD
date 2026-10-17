@@ -1,6 +1,6 @@
 # Release 2 AWS deployment
 
-The cloud baseline runs the existing five features and their CRUD APIs on one EC2 host in `ap-southeast-2`. The local Release 1 Compose layout remains available. Ollama, MCP, RAG and the future multi-agent service are disabled in the cloud configuration.
+The cloud baseline runs the existing five features and their CRUD APIs on one EC2 host in `ap-southeast-2`. The local Release 1 Compose layout remains available. Ollama, MCP, RAG and Multi-Agent are disabled in the cloud configuration.
 
 ```mermaid
 flowchart LR
@@ -37,13 +37,30 @@ python3 cloud/deploy.py --release manual-unique-id --report deployment-report.js
 
 Provisioning validates the template and checks the chosen instance type against the project's current plan before changing the stack. It creates the VPC, host, retained storage, private release bucket, secrets and CloudFront distribution. The host installs Docker and a checksum-verified Compose binary.
 
-Deployment creates a source archive, uploads it to S3 and executes installation through SSM. The host verifies the archive hash, builds containers and runs integrated authentication and CRUD checks. Only a passing release becomes `/srv/asd/current`. A failed update attempts to restore the previous containers; database changes are not rolled back. Do not introduce destructive database migrations without a separate backup and recovery plan.
+Deployment requires a clean, committed main checkout, including no untracked source. Actions also verifies its repository/ref/SHA/run attempt; manual main deployments remain labelled manual and cannot establish final Actions release evidence. Deployment creates a source archive, uploads it to S3 and executes installation through SSM. The host verifies the archive hash, builds containers and runs both loopback and public integrated authentication/CRUD/disabled-AI checks. Running flags, container health/services and host listeners must establish the disabled baseline before acceptance. Only a passing release becomes `/srv/asd/current`. A failed update attempts to restore the previous containers; database changes are not rolled back. Do not introduce destructive database migrations without a separate backup and recovery plan.
+
+`deployment-report.json` records the source commit, bundle SHA-256, release ID,
+UTC capture, run/attempt, SSM command, instance, public target and acceptance.
+`deployment-evidence/deployment-result.json` contains validated remote paths/hashes
+for `local-smoke.json`, `public-smoke.json` and `runtime.json`. Native captures stay
+in the immutable `/srv/asd/releases/<release>-<digest-prefix>/` directory; retrieve
+those three files through SSM, verify their hashes, and add them to the final
+review manifest. Remote paths alone cannot satisfy the report collector. No new
+public diagnostics route is exposed. Host `deployment.log` stays private; neither
+raw SSM stdout/stderr nor the full Docker environment is exported. Failed/pending
+SSM commands retain safe failure status/identity when available, and Actions
+attempts artifact upload on failure. A rollback attempt is not proof of restored
+health; inspect the previous release afterward. No database rollback is performed.
+
+S14's local fixture checks establish the code paths; actual SSM/public/resource
+stability and five same-SHA workflow evidence still belong to S16. No successful
+live deployment is claimed by these source changes.
 
 SSM command IDs and sanitized deployment reports provide evidence. Do not paste `cloud.env`, Secrets Manager values, cookies or raw `docker inspect` output into reports. The seed password can be retrieved privately from the stack's `DemoPasswordArn` for `admin@asd.local` and `customer@asd.local`; it is not published in source or stack outputs.
 
 ## Stop and resume sessions
 
-The initial environment was stopped after verification at the user's request. Its URL is `https://dww8d9hiqp0ce.cloudfront.net`; it is unavailable while EC2 is stopped. The instance ID is `i-03a217a6a7f61d3ae`. Start it for the next group session:
+Historical setup state: the initial environment was stopped after verification at the user's request. Its URL is `https://dww8d9hiqp0ce.cloudfront.net`; it is unavailable while EC2 is stopped. Current EC2/OIDC/availability state must be checked after AWS authentication is restored; the historical stop is not a current-state observation. The instance ID is `i-03a217a6a7f61d3ae`. Start it for the next group session:
 
 ```bash
 aws ec2 start-instances --profile aws-toolkit --region ap-southeast-2 --instance-ids i-03a217a6a7f61d3ae
@@ -67,7 +84,7 @@ The template's `EnableGitHubOidc` parameter defaults to `false`. This project's 
 
 ## Validation and limitations
 
-The initial port passed 677 Python tests with ten optional live-service tests skipped, plus 44 integrated local cloud checks. A request without the gateway's origin verification header was rejected with HTTP 403. The template passed cfn-lint, the repository's targeted cfn-guard rules and AWS `validate-template`. These checks cover this change; they do not establish that all Release 2 assessment requirements are complete.
+Historical initial-port evidence: 677 Python tests passed with ten optional live-service tests skipped, plus 44 integrated local cloud checks. A request without the gateway's origin verification header was rejected with HTTP 403. The template passed cfn-lint, the repository's targeted cfn-guard rules and AWS `validate-template`. These checks cover this change; they do not establish that all Release 2 assessment requirements are complete.
 
 This baseline has a single host and SQLite databases. It has no automatic failover, scheduled database backups or centralized application-log collection. Container logs rotate on disk; CloudTrail event history is available but no durable trail was configured. CloudFront provides browser HTTPS, while the restricted origin connection currently uses HTTP. An ALB with origin TLS and managed database/backup services are possible next steps if the group decides it needs stronger availability or end-to-end transport encryption.
 
