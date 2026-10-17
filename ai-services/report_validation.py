@@ -5,6 +5,7 @@ from hashlib import sha256
 import json
 from pathlib import Path
 import re
+from urllib.parse import urlsplit
 
 from defusedxml import ElementTree
 from defusedxml.common import DefusedXmlException
@@ -443,5 +444,395 @@ def collect_testing_evidence(
         )
     except (ValueError, TypeError, KeyError, OSError, RecursionError):
         evidence["issues"].append("invalid_testing_manifest")
+    evidence["inputs"] = inputs.files
+    return evidence
+
+
+CLOUD_CRUD = {
+    "product_catalogue": r"/api/cart-items(?:/\d+)?",
+    "inventory": r"/inventory-api/api/inventory/products(?:/\d+)?",
+    "customer_loyalty": r"/account-api/api/admin/customers(?:/\d+)?",
+    "order_returns": r"/api/order-returns/orders(?:/\d+)?(?:/status)?",
+    "customer_support": r"/api/support/(?:customer|admin)/tickets(?:/\d+)?(?:/messages)?",
+}
+DISABLED_PATHS = {
+    "customer_support:ai": r"/api/support/admin/tickets/\d+/ai-analysis",
+    "customer_support:mcp": r"/api/support/admin/mcp/(?:tools/call|assistant)",
+    "customer_support:rag": r"/api/support/admin/rag/answer",
+    "customer_support:multi_agent": r"/api/support/admin/multi-agent/tickets/\d+/workflows",
+    "customer_loyalty:ai": r"/account-api/api/admin/ai/customer-insight",
+    "customer_loyalty:mcp": r"/account-api/api/admin/mcp/loyalty-tier",
+    "customer_loyalty:rag": r"/account-api/api/admin/rag/answer",
+    "product_catalogue:multi_agent": r"/api/chufeng/multi-agent/workflows",
+}
+DISABLED_INTEGRATIONS = set(DISABLED_PATHS)
+
+
+def _main_run(run, source_sha):
+    _require(isinstance(run, dict) and run.get("head_sha") == source_sha)
+    _require(run.get("head_branch") == "main" and run.get("event") == "push")
+    _require(type(run.get("id")) is int and run["id"] > 0)
+    _require(
+        run.get("html_url")
+        == f"https://github.com/egoldman2/ASD/actions/runs/{run['id']}"
+    )
+    jobs = run.get("jobs")
+    _require(
+        isinstance(jobs, list)
+        and 0 < len(jobs) <= 30
+        and all(isinstance(job, dict) for job in jobs)
+    )
+    return (
+        run.get("status") == "completed"
+        and run.get("conclusion") == "success"
+        and all(
+            job.get("status") == "completed" and job.get("conclusion") == "success"
+            for job in jobs
+        )
+    )
+
+
+def _cloud_smoke(smoke, source_sha, release, target):
+    _require(isinstance(smoke, dict) and smoke.get("source_sha") == source_sha)
+    _require(smoke.get("release_id") == release and smoke.get("base_url") == target)
+    _timestamp(smoke.get("captured_at"))
+    rows = smoke.get("checks")
+    _require(
+        isinstance(rows, list)
+        and 0 < len(rows) <= 300
+        and all(isinstance(row, dict) for row in rows)
+    )
+    matrix = {feature: set() for feature in FEATURES}
+    disabled = set()
+    methods = {
+        "create": {"POST"},
+        "read": {"GET"},
+        "update": {"PUT", "PATCH"},
+        "delete": {"DELETE"},
+        "reply": {"POST"},
+    }
+    statuses = {
+        "create": {201},
+        "read": {200},
+        "update": {200},
+        "delete": {200, 204},
+        "reply": {201},
+    }
+    for row in rows:
+        feature, operation = row.get("feature"), row.get("operation")
+        if feature in matrix and operation in methods and row.get("passed") is True:
+            if (
+                row.get("method") in methods[operation]
+                and row.get("status") in statuses[operation]
+                and re.fullmatch(CLOUD_CRUD[feature], str(row.get("path")))
+            ):
+                matrix[feature].add(operation)
+        if (
+            row.get("disabled_integration") in DISABLED_INTEGRATIONS
+            and row.get("status") == 503
+            and row.get("safe_disabled") is True
+            and row.get("method") == "POST"
+            and re.fullmatch(
+                DISABLED_PATHS[row["disabled_integration"]], str(row.get("path"))
+            )
+        ):
+            disabled.add(row["disabled_integration"])
+    missing = {
+        feature: sorted(
+            (
+                {"create", "read", "update", "delete", "reply"}
+                if feature == "customer_support"
+                else {"create", "read", "update", "delete"}
+            )
+            - operations
+        )
+        for feature, operations in matrix.items()
+    }
+    passed = (
+        smoke.get("status") == "passed"
+        and smoke.get("cleanup_status") == "passed"
+        and all(row.get("passed") is True for row in rows)
+        and not any(missing.values())
+        and disabled == DISABLED_INTEGRATIONS
+    )
+    return {
+        "status": "pass" if passed else "fail",
+        "check_count": len(rows),
+        "missing_crud": missing,
+        "missing_disabled": sorted(DISABLED_INTEGRATIONS - disabled),
+        "cleanup_status": smoke.get("cleanup_status"),
+    }
+
+
+def collect_cloud_evidence(root, manifest_path, source_sha, required_workflows):
+    """Validate captured main Actions, accepted release and public/runtime evidence."""
+    _require(isinstance(source_sha, str) and re.fullmatch(r"[a-f0-9]{40}", source_sha))
+    _require(
+        isinstance(required_workflows, list)
+        and len(required_workflows) == len(set(required_workflows)) == 5
+    )
+    _require(
+        all(
+            isinstance(path, str)
+            and re.fullmatch(r"\.github/workflows/[A-Za-z0-9_-]+\.ya?ml", path)
+            and path != ".github/workflows/cloud-deployment.yml"
+            for path in required_workflows
+        )
+    )
+    inputs = EvidenceInputs(root)
+    evidence = {
+        "kind": "cloud-deployment",
+        "read_only": True,
+        "source_sha": source_sha,
+        "status": "incomplete",
+        "technical_status": "incomplete",
+        "checks": [],
+        "issues": [],
+        "human_release": {"recorded": False},
+        "remote_authenticity_verified": False,
+        "limitations": [
+            "Supplied captures are checked offline; remote authenticity is not independently verified.",
+            "A technical result or model recommendation cannot grant a human release approval.",
+            "Recorded core CRUD does not establish unrecorded returns/supplier operations or production capacity.",
+        ],
+    }
+    try:
+        manifest = json.loads(inputs.read({"path": manifest_path}, limit=128 * 1024))
+        _require(
+            isinstance(manifest, dict)
+            and manifest.get("schema_version") == 1
+            and manifest.get("kind") == "cloud-deployment"
+        )
+        _capture(manifest, source_sha)
+        deploy = inputs.json(manifest.get("deployment"))
+        _capture(deploy, source_sha)
+        release, digest, target = (
+            deploy.get("release_id"),
+            deploy.get("source_sha256"),
+            deploy.get("public_url"),
+        )
+        _require(
+            isinstance(release, str)
+            and re.fullmatch(re.escape(source_sha) + r"-[1-9][0-9]{0,8}", release)
+        )
+        _require(
+            type(deploy.get("run_id")) is int
+            and deploy["run_id"] > 0
+            and type(deploy.get("run_attempt")) is int
+            and deploy["run_attempt"] > 0
+        )
+        _require(release == source_sha + "-" + str(deploy["run_attempt"]))
+        _require(isinstance(digest, str) and re.fullmatch(r"[a-f0-9]{64}", digest))
+        url = urlsplit(target)
+        _require(
+            url.scheme == "https"
+            and url.hostname
+            and re.fullmatch(r"[A-Za-z0-9.-]+", url.hostname)
+            and url.port in {None, 443}
+            and not url.username
+            and not url.password
+            and url.path in {"", "/"}
+            and not url.query
+            and not url.fragment
+        )
+        _require(
+            deploy.get("environment") == "aws-cloud"
+            and deploy.get("region") == "ap-southeast-2"
+        )
+        _require(
+            isinstance(deploy.get("command_id"), str)
+            and re.fullmatch(
+                r"[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}", deploy["command_id"]
+            )
+        )
+        _require(
+            isinstance(deploy.get("target_instance"), str)
+            and re.fullmatch(
+                r"i-(?:[a-f0-9]{8}|[a-f0-9]{17})", deploy["target_instance"]
+            )
+        )
+        evidence["release"] = {
+            "release_id": release,
+            "source_sha256": digest,
+            "target_url": target,
+            "command_id": deploy["command_id"],
+            "environment": "aws-cloud",
+            "region": "ap-southeast-2",
+        }
+        evidence["checks"].append(
+            {
+                "name": "ssm_acceptance",
+                "status": "pass"
+                if deploy.get("status") == "Success"
+                and deploy.get("trigger") == "github_actions"
+                and deploy.get("acceptance") == "passed"
+                else "fail",
+            }
+        )
+        for name in ("actions", "workflow_gate", "public_smoke", "runtime", "health"):
+            try:
+                report = inputs.json(manifest.get(name))
+                _require(isinstance(report, dict))
+                if name == "actions":
+                    passed = _main_run(report, source_sha)
+                    _require(
+                        report.get("id") == deploy["run_id"]
+                        and report.get("run_attempt") == deploy["run_attempt"]
+                    )
+                    _require(
+                        report.get("path") == ".github/workflows/cloud-deployment.yml"
+                    )
+                    passed &= any(job.get("name") == "deploy" for job in report["jobs"])
+                    detail = {"run_url": report["html_url"]}
+                elif name == "workflow_gate":
+                    _require(report.get("source_sha") == source_sha)
+                    runs = report.get("workflows")
+                    _require(
+                        isinstance(runs, list)
+                        and len(runs) == 5
+                        and all(isinstance(run, dict) for run in runs)
+                    )
+                    _require(
+                        {run.get("path") for run in runs} == set(required_workflows)
+                    )
+                    _require(len({run.get("id") for run in runs}) == 5)
+                    passed = report.get("status") == "passed" and all(
+                        _main_run(run, source_sha) for run in runs
+                    )
+                    detail = {"workflow_count": len(runs)}
+                elif name == "public_smoke":
+                    detail = _cloud_smoke(report, source_sha, release, target)
+                    passed = detail.pop("status") == "pass"
+                elif name == "runtime":
+                    _capture(report, source_sha)
+                    _require(report.get("origin") == "ssm-runtime")
+                    _require(
+                        report.get("release_id") == release
+                        and report.get("source_sha256") == digest
+                    )
+                    expected_path = f"/srv/asd/releases/{release}-{digest[:12]}"
+                    _require(report.get("current_release") == expected_path)
+                    flags, services, ports = (
+                        report.get("ai_flags"),
+                        report.get("service_names"),
+                        report.get("listening_ports"),
+                    )
+                    _require(isinstance(flags, dict) and FLAGS <= flags.keys())
+                    _require(
+                        isinstance(services, list)
+                        and services
+                        and all(_text(service, 100) for service in services)
+                    )
+                    _require(
+                        isinstance(ports, list)
+                        and ports
+                        and all(
+                            type(port) is int and 0 < port <= 65535 for port in ports
+                        )
+                    )
+                    passed = (
+                        all(flags[name] == "false" for name in FLAGS)
+                        and not any(
+                            re.search(
+                                r"ollama|multi[-_]?agent|(?:mcp|rag)[-_]?server|(?:^|[-_])(?:mcp|rag)(?:$|[-_])",
+                                service,
+                                re.IGNORECASE,
+                            )
+                            for service in services
+                        )
+                        and not ({11434, 8765, 5003, 5004} & set(ports))
+                    )
+                    detail = {
+                        "baseline_flags_disabled": all(
+                            flags[name] == "false" for name in FLAGS
+                        ),
+                        "current_release": expected_path,
+                    }
+                else:
+                    _capture(report, source_sha)
+                    _require(
+                        report.get("release_id") == release
+                        and report.get("target_instance") == deploy["target_instance"]
+                    )
+                    _require(
+                        type(report.get("observation_seconds")) is int
+                        and report["observation_seconds"] > 0
+                    )
+                    _require(
+                        all(
+                            type(report.get(field)) is int and report[field] >= 0
+                            for field in ("new_oom_events", "unexpected_restarts")
+                        )
+                    )
+                    passed = (
+                        report.get("status") == "stable"
+                        and report.get("instance_status")
+                        == report.get("system_status")
+                        == "ok"
+                        and report.get("new_oom_events")
+                        == report.get("unexpected_restarts")
+                        == 0
+                    )
+                    detail = {
+                        "observation_seconds": report["observation_seconds"],
+                        "capacity_limit": "Only the recorded observation window is covered.",
+                    }
+                evidence["checks"].append(
+                    {"name": name, "status": "pass" if passed else "fail", **detail}
+                )
+            except (ValueError, TypeError, KeyError, OSError, RecursionError):
+                evidence["issues"].append("invalid_" + name + "_capture")
+        evidence["technical_status"] = (
+            "fail"
+            if any(check["status"] == "fail" for check in evidence["checks"])
+            else "incomplete"
+            if evidence["issues"]
+            else "pass"
+        )
+        human_ref = manifest.get("human_release")
+        if human_ref:
+            try:
+                human = inputs.json(human_ref)
+                _require(
+                    isinstance(human, dict) and human.get("source_sha") == source_sha
+                )
+                _require(
+                    human.get("decision") in {"accept", "conditional_accept", "reject"}
+                )
+                _require(
+                    _text(human.get("identity")) and _text(human.get("reason"), 2000)
+                )
+                _timestamp(human.get("decided_at"))
+                _require(
+                    datetime.fromisoformat(human["decided_at"].replace("Z", "+00:00"))
+                    >= datetime.fromisoformat(
+                        deploy["captured_at"].replace("Z", "+00:00")
+                    )
+                )
+                if human["decision"] == "conditional_accept":
+                    _require(_text(human.get("conditions"), 2000))
+                evidence["human_release"] = {
+                    "recorded": True,
+                    "decision": human["decision"],
+                    "identity": public_evidence(human["identity"]),
+                    "reason_present": True,
+                    "conditions_pending": human["decision"] == "conditional_accept",
+                }
+            except (ValueError, TypeError, KeyError, OSError, RecursionError):
+                evidence["issues"].append("invalid_human_release_record")
+        decision = evidence["human_release"].get("decision")
+        evidence["status"] = (
+            "fail"
+            if evidence["technical_status"] == "fail" or decision == "reject"
+            else "incomplete"
+            if evidence["technical_status"] != "pass"
+            or decision != "accept"
+            or evidence["issues"]
+            else "pass"
+        )
+        if not evidence["human_release"]["recorded"]:
+            evidence["issues"].append("human_release_decision_missing")
+    except (ValueError, TypeError, KeyError, OSError, RecursionError):
+        evidence["issues"].append("invalid_cloud_manifest_or_deployment")
     evidence["inputs"] = inputs.files
     return evidence

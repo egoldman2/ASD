@@ -101,3 +101,66 @@ remain visible. `--no-save` creates neither artifact. Fixture tests use scripted
 model replies and do not establish real model or human participation.
 The CLI exits 1 for failed/incomplete deterministic report evidence; pass and
 pass-with-exceptions exit 0. A zero exit still does not grant release approval.
+
+## Cloud Deployment Report captures (S13a)
+
+`collect_cloud_evidence(root, manifest_path, source_sha, required_workflows)` reuses
+the same bounded, hash-checked reader. S13b connects it to the existing loop;
+S14 supplies the deployment/smoke provenance fields and S16 supplies real captures.
+This contract and its synthetic tests are not live deployment evidence.
+
+The manifest uses `schema_version: 1`, `kind: cloud-deployment`, selected
+`source_sha`, `owner`, timezone-aware `captured_at`, actual capture `command` and
+artifact descriptors for `deployment`, `actions`, `workflow_gate`, `public_smoke`,
+`runtime`, `health` and optional `human_release`. Every descriptor is `{path,
+sha256}`. The expected code SHA and five distinct assigned student workflow paths
+are provided independently. An unknown official allocation cannot pass by guessing.
+
+- `deployment`: capture metadata plus `release_id` (`<code SHA>-<run attempt>`),
+  bundle `source_sha256`, HTTPS `public_url`, `environment: aws-cloud`,
+  `region: ap-southeast-2`, SSM `command_id`, EC2 `target_instance`, actual
+  `run_id`/`run_attempt`, `trigger: github_actions`, SSM `status: Success` and
+  `acceptance: passed`. A manual SSM success is insufficient.
+- `actions`: actual cloud workflow/run/job metadata. The source SHA, main push,
+  run ID/attempt, workflow path and successful deploy job must match. Every
+  captured job must have completed successfully; skipped/pending jobs cannot pass.
+- `workflow_gate`: `source_sha`, `status` and five raw `workflows` run summaries,
+  with distinct IDs and the exact assigned paths. Each has the selected SHA,
+  `head_branch: main`, `event: push`, run URL, completed/success result and all
+  job statuses. A declaration that a gate passed cannot replace those records.
+- `public_smoke`: selected SHA, release ID, actual HTTPS `base_url`, capture time,
+  `status`, `cleanup_status` and bounded `checks`. Derive rows from real gateway
+  requests, recording `method`, `path`, `status`, `passed`, `feature` and CRUD
+  `operation` for each applicable request. Require create/read/update/delete for
+  all five core features and a support staff `reply`. Match methods/statuses and
+  existing API paths, rather than accepting a raw check count or homepage alone.
+- Disabled-response rows also record `disabled_integration` and `safe_disabled`
+  after checking the actual authenticated response. Require support AI/MCP/RAG/
+  Multi-Agent, existing account AI/MCP/RAG and catalogue Multi-Agent checks on
+  their concrete POST routes. Each must return safe disabled behaviour and 503.
+  Teammates' additional integrations remain with their owners.
+- `runtime`: capture metadata with `origin: ssm-runtime`, selected SHA, release
+  ID/bundle digest and actual `/srv/asd/current` target in `current_release`.
+  Inspect running container flags (`ai_flags`), `service_names` and host
+  `listening_ports`; the four flags must be false and AI services/model ports
+  absent. Source Compose flags alone are insufficient. No public diagnostics
+  endpoint is required.
+- `health`: capture metadata, same release/instance, positive
+  `observation_seconds`, actual `instance_status`/`system_status`,
+  `new_oom_events`, `unexpected_restarts` and `status`. A stable recorded window
+  requires both instance checks OK and zero new events; it is not a production
+  capacity guarantee or permission to change AWS capabilities.
+- `human_release`: a genuine separately supplied record with selected SHA,
+  `decision` (`accept`, `conditional_accept` or `reject`), `identity`,
+  timezone-aware `decided_at` after deployment capture and nonempty `reason`.
+  Conditional decisions additionally require `conditions`. The validator never
+  generates this record. It retains only a redacted identity and decision summary;
+  the input file/hash links to the actual reasons, without copying raw human prose.
+
+`technical_status` covers captured deployment, gate, public smoke, runtime and
+health evidence. `status` additionally requires an actual human acceptance:
+missing/conditional decisions remain incomplete, and rejection or failed
+technical checks remain failed. A successful model review cannot create approval.
+Offline capture authenticity, unrecorded returns/supplier operations, broader
+capacity and other release checks remain explicit limitations. Verify original
+Actions/public/resource evidence separately before the real release decision.
