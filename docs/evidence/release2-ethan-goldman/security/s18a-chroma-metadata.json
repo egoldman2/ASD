@@ -1,0 +1,10 @@
+{
+  "captured_at": "2026-10-17T01:05:35.576132+00:00",
+  "source": "https://pypi.org/pypi/chromadb/json",
+  "package": "chromadb",
+  "latest_version": "1.5.9",
+  "requires_python": ">=3.9",
+  "limitations": [
+    "Package metadata does not establish safety; compare native advisory results and exposure before release"
+  ]
+}

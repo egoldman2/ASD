@@ -90,7 +90,7 @@ def test_assistant_url_override_is_local_and_never_changes_model_arguments(live_
 
 
 @pytest.mark.skipif(os.getenv('RUN_LIVE_RELEASE1_VALIDATION') != '1', reason='Opt-in actual CLI/model/protocol acceptance')
-def test_actual_cli_modes_record_four_native_mcp_examples_and_grounded_rag(live_mcp, rag_host, monkeypatch):
+def test_actual_cli_modes_record_four_native_mcp_examples_and_grounded_rag(live_mcp, rag_host, monkeypatch, tmp_path):
     runner = load_agentic_loop('goldman_release1_live_cli')
     config, _ = runner.load_feature('student-Ethan Goldman')
     secret = configured_runtime(live_mcp, monkeypatch)
@@ -119,9 +119,9 @@ def test_actual_cli_modes_record_four_native_mcp_examples_and_grounded_rag(live_
     before = sha256(live_mcp.database_path.read_bytes()).hexdigest()
     paths, evidence = {}, {}
     for mode in ('mcp', 'rag'):
-        result = subprocess.run([sys.executable, str(ROOT / 'ai-services/agentic_loop.py'),
+        result = subprocess.run([sys.executable, str(ROOT / 'ai-services/agentic_loop.py'),  # noqa: S603 - Trusted interpreter/project script and literal mode tuple; no shell or user arguments.
             '--feature', 'student-Ethan Goldman', '--mode', mode], cwd=ROOT, capture_output=True, text=True, timeout=420)
-        Path(f'/tmp/asd-e6-{mode}-cli.txt').write_text(result.stdout + '\n' + result.stderr)
+        (tmp_path / f'{mode}-cli.txt').write_text(result.stdout + '\n' + result.stderr)
         assert result.returncode == 0, result.stdout + result.stderr
         match = re.search(r'Evidence saved to (.+)', result.stdout)
         assert match, result.stdout
@@ -146,4 +146,4 @@ def test_actual_cli_modes_record_four_native_mcp_examples_and_grounded_rag(live_
     assert not evidence['rag']['runtime']['probes'][1]['answer']['metadata']['model_invoked']
     assert sha256(live_mcp.database_path.read_bytes()).hexdigest() == before
     assert secret not in json.dumps(native_mcp) + json.dumps(native_rag)
-    Path('/tmp/asd-e6-live-cli-traces.json').write_text(json.dumps({'paths': paths, 'mcp': native_mcp, 'rag': native_rag}, indent=2))
+    (tmp_path / 'live-cli-traces.json').write_text(json.dumps({'paths': paths, 'mcp': native_mcp, 'rag': native_rag}, indent=2))

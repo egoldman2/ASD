@@ -269,7 +269,7 @@ if __name__ == "__main__":
         from database_service.init_db import initialize_database
     initialize_database(app.config["DATABASE_PATH"])
     app.run(
-        host=os.getenv("APP_HOST", "0.0.0.0"),
+        host=os.getenv("APP_HOST", "127.0.0.1"),
         port=int(os.getenv("APP_PORT", "6006")),
         debug=False,
         use_reloader=False,

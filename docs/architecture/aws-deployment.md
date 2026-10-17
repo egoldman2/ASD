@@ -1,6 +1,6 @@
 # Release 2 AWS deployment
 
-The cloud baseline runs the existing five features and their CRUD APIs on one EC2 host in `ap-southeast-2`. The local Release 1 Compose layout remains available. Ollama, MCP, RAG and Multi-Agent are disabled in the cloud configuration.
+Current source/configuration describes the existing five features and their CRUD APIs on one EC2 host in `ap-southeast-2`. The local Release 1 Compose layout remains available. Ollama, MCP, RAG and Multi-Agent are disabled in the cloud configuration.
 
 ```mermaid
 flowchart LR
@@ -14,6 +14,13 @@ flowchart LR
     Orders --> EBS
     S3[Private release bucket] -->|SSM deployment| Gateway
 ```
+
+Current status (17 October 2026): shared gates, smoke/provenance and local model
+support are implemented on `ethan-goldman`. Actual local cloud-bundle checks pass;
+current AWS access, host recovery, OIDC, main integration and final public Actions
+deployment remain unverified. The running-state, plan and sizing observations
+below are dated historical evidence. See the [current shared handoff](../reports/release2-shared-cloud-and-testing.md)
+and [ledger](../evidence/release2-ethan-goldman/progress.md).
 
 ## Design choices
 
@@ -107,7 +114,7 @@ Retained EBS, the release bucket and seed-password secret survive stack deletion
 
 ## Group decisions still needed
 
-Decide who owns the AWS project and invites team members; whether to keep this shared environment running; the acceptable credit budget; how demo credentials are shared privately; who can approve deployments; whether the current availability, logging and backup limits are sufficient; and how OIDC capability will be enabled. The local multi-agent implementation, student endpoint test assignments, review pages, report and showcase remain separate Release 2 work.
+Decide who owns the AWS project and invites team members; whether to keep this shared environment running; the acceptable credit budget; how demo credentials are shared privately; who can approve deployments; whether the current availability, logging and backup limits are sufficient; and how OIDC capability will be enabled. The support Multi-Agent implementation, explicit support endpoint CI and review modes are implemented. Genuine human review, remaining member evidence, final integrated deployment and report/showcase acceptance remain required.
 
 Cloud matrix/build validation also runs on relevant PRs. Gate and deployment
 remain main-only; concurrency is separated by ref so PR validation cannot replace

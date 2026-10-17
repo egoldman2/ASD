@@ -238,7 +238,7 @@ def test_assistant_route_uses_real_mcp_results_with_deterministic_model(live_mcp
 
 
 @pytest.mark.skipif(os.getenv("RUN_LIVE_MCP_AI") != "1", reason="Opt-in real host model and MCP acceptance")
-def test_live_model_executes_mcp_and_generates_verified_answer(live_mcp, monkeypatch):
+def test_live_model_executes_mcp_and_generates_verified_answer(live_mcp, monkeypatch, tmp_path):
     monkeypatch.setenv("OLLAMA_URL", "http://127.0.0.1:11434")
     monkeypatch.setenv("MCP_ASSISTANT_MODEL", "qwen2.5:3b")
     stack = live_mcp
@@ -254,7 +254,7 @@ def test_live_model_executes_mcp_and_generates_verified_answer(live_mcp, monkeyp
     response = stack.admin().post(stack.backend.url + "/api/support/admin/mcp/assistant",
                                   json={"question": "How does our support workload look?"},
                                   headers=stack.origin_headers, timeout=95)
-    Path('/tmp/asd-support-mcp-model-outputs.json').write_text(json.dumps(outputs, indent=2))
+    (tmp_path / 'mcp-model-outputs.json').write_text(json.dumps(outputs, indent=2))
     assert response.status_code == 200, response.text
     result = response.json()
     assert result["status"] == "answered" and result["model"] == "qwen2.5:3b"
@@ -262,7 +262,7 @@ def test_live_model_executes_mcp_and_generates_verified_answer(live_mcp, monkeyp
     assert result["observations"][0]["result"]["total"] == 12
     assert result["answer"] and result["facts"] and 2 <= result["model_requests"] <= 4
     assert sha256(stack.database_path.read_bytes()).hexdigest() == before
-    Path('/tmp/asd-support-mcp-assistant-live.json').write_text(json.dumps(result, indent=2))
+    (tmp_path / 'mcp-assistant-live.json').write_text(json.dumps(result, indent=2))
 
 
 def test_native_draft_then_wrong_labelled_count_gets_one_bounded_correction():

@@ -2,6 +2,12 @@
 
 Prepared 12 October 2026 from the implementation and the 9 October deployment evidence. This guide is for explaining the work in the showcase and for handing operation of the shared environment to the group.
 
+Status update, 17 October 2026: this document preserves its dated historical
+observations. The [current shared release handoff](../reports/release2-shared-cloud-and-testing.md)
+records implemented support/review/gate work, actual local evidence and unresolved
+AWS/human/integration dependencies. Statements below about current/live state
+refer to their original 9–12 October capture, not a new availability check.
+
 ## 1. What we actually built
 
 We adapted the existing Release 1 marketplace to run on one AWS EC2 Linux virtual machine. Docker Compose runs the existing frontends, Flask APIs and SQLite database services. CloudFront supplies a public HTTPS entry point. Application records live on encrypted EBS storage outside the release folders. Reusable scripts provision infrastructure and deploy source releases through AWS Systems Manager.
