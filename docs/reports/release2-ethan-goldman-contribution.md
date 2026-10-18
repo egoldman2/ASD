@@ -1,6 +1,6 @@
 # Release 2 — Ethan Goldman contribution (S18a working draft)
 
-Prepared 17 October 2026, Australia/Sydney (AEDT). **Release incomplete.** This
+Updated 18 October 2026, Australia/Sydney (AEDT). **Release incomplete.** This
 is material for the group editor, not the final PDF, attendance declaration or
 human release decision. Implementation and operations were performed with Codex
 on `ethan-goldman`; all checkpoint commits, checks and limitations are in the
@@ -119,10 +119,17 @@ UI workflow `3a970ca5-0b90-4e7f-ab84-cd7beb089c28` and terminal HTTP workflow
 `67702aa8-4a5f-4cd0-a311-8bd952ed18d5` each completed real Planner/Worker Qwen 3B
 and Reviewer Llama 3.1 8B. Native history/audit and both generated outputs survive
 restart and scoped container recreation; old sessions and ticket data also
-persist. Both proposals repeat an already-requested information request. Human
-decisions remain pending, regardless of model acceptance recommendations.
-The preliminary real Agentic Loop retained incomplete human evidence and failed
-model citation grounding; it is not S17 acceptance.
+persist. Both proposals repeat an already-requested information request. On
+18 October Ethan explicitly accepted both with the reason `nothing needed.`;
+the existing Chrome staff controls recorded each decision as `user:1`. The
+[completed review evidence](../evidence/release2-ethan-goldman/local/human-review-20261018/README.md)
+verifies the exact saved decisions, matching audit/history and unchanged ticket,
+messages and model outputs, including after another server restart. The actual
+selected Support Agentic Loop now verifies complete human/runtime evidence.
+Model citation/agent-name grounding still failed, so its report preserves those
+issues and uses the existing deterministic fallback. Support regressions pass
+206 tests with 10 opt-in skips. This local result is separate from S17 group
+review and release approval; the preliminary capture remains historical.
 
 ## Cloud report, contribution and remaining handover
 
@@ -143,7 +150,7 @@ change or model hosting occurred.
 Source changes are integrated through [draft PR #16](https://github.com/egoldman2/ASD/pull/16)
 into main. No merge is authorized. Dates/SHAs in the ledger describe actual work;
 no meeting attendance, teammate participation or video presentation is invented.
-Final local human review, owner evidence, S03 stability/OIDC access, main integration,
+Owner evidence, S03 stability/OIDC access, main integration,
 actual Actions deployment, three final reviews, release-owner decision, group
 PDF/video and marking-window retention remain required. Bonus points are unclaimed.
 

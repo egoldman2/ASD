@@ -37,6 +37,7 @@ removed. Code, tests, required report drafts and native local/cloud captures rem
 | S00d | `8702c4b` | Automated checks and branch CI passed | [current findings](security/s03a-all-ruff.json) [CI 1](https://github.com/egoldman2/ASD/actions/runs/38995127754), [CI 2](https://github.com/egoldman2/ASD/actions/runs/38995130793) |
 | S02a | `7b64a0c` | Recovered host and verified consistent database backups | [recovery](../release2-aws/recovery-20261017/README.md) [CI 1](https://github.com/egoldman2/ASD/actions/runs/39032815225), [CI 2](https://github.com/egoldman2/ASD/actions/runs/39032819040) |
 | S03a | `78e21b7` | 15 health tests and 302 shared/cloud tests pass; undeployed | [probe repair](../release2-aws/cpu-probes-20261017/README.md) [CI 1](https://github.com/egoldman2/ASD/actions/runs/39033738565), [CI 2](https://github.com/egoldman2/ASD/actions/runs/39033742420) |
+| S15b | Demo `37e859a`; review `d389a49` | Both genuine Accept decisions saved; restart/API/audit checks pass; Support 206 passed/10 opt-in skips | [completed human review](local/human-review-20261018/README.md); checkpoint SHA and exact-SHA CI in [PR #16](https://github.com/egoldman2/ASD/pull/16) |
 
 ## Current verification and remaining work
 
@@ -45,8 +46,11 @@ removed. Code, tests, required report drafts and native local/cloud captures rem
   their actual source and run. CI fixtures are separate from real local AI captures.
 - Security: [44 whole-repository Ruff findings](security/s03a-all-ruff.json) and
   four existing ChromaDB exceptions remain disclosed in the [security report](security/README.md).
-- Both ticket #2013 model workflows still require genuine human decisions/reasons;
-  see the [local report](local/README.md). No ticket action or approval is invented.
+- Both ticket #2013 workflows now record Ethan's Accept / `nothing needed.`;
+  [native evidence and completed review](local/human-review-20261018/README.md)
+  verify unchanged ticket/model data and post-decision restart persistence.
+  Review runtime validation passes; model grounding failed and used the existing
+  deterministic fallback. This is separate from final group release approval.
 - The recovered AWS app is an older manual release. The CPU probe repair is tested
   but undeployed; main Actions deployment, public CRUD/disabled-AI/persistence and
   representative-load stability remain required. GitHub OIDC access is SCP-blocked.
@@ -56,5 +60,5 @@ removed. Code, tests, required report drafts and native local/cloud captures rem
   outputs, human release decision, official group/workflow allocation, group PDF,
   video, attendance and resource-retention decision remain outstanding.
 
-Next: record the real Support decisions; resolve deployment access and integration,
+Next: resolve deployment access and authorized main integration,
 then capture final deployment/review evidence and complete the group submission.

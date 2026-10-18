@@ -1,6 +1,6 @@
 # Release 2 — shared cloud and testing contribution (S18a draft)
 
-Prepared 17 October 2026 (Australia/Sydney). **Release incomplete; no human release
+Updated 18 October 2026 (Australia/Sydney). **Release incomplete; no human release
 approval.** This is Ethan Goldman's group-editor handoff. The final PDF has a
 3,000-word cap across all contributors; these repository reports are source
 material, not a claim that appendices or tables are exempt. Official group,
@@ -147,16 +147,19 @@ validation and source hashes. See the [input contract](release2-report-evidence-
 
 S15a captured two real local support workflows, all three agent outputs,
 history/audit, actual Release 1 AI/MCP/RAG behaviour and restart persistence.
-Both human decisions are still pending. The preliminary real multi-agent review
-also retained missing human evidence and model grounding failure. Three final
-review outputs and a real final release decision therefore do not exist yet.
+Ethan accepted both proposals on 18 October with reason `nothing needed.`;
+[saved decisions, screenshots and verification](../evidence/release2-ethan-goldman/local/human-review-20261018/README.md)
+confirm unchanged ticket/model data and post-decision restart persistence. The
+actual selected Support review now has complete runtime/human evidence; its
+model grounding failed and the existing deterministic fallback preserved the
+validated result. Three final group review outputs and a real final release
+decision still do not exist.
 Ticket approval and group release approval are separate records.
 
 ## Concrete remaining ownership and acceptance
 
 | Dependency | Owner/action | Evidence needed before completion |
 | --- | --- | --- |
-| Two local workflow decisions | Ethan reviews #2013, supplies decision and reason | Stored UI/terminal decisions, unchanged ticket/output, updated history/audit and final rerun |
 | Other local integrations | Each feature owner | Own UI/terminal AI/MCP/RAG/Multi-Agent, CRUD and report evidence |
 | Data minimum/cart ambiguity | Catalogue/inventory owners | Supplier minimum resolved (cloud 5); reconcile legacy/current cart counts: local 10/0, cloud 10/8; no fabricated records |
 | Current security findings | Relevant source owners | Reviewed fixes and rescans; 44 current Ruff findings remain, not release sign-off |
