@@ -4,15 +4,34 @@ import asyncio
 from pathlib import Path
 import sys
 
+import pytest
+
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from rag_server.rag_http_server import MAX_REQUEST_BODY_BYTES, create_app
+from rag_server.rag_http_server import MAX_REQUEST_BODY_BYTES, create_app, main
 from rag_server.rag_server import AVAILABLE_TOOLS, SERVER_NAME, create_server
 from rag_server.response import RAGErrorCode, error_response, success_response
 
 
 AI_SERVICES_ROOT = Path(__file__).resolve().parents[2]
+
+
+@pytest.mark.parametrize("configured_host", [None, "127.0.0.1", "192.0.2.10"])
+def test_http_entrypoint_defaults_to_loopback_and_keeps_explicit_host(
+    monkeypatch, configured_host,
+):
+    monkeypatch.delenv("RAG_HOST", raising=False)
+    if configured_host is not None:
+        monkeypatch.setenv("RAG_HOST", configured_host)
+    calls = []
+    monkeypatch.setattr("flask.Flask.run", lambda self, **options: calls.append(options))
+
+    main()
+
+    assert len(calls) == 1
+    assert calls[0]["host"] == (configured_host or "127.0.0.1")
+    assert calls[0]["debug"] is False
 
 
 class FakePipeline:
