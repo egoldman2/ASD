@@ -246,18 +246,15 @@ def _response_issues(
     recommendation_match = re.search(
         r"(?ims)^Recommendation:\s*(.*)$", response_text
     )
-    flagged_problem = bool(
-        re.search(
-            r"\b(contradict\w*|incorrect\w*|unsupported|incomplete|omission)\b",
-            response_text,
-            re.IGNORECASE,
-        )
+    recommendation = (
+        recommendation_match.group(1).strip()
+        if recommendation_match is not None
+        else ""
     )
     needs_action = bool(
         (risk_match and risk_match.group(1).upper() in {"MEDIUM", "HIGH"})
-        or "Partially Accept" in response_text
-        or "Reject" in response_text
-        or flagged_problem
+        or recommendation.startswith("Partially Accept")
+        or recommendation.startswith("Reject")
     )
     if needs_action:
         if correction_match and correction_match.group(1).strip().lower().startswith(
@@ -268,12 +265,6 @@ def _response_issues(
             "not required"
         ):
             issues.append("Retest cannot be Not required for a non-accept review")
-        if (
-            flagged_problem
-            and recommendation_match
-            and recommendation_match.group(1).strip().startswith("Accept")
-        ):
-            issues.append("Recommendation cannot be Accept when a problem is flagged")
     return tuple(issues)
 
 
