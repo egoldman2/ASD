@@ -596,6 +596,7 @@ def collect_cloud_evidence(root, manifest_path, source_sha, required_workflows):
             "Recorded core CRUD does not establish unrecorded returns/supplier operations or production capacity.",
         ],
     }
+    manifest = {}
     try:
         manifest = json.loads(inputs.read({"path": manifest_path}, limit=128 * 1024))
         _require(
@@ -834,5 +835,29 @@ def collect_cloud_evidence(root, manifest_path, source_sha, required_workflows):
             evidence["issues"].append("human_release_decision_missing")
     except (ValueError, TypeError, KeyError, OSError, RecursionError):
         evidence["issues"].append("invalid_cloud_manifest_or_deployment")
+        # A failed preflight produces no accepted deployment artifact.
+        try:
+            _require(isinstance(manifest, dict))
+            _require(manifest.get("schema_version") == 1)
+            _require(manifest.get("kind") == "cloud-deployment")
+            _capture(manifest, source_sha)
+            actions = inputs.json(manifest.get("actions"))
+            _main_run(actions, source_sha)
+            _require(actions.get("path") == ".github/workflows/cloud-deployment.yml")
+            if (
+                actions.get("status") == "completed"
+                and actions.get("conclusion") == "failure"
+                and any(
+                    job.get("status") == "completed"
+                    and job.get("conclusion") == "failure"
+                    for job in actions["jobs"]
+                )
+            ):
+                evidence["checks"].append(
+                    {"name": "actions", "status": "fail", "run_url": actions["html_url"]}
+                )
+                evidence["technical_status"] = evidence["status"] = "fail"
+        except (ValueError, TypeError, KeyError, OSError, RecursionError):
+            pass
     evidence["inputs"] = inputs.files
     return evidence
