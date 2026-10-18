@@ -8,6 +8,7 @@
   const form = document.getElementById("maForm");
   const questionInput = document.getElementById("maQuestion");
   const productIdInput = document.getElementById("maProductId");
+  const timeLimitLabel = document.getElementById("maTimeLimit");
   const runButton = document.getElementById("maRunButton");
   const workflowLine = document.getElementById("maWorkflowLine");
   const planOutput = document.getElementById("maPlan");
@@ -20,7 +21,67 @@
   const reviewLine = document.getElementById("maReviewLine");
   const jsonBlock = document.getElementById("maJson");
 
+  const POLL_INTERVAL_MS = 5000;
+  const POLL_LIMIT_MINUTES = 150;
+  const POLL_LIMIT_MS = POLL_LIMIT_MINUTES * 60 * 1000;
+
   let currentWorkflowId = null;
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function elapsedText(startMs) {
+    const seconds = Math.floor((Date.now() - startMs) / 1000);
+    return `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, "0")}s`;
+  }
+
+  function showFailure(message, details) {
+    workflowLine.textContent = `Workflow failed: ${message}`;
+    workflowLine.style.color = "#b00020";
+    workflowLine.style.fontWeight = "600";
+    if (details !== undefined) {
+      jsonBlock.textContent = "Failure details:\n" + JSON.stringify(details, null, 2);
+    }
+  }
+
+  function clearFailureStyle() {
+    workflowLine.style.color = "";
+    workflowLine.style.fontWeight = "";
+  }
+
+  async function waitForJob(jobId) {
+    const startMs = Date.now();
+    while (Date.now() - startMs < POLL_LIMIT_MS) {
+      await sleep(POLL_INTERVAL_MS);
+      let result;
+      try {
+        result = await send("GET", `${BASE_API}/jobs/${encodeURIComponent(jobId)}`);
+      } catch (err) {
+        workflowLine.textContent =
+          `Waiting for the agents (${elapsedText(startMs)})... retrying status check.`;
+        continue;
+      }
+      const { status, payload } = result;
+      if (status !== 200) {
+        return { error: errorText(status, payload), details: payload, elapsed: elapsedText(startMs) };
+      }
+      if (payload.status === "completed") return { workflow: payload.workflow };
+      if (payload.status === "failed") {
+        return { error: errorText(502, payload), details: payload, elapsed: elapsedText(startMs) };
+      }
+
+      const stage = payload.status === "recovering"
+        ? "Connection to the server dropped, waiting for the result in its history. " +
+          "If the server terminal shows a 502, the run has failed"
+        : "Running Planner → Worker → Reviewer";
+      workflowLine.textContent = `${stage} (${elapsedText(startMs)})...`;
+    }
+    return {
+      error: `Stopped waiting after ${POLL_LIMIT_MINUTES} minutes. Check the Multi-Agent server log.`,
+      elapsed: elapsedText(startMs),
+    };
+  }
 
   async function send(method, url, body) {
     const options = {
@@ -95,19 +156,25 @@
     if (productId) requestBody.product_id = Number.parseInt(productId, 10);
 
     clearResult();
+    clearFailureStyle();
     runButton.disabled = true;
     workflowLine.textContent =
       "Running Planner → Worker → Reviewer. This can take several minutes...";
 
     try {
       const { status, payload } = await send("POST", `${BASE_API}/workflows`, requestBody);
-      if (status === 201) {
-        renderWorkflow(payload);
+      if (status !== 202) {
+        showFailure(errorText(status, payload), payload);
+        return;
+      }
+      const outcome = await waitForJob(payload.job_id);
+      if (outcome.workflow) {
+        renderWorkflow(outcome.workflow);
       } else {
-        workflowLine.textContent = errorText(status, payload);
+        showFailure(`${outcome.error} (after ${outcome.elapsed})`, outcome.details);
       }
     } catch (err) {
-      workflowLine.textContent = "The Multi-Agent workflow is unavailable right now.";
+      showFailure(`could not reach the backend (${err && err.message ? err.message : err}).`);
       console.error("Multi-Agent workflow failed:", err);
     } finally {
       runButton.disabled = false;
@@ -143,5 +210,10 @@
     }
   });
 
-  document.addEventListener("DOMContentLoaded", refreshStatus);
+  document.addEventListener("DOMContentLoaded", () => {
+    if (timeLimitLabel) {
+      timeLimitLabel.textContent = `Maximum wait: ${POLL_LIMIT_MINUTES} minutes per run.`;
+    }
+    refreshStatus();
+  });
 })();
