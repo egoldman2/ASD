@@ -148,7 +148,7 @@ def create_app():
 app = create_app()
 if __name__ == "__main__":
     app.run(
-        host=os.getenv("APP_HOST", "0.0.0.0"),
+        host=os.getenv("APP_HOST", "127.0.0.1"),
         port=int(os.getenv("APP_PORT", "8102")),
         debug=os.getenv("APP_DEBUG", "false").lower() == "true",
         use_reloader=False,

@@ -50,6 +50,10 @@ SENSITIVE_COLUMNS = {
 }
 
 
+def _quoted_identifier(name):
+    """Safely quote an SQLite table name; identifiers cannot be bound as parameters."""
+    return '"' + str(name).replace('"', '""') + '"'
+
 # --------------------------------------------------------------------------
 # Config / prompt loading
 # --------------------------------------------------------------------------
@@ -199,13 +203,17 @@ def collect_database_evidence(config: dict[str, Any]) -> dict[str, Any]:
                     "columns": idx_cols,
                 })
 
+            quoted_table = _quoted_identifier(table)
+
             record_count = conn.execute(
-                f"SELECT COUNT(*) AS n FROM {table}"
+                f"SELECT COUNT(*) AS n FROM {quoted_table}"  # noqa: S608 - table name is quoted; identifiers cannot be parameterised
             ).fetchone()["n"]
 
             sample_rows = conn.execute(
-                f"SELECT * FROM {table} LIMIT {MAX_SAMPLE_ROWS}"
+                f"SELECT * FROM {quoted_table} LIMIT ?",  # noqa: S608 - table name is quoted; LIMIT is a bound parameter
+                (MAX_SAMPLE_ROWS,),
             ).fetchall()
+
             sample_records = []
             for row in sample_rows:
                 record = {}

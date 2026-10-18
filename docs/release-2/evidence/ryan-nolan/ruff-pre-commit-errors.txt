@@ -1,0 +1,38 @@
+Ruff security rules......................................................Failed
+- hook id: ruff-check
+- exit code: 1
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ryan_Nolan/agentic/agentic_review.py:203:17
+    |
+202 |             record_count = conn.execute(
+203 |                 f"SELECT COUNT(*) AS n FROM {table}"
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+204 |             ).fetchone()["n"]
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> student-Ryan_Nolan/agentic/agentic_review.py:207:17
+    |
+206 |             sample_rows = conn.execute(
+207 |                 f"SELECT * FROM {table} LIMIT {MAX_SAMPLE_ROWS}"
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+208 |             ).fetchall()
+209 |             sample_records = []
+    |
+
+S104 Possible binding to all interfaces
+   --> student-Ryan_Nolan/backend/app.py:151:36
+    |
+149 | if __name__ == "__main__":
+150 |     app.run(
+151 |         host=os.getenv("APP_HOST", "0.0.0.0"),
+    |                                    ^^^^^^^^^
+152 |         port=int(os.getenv("APP_PORT", "8102")),
+153 |         debug=os.getenv("APP_DEBUG", "false").lower() == "true",
+    |
+
+Found 3 errors.
+
+Detect committed secrets.................................................Passed
+Audit all Python dependencies............................................Passed
