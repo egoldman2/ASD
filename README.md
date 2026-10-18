@@ -21,7 +21,7 @@ pre-commit run
 
 ## Project Overview
 
-This project is an integrated online marketplace developed by Group 7 for ASD 2026.
+This project is an integrated online marketplace developed by Group 33 for ASD 2026.
 
 The application is divided into five individual microservice features. Each feature contains its own frontend, backend/API, database, testing, Docker, AI-assisted functionality, and CI/CD workflow. The services are integrated through a shared home page and Docker Compose configuration.
 

@@ -4,8 +4,10 @@ Updated 18 October 2026, Australia/Sydney (AEDT). **Release incomplete.** This
 is material for the group editor, not the final PDF, attendance declaration or
 human release decision. Implementation and operations were performed with Codex
 on `ethan-goldman`; all checkpoint commits, checks and limitations are in the
-[progress ledger](../evidence/release2-ethan-goldman/progress.md). Official student
-number, group number and Canvas deadline/timezone await confirmation.
+[progress ledger](../evidence/release2-ethan-goldman/progress.md). Canvas confirms
+[Group 33](https://canvas.uts.edu.au/groups/399683). The [Release 2 assignment](https://canvas.uts.edu.au/courses/39716/assignments/267943)
+displays 25 October, 23:59 with the profile timezone Sydney; its brief says AEST.
+The timezone wording and official numeric workflow allocation need confirmation.
 
 ## Scope and support design
 
@@ -57,13 +59,8 @@ second workflow writer was introduced.
 | Same-SHA deployment gates | S10 `9c70b04` → `d8724d2` | Five verified workflow identities, latest-attempt jobs, current-main checks and seven-suite PR validation |
 | Actual local demonstration | S15a application `37e859a` | Native model/browser/API captures, two workflows, restart/recreation persistence and loopback-only ports |
 
-The [S10c cloud PR run](https://github.com/egoldman2/ASD/actions/runs/38986999923)
-passed seven isolated suites and image build. Main-only gate/deploy skipped,
-as intended for a PR. The shared/cloud regression was 274 passed. The later
-[Support regression](../evidence/release2-aws/cpu-probes-20261017/support-tests.txt)
-was 206 passed/10 opt-in skips. Actual model and nginx checks have separate
-captures; normal CI uses test doubles. Counts belong to their recorded source,
-not an untested final merge SHA.
+Actual model and nginx checks have separate captures; normal CI uses test doubles.
+The ledger retains historical checks; current integrated-main results follow.
 
 ## Pre-commit and post-commit testing report
 
@@ -88,16 +85,15 @@ Goldman's workflow is `.github/workflows/EthanGoldman.yml`. Its named tests are
 and `test_admin_update_contract` for `admin_update`
 (`PUT /api/support/admin/tickets/<int:ticket_id>`). They check persisted data,
 session-derived identity, limits, authorization/origin denials and no mutation on
-invalid updates. [Actual S09 context](../evidence/release2-ethan-goldman/ci/s09-actions-test-context.json)
-and [native endpoint JUnit](../evidence/release2-ethan-goldman/ci/s09-actions-endpoint-functions.xml)
-match source `50fe5ade0a05497ecbfba136f4ec2fde675e8205` and
-[successful run](https://github.com/egoldman2/ASD/actions/runs/38974830702).
-Latest branch follow-up: the same two functions pass with zero skips at source
-`78e21b7c6e63030fb01ea3331f54f845379cbf8a`; [native context](../evidence/release2-ethan-goldman/ci/s03a-actions-test-context.json),
-[endpoint JUnit](../evidence/release2-ethan-goldman/ci/s03a-actions-endpoint-functions.xml)
-and [archive digest/suite counts](../evidence/release2-ethan-goldman/ci/s03a-actions-artifact.json)
-verify the actual [push run](https://github.com/egoldman2/ASD/actions/runs/39033738565).
-Final integrated-SHA evidence must still be collected after an authorized merge.
+invalid updates.
+
+After Ethan authorized PR #16, main source `cc6f1e4bdfe81e85da5dc384317510ae36e50935`
+passed all five student workflows. Its [native endpoint JUnit](../evidence/release2-ethan-goldman/ci/main-cc6f1e4/endpoint-functions.xml)
+has the two required cases with zero failures/skips; [context](../evidence/release2-ethan-goldman/ci/main-cc6f1e4/test-context.json)
+records Python 3.11.17, the exact main SHA and all AI/live opt-ins disabled.
+The [successful Support run](https://github.com/egoldman2/ASD/actions/runs/39116067484)
+also records 206 Support passes/10 skips, 302 shared/cloud passes, 138 MCP/RAG
+passes/2 skips and 82 Multi-Agent passes. [Verified artifact provenance and gate](../evidence/release2-ethan-goldman/ci/main-cc6f1e4/verification.json).
 
 ## Actual local deployment and workflow report
 
@@ -147,10 +143,16 @@ deployment or final acceptance is claimed. Historical global OOM cause remains
 unresolved; fresh OIDC listing is explicitly SCP-denied. No paid/capability
 change or model hosting occurred.
 
-Source changes are integrated through [draft PR #16](https://github.com/egoldman2/ASD/pull/16)
-into main. No merge is authorized. Dates/SHAs in the ledger describe actual work;
+Source changes are integrated through the authorized [PR #16 merge](https://github.com/egoldman2/ASD/pull/16)
+into main at `cc6f1e4`. All seven cloud suites, image build and the exact-main
+five-workflow gate pass. The [actual deployment attempt](https://github.com/egoldman2/ASD/actions/runs/39116067546)
+fails at `Require configured deployment role`: `AWS_DEPLOY_ROLE_ARN` is empty.
+AWS credential configuration and publish/SSM steps were skipped. Renewed SDK
+access confirms FREE/active, healthy EC2/SSM and the explicit OIDC SCP denial.
+Ethan retained the current plan; no Paid/Advanced change is authorized.
+Dates/SHAs in the ledger describe actual work;
 no meeting attendance, teammate participation or video presentation is invented.
-Owner evidence, S03 stability/OIDC access, main integration,
+Owner evidence, S03 stability/OIDC access,
 actual Actions deployment, three final reviews, release-owner decision, group
 PDF/video and marking-window retention remain required. Bonus points are unclaimed.
 
@@ -160,11 +162,3 @@ five-second startup checks and the 150-second configured failure interval
 budget. [Native measurements and verification](../evidence/release2-aws/cpu-probes-20261017/README.md).
 This source repair is not deployed; S03 still requires main-only deployment and
 representative-load stability. Historical OOM root cause remains incomplete.
-
-S03a source `78e21b7c6e63030fb01ea3331f54f845379cbf8a` passes
-[push CI](https://github.com/egoldman2/ASD/actions/runs/39033738565) and
-[cloud PR CI](https://github.com/egoldman2/ASD/actions/runs/39033742420); main jobs skip.
-The [digest-verified native archive](../evidence/release2-ethan-goldman/ci/s03a-actions-artifact.json)
-contains two passing required endpoint cases and 15 passing healthcheck cases
-within 302 shared/cloud tests. [Actual flags/context](../evidence/release2-ethan-goldman/ci/s03a-actions-test-context.json).
-No integrated main or AWS deployment is implied.

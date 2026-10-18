@@ -37,13 +37,16 @@ removed. Code, tests, required report drafts and native local/cloud captures rem
 | S00d | `8702c4b` | Automated checks and branch CI passed | [current findings](security/s03a-all-ruff.json) [CI 1](https://github.com/egoldman2/ASD/actions/runs/38995127754), [CI 2](https://github.com/egoldman2/ASD/actions/runs/38995130793) |
 | S02a | `7b64a0c` | Recovered host and verified consistent database backups | [recovery](../release2-aws/recovery-20261017/README.md) [CI 1](https://github.com/egoldman2/ASD/actions/runs/39032815225), [CI 2](https://github.com/egoldman2/ASD/actions/runs/39032819040) |
 | S03a | `78e21b7` | 15 health tests and 302 shared/cloud tests pass; undeployed | [probe repair](../release2-aws/cpu-probes-20261017/README.md) [CI 1](https://github.com/egoldman2/ASD/actions/runs/39033738565), [CI 2](https://github.com/egoldman2/ASD/actions/runs/39033742420) |
-| S15b | Demo `37e859a`; review `d389a49` | Both genuine Accept decisions saved; restart/API/audit checks pass; Support 206 passed/10 opt-in skips | [completed human review](local/human-review-20261018/README.md); checkpoint SHA and exact-SHA CI in [PR #16](https://github.com/egoldman2/ASD/pull/16) |
+| S15b | Evidence `5796521`; demo `37e859a`; review `d389a49` | Both genuine Accept decisions saved; restart/API/audit checks pass; Support 206 passed/10 opt-in skips | [human review](local/human-review-20261018/README.md); [push CI](https://github.com/egoldman2/ASD/actions/runs/39115466578), [cloud PR CI](https://github.com/egoldman2/ASD/actions/runs/39115468955) |
+| S16a | Authorized PR #16 merge `cc6f1e4` | All five main workflows, seven cloud suites, image build and exact-main gate pass; deploy fails at missing role preflight | [native endpoint/context/gate and verification](ci/main-cc6f1e4/verification.json); [Support CI](https://github.com/egoldman2/ASD/actions/runs/39116067484), [actual cloud attempt](https://github.com/egoldman2/ASD/actions/runs/39116067546) |
 
 ## Current verification and remaining work
 
-- Support: 206 passing tests, 10 opt-in skips. Shared/cloud: 302 passing tests.
-  [Native endpoint and suite artifacts](ci/s03a-actions-artifact.json) identify
-  their actual source and run. CI fixtures are separate from real local AI captures.
+- Main `cc6f1e4`: Support 206 passed/10 opt-in skips; shared/cloud 302 passed;
+  MCP/RAG 138 passed/2 opt-in skips; Multi-Agent 82 passed. The two required
+  endpoint cases pass without skips. [Native main evidence](ci/main-cc6f1e4/verification.json)
+  identifies actual runs and verified archive hashes. CI fixtures are separate
+  from real local model captures.
 - Security: [44 whole-repository Ruff findings](security/s03a-all-ruff.json) and
   four existing ChromaDB exceptions remain disclosed in the [security report](security/README.md).
 - Both ticket #2013 workflows now record Ethan's Accept / `nothing needed.`;
@@ -54,11 +57,17 @@ removed. Code, tests, required report drafts and native local/cloud captures rem
 - The recovered AWS app is an older manual release. The CPU probe repair is tested
   but undeployed; main Actions deployment, public CRUD/disabled-AI/persistence and
   representative-load stability remain required. GitHub OIDC access is SCP-blocked.
-- [PR #16](https://github.com/egoldman2/ASD/pull/16) remains draft and unmerged.
-  Merge and paid AWS capability changes need separate authorization.
+- Ethan authorized [PR #16](https://github.com/egoldman2/ASD/pull/16)'s merge on
+  18 October. Renewed AWS access confirms FREE/active, healthy EC2/SSM, an explicit
+  OIDC SCP denial and no GitHub-trusting role. Ethan chose to keep the current
+  plan; Paid/Advanced changes remain unauthorized. Actions configured no AWS
+  credentials and performed no publish/SSM deployment.
 - Other feature owners supply their integrations and evidence. Final three review
-  outputs, human release decision, official group/workflow allocation, group PDF,
+  outputs, human release decision, official numeric workflow allocation, group PDF,
   video, attendance and resource-retention decision remain outstanding.
+- Canvas confirms Group 33. Release 2 displays 25 October, 23:59 with the profile
+  timezone Sydney; its brief says AEST. The timezone wording still needs confirmation.
 
-Next: resolve deployment access and authorized main integration,
-then capture final deployment/review evidence and complete the group submission.
+Next: collect the other owners' final evidence and finish the Group 33 report/video
+handoff. S16 deployment, public acceptance and S17 release sign-off remain blocked
+under the retained AWS capability restriction.

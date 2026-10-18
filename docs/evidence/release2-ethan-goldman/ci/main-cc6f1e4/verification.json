@@ -1,0 +1,139 @@
+{
+  "stage": "S16a: authorized main integration and actual deployment preflight; S16 incomplete",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-18T09:48:54.544594+00:00",
+  "source_sha": "cc6f1e4bdfe81e85da5dc384317510ae36e50935",
+  "pull_request": {
+    "url": "https://github.com/egoldman2/ASD/pull/16",
+    "approved_head": "5796521295ed4c108850780bb6c80b1eac15f03e",
+    "merge_sha": "cc6f1e4bdfe81e85da5dc384317510ae36e50935",
+    "merged_at": "2026-10-18T09:37:29Z"
+  },
+  "support_run": "https://github.com/egoldman2/ASD/actions/runs/39116067484",
+  "cloud_run": "https://github.com/egoldman2/ASD/actions/runs/39116067546",
+  "five_main_student_workflows_and_jobs_passed": true,
+  "cloud_validation_suites_passed": 7,
+  "cloud_build_passed": true,
+  "main_candidate_current": true,
+  "native_support_suite_counts": {
+    "mcp-rag-contracts.xml": {
+      "tests": 140,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 2,
+      "passed": 138
+    },
+    "endpoint-functions.xml": {
+      "tests": 2,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 2
+    },
+    "shared-access.xml": {
+      "tests": 302,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 302
+    },
+    "shared-multi-agent.xml": {
+      "tests": 82,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 82
+    },
+    "support-regression.xml": {
+      "tests": 216,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 10,
+      "passed": 206
+    }
+  },
+  "failed_deployment_job": {
+    "url": "https://github.com/egoldman2/ASD/actions/runs/39116067546/job/117643272064",
+    "step": "Require configured deployment role",
+    "cause": "AWS_DEPLOY_ROLE_ARN is empty in aws-cloud.",
+    "configure_aws_credentials": "skipped",
+    "publish_and_ssm_deploy": "skipped"
+  },
+  "aws_read_only_recheck": {
+    "captured_at": "2026-10-18T09:38:38.156872+00:00",
+    "region": "ap-southeast-2",
+    "plan": "FREE",
+    "oidc_list": "AccessDenied with explicit managed SCP denial",
+    "roles_read": 13,
+    "github_federated_roles": 0,
+    "instance_running": true,
+    "ssm": "Online",
+    "instance_and_system_status": "ok"
+  },
+  "owner_capability_decision": "On 18 October Ethan chose Keep the current plan. No Paid/Advanced activation is authorized.",
+  "artifact_archives": [
+    {
+      "id": 12133030534,
+      "name": "aws-deployment-evidence",
+      "digest": "sha256:053765735d5750abb33b743bdd49194ccc37a06c2f4487d1a941bd1f86921d3e",
+      "size_in_bytes": 320
+    },
+    {
+      "id": 12132876270,
+      "name": "student-workflow-gate-cc6f1e4bdfe81e85da5dc384317510ae36e50935-1",
+      "digest": "sha256:d2b0500ed5fb3af3ab46c78836889b9a36ba31bd39ab76f0721be84e7e31adee",
+      "size_in_bytes": 1005
+    },
+    {
+      "id": 12132920155,
+      "name": "goldman-release2-tests-cc6f1e4bdfe81e85da5dc384317510ae36e50935-1",
+      "digest": "sha256:286a0151f20c5b63a03bbe77e0347ed34f8b52ed91b0f4e6e0092a15f9596683",
+      "size_in_bytes": 19935
+    }
+  ],
+  "limitations": [
+    "No AWS credentials were configured by Actions and no source bundle/SSM deployment occurred.",
+    "The AWS host still runs its older manual release; no final public CRUD, persistence or load acceptance is claimed.",
+    "These native passing main tests are separate from real local model and human-review captures.",
+    "Final group reviews, release decision and submission remain incomplete."
+  ],
+  "files": {
+    "deployment-candidate.json": {
+      "bytes": 197,
+      "sha256": "cda571bb3af6e6ca563fcbf211753f712b75a5c916ba3d25bcd25a8815d72c13"
+    },
+    "deployment-role-failure.txt": {
+      "bytes": 163,
+      "sha256": "d7699e5d184c7fad1a9dfdb7220466b8c82bf29dbaf5c357257106bde7ae646e"
+    },
+    "endpoint-functions.xml": {
+      "bytes": 516,
+      "sha256": "457400ca3351a3f294a884eff046b2cc8121201d5b40baa7bba2000f28609341"
+    },
+    "test-context.json": {
+      "bytes": 1372,
+      "sha256": "4827be618fedf740e7b6d683f7b96703f8fa7f5ead739659222f094a45b0ad7f"
+    },
+    "workflow-gate.json": {
+      "bytes": 5154,
+      "sha256": "946a73d71f5c70157671c7ab0605835018ee252154b41687fdf3583540409f6b"
+    }
+  },
+  "assignment_details": {
+    "checked_at": "2026-10-18T09:53:42.980399+00:00",
+    "group": 33,
+    "group_url": "https://canvas.uts.edu.au/groups/399683",
+    "assignment_url": "https://canvas.uts.edu.au/courses/39716/assignments/267943",
+    "displayed_due": "25 October, 23:59",
+    "profile_timezone_display": "Sydney",
+    "brief_due_text": "25 October 2026, 11:59 PM AEST",
+    "timezone_wording_conflict_unresolved": true,
+    "required_final_pdf_name": "group-33.pdf",
+    "source": "Read-only live Chrome/Canvas assignment list, brief, group tray and user timezone setting; no submission or settings changed."
+  },
+  "separate_secret_scan": {
+    "classified_git_and_artifact_hashes": 10,
+    "unclassified_findings": 0,
+    "new_ignores": 0
+  }
+}
