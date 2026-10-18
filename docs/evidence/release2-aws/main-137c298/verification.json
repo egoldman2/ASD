@@ -1,0 +1,30 @@
+{
+  "owner": "Ethan Goldman",
+  "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+  "captured_at": "2026-10-18T11:17:41.183924+00:00",
+  "run_url": "https://github.com/egoldman2/ASD/actions/runs/39122068227",
+  "gate_archive": {
+    "artifact_id": 12133754839,
+    "artifact_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12133754839",
+    "bytes": 1012,
+    "sha256": "7623e644dc3f60536aafa0084ff355e9f86a64d1a7cb3dede233978769f4abe4",
+    "github_digest_matched": true,
+    "native_member": "workflow-gate.json",
+    "native_bytes_unchanged": true
+  },
+  "preflight_log": {
+    "job_id": 117660876071,
+    "command": "GitHub workflow job log retrieval, followed by exact-line selection for AWS_DEPLOY_ROLE_ARN and the error",
+    "excerpt": [
+      "2026-10-18T11:16:09.8823769Z ##[group]Run test -n \"$ROLE_ARN\" || { echo 'Configure AWS_DEPLOY_ROLE_ARN in the aws-cloud environment.' >&2; exit 1; }",
+      "2026-10-18T11:16:09.8827148Z \u001b[36;1mtest -n \"$ROLE_ARN\" || { echo 'Configure AWS_DEPLOY_ROLE_ARN in the aws-cloud environment.' >&2; exit 1; }\u001b[0m",
+      "2026-10-18T11:16:09.9013190Z Configure AWS_DEPLOY_ROLE_ARN in the aws-cloud environment.",
+      "2026-10-18T11:16:09.9027758Z ##[error]Process completed with exit code 1."
+    ],
+    "scope": "Unchanged selected lines; not the full job log"
+  },
+  "deployment": "Not performed: credential configuration and publish/SSM steps skipped after missing role preflight.",
+  "limitations": [
+    "No accepted deployment, public CRUD/runtime capture, measured stability window or human release approval exists for this SHA."
+  ]
+}

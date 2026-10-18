@@ -1,0 +1,43 @@
+{
+  "owner": "Ethan Ting",
+  "feature": "customer_loyalty",
+  "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+  "event": "push",
+  "ref": "refs/heads/main",
+  "run_id": "39122068255",
+  "run_attempt": "1",
+  "run_url": "https://github.com/egoldman2/ASD/actions/runs/39122068255",
+  "captured_at": "2026-10-18T11:09:33.981421+00:00",
+  "python": "3.11.17",
+  "workflow": ".github/workflows/student-3.yml",
+  "ai_flags": {
+    "AI_MODE_ENABLED": "false",
+    "MCP_ENABLED": "false",
+    "RAG_ENABLED": "false",
+    "MULTI_AGENT_ENABLED": "false"
+  },
+  "live_opt_ins": {
+    "RUN_LIVE_AI": "0",
+    "RUN_LIVE_MCP_AI": "0",
+    "RUN_LIVE_RAG_AI": "0",
+    "RUN_LIVE_VALIDATION": "0",
+    "RUN_LIVE_RELEASE1_VALIDATION": "0",
+    "RUN_LIVE_MULTI_AGENT": "0",
+    "RUN_NGINX_PROXY_CHECK": "0"
+  },
+  "endpoint_junit": "endpoint-functions.xml",
+  "endpoint_functions": [
+    {
+      "function": "register",
+      "method": "POST",
+      "path": "/api/register",
+      "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_customer_registration_creates_customer_session"
+    },
+    {
+      "function": "create_loyalty_adjustment",
+      "method": "POST",
+      "path": "/api/admin/loyalty/<int:user_id>/adjustments",
+      "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_admin_adjustment_includes_authenticated_admin_id"
+    }
+  ]
+}

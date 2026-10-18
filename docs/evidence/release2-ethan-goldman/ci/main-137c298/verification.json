@@ -1,0 +1,185 @@
+{
+  "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-18T11:12:30.952463+00:00",
+  "command": "Retrieve GitHub workflow artifacts; verify archive byte count and GitHub SHA-256 digest before reading the three named native members.",
+  "artifacts": [
+    {
+      "feature": "customer_support",
+      "owner": "Ethan Goldman",
+      "run_id": 39122068977,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39122068977",
+      "artifact_id": 12134408372,
+      "artifact_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12134408372",
+      "archive_sha256": "f0599f49c44504fc5dfcd21162e7da2aa1c4a419cae83af2b95686cd7e0d5287",
+      "archive_bytes": 20243,
+      "github_digest_matched": true,
+      "native_bytes_unchanged": true,
+      "endpoint_cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "files": [
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_support/test-context.json",
+          "sha256": "cd6e16e5d94ee684b5095ecc265e5d24ee3e4a32cb47df9ec0807d8b93e4aa95",
+          "bytes": 1372
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_support/endpoint-functions.xml",
+          "sha256": "482567dab7f85d2266fe475866ce944948b1a046cdf7a2ce4af28799bf02cabb",
+          "bytes": 516
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/python-versions.txt",
+          "sha256": "5c22cfea2b251e45ea8fd2550c53683973c60debd4ccde2fc5299b5b37e114e6",
+          "bytes": 2024,
+          "archive_member": "python-versions.txt",
+          "storage": "Byte-identical native member shared by four verified archives."
+        }
+      ]
+    },
+    {
+      "feature": "order_returns",
+      "owner": "Howard",
+      "run_id": 39122068272,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39122068272",
+      "artifact_id": 12134771082,
+      "artifact_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12134771082",
+      "archive_sha256": "9866b8361a1d0bd033ecab2fadcbb4cf37e1b534c217cc4a9aebf094788ce88a",
+      "archive_bytes": 1416,
+      "github_digest_matched": true,
+      "native_bytes_unchanged": true,
+      "endpoint_cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "files": [
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/order_returns/test-context.json",
+          "sha256": "31a22fbb690e28b54e6a25740c9259ea92fb9007394d01b75bee5d2900a58f83",
+          "bytes": 1253
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/order_returns/endpoint-functions.xml",
+          "sha256": "eaa4da94ae549b6dfe439a5d31a4ac2c6a11ebf78bf6e4f12c80762e58adfffe",
+          "bytes": 434
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/order_returns/python-versions.txt",
+          "sha256": "13528e3840ff6a141c7e653402d9d0c94f9c693bde09ae8448af4177249f49cf",
+          "bytes": 324
+        }
+      ]
+    },
+    {
+      "feature": "product_catalogue",
+      "owner": "Chufeng Li",
+      "run_id": 39122068262,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39122068262",
+      "artifact_id": 12134208101,
+      "artifact_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12134208101",
+      "archive_sha256": "c9ac9a83461d9041fef5240bdea12c49375765b6b87c8c719034fc2a0b7d03f6",
+      "archive_bytes": 2260,
+      "github_digest_matched": true,
+      "native_bytes_unchanged": true,
+      "endpoint_cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "files": [
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/product_catalogue/test-context.json",
+          "sha256": "78bcd511ecb8513f1b96024a799587dca32d652feacaa7829f6d6a551534cbfc",
+          "bytes": 1266
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/product_catalogue/endpoint-functions.xml",
+          "sha256": "0ddd51c54b1616f5cec72a03b6393fb68be0fdafc92b9c0ca077ebbaf20ac4cb",
+          "bytes": 459
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/python-versions.txt",
+          "sha256": "5c22cfea2b251e45ea8fd2550c53683973c60debd4ccde2fc5299b5b37e114e6",
+          "bytes": 2024,
+          "archive_member": "python-versions.txt",
+          "storage": "Byte-identical native member shared by four verified archives."
+        }
+      ]
+    },
+    {
+      "feature": "customer_loyalty",
+      "owner": "Ethan Ting",
+      "run_id": 39122068255,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39122068255",
+      "artifact_id": 12135006205,
+      "artifact_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12135006205",
+      "archive_sha256": "3b2dc415efd91e1179b14ccdb48563df2d27d7cf551649f0864a2d72861e880b",
+      "archive_bytes": 2341,
+      "github_digest_matched": true,
+      "native_bytes_unchanged": true,
+      "endpoint_cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "files": [
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_loyalty/test-context.json",
+          "sha256": "d547d9e681572bbfd5a14d762a9832112730c9a1176ed1b39fc266ff49721c66",
+          "bytes": 1372
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_loyalty/endpoint-functions.xml",
+          "sha256": "235f0a1587f6a5088928ec823b3f834f41c47ad0c5adcaddd0108768ad7bc8d0",
+          "bytes": 529
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/python-versions.txt",
+          "sha256": "5c22cfea2b251e45ea8fd2550c53683973c60debd4ccde2fc5299b5b37e114e6",
+          "bytes": 2024,
+          "archive_member": "python-versions.txt",
+          "storage": "Byte-identical native member shared by four verified archives."
+        }
+      ]
+    },
+    {
+      "feature": "inventory",
+      "owner": "Ryan Nolan",
+      "run_id": 39122068218,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39122068218",
+      "artifact_id": 12135115658,
+      "artifact_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12135115658",
+      "archive_sha256": "45235cade5580acaa196d641001b032d7289f1462a83a7549dd7f30b486c2b1b",
+      "archive_bytes": 2248,
+      "github_digest_matched": true,
+      "native_bytes_unchanged": true,
+      "endpoint_cases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "files": [
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/inventory/test-context.json",
+          "sha256": "2a46da542d21209bb2370a61369f0f26b0684ef71168d5bb47a3139cfe0380d2",
+          "bytes": 1290
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/inventory/endpoint-functions.xml",
+          "sha256": "cf638dcd02961be2753c6cebabb68b3fa00dc8762ab6cae945d07cc4abe7afe1",
+          "bytes": 459
+        },
+        {
+          "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/python-versions.txt",
+          "sha256": "5c22cfea2b251e45ea8fd2550c53683973c60debd4ccde2fc5299b5b37e114e6",
+          "bytes": 2024,
+          "archive_member": "python-versions.txt",
+          "storage": "Byte-identical native member shared by four verified archives."
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Archive verification and endpoint results do not independently prove final whole-workflow success; Actions jobs are captured separately.",
+    "Accounts endpoint tests mock the database boundary; this selection alone does not establish persistence."
+  ]
+}

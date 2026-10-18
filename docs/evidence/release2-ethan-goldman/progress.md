@@ -41,16 +41,33 @@ removed. Code, tests, required report drafts and native local/cloud captures rem
 | S16a | Authorized PR #16 merge `cc6f1e4` | All five main workflows, seven cloud suites, image build and exact-main gate pass; deploy fails at missing role preflight | [native endpoint/context/gate and verification](ci/main-cc6f1e4/verification.json); [Support CI](https://github.com/egoldman2/ASD/actions/runs/39116067484), [actual cloud attempt](https://github.com/egoldman2/ASD/actions/runs/39116067546) |
 | S16b | Authorized PR #17 merge `857866c` | All five main workflows, seven cloud suites, build and gate pass; deployment again stops before credentials at the missing role | [Support CI](https://github.com/egoldman2/ASD/actions/runs/39118421094), [cloud attempt](https://github.com/egoldman2/ASD/actions/runs/39118421096) |
 | S13c | `2bc6ae6` | Cloud Review retains an actual failed preflight without an accepted deployment artifact; 104 focused and 311 shared/cloud tests pass; all six CI runs pass | [regressions](../../../shared/tests/test_cloud_report_validation.py); [push CI](https://github.com/egoldman2/ASD/actions/runs/39119587355), [cloud PR CI](https://github.com/egoldman2/ASD/actions/runs/39119900573) |
+| S09b | `5c2bb80` | Two existing endpoint tests per feature selected from task allocations under Ethan's instruction; all ten endpoint cases, eight capture tests and 319 shared/cloud tests pass locally; all seven exact-head CI runs pass | [mapping](../../reports/release2-report-evidence-contract.md); [Support push](https://github.com/egoldman2/ASD/actions/runs/39120828462), [cloud PR](https://github.com/egoldman2/ASD/actions/runs/39120832173); all five PR archives downloaded and digest-verified |
+| S16c | Authorized PR #18 merge `137c298` | All five main workflows, seven cloud suites, build and exact-main gate pass; all ten named endpoint cases pass; deployment fails at missing-role preflight before credentials or publish/SSM | [native five-owner verification](ci/main-137c298/verification.json), [gate and failure](../release2-aws/main-137c298/verification.json); [Support CI](https://github.com/egoldman2/ASD/actions/runs/39122068977), [cloud attempt](https://github.com/egoldman2/ASD/actions/runs/39122068227) |
+| S17a | Review source `137c298` | Real local Qwen 3B Testing/Cloud reviews execute and save linked validation/console logs; both retain deterministic failure, with model-grounding issues and fallback disclosed; no human release decision exists | [Testing Review](../agentic/shared-asd-group-services-testing-20261018-221717-719042.md), [Cloud Review](../agentic/shared-asd-group-services-cloud-deployment-20261018-222109-735344.md); [testing inputs](../release2-testing-manifest.json), [cloud inputs](../release2-cloud-deployment-manifest.json) |
 
 ## Current verification and remaining work
 
-- Main `cc6f1e4`: Support 206 passed/10 opt-in skips; shared/cloud 302 passed;
+- Main `137c298`: all five student workflows and all ten named endpoint cases pass
+  without failures/errors/skips. Seven cloud suites, image build and exact-main
+  gate pass. The actual deployment stops at the missing role before credentials;
+  [native main captures](ci/main-137c298/verification.json) and
+  [actual cloud failure](../release2-aws/main-137c298/verification.json) retain
+  run/archive identities. Four byte-identical native dependency lists are stored
+  once, with each original archive-to-member mapping retained.
+- Earlier main `cc6f1e4`: Support 206 passed/10 opt-in skips; shared/cloud 302 passed;
   MCP/RAG 138 passed/2 opt-in skips; Multi-Agent 82 passed. The two required
   endpoint cases pass without skips. [Native main evidence](ci/main-cc6f1e4/verification.json)
   identifies actual runs and verified archive hashes. CI fixtures are separate
   from real local model captures.
 - Security: [44 whole-repository Ruff findings](security/s03a-all-ruff.json) and
   four existing ChromaDB exceptions remain disclosed in the [security report](security/README.md).
+  Fresh source-`137c298` scans retain [75 unfiltered detector candidates](security/s17-detect-secrets.json)
+  (48 reported on baseline metadata itself) and the [four native dependency findings](security/s17-dependency-findings.json).
+  Candidates are not a count of confirmed leaked secrets; raw findings are not
+  removed or relabelled as passing. All five student endpoint/Actions captures
+  pass the actual Testing Review validator, while security keeps its result failed.
+  A separate scan of 33 new evidence files found 201 known provenance/detector
+  digest literals and zero unclassified candidates; no new ignore was added.
 - Both ticket #2013 workflows now record Ethan's Accept / `nothing needed.`;
   [native evidence and completed review](local/human-review-20261018/README.md)
   verify unchanged ticket/model data and post-decision restart persistence.
@@ -59,17 +76,24 @@ removed. Code, tests, required report drafts and native local/cloud captures rem
 - The recovered AWS app is an older manual release. The CPU probe repair is tested
   but undeployed; main Actions deployment, public CRUD/disabled-AI/persistence and
   representative-load stability remain required. GitHub OIDC access is SCP-blocked.
+  The [18 October read-only follow-up](../release2-aws/cpu-probes-20261017/followup-20261018.json)
+  records nearly empty CPU credits, 76–80% steal samples and no container restarts
+  at capture. Its first command exited 1 on an empty journal search; a successful
+  bounded follow-up does not establish historical OOM cause or final stability.
 - Ethan authorized [PR #16](https://github.com/egoldman2/ASD/pull/16)'s merge on
   18 October. Renewed AWS access confirms FREE/active, healthy EC2/SSM, an explicit
   OIDC SCP denial and no GitHub-trusting role. Ethan chose to keep the current
   plan; Paid/Advanced changes remain unauthorized. Actions configured no AWS
   credentials and performed no publish/SSM deployment.
-- Other feature owners supply their integrations and evidence. Final three review
-  outputs, human release decision, official numeric workflow allocation, group PDF,
-  video, attendance and resource-retention decision remain outstanding.
+- Other feature owners supply their integrations and evidence. The actual Support
+  Multi-Agent review and both shared report reviews are saved; their genuine
+  limitations/failures remain. Human release decision, official numeric workflow allocation and
+  resource-retention decision remain outstanding. On 18 October Ethan deferred
+  report/video assembly; the local PDF draft is not part of this evidence commit.
 - Canvas confirms Group 33. Release 2 displays 25 October, 23:59 with the profile
   timezone Sydney; its brief says AEST. The timezone wording still needs confirmation.
 
-Next: collect the other owners' final evidence and finish the Group 33 report/video
-handoff. S16 deployment, public acceptance and S17 release sign-off remain blocked
-under the retained AWS capability restriction.
+Next: retain this required native evidence checkpoint, then resume S16 only when
+supported AWS deployment-role access exists under the owner's capability decision.
+Resolve remaining source-owner security findings and rerun affected reviews before
+release sign-off. Report/video assembly is deferred at Ethan's request.

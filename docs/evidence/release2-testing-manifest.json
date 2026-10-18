@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "kind": "testing",
+  "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-18T11:16:45.531437+00:00",
+  "command": "Assemble hash-checked actual unfiltered security scans and five same-main-push endpoint/Actions captures.",
+  "security": [
+    {
+      "tool": "ruff",
+      "owner": "Ethan Goldman",
+      "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+      "captured_at": "2026-10-18T11:09:43.663355+00:00",
+      "command": "/private/tmp/asd-release2-venv/bin/ruff check . --select S --output-format json",
+      "exit_code": 1,
+      "report": {
+        "path": "docs/evidence/release2-ethan-goldman/security/s03a-all-ruff.json",
+        "sha256": "d93413eff4d24ee5caa0d5c54d42752da3ecaeeb60b270206c1c09f9d90ee7f1"
+      }
+    },
+    {
+      "tool": "detect-secrets",
+      "owner": "Ethan Goldman",
+      "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+      "captured_at": "2026-10-18T11:09:43.738999+00:00",
+      "command": "/private/tmp/asd-release2-venv/bin/detect-secrets scan --no-verify --exclude-files '(?x)^(docs/evidence/.*|ai-services/multi_agent_server/(coordination_audit|workflow_history)\\.jsonl|.*\\.min\\.js|.*\\.log)$'",
+      "exit_code": 0,
+      "report": {
+        "path": "docs/evidence/release2-ethan-goldman/security/s17-detect-secrets.json",
+        "sha256": "21b64b6ba3d7061361b449a275502cffa8a8576ffe400a3c9d6cb7e6b11efa32"
+      }
+    },
+    {
+      "tool": "pip-audit",
+      "owner": "Ethan Goldman",
+      "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+      "captured_at": "2026-10-18T11:09:47.279259+00:00",
+      "command": "/private/tmp/asd-release2-venv/bin/pip-audit -r requirements-audit.txt --format json --progress-spinner off",
+      "exit_code": 1,
+      "report": {
+        "path": "docs/evidence/release2-ethan-goldman/security/s17-dependency-findings.json",
+        "sha256": "14f1a879862ed42f13fcaee0ba74f30d30b2a5d14a1c2df531b9f30f00290d19"
+      },
+      "exceptions": [
+        {
+          "id": "PYSEC-2026-311",
+          "reason": "Existing documented ChromaDB advisory exception; unfiltered native finding retained; no new human acceptance.",
+          "record": {
+            "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+            "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8"
+          }
+        },
+        {
+          "id": "PYSEC-2026-3813",
+          "reason": "Existing documented ChromaDB advisory exception; unfiltered native finding retained; no new human acceptance.",
+          "record": {
+            "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+            "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8"
+          }
+        },
+        {
+          "id": "PYSEC-2026-3814",
+          "reason": "Existing documented ChromaDB advisory exception; unfiltered native finding retained; no new human acceptance.",
+          "record": {
+            "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+            "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8"
+          }
+        },
+        {
+          "id": "PYSEC-2026-3815",
+          "reason": "Existing documented ChromaDB advisory exception; unfiltered native finding retained; no new human acceptance.",
+          "record": {
+            "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+            "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8"
+          }
+        }
+      ]
+    }
+  ],
+  "students": [
+    {
+      "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+      "owner": "Howard",
+      "captured_at": "2026-10-18T11:09:14.032340+00:00",
+      "command": "python shared/endpoint_ci.py --feature order_returns --owner Howard",
+      "feature": "order_returns",
+      "endpoints": [
+        {
+          "function": "create_order",
+          "method": "POST",
+          "path": "/api/order-returns/orders",
+          "test_node_id": "student-Howard/tests/test_api.py::test_create_order"
+        },
+        {
+          "function": "create_return",
+          "method": "POST",
+          "path": "/api/order-returns/returns",
+          "test_node_id": "student-Howard/tests/test_api.py::test_create_return"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/order_returns/endpoint-functions.xml",
+        "sha256": "eaa4da94ae549b6dfe439a5d31a4ac2c6a11ebf78bf6e4f12c80762e58adfffe"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/order_returns/test-context.json",
+        "sha256": "31a22fbb690e28b54e6a25740c9259ea92fb9007394d01b75bee5d2900a58f83"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/order_returns/actions.json",
+        "sha256": "a6cd5e58c7f61ea221c0345f2b665ee9e1fb761be2cbde7769b39df72c60edb3"
+      }
+    },
+    {
+      "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+      "owner": "Ryan Nolan",
+      "captured_at": "2026-10-18T11:09:26.330271+00:00",
+      "command": "python shared/endpoint_ci.py --feature inventory --owner 'Ryan Nolan'",
+      "feature": "inventory",
+      "endpoints": [
+        {
+          "function": "create_product",
+          "method": "POST",
+          "path": "/api/inventory/products",
+          "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_create_product"
+        },
+        {
+          "function": "update_product",
+          "method": "PUT",
+          "path": "/api/inventory/products/<int:product_id>",
+          "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_update_product"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/inventory/endpoint-functions.xml",
+        "sha256": "cf638dcd02961be2753c6cebabb68b3fa00dc8762ab6cae945d07cc4abe7afe1"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/inventory/test-context.json",
+        "sha256": "2a46da542d21209bb2370a61369f0f26b0684ef71168d5bb47a3139cfe0380d2"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/inventory/actions.json",
+        "sha256": "50ee40f8c46376cdb88afa995f2c4b11ded74b1cf51bab633758b5f307ed7add"
+      }
+    },
+    {
+      "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+      "owner": "Chufeng Li",
+      "captured_at": "2026-10-18T11:09:31.105203+00:00",
+      "command": "python shared/endpoint_ci.py --feature product_catalogue --owner 'Chufeng Li'",
+      "feature": "product_catalogue",
+      "endpoints": [
+        {
+          "function": "get_products",
+          "method": "GET",
+          "path": "/api/products",
+          "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_get_and_search_products"
+        },
+        {
+          "function": "create_cart_item",
+          "method": "POST",
+          "path": "/api/cart-items",
+          "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_add_cart_item"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/product_catalogue/endpoint-functions.xml",
+        "sha256": "0ddd51c54b1616f5cec72a03b6393fb68be0fdafc92b9c0ca077ebbaf20ac4cb"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/product_catalogue/test-context.json",
+        "sha256": "78bcd511ecb8513f1b96024a799587dca32d652feacaa7829f6d6a551534cbfc"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/product_catalogue/actions.json",
+        "sha256": "1dc98bc6c9a3e9584a16dc0478d802463e63ae4d399f556fbb3694caf8320bc4"
+      }
+    },
+    {
+      "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+      "owner": "Ethan Ting",
+      "captured_at": "2026-10-18T11:09:33.981421+00:00",
+      "command": "python shared/endpoint_ci.py --feature customer_loyalty --owner 'Ethan Ting'",
+      "feature": "customer_loyalty",
+      "endpoints": [
+        {
+          "function": "register",
+          "method": "POST",
+          "path": "/api/register",
+          "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_customer_registration_creates_customer_session"
+        },
+        {
+          "function": "create_loyalty_adjustment",
+          "method": "POST",
+          "path": "/api/admin/loyalty/<int:user_id>/adjustments",
+          "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_admin_adjustment_includes_authenticated_admin_id"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_loyalty/endpoint-functions.xml",
+        "sha256": "235f0a1587f6a5088928ec823b3f834f41c47ad0c5adcaddd0108768ad7bc8d0"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_loyalty/test-context.json",
+        "sha256": "d547d9e681572bbfd5a14d762a9832112730c9a1176ed1b39fc266ff49721c66"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_loyalty/actions.json",
+        "sha256": "9e4249fe36eb4a3ad6bc44a2bd05f8039261a7cac0d21c97d261f675391050e9"
+      }
+    },
+    {
+      "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+      "owner": "Ethan Goldman",
+      "captured_at": "2026-10-18T11:09:34.935438+00:00",
+      "command": "python shared/endpoint_ci.py --feature customer_support --owner 'Ethan Goldman'",
+      "feature": "customer_support",
+      "endpoints": [
+        {
+          "function": "customer_create",
+          "method": "POST",
+          "path": "/api/support/customer/tickets",
+          "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract"
+        },
+        {
+          "function": "admin_update",
+          "method": "PUT",
+          "path": "/api/support/admin/tickets/<int:ticket_id>",
+          "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_support/endpoint-functions.xml",
+        "sha256": "482567dab7f85d2266fe475866ce944948b1a046cdf7a2ce4af28799bf02cabb"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_support/test-context.json",
+        "sha256": "cd6e16e5d94ee684b5095ecc265e5d24ee3e4a32cb47df9ec0807d8b93e4aa95"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-137c298/customer_support/actions.json",
+        "sha256": "1a7a209e358a984ede1f1f240ea9d42ea3363de1fca624fa4ea388a26840fdcf"
+      }
+    }
+  ]
+}

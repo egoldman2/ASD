@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "owner": "Ethan Goldman",
+  "region": "ap-southeast-2",
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "scope": "Read-only diagnosis of the older manual runtime; not final deployment or stability acceptance",
+  "ssm": [
+    {
+      "command_id": "13bbe834-1cc0-4bba-9762-b555e8fb7ce3",
+      "captured_at": "2026-10-18T10:18:10Z",
+      "operations": [
+        "date -u",
+        "readlink -f /srv/asd/current",
+        "free -b",
+        "vmstat 1 5",
+        "docker stats --no-stream",
+        "docker inspect State.OOMKilled RestartCount",
+        "journalctl kernel OOM search"
+      ],
+      "result": {
+        "status": "Failed",
+        "response_code": 1,
+        "stdout": "2026-10-18T10:18:10Z\n/srv/asd/releases/manual-20261009-aws2-d8cd072bf503\n               total        used        free      shared  buff/cache   available\nMem:      2002432000  1143689216    83062784   101109760   775680000   572628992\nSwap:              0           0           0\nprocs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st\n 6  0      0  81036  65444 692120    0    0     5    13    2  184 18  2  4  0 76\n 4  0      0  81036  65444 692196    0    0     0     0  398 1032 20  1  0  0 79\n 6  0      0  77760  65444 692196    0    0     0     0  743 1996 19  2  0  0 79\n 3  0      0  65672  65444 692200    0    0     0     0  600 1818 21  1  0  0 78\n 7  0      0  69852  65272 690188    0    0     0    72  548 1522 17  2  0  0 80\nasd-cloud-gateway-1 0.00% 3.672MiB / 1.865GiB 0.19% 3\nasd-cloud-product-catalogue-1 0.00% 3.16MiB / 1.865GiB 0.17% 3\nasd-cloud-customer-support-1 0.00% 3.41MiB / 1.865GiB 0.18% 3\nasd-cloud-shared-backend-1 0.07% 69.99MiB / 1.865GiB 3.66% 3\nasd-cloud-order-returns-frontend-1 0.00% 6.82MiB / 1.865GiB 0.36% 3\nasd-cloud-inventory-backend-1 39.94% 77.44MiB / 1.865GiB 4.06% 5\nasd-cloud-customer-support-backend-1 0.05% 70.42MiB / 1.865GiB 3.69% 3\nasd-cloud-ethan-backend-1 70.80% 82.38MiB / 1.865GiB 4.31% 5\nasd-cloud-product-database-1 0.10% 45.05MiB / 1.865GiB 2.36% 4\nasd-cloud-ethan-database-1 0.08% 43.44MiB / 1.865GiB 2.27% 4\nasd-cloud-shared-home-1 0.00% 3.242MiB / 1.865GiB 0.17% 3\nasd-cloud-ethan-frontend-1 0.00% 3.215MiB / 1.865GiB 0.17% 3\nasd-cloud-customer-support-database-1 0.07% 55.25MiB / 1.865GiB 2.89% 3\nasd-cloud-inventory-frontend-1 0.00% 3.156MiB / 1.865GiB 0.17% 3\n/asd-cloud-gateway-1 running OOM=false Restarts=0\n/asd-cloud-product-catalogue-1 running OOM=false Restarts=0\n/asd-cloud-customer-support-1 running OOM=false Restarts=0\n/asd-cloud-shared-backend-1 running OOM=false Restarts=0\n/asd-cloud-order-returns-frontend-1 running OOM=false Restarts=0\n/asd-cloud-inventory-backend-1 running OOM=false Restarts=0\n/asd-cloud-customer-support-backend-1 running OOM=false Restarts=0\n/asd-cloud-ethan-backend-1 running OOM=false Restarts=0\n/asd-cloud-product-database-1 running OOM=false Restarts=0\n/asd-cloud-ethan-database-1 running OOM=false Restarts=0\n/asd-cloud-shared-home-1 running OOM=false Restarts=0\n/asd-cloud-ethan-frontend-1 running OOM=false Restarts=0\n/asd-cloud-customer-support-database-1 running OOM=false Restarts=0\n/asd-cloud-inventory-frontend-1 running OOM=false Restarts=0\n-- No entries --\n",
+        "stderr": "failed to run commands: exit status 1"
+      }
+    },
+    {
+      "command_id": "7585b6e1-a3e0-45e4-812a-f860a8e6fced",
+      "operations": [
+        "df -h /srv/asd /",
+        "bounded kernel journal inspection since 2026-10-17 (maximum 4000 JSON records)"
+      ],
+      "result": {
+        "status": "Success",
+        "response_code": 0,
+        "stdout": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/nvme1n1     30G  325M   28G   2% /srv/asd\n/dev/nvme0n1p1   20G  2.2G   18G  11% /\n{\"captured_at\": \"2026-10-18T10:26:07.403312+00:00\", \"kernel_records_scanned\": 700, \"record_limit\": 4000, \"oom_matches\": [], \"first_monotonic_usec\": \"0\", \"last_monotonic_usec\": \"11297715\"}\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "cloudwatch": {
+    "captured_at": "2026-10-18T10:22:51.847726+00:00",
+    "instance": "i-03a217a6a7f61d3ae",
+    "metrics": {
+      "MetricDataResults": [
+        {
+          "Id": "cpuutilization",
+          "Label": "CPUUtilization",
+          "Timestamps": [
+            "2026-10-18T09:37:00+00:00",
+            "2026-10-18T09:42:00+00:00",
+            "2026-10-18T09:47:00+00:00",
+            "2026-10-18T09:52:00+00:00",
+            "2026-10-18T09:57:00+00:00",
+            "2026-10-18T10:02:00+00:00",
+            "2026-10-18T10:07:00+00:00",
+            "2026-10-18T10:12:00+00:00",
+            "2026-10-18T10:17:00+00:00"
+          ],
+          "Values": [
+            20.00000090001017,
+            19.999992035340235,
+            20.000606367020275,
+            19.9960750905983,
+            20.002069721465165,
+            19.999729942221702,
+            20.0009364736415,
+            19.999338560215854,
+            20.003686283951623
+          ],
+          "StatusCode": "Complete"
+        },
+        {
+          "Id": "cpucreditbalance",
+          "Label": "CPUCreditBalance",
+          "Timestamps": [
+            "2026-10-18T09:37:00+00:00",
+            "2026-10-18T09:42:00+00:00",
+            "2026-10-18T09:47:00+00:00",
+            "2026-10-18T09:52:00+00:00",
+            "2026-10-18T09:57:00+00:00",
+            "2026-10-18T10:02:00+00:00",
+            "2026-10-18T10:07:00+00:00",
+            "2026-10-18T10:12:00+00:00",
+            "2026-10-18T10:17:00+00:00"
+          ],
+          "Values": [
+            0.00026095,
+            0.0007892333333333333,
+            0.0001542,
+            0.00026615,
+            0.00021621666666666667,
+            0.00023923333333333334,
+            0.0011308333333333333,
+            0.0008623666666666667,
+            0.00018615
+          ],
+          "StatusCode": "Complete"
+        },
+        {
+          "Id": "cpucreditusage",
+          "Label": "CPUCreditUsage",
+          "Timestamps": [
+            "2026-10-18T09:37:00+00:00",
+            "2026-10-18T09:42:00+00:00",
+            "2026-10-18T09:47:00+00:00",
+            "2026-10-18T09:52:00+00:00",
+            "2026-10-18T09:57:00+00:00",
+            "2026-10-18T10:02:00+00:00",
+            "2026-10-18T10:07:00+00:00",
+            "2026-10-18T10:12:00+00:00",
+            "2026-10-18T10:17:00+00:00"
+          ],
+          "Values": [
+            2.001400916666667,
+            1.99772505,
+            2.0014017,
+            1.9995147166666667,
+            2.0010432666666667,
+            1.99890365,
+            1.9984950666666668,
+            2.0003018,
+            2.00168955
+          ],
+          "StatusCode": "Complete"
+        }
+      ],
+      "Messages": []
+    },
+    "credit_mode": {
+      "InstanceCreditSpecifications": [
+        {
+          "InstanceId": "i-03a217a6a7f61d3ae",
+          "CpuCredits": "standard"
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "First diagnostic command exited 1 because journalctl --grep returned no matches; it is not classified as successful.",
+    "Bounded journal data cover available records only; historical OOM cause remains unresolved.",
+    "Metrics and snapshots indicate credit pressure, not a completed load test or proven historical root cause.",
+    "No deployment, instance sizing, credit mode, AWS capability or data changes were made."
+  ]
+}
