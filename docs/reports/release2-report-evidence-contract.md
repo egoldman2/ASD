@@ -10,8 +10,22 @@ SHA and feature scope come from the selected review, independently of the manife
 Support requires `customer_support`; shared review requires all five existing
 feature IDs. Expected support endpoint descriptors are `customer_create` and
 `admin_update`, using the exact method/path/test-node mapping captured by S09.
-Other owners must supply their real assignments and results. Official student
+Actual results must come from the matching owner workflows. Official student
 workflow numbering remains unconfirmed; this validator does not assign numbers.
+
+At Ethan's request on 18 October, the existing task allocations were used to
+select two existing endpoint tests per feature. The shared configuration holds
+their exact methods, routes and test nodes; `shared/endpoint_ci.py` runs those
+nodes and records actual Actions metadata and installed dependency versions.
+All five workflows retain endpoint JUnit/context artifacts, including on failure.
+
+| Feature | Allocated functions represented by the selected tests |
+| --- | --- |
+| Catalogue/cart | `get_products`, `create_cart_item` |
+| Inventory | `create_product`, `update_product` |
+| Accounts/loyalty | `register`, `create_loyalty_adjustment` |
+| Orders/returns | `create_order`, `create_return` |
+| Support | `customer_create`, `admin_update` |
 
 The JSON manifest has `schema_version: 1`, `kind: testing`, `source_sha`, `owner`,
 timezone-aware `captured_at`, `security` and `students`. Every scan/student capture

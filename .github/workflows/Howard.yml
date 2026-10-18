@@ -7,6 +7,8 @@ on:
     branches: [ main ]
     paths:
       - 'student-Howard/**'
+      - 'shared/**'
+      - '.github/workflows/Howard.yml'
   workflow_dispatch:
 
 env:
@@ -61,8 +63,20 @@ jobs:
           print("All tables have at least 10 records.")
           PY
 
+      - name: Record and verify allocated endpoint functions
+        env:
+          ORDERS_DATABASE_PATH: ${{ runner.temp }}/orders-endpoint-tests.db
+        run: python shared/endpoint_ci.py --feature order_returns --owner Howard
+
       - name: Run pytest
         run: python -m pytest student-Howard/tests/ -q
 
       - name: Build Docker image
         run: docker build -t order-returns-frontend -f student-Howard/Dockerfile --target frontend .
+
+      - name: Upload endpoint and environment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: howard-release2-endpoints-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/

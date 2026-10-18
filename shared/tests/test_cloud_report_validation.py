@@ -189,6 +189,56 @@ def test_good_technical_capture_and_recorded_fixture_decision(cloud_capture):
     )
 
 
+@pytest.mark.parametrize("deployment", [None, {}])
+def test_failed_preflight_survives_missing_or_invalid_deployment(cloud_capture, deployment):
+    reports = cloud_capture.reports
+    if deployment is None:
+        reports.pop("deployment")
+    else:
+        reports["deployment"] = deployment
+    reports["actions"]["conclusion"] = "failure"
+    reports["actions"]["jobs"][0]["conclusion"] = "failure"
+
+    result = cloud_capture.cloud_collect()
+
+    assert result["status"] == result["technical_status"] == "fail"
+    assert result["checks"] == [
+        {"name": "actions", "status": "fail", "run_url": reports["actions"]["html_url"]}
+    ]
+    assert "invalid_cloud_manifest_or_deployment" in result["issues"]
+    assert not result["human_release"]["recorded"]
+    assert any(item["path"] == "actions.json" for item in result["inputs"])
+
+
+@pytest.mark.parametrize("field,value", [
+    ("head_sha", "c" * 40),
+    ("head_branch", "ethan-goldman"),
+    ("path", ".github/workflows/EthanGoldman.yml"),
+    ("status", "in_progress"),
+])
+def test_preflight_failure_requires_matching_completed_cloud_run(cloud_capture, field, value):
+    reports = cloud_capture.reports
+    reports.pop("deployment")
+    reports["actions"]["conclusion"] = "failure"
+    reports["actions"]["jobs"][0]["conclusion"] = "failure"
+    reports["actions"][field] = value
+
+    result = cloud_capture.cloud_collect()
+
+    assert result["status"] == result["technical_status"] == "incomplete"
+    assert result["checks"] == []
+
+
+@pytest.mark.parametrize("manifest", [None, [], "invalid"])
+def test_non_object_cloud_manifest_remains_incomplete(cloud_capture, manifest):
+    cloud_capture.write("cloud-manifest.json", manifest)
+    result = cloud_capture.module.collect_cloud_evidence(
+        cloud_capture.root, "cloud-manifest.json", SOURCE, cloud_capture.cloud_paths
+    )
+    assert result["status"] == "incomplete"
+    assert result["checks"] == []
+
+
 @pytest.mark.parametrize(
     "change",
     ["manual", "failed", "skipped", "branch", "sha", "missing_gate", "stale_gate"],
