@@ -1,0 +1,2 @@
+2026-10-18T09:44:15.2210351Z Configure AWS_DEPLOY_ROLE_ARN in the aws-cloud environment.
+2026-10-18T09:44:15.2223967Z ##[error]Process completed with exit code 1.

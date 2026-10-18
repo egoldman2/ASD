@@ -3,8 +3,11 @@
 Updated 18 October 2026 (Australia/Sydney). **Release incomplete; no human release
 approval.** This is Ethan Goldman's group-editor handoff. The final PDF has a
 3,000-word cap across all contributors; these repository reports are source
-material, not a claim that appendices or tables are exempt. Official group,
-student allocation and Canvas deadline/timezone remain unconfirmed.
+material, not a claim that appendices or tables are exempt. Canvas confirms
+[Group 33](https://canvas.uts.edu.au/groups/399683), so the final filename is
+`group-33.pdf`. The [assignment](https://canvas.uts.edu.au/courses/39716/assignments/267943)
+displays 25 October, 23:59 with the profile timezone Sydney; its brief says AEST.
+The timezone wording and official numeric workflow allocation need confirmation.
 
 ## Implemented architecture and boundaries
 
@@ -93,20 +96,23 @@ Reusable scripts are `cloud/provision.sh`, `prepare.py`, `check_workflows.py`,
 retrieval. Manual deployment remains labelled manual and cannot satisfy the
 required final Actions deployment. S04a verified the repository's actual immutable OIDC prefix, corrected the
 name-only template default and configured a real main-only aws-cloud branch rule.
-Local template lint and four targeted Guard checks pass. Role-variable lookup
-returns 404. Renewed access now validates the template through AWS, but actual
-OIDC-provider listing fails with an explicit managed SCP deny; [S02a evidence](../evidence/release2-aws/recovery-20261017/README.md).
+Local template lint and four targeted Guard checks pass. S04a's role-variable
+lookup returned 404. S02a's renewed access validated the template through AWS,
+but OIDC-provider listing failed with an explicit managed SCP deny;
+[S02a evidence](../evidence/release2-aws/recovery-20261017/README.md).
 No verified deploy role or successful role assumption exists.
-No merge or paid capability change is authorized.
+PR #16 was subsequently merged with Ethan's explicit authorization; Paid/Advanced
+changes remain unauthorized.
 
 ## Actual test/security outcomes
 
-S10c source `d8724d2794ac6d4d92faa3444b1b6a977f89bfa8` passed 274 shared/cloud
-checks locally and [seven suites plus build in PR CI](https://github.com/egoldman2/ASD/actions/runs/38986999923).
-The main-only jobs skipped. A separate actual baseline gate on older main correctly
-failed because Goldman's run failed and two student main runs were absent. It is
-failure evidence, not permission to waive the gate. Final all-five main evidence
-is still missing.
+At the authorized PR #16 merge SHA `cc6f1e4`, all five student workflows,
+seven cloud validation suites, cloud image build and
+the exact-main gate pass. [Native gate, endpoint/context files and archive verification](../evidence/release2-ethan-goldman/ci/main-cc6f1e4/verification.json)
+retain actual results. [Main cloud run](https://github.com/egoldman2/ASD/actions/runs/39116067546)
+fails at the missing deployment role preflight; AWS credential configuration and
+publish/SSM steps were skipped. This is an unsuccessful deployment attempt.
+The ledger preserves the earlier failed baseline gate and intermediate PR checks.
 
 Generated Linux cloud fixtures passed 64 actual gateway checks covering all five
 features' persisted CRUD, support reply, authentication/roles/ownership, cleanup
@@ -165,10 +171,9 @@ Ticket approval and group release approval are separate records.
 | Current security findings | Relevant source owners | Reviewed fixes and rescans; 44 current Ruff findings remain, not release sign-off |
 | AWS resource stability | Ethan after S02a recovery | Host/SSM/storage checks and consistent backups pass; S03 still needs a measured repair and representative-load deployment window |
 | OIDC capability | AWS project owner | Actual supported capability/trust/environment and role access; no plan/capability change by this work |
-| Integration | Human PR reviewer/merge owner | Review PR #16 and authorize merge; rerun every main workflow at resulting SHA |
-| S16 deployment | Ethan after integration/access | Passing main Actions/SSM acceptance, public browser/API CRUD and disabled baseline, provenance and health window |
+| S16 deployment | Ethan after supported AWS access | Integration/main tests and gate pass; passing Actions/SSM acceptance, public browser/API CRUD, disabled baseline, provenance and health window are still required |
 | S17 release decision | Group release owner | Three final review/validation outputs and dated identity/SHA/reasons/conditions supplied by the person |
-| S18 submission/showcase | Group editor and all five members | Confirm official allocation/deadline, one rendered PDF within limit, accessible video, actual attendance/contributions and all members speaking |
+| S18 submission/showcase | Group editor and all five members | Confirm numeric workflow allocation and deadline timezone; one rendered Group 33 PDF within limit, accessible video, actual attendance/contributions and all members speaking |
 | Retain/cleanup | AWS project owner | Agreed demo/marking window and explicit decision about retained disks/address/bucket/secrets and ongoing cost |
 
 On 17 October, explicit Chrome login renewed AWS access. S02a confirmed Sydney
@@ -180,9 +185,14 @@ restarts/OOMKilled at capture; all application AI flags remain false. The old
 manual accepted path has no full source metadata. Historical kernel evidence
 confirms global OOM but does not isolate its cause; S03 remains incomplete. Fresh
 OIDC listing is explicitly SCP-denied. [Native recovery and limits](../evidence/release2-aws/recovery-20261017/README.md).
-No new source deployment, main merge, paid/advanced capability change, final
+No new source deployment, paid/advanced capability change, final
 public CRUD/Actions acceptance or bonus is claimed. Snapshot cleanup awaits the
 owner; no resources/data are automatically deleted.
+
+On 18 October the renewed local AWS session again confirmed FREE/active, healthy
+EC2/SSM, an explicit OIDC SCP denial and no GitHub-trusting role among 13 roles.
+Ethan chose to keep the current plan. The managed restriction and missing deploy
+role therefore remain the S16 blocker; no credentials or checks were substituted.
 
 S03a measures substantial recurring Python health-probe CPU overhead on the old
 manual runtime. The source now spaces steady probes to 30 seconds, retains
