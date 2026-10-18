@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "mode": "cloud-deployment",
+  "status": "fail",
+  "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+  "captured_at": "2026-10-18T11:21:09.737343+00:00",
+  "review_file": "shared-asd-group-services-cloud-deployment-20261018-222109-735344.md",
+  "review_sha256": "93289fe9400356c6b3cc58ebe603cf339af9a480802afd618b5815c0d3e094ac",
+  "model_grounding_issues": [
+    "The report does not preserve the exact deterministic status."
+  ],
+  "evidence": {
+    "kind": "cloud-deployment",
+    "read_only": true,
+    "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+    "status": "fail",
+    "technical_status": "fail",
+    "checks": [
+      {
+        "name": "actions",
+        "status": "fail",
+        "run_url": "https://github.com/egoldman2/ASD/actions/runs/39122068227"
+      }
+    ],
+    "issues": [
+      "invalid_cloud_manifest_or_deployment"
+    ],
+    "human_release": {
+      "recorded": false
+    },
+    "remote_authenticity_verified": false,
+    "limitations": [
+      "Supplied captures are checked offline; remote authenticity is not independently verified.",
+      "A technical result or model recommendation cannot grant a human release approval.",
+      "Recorded core CRUD does not establish unrecorded returns/supplier operations or production capacity.",
+      "Official workflow/endpoint allocation is not verified by offline captures."
+    ],
+    "inputs": [
+      {
+        "path": "docs/evidence/release2-cloud-deployment-manifest.json",
+        "sha256": "e8b99fa712b82b2e12c064b22fe08ff47caa1c4c107d52805529cdca9f30518e",
+        "bytes": 704
+      },
+      {
+        "path": "docs/evidence/release2-aws/main-137c298/actions.json",
+        "sha256": "f8533b38ff4f211b6801545faeab89726dfea3e4ddadbc2944e2269fa328c253",
+        "bytes": 5826
+      }
+    ],
+    "configured_workflow_count": 5
+  }
+}

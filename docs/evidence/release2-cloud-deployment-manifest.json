@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "kind": "cloud-deployment",
+  "owner": "Ethan Goldman",
+  "source_sha": "137c2987eee913d531e724d8c665118135d76181",
+  "captured_at": "2026-10-18T11:17:41.183924+00:00",
+  "command": "Assemble actual completed main cloud run/job/step metadata and digest-verified native workflow gate; accepted deployment evidence is absent.",
+  "actions": {
+    "path": "docs/evidence/release2-aws/main-137c298/actions.json",
+    "sha256": "f8533b38ff4f211b6801545faeab89726dfea3e4ddadbc2944e2269fa328c253"
+  },
+  "workflow_gate": {
+    "path": "docs/evidence/release2-aws/main-137c298/workflow-gate.json",
+    "sha256": "b2ad4c483b041e162e421d720814359b9a139397a46f56e417b18e3d7cbd882f"
+  }
+}
