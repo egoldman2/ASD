@@ -72,6 +72,9 @@ jobs:
           test "$RAG_ENABLED" = "false"
           test "$RUN_LIVE_AI" = "0"
 
+      - name: Record and verify allocated endpoint functions
+        run: python shared/endpoint_ci.py --feature product_catalogue --owner 'Chufeng Li'
+
       - name: Run Product Catalogue, MCP, and RAG tests
         run: >-
           python -m pytest
@@ -79,6 +82,13 @@ jobs:
           ai-services/mcp_server/tests
           ai-services/rag_server/tests
           -q
+
+      - name: Upload endpoint and environment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chufeng-release2-endpoints-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/
 
   docker-build:
     name: Build Docker images

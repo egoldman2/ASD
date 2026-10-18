@@ -122,6 +122,62 @@
       "customer_support"
     ],
     "expected_endpoints": {
+      "product_catalogue": [
+        {
+          "function": "get_products",
+          "method": "GET",
+          "path": "/api/products",
+          "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_get_and_search_products"
+        },
+        {
+          "function": "create_cart_item",
+          "method": "POST",
+          "path": "/api/cart-items",
+          "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_add_cart_item"
+        }
+      ],
+      "inventory": [
+        {
+          "function": "create_product",
+          "method": "POST",
+          "path": "/api/inventory/products",
+          "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_create_product"
+        },
+        {
+          "function": "update_product",
+          "method": "PUT",
+          "path": "/api/inventory/products/<int:product_id>",
+          "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_update_product"
+        }
+      ],
+      "customer_loyalty": [
+        {
+          "function": "register",
+          "method": "POST",
+          "path": "/api/register",
+          "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_customer_registration_creates_customer_session"
+        },
+        {
+          "function": "create_loyalty_adjustment",
+          "method": "POST",
+          "path": "/api/admin/loyalty/<int:user_id>/adjustments",
+          "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_admin_adjustment_includes_authenticated_admin_id"
+        }
+      ],
+      "order_returns": [
+        {
+          "function": "create_order",
+          "method": "POST",
+          "path": "/api/order-returns/orders",
+          "test_node_id": "student-Howard/tests/test_api.py::test_create_order"
+        },
+        {
+          "function": "create_return",
+          "method": "POST",
+          "path": "/api/order-returns/returns",
+          "test_node_id": "student-Howard/tests/test_api.py::test_create_return"
+        }
+      ],
       "customer_support": [
         {
           "function": "customer_create",

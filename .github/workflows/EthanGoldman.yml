@@ -52,51 +52,16 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt -r ai-services/rag_server/requirements.txt
 
-      - name: Record test environment and endpoint function mapping
-        run: |
-          mkdir -p artifacts
-          python -m pip freeze > artifacts/python-versions.txt
-          node --version > artifacts/node-version.txt
-          python - <<'PY'
-          from datetime import datetime, timezone
-          import json
-          import os
-          from pathlib import Path
-          import platform
-
-          flags = ("AI_MODE_ENABLED", "MCP_ENABLED", "RAG_ENABLED", "MULTI_AGENT_ENABLED")
-          opt_ins = ("RUN_LIVE_AI", "RUN_LIVE_MCP_AI", "RUN_LIVE_RAG_AI", "RUN_LIVE_VALIDATION", "RUN_LIVE_RELEASE1_VALIDATION", "RUN_LIVE_MULTI_AGENT", "RUN_NGINX_PROXY_CHECK")
-          assert all(os.environ[name] == "false" for name in flags)
-          assert all(os.environ[name] == "0" for name in opt_ins)
-          report = {
-              "owner": "Ethan Goldman", "feature": "customer_support",
-              "source_sha": os.environ["GITHUB_SHA"], "event": os.environ["GITHUB_EVENT_NAME"],
-              "ref": os.environ["GITHUB_REF"], "run_id": os.environ["GITHUB_RUN_ID"],
-              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
-              "run_url": f'https://github.com/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}',
-              "captured_at": datetime.now(timezone.utc).isoformat(), "python": platform.python_version(),
-              "workflow": ".github/workflows/EthanGoldman.yml",
-              "ai_flags": {name: os.environ[name] for name in flags},
-              "live_opt_ins": {name: os.environ[name] for name in opt_ins},
-              "endpoint_junit": "endpoint-functions.xml",
-              "endpoint_functions": [
-                  {"function": "customer_create", "method": "POST", "path": "/api/support/customer/tickets",
-                   "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract"},
-                  {"function": "admin_update", "method": "PUT", "path": "/api/support/admin/tickets/<int:ticket_id>",
-                   "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract"},
-              ],
-          }
-          Path("artifacts/test-context.json").write_text(json.dumps(report, indent=2) + "\n")
-          PY
-
-      - name: Verify customer_create and admin_update endpoint functions
-        run: python -m pytest 'student-Ethan Goldman/tests/test_release2_endpoint_functions.py' -q --junitxml=artifacts/endpoint-functions.xml
+      - name: Record and verify allocated endpoint functions
+        run: python shared/endpoint_ci.py --feature customer_support --owner 'Ethan Goldman'
 
       - name: Run Customer Support tests
         run: python -m pytest 'student-Ethan Goldman/tests' -q --junitxml=artifacts/support-regression.xml
 
       - name: Verify workflow loading and error events
-        run: node --test 'student-Ethan Goldman/tests/check_support_events.js' > artifacts/frontend-events.txt
+        run: |
+          node --version > artifacts/node-version.txt
+          node --test 'student-Ethan Goldman/tests/check_support_events.js' > artifacts/frontend-events.txt
 
       - name: Run shared MCP and RAG contract tests
         run: python -m pytest ai-services/mcp_server/tests ai-services/rag_server/tests -q --junitxml=artifacts/mcp-rag-contracts.xml

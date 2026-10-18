@@ -80,6 +80,9 @@ jobs:
                   )
           PY
 
+      - name: Record and verify allocated endpoint functions
+        run: python shared/endpoint_ci.py --feature inventory --owner 'Ryan Nolan'
+
       - name: Run Ryan Nolan tests
         env:
           MCP_ENABLED: "false"
@@ -88,6 +91,13 @@ jobs:
         
       - name: Compile Ryan Nolan Python modules
         run: python -m compileall -q "student-Ryan_Nolan"
+
+      - name: Upload endpoint and environment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ryan-release2-endpoints-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/
 
   docker-build:
     name: Build Ryan Nolan Docker images
