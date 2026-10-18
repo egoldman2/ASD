@@ -1,0 +1,77 @@
+{
+  "started_at": "2026-10-18T11:29:59.452647+00:00",
+  "base_url": "http://localhost:8005",
+  "ticket_id": 2015,
+  "subject": "Release 2 disposable UI deletion check 20261018",
+  "create_status": 201,
+  "selected_ticket_2013_before_sha256": "7da8fdf4c9a752b2108c4f7db5a6a47468a7eec1a0c42df14ea3c6ef64c56152",
+  "existing_ticket_ids": [
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+  ],
+  "scope": "Only the newly generated disposable local test ticket may be deleted; ticket #2013 and existing data remain unchanged.",
+  "completed_at": "2026-10-18T11:36:03.546641+00:00",
+  "collection_source_sha": "cc84d7cb02ebc3c5f5e8a985e6263c6db633fe35",
+  "runtime": "Existing retained local S15 demo; no rebuild or deployment performed for this check.",
+  "approval_source": "Explicit conversation reply: Delete test ticket #2015",
+  "browser": "Chrome",
+  "delete_method": "Existing staff UI Delete ticket control, followed by its native confirmation; no API DELETE used.",
+  "browser_result_url": "http://localhost:8005/staff.html",
+  "deleted_ticket_read_status": 404,
+  "selected_ticket_2013_after_sha256": "7da8fdf4c9a752b2108c4f7db5a6a47468a7eec1a0c42df14ea3c6ef64c56152",
+  "selected_ticket_2013_unchanged": true,
+  "existing_ticket_ids_after": [
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013
+  ],
+  "existing_ticket_ids_unchanged": true,
+  "limitations": [
+    "This extends the earlier real local demo evidence; collection Git SHA is not a claim that its running containers were rebuilt from that SHA.",
+    "No new model calls, ticket review decisions or cloud acceptance are claimed."
+  ],
+  "queue_search": {
+    "query": "2015",
+    "matching": 0,
+    "visible_message": "No tickets found"
+  },
+  "automation_note": "The background CDP click left the native confirmation open. After verifying the record still existed, the explicitly approved confirmation was completed through Chrome native UI; only then did the ticket return 404.",
+  "artifacts": [
+    {
+      "path": "docs/evidence/release2-ethan-goldman/local/ui-delete-20261018/before-delete.png",
+      "sha256": "615a1224ef99bc61738c456f61d9ce6c3959d650c67a04b78a4e5ea2f03c7a83",
+      "bytes": 266948,
+      "mime_type": "image/jpeg",
+      "native_screenshot": true
+    },
+    {
+      "path": "docs/evidence/release2-ethan-goldman/local/ui-delete-20261018/after-delete.png",
+      "sha256": "c8cce70d30397220202e1883a5f779eead242207b44045520c283c3010debd21",
+      "bytes": 67876,
+      "mime_type": "image/jpeg",
+      "native_screenshot": true
+    }
+  ],
+  "screenshot_note": "Chrome returned JPEG bytes; kept unchanged at the screenshot paths already shown in the conversation."
+}
