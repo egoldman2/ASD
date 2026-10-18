@@ -12,10 +12,8 @@ from urllib.parse import urlsplit
 BASE_DIR = Path(__file__).resolve().parent
 
 DEFAULT_RAG_ENABLED = True
-# Listen on every local interface so Dockerised student backends can reach the
-# host-side service through host.docker.internal.  This is still a local
-# development service and must not be exposed on a public network.
-DEFAULT_RAG_HOST = "0.0.0.0"
+# The unauthenticated host service must require an explicit non-loopback bind.
+DEFAULT_RAG_HOST = "127.0.0.1"
 DEFAULT_RAG_PORT = 5003
 DEFAULT_PRODUCT_DATABASE_API_URL = (
     "http://127.0.0.1:6001/api/database/products"
@@ -159,7 +157,7 @@ class RAGSettings:
     def endpoint_url(self) -> str:
         """Return the host-side URL used to reach the local RAG HTTP server."""
 
-        display_host = "127.0.0.1" if self.host == "0.0.0.0" else self.host
+        display_host = "127.0.0.1" if self.host == "0.0.0.0" else self.host  # noqa: S104 - URL formatting, not a network bind.
         return f"http://{display_host}:{self.port}"
 
     @classmethod

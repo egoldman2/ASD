@@ -20,7 +20,11 @@ model before starting the service. The Ethan Ting live smoke check used
 
 `RAG_ENABLED=false` disables retrieval and generation. `AI_MODE_ENABLED=false`
 also stops model generation; deterministic retrieval does not require Ollama.
-The default HTTP bind is `0.0.0.0` for the Docker host bridge. `RAG_HOST`,
+The default HTTP bind is `127.0.0.1`, matching the demonstrated local setup. This
+service has no authentication. If your Docker host bridge requires another bind,
+set `RAG_HOST` explicitly to a trusted host interface and restrict network access
+to the local Docker clients; do not expose the service to a public network.
+`RAG_HOST`,
 `RAG_PORT`, `RAG_CHROMA_PATH`, `RAG_MIN_RELEVANCE_SCORE`, `RAG_DEFAULT_TOP_K`,
 `RAG_MAX_TOP_K`, `OLLAMA_URL` and `OLLAMA_MODEL` are configurable. The shared
 request timeout defaults to 45 seconds and must be finite, positive and at most
