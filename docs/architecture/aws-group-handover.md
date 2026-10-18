@@ -2,6 +2,12 @@
 
 Prepared 12 October 2026 from the implementation and the 9 October deployment evidence. This guide is for explaining the work in the showcase and for handing operation of the shared environment to the group.
 
+Status update, 17 October 2026: this document preserves its dated historical
+observations. The [current shared release handoff](../reports/release2-shared-cloud-and-testing.md)
+records implemented support/review/gate work, actual local evidence and unresolved
+AWS/human/integration dependencies. Statements below about current/live state
+refer to their original 9–12 October capture, not a new availability check.
+
 ## 1. What we actually built
 
 We adapted the existing Release 1 marketplace to run on one AWS EC2 Linux virtual machine. Docker Compose runs the existing frontends, Flask APIs and SQLite database services. CloudFront supplies a public HTTPS entry point. Application records live on encrypted EBS storage outside the release folders. Reusable scripts provision infrastructure and deploy source releases through AWS Systems Manager.
@@ -132,9 +138,9 @@ flowchart LR
 
 `cloud/deploy.py` reads stack outputs instead of requiring each developer to know bucket and secret identifiers. It bundles the current source, uploads it and sends an SSM command. The host downloads the archive using its own role, verifies its checksum and invokes `cloud/install.sh`.
 
-The installer uses a host deployment lock, writes a private `cloud.env`, reuses the persistent session key, builds and starts containers, then runs `cloud/smoke.py`. Successful releases update `/srv/asd/current`. If startup or smoke checks fail, the installer attempts to restore the previous containers. Release-specific image tags avoid overwriting the previous application images.
+The installer uses a host deployment lock, writes a private `cloud.env`, reuses the persistent session key, builds and starts containers, then runs `cloud/smoke.py` against both loopback and the public HTTPS origin and inspects actual runtime flags/listeners. Successful releases update `/srv/asd/current`. If startup or smoke checks fail, the installer attempts to restore the previous containers. Release-specific image tags avoid overwriting the previous application images.
 
-The SHA-256 verifies the archive downloaded by the host matches the uploaded release. It does not prove that the code was reviewed. Manual deployment can include uncommitted code from the developer's working copy; the group should deploy reviewed, identified commits.
+The SHA-256 verifies the archive downloaded by the host matches the uploaded release. It does not prove that the code was reviewed. Deployment now rejects dirty/untracked working copies and non-main source. Actions additionally checks the checked-out SHA/ref/repository and release attempt. A manual main deployment is labelled manual and does not establish final Actions release evidence. See [the current evidence/runbook](aws-deployment.md) for safe failure artifacts and native capture retrieval.
 
 ## 6. Data persistence, security and their limits
 
@@ -194,7 +200,7 @@ aws ec2 start-instances --profile aws-toolkit --region ap-southeast-2 \
 aws ec2 wait instance-running --profile aws-toolkit --region ap-southeast-2 \
   --instance-ids i-03a217a6a7f61d3ae
 
-# Deploy an identified release from the repository root, while EC2 is ready.
+# Deploy only a clean, committed main checkout after normal PR integration, while EC2 is ready.
 AWS_PROFILE=aws-toolkit python3 cloud/deploy.py \
   --release teammate-reviewed-release-id --report deployment-report.json
 
@@ -211,7 +217,17 @@ Independent access does not mean five isolated deployments. Every manual deploym
 
 ## 9. GitHub deployment and its current blocker
 
-`cloud-deployment.yml` defines six parallel test suites and a cloud image-build job. The deployment job waits for both to pass, targets main, uses a GitHub environment named `aws-cloud`, requests an OIDC token and calls the same `cloud/deploy.py` script. This workflow repeats the relevant test suites; it does not wait for separate pre-existing student workflow runs. Reports are uploaded as GitHub artifacts. Configure environment branch rules and any desired review requirements explicitly; they are not created by the YAML.
+`cloud-deployment.yml` now defines seven isolated test suites, a cloud image-build
+job and a bounded five-student workflow gate. Deployment requires all three and
+an exact main candidate. The gate checks the versioned existing workflow IDs/paths,
+main push SHA and latest-attempt jobs; all must succeed. Every named student
+workflow triggers on every main push, with all AI flags/live opt-ins disabled.
+Only the gate receives Actions read access. The deployment job uses `aws-cloud`,
+an OIDC token and `cloud/deploy.py`, after a fresh main-reference check. CLI and
+locked-host checks prevent a queued stale candidate from replacing the intended
+main release. Sanitized gate/deployment reports upload even on failure. These
+source changes are locally verified; actual integrated Actions/SSM acceptance
+remains outstanding. Configure environment branch rules and any desired review requirements explicitly; they are not created by the YAML.
 
 OIDC lets GitHub obtain short-lived AWS permissions using a role trusted for `repo:egoldman2/ASD:environment:aws-cloud`. The proposed role can write release objects and send commands to this host. SSM command access is powerful host access, so treat deployment permission accordingly. It does not grant a teammate billing ownership.
 

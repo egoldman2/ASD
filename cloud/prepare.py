@@ -51,7 +51,8 @@ def prepare(destination, source=ROOT):
         if (
             not path.is_file() or path.is_symlink()
             or any(part.startswith(".") or part == "__pycache__" for part in relative.parts[:-1])
-            or (path.suffix not in SOURCE_SUFFIXES and not path.name.startswith("Dockerfile") and path.name != ".dockerignore")
+            or (path.suffix not in SOURCE_SUFFIXES and not path.name.startswith("Dockerfile")
+                and path.name != ".dockerignore" and relative.as_posix() != "cloud/student-workflows.json")
             or path.name.startswith(".env")
             or "chroma" in relative.parts
         ):
@@ -78,7 +79,8 @@ def prepare(destination, source=ROOT):
     # Cloud AI is disabled; none of the application APIs need a Chroma index.
     requirements = destination / "requirements.txt"
     lines = [line for line in requirements.read_text().splitlines() if not line.lower().startswith("chromadb")]
-    requirements.write_text("\n".join(lines) + "\ngunicorn==23.0.0\n")
+    cloud_requirements = (destination / "cloud/requirements.txt").read_text()
+    requirements.write_text("\n".join(lines) + "\n" + cloud_requirements)
     for directory in (destination / "shared", *(destination / name / "frontend" for name in FEATURES)):
         for path in directory.rglob("*"):
             if path.is_file() and path.suffix in {".html", ".js"} and re.search(r"https?://(?:localhost|127\.0\.0\.1)", path.read_text()):

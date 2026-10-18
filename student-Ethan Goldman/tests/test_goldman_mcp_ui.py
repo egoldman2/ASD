@@ -4,7 +4,6 @@ from hashlib import sha256
 from importlib import import_module
 import json
 import os
-from pathlib import Path
 import sqlite3
 
 import pytest
@@ -98,7 +97,7 @@ def test_assistant_ui_answer_evidence_and_safe_failure_states(live_mcp, monkeypa
 
 
 @pytest.mark.skipif(os.getenv('RUN_LIVE_MCP_AI') != '1', reason='Opt-in actual model with all four staff fragment questions')
-def test_live_staff_questions_use_each_actual_model_selected_tool(live_mcp, monkeypatch):
+def test_live_staff_questions_use_each_actual_model_selected_tool(live_mcp, monkeypatch, tmp_path):
     monkeypatch.setenv('OLLAMA_URL', 'http://127.0.0.1:11434')
     monkeypatch.setenv('MCP_ASSISTANT_MODEL', os.getenv('MCP_ASSISTANT_MODEL', 'qwen2.5:3b'))
     stack, admin = live_mcp, live_mcp.admin()
@@ -119,7 +118,7 @@ def test_live_staff_questions_use_each_actual_model_selected_tool(live_mcp, monk
         traces.append({'question': question, 'expected_tool': name, 'model_outputs': []})
         response = post(stack, admin, 'assistant', {'question': question, **data})
         traces[-1].update(status=response.status_code, fragment=response.text)
-        Path('/tmp/asd-support-mcp-ui-live.json').write_text(json.dumps(traces, indent=2))
+        (tmp_path / 'mcp-ui-live.json').write_text(json.dumps(traces, indent=2))
         assert response.status_code == 200 and 'Assistant answer' in response.text, response.text
         names = [c['function']['name'] for output in traces[-1]['model_outputs'] for c in output.get('tool_calls', [])]
         assert name in names and 'Data used:' in response.text and 'Verified fact references' in response.text

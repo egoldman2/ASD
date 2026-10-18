@@ -1,0 +1,39 @@
+{
+  "profile": "aws-toolkit",
+  "region": "ap-southeast-2",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "commands": [
+    {
+      "purpose": "host-inspection",
+      "command_id": "585b0c2e-8dc2-4ad0-8d89-2e6b4beddd3f",
+      "requested_at": "2026-10-17T23:12:46.878000+11:00",
+      "status": "Success",
+      "response_code": 0,
+      "execution_start": "2026-10-17T12:12:48.758Z",
+      "execution_end": "2026-10-17T12:12:56.758Z",
+      "stderr_bytes": 0
+    },
+    {
+      "purpose": "database-backup",
+      "command_id": "0fef97a5-a663-41c7-af3e-d463a7f890d9",
+      "requested_at": "2026-10-17T23:16:10.113000+11:00",
+      "status": "Success",
+      "response_code": 0,
+      "execution_start": "2026-10-17T12:16:10.916Z",
+      "execution_end": "2026-10-17T12:16:10.916Z",
+      "stderr_bytes": 0
+    },
+    {
+      "purpose": "oom-context",
+      "command_id": "3eff6524-1ff0-42f0-890d-f148b5a5bd57",
+      "requested_at": "2026-10-17T23:18:23.540000+11:00",
+      "status": "Success",
+      "response_code": 0,
+      "execution_start": "2026-10-17T12:18:24.509Z",
+      "execution_end": "2026-10-17T12:18:25.509Z",
+      "stderr_bytes": 0
+    }
+  ],
+  "initial_backup_request": "First request contained a 126-character Comment, exceeding the documented 100-character limit. No execution appeared in recent command history; corrected 73-character request succeeded. Original error was not retained by initial orchestration. CLI output-skeleton experiment failed validating generated example values and is not an AWS result or passing check.",
+  "limits": "Full invocation metadata/stdout and initial failed request retained privately; safe native host outputs and scripts are committed separately."
+}

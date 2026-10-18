@@ -1,0 +1,211 @@
+{
+  "fixture_only": true,
+  "captured_at": "2026-10-16T23:40:56.671252+00:00",
+  "project": "asd-release2-s14a",
+  "service_names": [
+    "customer-support",
+    "customer-support-backend",
+    "customer-support-database",
+    "ethan-backend",
+    "ethan-database",
+    "ethan-frontend",
+    "gateway",
+    "inventory-backend",
+    "inventory-frontend",
+    "order-returns-frontend",
+    "product-catalogue",
+    "product-database",
+    "shared-backend",
+    "shared-home"
+  ],
+  "listening_ports": [
+    80,
+    5000,
+    6001,
+    6002,
+    6003,
+    6005,
+    6006,
+    8102,
+    33975,
+    34279,
+    34539,
+    34799,
+    36585,
+    36957,
+    37207,
+    37987,
+    40639,
+    41029,
+    42569,
+    43315,
+    44805,
+    45931
+  ],
+  "services": [
+    {
+      "service": "customer-support",
+      "state": "running",
+      "health": null,
+      "ai_flags": {},
+      "listening_ports": [
+        80,
+        42569
+      ]
+    },
+    {
+      "service": "customer-support-backend",
+      "state": "running",
+      "health": "healthy",
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      },
+      "listening_ports": [
+        6005,
+        36957
+      ]
+    },
+    {
+      "service": "customer-support-database",
+      "state": "running",
+      "health": "healthy",
+      "ai_flags": {},
+      "listening_ports": [
+        6006,
+        40639
+      ]
+    },
+    {
+      "service": "ethan-backend",
+      "state": "running",
+      "health": "healthy",
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      },
+      "listening_ports": [
+        6002,
+        37207
+      ]
+    },
+    {
+      "service": "ethan-database",
+      "state": "running",
+      "health": "healthy",
+      "ai_flags": {},
+      "listening_ports": [
+        6003,
+        34799
+      ]
+    },
+    {
+      "service": "ethan-frontend",
+      "state": "running",
+      "health": null,
+      "ai_flags": {},
+      "listening_ports": [
+        80,
+        44805
+      ]
+    },
+    {
+      "service": "gateway",
+      "state": "running",
+      "health": null,
+      "ai_flags": {},
+      "listening_ports": [
+        80,
+        37987
+      ]
+    },
+    {
+      "service": "inventory-backend",
+      "state": "running",
+      "health": "healthy",
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      },
+      "listening_ports": [
+        8102,
+        34279
+      ]
+    },
+    {
+      "service": "inventory-frontend",
+      "state": "running",
+      "health": null,
+      "ai_flags": {},
+      "listening_ports": [
+        80,
+        33975
+      ]
+    },
+    {
+      "service": "order-returns-frontend",
+      "state": "running",
+      "health": null,
+      "ai_flags": {},
+      "listening_ports": [
+        80,
+        41029
+      ]
+    },
+    {
+      "service": "product-catalogue",
+      "state": "running",
+      "health": null,
+      "ai_flags": {},
+      "listening_ports": [
+        80,
+        36585
+      ]
+    },
+    {
+      "service": "product-database",
+      "state": "running",
+      "health": "healthy",
+      "ai_flags": {},
+      "listening_ports": [
+        6001,
+        34539
+      ]
+    },
+    {
+      "service": "shared-backend",
+      "state": "running",
+      "health": "healthy",
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      },
+      "listening_ports": [
+        5000,
+        45931
+      ]
+    },
+    {
+      "service": "shared-home",
+      "state": "running",
+      "health": null,
+      "ai_flags": {},
+      "listening_ports": [
+        80,
+        43315
+      ]
+    }
+  ],
+  "limitations": [
+    "Local Linux containers only, not EC2/SSM or stability over time",
+    "Docker DNS listeners included; no raw environment or credentials captured"
+  ]
+}

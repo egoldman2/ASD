@@ -226,7 +226,7 @@ def test_endpoint_evidence_records_expected_status(monkeypatch):
     agentic_loop = load_agentic_loop("ethan_agentic_endpoints")
 
     class FakeResponse:
-        status = 200
+        status_code = 200
         headers = {"Content-Type": "application/json"}
 
         def __enter__(self):
@@ -235,13 +235,13 @@ def test_endpoint_evidence_records_expected_status(monkeypatch):
         def __exit__(self, *args):
             return False
 
-        def read(self):
-            return json.dumps({"status": "healthy"}).encode("utf-8")
+        def iter_content(self, size):
+            yield json.dumps({"status": "healthy"}).encode("utf-8")
 
     monkeypatch.setattr(
-        agentic_loop.request,
-        "urlopen",
-        lambda request_object, timeout: FakeResponse(),
+        agentic_loop.requests,
+        "get",
+        lambda url, **kwargs: FakeResponse(),
     )
 
     evidence = agentic_loop.collect_endpoint_evidence({

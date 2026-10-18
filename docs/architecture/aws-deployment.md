@@ -1,6 +1,6 @@
 # Release 2 AWS deployment
 
-The cloud baseline runs the existing five features and their CRUD APIs on one EC2 host in `ap-southeast-2`. The local Release 1 Compose layout remains available. Ollama, MCP, RAG and the future multi-agent service are disabled in the cloud configuration.
+Current source/configuration describes the existing five features and their CRUD APIs on one EC2 host in `ap-southeast-2`. The local Release 1 Compose layout remains available. Ollama, MCP, RAG and Multi-Agent are disabled in the cloud configuration.
 
 ```mermaid
 flowchart LR
@@ -15,6 +15,16 @@ flowchart LR
     S3[Private release bucket] -->|SSM deployment| Gateway
 ```
 
+Current status (17 October 2026): shared gates, smoke/provenance and local model
+support are implemented on `ethan-goldman`. Actual local cloud-bundle checks pass;
+AWS access was renewed through Chrome with explicit human approval. S02a recovered
+the existing host after private encrypted snapshots; SSM, EC2/EBS checks and four
+consistent SQLite backup integrity checks pass. The project remains FREE in
+Sydney. The running app is still the old manual release with unverified full SHA.
+S03 stability, OIDC, main integration and final public Actions deployment remain
+incomplete. See [17 October recovery](../evidence/release2-aws/recovery-20261017/README.md). See the [current shared handoff](../reports/release2-shared-cloud-and-testing.md)
+and [ledger](../evidence/release2-ethan-goldman/progress.md).
+
 ## Design choices
 
 - One public HTTPS origin gives all features a shared secure session cookie. Paths are `/catalogue/`, `/inventory/`, `/account/`, `/orders/` and `/support/`.
@@ -24,6 +34,14 @@ flowchart LR
 - The host fetches release files and generated credentials with an instance role. IMDSv2 and a hop limit of one prevent bridge-network application containers from using that role.
 - Accounts, products, support and orders databases live under `/srv/asd/data` on encrypted EBS, outside release directories. The generated session key also survives releases. Initial seed passwords come from Secrets Manager; existing database hashes are not replaced.
 - The EC2 default is `t3.small`, verified eligible for this project's Free plan. Local idle measurements were approximately 550 MiB across the 14 containers. This is an assessment baseline; load and sustained CPU usage still need measurement.
+
+S03a measured recurring Python health-probe CPU overhead on the recovered old
+manual release. Source healthchecks now run every 30 seconds after startup, with
+five-second checks during the existing 30-second startup grace period. Five
+failures preserve the 150-second configured interval budget; actual detection
+time also includes probe execution. All HTTP validations remain enabled. This
+repair is not deployed and does not close the historical OOM diagnosis or final
+S03 stability gate. [Measurements and verification](../evidence/release2-aws/cpu-probes-20261017/README.md).
 
 ## Provision and release
 
@@ -37,13 +55,30 @@ python3 cloud/deploy.py --release manual-unique-id --report deployment-report.js
 
 Provisioning validates the template and checks the chosen instance type against the project's current plan before changing the stack. It creates the VPC, host, retained storage, private release bucket, secrets and CloudFront distribution. The host installs Docker and a checksum-verified Compose binary.
 
-Deployment creates a source archive, uploads it to S3 and executes installation through SSM. The host verifies the archive hash, builds containers and runs integrated authentication and CRUD checks. Only a passing release becomes `/srv/asd/current`. A failed update attempts to restore the previous containers; database changes are not rolled back. Do not introduce destructive database migrations without a separate backup and recovery plan.
+Deployment requires a clean, committed main checkout, including no untracked source. Actions also verifies its repository/ref/SHA/run attempt; manual main deployments remain labelled manual and cannot establish final Actions release evidence. Deployment creates a source archive, uploads it to S3 and executes installation through SSM. The host verifies the archive hash, builds containers and runs both loopback and public integrated authentication/CRUD/disabled-AI checks. Running flags, container health/services and host listeners must establish the disabled baseline before acceptance. Only a passing release becomes `/srv/asd/current`. A failed update attempts to restore the previous containers; database changes are not rolled back. Do not introduce destructive database migrations without a separate backup and recovery plan.
+
+`deployment-report.json` records the source commit, bundle SHA-256, release ID,
+UTC capture, run/attempt, SSM command, instance, public target and acceptance.
+`deployment-evidence/deployment-result.json` contains validated remote paths/hashes
+for `local-smoke.json`, `public-smoke.json` and `runtime.json`. Native captures stay
+in the immutable `/srv/asd/releases/<release>-<digest-prefix>/` directory; retrieve
+those three files through SSM, verify their hashes, and add them to the final
+review manifest. Remote paths alone cannot satisfy the report collector. No new
+public diagnostics route is exposed. Host `deployment.log` stays private; neither
+raw SSM stdout/stderr nor the full Docker environment is exported. Failed/pending
+SSM commands retain safe failure status/identity when available, and Actions
+attempts artifact upload on failure. A rollback attempt is not proof of restored
+health; inspect the previous release afterward. No database rollback is performed.
+
+S14's local fixture checks establish the code paths; actual SSM/public/resource
+stability and five same-SHA workflow evidence still belong to S16. No successful
+live deployment is claimed by these source changes.
 
 SSM command IDs and sanitized deployment reports provide evidence. Do not paste `cloud.env`, Secrets Manager values, cookies or raw `docker inspect` output into reports. The seed password can be retrieved privately from the stack's `DemoPasswordArn` for `admin@asd.local` and `customer@asd.local`; it is not published in source or stack outputs.
 
 ## Stop and resume sessions
 
-The initial environment was stopped after verification at the user's request. Its URL is `https://dww8d9hiqp0ce.cloudfront.net`; it is unavailable while EC2 is stopped. The instance ID is `i-03a217a6a7f61d3ae`. Start it for the next group session:
+Historical setup state: the environment was stopped after verification at the user's request. On 17 October at 12:10 UTC, S02a started the existing instance after both encrypted snapshots completed. At 12:18 UTC EC2/system/EBS checks were ok, SSM Online, and public HEAD returned 200 at `https://dww8d9hiqp0ce.cloudfront.net`. These are recovery checks of the older manual release, not final acceptance. The instance ID is `i-03a217a6a7f61d3ae`. For a later session, check current state before starting it:
 
 ```bash
 aws ec2 start-instances --profile aws-toolkit --region ap-southeast-2 --instance-ids i-03a217a6a7f61d3ae
@@ -61,18 +96,77 @@ Stopping saves compute charges but retains both disks, the Elastic IP and secret
 
 ## GitHub deployment
 
-`.github/workflows/cloud-deployment.yml` runs six test suites and a cloud container build before deploying a main-branch release. Configure a GitHub environment named `aws-cloud`, with `AWS_DEPLOY_ROLE_ARN` and optionally `AWS_STACK_NAME` environment variables. The AWS role trusts only this repository and that environment using OIDC; no long-lived access keys are needed.
+`.github/workflows/cloud-deployment.yml` runs seven isolated test suites (including
+shared Multi-Agent) and a cloud container build. A bounded read-only gate also
+requires all five [verified named student workflows](../reports/release2-workflow-mapping.md)
+to pass for the exact main push SHA and latest run attempts. Every reported job
+must pass; a PR run, stale SHA, missing/skipped job or old green attempt is
+insufficient. The gate alone receives Actions read permission and uploads its
+sanitized report even on failure. The source deployment remains main-only.
 
-The template's `EnableGitHubOidc` parameter defaults to `false`. This project's managed policies explicitly denied IAM OIDC provider creation, read and list operations during setup. The actual GitHub role and a successful GitHub deployment run remain to be established; preparing a workflow does not verify CI/CD. If the project permits OIDC, enable the template option with `ENABLE_GITHUB_OIDC=true`; supply `GITHUB_OIDC_PROVIDER_ARN` when reusing an existing provider. Project capability changes belong in AWS Settings and require the project owner's decision. AWS documents these restrictions in its [project capability guide](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
+The deployment job rechecks main before requesting AWS credentials. The CLI
+checks it before upload and immediately before SSM, and the locked host checks
+again before replacement and acceptance. Superseded candidates are skipped by
+the workflow/CLI; a host-side change fails acceptance and attempts previous-code
+restoration. The host reads this public repository reference without receiving
+the GitHub token; an unavailable API fails acceptance. This handles stale queued candidates without deploying artifacts
+from an untrusted workflow_run. A stable current main and real five-student
+Actions/SSM evidence remain required in S16. Configure a GitHub environment named `aws-cloud`, with `AWS_DEPLOY_ROLE_ARN` and optionally `AWS_STACK_NAME` environment variables. The AWS role trusts only this repository and that environment using OIDC; no long-lived access keys are needed.
+
+On 17 October, GitHub's public subject configuration verified immutable prefix
+`repo:egoldman2@200193881/ASD@1326270780`. The template's `GitHubRepository` parameter
+therefore uses `egoldman2@200193881/ASD@1326270780`, not the old name-only value.
+`cloud/provision.sh` explicitly passes this parameter, defaults to profile
+`aws-toolkit`, and rejects malformed identities before AWS calls. For an intended
+repository change, first verify its current OIDC prefix and supply
+`GITHUB_OIDC_REPOSITORY_IDENTITY`; do not guess IDs or widen subject matching.
+The aws-cloud environment now has an actual main-only branch policy. The role
+variable endpoint returned 404. After explicit login renewal, AWS template
+service validation passed on 17 October; [native response](../evidence/release2-aws/recovery-20261017/template-validation.json). [Native S04a evidence](../evidence/release2-ethan-goldman/ci/s04a-verification.json)
+records zero local lint findings and four targeted Guard passes; it does not prove
+role assumption or deploy acceptance. GitHub documents [immutable OIDC subjects](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws).
+
+The template's `EnableGitHubOidc` parameter defaults to `false`. This project's managed policies explicitly denied IAM OIDC provider creation, read and list operations during setup. Fresh provider listing on 17 October again fails with an explicit SCP deny; [sanitized result](../evidence/release2-aws/recovery-20261017/oidc-capability.json). The live stack still has OIDC disabled and its old name-only repository parameter; the corrected source trust has not been deployed. The actual GitHub role and a successful GitHub deployment run remain to be established; preparing a workflow does not verify CI/CD. If the project permits OIDC, enable the template option with `ENABLE_GITHUB_OIDC=true`; supply `GITHUB_OIDC_PROVIDER_ARN` when reusing an existing provider. Project capability changes belong in AWS Settings and require the project owner's decision. AWS documents these restrictions in its [project capability guide](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
+
+### Concrete capability decision for the project owner
+
+The published Free and Paid project policies both include `iam:*Provider*` in
+`DenyIAMRestrictedActions`. This matches the observed provider-list denial;
+the published policy is explanatory evidence, not a retrieved copy of this
+project's exact SCP. A paid upgrade alone therefore does not establish OIDC
+access. [AWS managed-policy reference](https://docs.aws.amazon.com/accounts/latest/reference/scps-and-rcps-for-projects.html).
+
+AWS's documented route is **Projects → Actions → Explore advanced features** in
+AWS Settings. It requires a paid upgrade first. Activation is irreversible,
+transfers organization security/governance administration to the owner and
+removes spend limits permanently. The owner must decide separately whether to
+upgrade and whether to activate, review billing/spend first, and personally
+complete any root email/password setup. No such decision or action has occurred.
+[AWS activation requirements and consequences](https://docs.aws.amazon.com/accounts/latest/reference/activate-advanced-features.html).
+
+After an authorized capability change, recheck provider permissions and the
+restricted trust, review a CloudFormation change set for replacement/data risks,
+and verify a main-only Actions role assumption. Keep Sydney, private data,
+short-lived credentials and the existing identity source; do not replace OIDC
+with copied human credentials. PR #16 still needs separate merge authorization.
 
 ## Validation and limitations
 
-The initial port passed 677 Python tests with ten optional live-service tests skipped, plus 44 integrated local cloud checks. A request without the gateway's origin verification header was rejected with HTTP 403. The template passed cfn-lint, the repository's targeted cfn-guard rules and AWS `validate-template`. These checks cover this change; they do not establish that all Release 2 assessment requirements are complete.
+Historical initial-port evidence: 677 Python tests passed with ten optional live-service tests skipped, plus 44 integrated local cloud checks. A request without the gateway's origin verification header was rejected with HTTP 403. The template passed cfn-lint, the repository's targeted cfn-guard rules and AWS `validate-template`. These checks cover this change; they do not establish that all Release 2 assessment requirements are complete.
 
 This baseline has a single host and SQLite databases. It has no automatic failover, scheduled database backups or centralized application-log collection. Container logs rotate on disk; CloudTrail event history is available but no durable trail was configured. CloudFront provides browser HTTPS, while the restricted origin connection currently uses HTTP. An ALB with origin TLS and managed database/backup services are possible next steps if the group decides it needs stronger availability or end-to-end transport encryption.
 
-Retained EBS, the release bucket and seed-password secret survive stack deletion. Deleting a stack does not fully remove storage charges. Before cleanup, identify these resources and decide whether application data must be preserved or exported. The failed initial stack contained no deployed application data; its unused retained resources were removed with explicit user approval before the eligible-instance retry.
+Two private encrypted pre-recovery snapshots and consistent SQLite/session backups were added on 17 October. Snapshot retention/cleanup awaits the owner; no restore drill is claimed. Retained EBS, the release bucket and seed-password secret survive stack deletion. Deleting a stack does not fully remove storage charges. Before cleanup, identify these resources and decide whether application data must be preserved or exported. The failed initial stack contained no deployed application data; its unused retained resources were removed with explicit user approval before the eligible-instance retry.
 
 ## Group decisions still needed
 
-Decide who owns the AWS project and invites team members; whether to keep this shared environment running; the acceptable credit budget; how demo credentials are shared privately; who can approve deployments; whether the current availability, logging and backup limits are sufficient; and how OIDC capability will be enabled. The local multi-agent implementation, student endpoint test assignments, review pages, report and showcase remain separate Release 2 work.
+Decide who owns the AWS project and invites team members; whether to keep this shared environment running; the acceptable credit budget; how demo credentials are shared privately; who can approve deployments; whether the current availability, logging and backup limits are sufficient; and how OIDC capability will be enabled. The support Multi-Agent implementation, explicit support endpoint CI and review modes are implemented. Genuine human review, remaining member evidence, final integrated deployment and report/showcase acceptance remain required.
+
+Cloud matrix/build validation also runs on relevant PRs. Gate and deployment
+remain main-only; concurrency is separated by ref so PR validation cannot replace
+a pending main deployment. No PR artifact is deployed.
+
+The cloud workflow also runs on every main push, including documentation-only
+commits. Otherwise a new main SHA could supersede a queued candidate while path
+filters prevent its replacement workflow from starting. PR validation retains
+its source-path filters; actual deployment still requires all main-only gates.

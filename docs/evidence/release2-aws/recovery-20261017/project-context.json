@@ -1,0 +1,11 @@
+{
+  "owner": "Ethan Goldman",
+  "profile": "aws-toolkit",
+  "selected_region": "ap-southeast-2",
+  "project_id": "059643396979",
+  "plan_type": "FREE",
+  "plan_status": "ACTIVE",
+  "region_confirmation": "Observed AWS Settings > project Overview > Additional info > Region: Asia Pacific (Sydney), ap-southeast-2",
+  "authentication": "Explicit human approval to run aws login; existing session selected through Chrome; STS succeeded after CLI reported profile updated. Chrome callback display error did not prevent CLI success. An unnecessary remote retry was canceled. No auth URL/code/session credential exported.",
+  "limits": "No paid upgrade, advanced activation, IAM provider/role creation, instance resize, unlimited CPU credits or main merge performed; billing balance/team emails excluded"
+}

@@ -3,16 +3,8 @@ name: Chufeng Product Catalogue CI
 on:
   push:
     branches:
+      - main
       - Chufeng
-    paths:
-      - "student-Chufeng/**"
-      - "ai-services/mcp_server/**"
-      - "ai-services/rag_server/**"
-      - "shared/**"
-      - "app.py"
-      - "docker-compose.yml"
-      - "requirements.txt"
-      - ".github/workflows/Chufeng.yml"
   pull_request:
     branches:
       - main
@@ -31,7 +23,14 @@ env:
   AI_MODE_ENABLED: "false"
   MCP_ENABLED: "false"
   RAG_ENABLED: "false"
+  MULTI_AGENT_ENABLED: "false"
   RUN_LIVE_AI: "0"
+  RUN_LIVE_MCP_AI: "0"
+  RUN_LIVE_RAG_AI: "0"
+  RUN_LIVE_VALIDATION: "0"
+  RUN_LIVE_RELEASE1_VALIDATION: "0"
+  RUN_LIVE_MULTI_AGENT: "0"
+  RUN_NGINX_PROXY_CHECK: "0"
 
 permissions:
   contents: read

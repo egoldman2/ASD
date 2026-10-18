@@ -1,0 +1,13 @@
+{
+  "fixture_only": true,
+  "captured_at": "2026-10-16T23:40:07.015086+00:00",
+  "preexisting_business_rows_preserved": true,
+  "old_customer_session_valid": true,
+  "old_admin_session_valid": true,
+  "session_configuration_unchanged": true,
+  "temporary_ticket_removed": true,
+  "limitations": [
+    "Local generated-bundle Compose recreation, not SSM or actual cloud persistence",
+    "Private cookies, configuration values and database row contents are excluded"
+  ]
+}

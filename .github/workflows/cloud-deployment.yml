@@ -1,7 +1,7 @@
 name: AWS Cloud Deployment
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches: [main]
     paths:
       - 'cloud/**'
@@ -9,20 +9,28 @@ on:
       - 'student-*/**'
       - 'app.py'
       - 'requirements.txt'
-      - '.github/workflows/cloud-deployment.yml'
+      - '.github/workflows/**'
+      - 'ai-services/**'
+      - 'requirements-audit.txt'
+  push:
+    branches: [main]
 permissions:
   contents: read
 concurrency:
-  group: aws-cloud-deployment
+  group: aws-cloud-${{ github.ref }}
   cancel-in-progress: false
 env:
-  AI_MODE_ENABLED: 'false'
-  MCP_ENABLED: 'false'
-  RAG_ENABLED: 'false'
-  MULTI_AGENT_ENABLED: 'false'
-  RUN_LIVE_AI: '0'
-  RUN_LIVE_MCP_AI: '0'
-  RUN_LIVE_RAG_AI: '0'
+  AI_MODE_ENABLED: "false"
+  MCP_ENABLED: "false"
+  RAG_ENABLED: "false"
+  MULTI_AGENT_ENABLED: "false"
+  RUN_LIVE_AI: "0"
+  RUN_LIVE_MCP_AI: "0"
+  RUN_LIVE_RAG_AI: "0"
+  RUN_LIVE_VALIDATION: "0"
+  RUN_LIVE_RELEASE1_VALIDATION: "0"
+  RUN_LIVE_MULTI_AGENT: "0"
+  RUN_NGINX_PROXY_CHECK: "0"
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -35,6 +43,7 @@ jobs:
           - ['student-Ethan Ting/tests']
           - ['student-Howard/tests']
           - ['student-Ethan Goldman/tests']
+          - ['ai-services/multi_agent_server/tests']
           - ['shared/tests', 'cloud/tests', 'ai-services/mcp_server/tests', 'ai-services/rag_server/tests']
     steps:
       - uses: actions/checkout@v4
@@ -65,16 +74,40 @@ jobs:
         env:
           PUBLIC_ORIGIN: https://validation.cloudfront.net
           DATA_ROOT: /tmp/asd-cloud-data
-          SESSION_SECRET: ci-only-session-secret
-          SEED_PASSWORD: CIOnlyGeneratedPassword1234567890
+          SESSION_SECRET: ci-only-session-secret # pragma: allowlist secret - Synthetic Compose build-validation value, never deployed.
+          SEED_PASSWORD: CIOnlyGeneratedPassword1234567890 # pragma: allowlist secret - Synthetic Compose build-validation value, never deployed.
           ORIGIN_TOKEN: ci-only-origin-token
         run: |
           python3 cloud/prepare.py .cloud-build/ci
           docker compose --file .cloud-build/ci/cloud/compose.yml config --quiet
           docker compose --file .cloud-build/ci/cloud/compose.yml build
-  deploy:
-    needs: [validate, cloud-build]
+  student_workflows:
     if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      current: ${{ steps.student_gate.outputs.current }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Require five exact-SHA main push workflows
+        id: student_gate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 cloud/check_workflows.py --sha "$GITHUB_SHA" --report .aws-deployment/workflow-gate.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: student-workflow-gate-${{ github.sha }}-${{ github.run_attempt }}
+          path: .aws-deployment/workflow-gate.json
+          include-hidden-files: true
+  deploy:
+    needs: [validate, cloud-build, student_workflows]
+    if: github.ref == 'refs/heads/main' && needs.student_workflows.outputs.current == 'true'
     runs-on: ubuntu-latest
     environment: aws-cloud
     permissions:
@@ -82,20 +115,37 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+      - name: Recheck that this candidate is still main
+        id: candidate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 cloud/check_workflows.py --sha "$GITHUB_SHA" --head-only --report .aws-deployment/deployment-candidate.json
+      - name: Skip a superseded candidate
+        if: steps.candidate.outputs.current == 'false'
+        run: echo 'Candidate superseded; deploy the newer main release.'
       - name: Require configured deployment role
+        if: steps.candidate.outputs.current == 'true'
         env:
           ROLE_ARN: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
         run: test -n "$ROLE_ARN" || { echo 'Configure AWS_DEPLOY_ROLE_ARN in the aws-cloud environment.' >&2; exit 1; }
       - uses: aws-actions/configure-aws-credentials@v4
+        if: steps.candidate.outputs.current == 'true'
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ap-southeast-2
       - name: Publish and deploy validated release
+        if: steps.candidate.outputs.current == 'true'
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           RELEASE_ID: ${{ github.sha }}-${{ github.run_attempt }}
           STACK_NAME: ${{ vars.AWS_STACK_NAME || 'asd-release2' }}
         run: python3 cloud/deploy.py --stack "$STACK_NAME" --release "$RELEASE_ID" --report deployment-report.json
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: aws-deployment-evidence
-          path: deployment-report.json
+          include-hidden-files: true
+          path: |
+            .aws-deployment/deployment-candidate.json
+            deployment-report.json
+            deployment-evidence/*.json

@@ -1,0 +1,18 @@
+{
+  "checkpoint": "release2-prerecovery-20261017T120651Z",
+  "stopped_instance": "i-03a217a6a7f61d3ae",
+  "volumes": [
+    {
+      "VolumeId": "vol-0abdeffdf216c8ed3",
+      "Size": 20,
+      "Encrypted": true,
+      "VolumeType": "gp3"
+    },
+    {
+      "VolumeId": "vol-02087b3eeb07eec99",
+      "Size": 30,
+      "Encrypted": true,
+      "VolumeType": "gp3"
+    }
+  ]
+}

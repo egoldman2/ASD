@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-10-17T12:10:04.137699+00:00",
+  "backups_complete": [
+    "snap-036e64b4a356e8578",
+    "snap-0e749c8a462661e04"
+  ],
+  "response": {
+    "StartingInstances": [
+      {
+        "InstanceId": "i-03a217a6a7f61d3ae",
+        "CurrentState": {
+          "Code": 0,
+          "Name": "pending"
+        },
+        "PreviousState": {
+          "Code": 80,
+          "Name": "stopped"
+        }
+      }
+    ]
+  }
+}

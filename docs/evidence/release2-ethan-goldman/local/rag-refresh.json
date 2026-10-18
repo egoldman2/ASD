@@ -1,0 +1,28 @@
+{
+  "captured_at": "2026-10-17T00:21:46.509361+00:00",
+  "http_status": 200,
+  "body": {
+    "success": true,
+    "operation": "refresh_corpus",
+    "data": {
+      "scope": "ethan_goldman_support",
+      "source": "Ethan Goldman Customer Support",
+      "document_count": 11,
+      "added_count": 11,
+      "updated_count": 0,
+      "removed_count": 0,
+      "collection": "asd_release1_shared_context",
+      "collection_count": 11,
+      "refreshed_at": "2026-10-17T00:21:46.504408+00:00"
+    },
+    "citations": [],
+    "confidence": null,
+    "insufficient_context": false,
+    "error": null,
+    "metadata": {
+      "read_only_source": true,
+      "embedding": "deterministic_sha256",
+      "embedding_dimensions": 256
+    }
+  }
+}

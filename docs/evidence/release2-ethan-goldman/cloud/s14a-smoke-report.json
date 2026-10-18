@@ -1,0 +1,617 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 2622
+    },
+    {
+      "method": "GET",
+      "path": "/catalogue/",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 3921
+    },
+    {
+      "method": "GET",
+      "path": "/inventory/",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 9889
+    },
+    {
+      "method": "GET",
+      "path": "/account/",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 4141
+    },
+    {
+      "method": "GET",
+      "path": "/assets/js/site-header.js",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 8589
+    },
+    {
+      "method": "GET",
+      "path": "/assets/css/styles.css",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 12016
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/profile",
+      "expected_status": 401,
+      "passed": true,
+      "status": 401,
+      "response_bytes": 30
+    },
+    {
+      "method": "GET",
+      "path": "/api/order-returns/orders",
+      "expected_status": 401,
+      "passed": true,
+      "status": 401,
+      "response_bytes": 30
+    },
+    {
+      "method": "GET",
+      "path": "/inventory-api/api/inventory/products",
+      "expected_status": 401,
+      "passed": true,
+      "status": 401,
+      "response_bytes": 30
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/customer/tickets",
+      "expected_status": 401,
+      "passed": true,
+      "status": 401,
+      "response_bytes": 30
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/login",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 129
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/login",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 123
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/profile",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 142
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/loyalty",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 250
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/admin/customers",
+      "expected_status": 403,
+      "passed": true,
+      "status": 403,
+      "response_bytes": 43
+    },
+    {
+      "method": "GET",
+      "path": "/inventory-api/api/inventory/products",
+      "expected_status": 403,
+      "passed": true,
+      "status": 403,
+      "response_bytes": 43
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets",
+      "expected_status": 403,
+      "passed": true,
+      "status": 403,
+      "response_bytes": 58
+    },
+    {
+      "method": "GET",
+      "path": "/orders/",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 27739
+    },
+    {
+      "method": "GET",
+      "path": "/support/",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 1846
+    },
+    {
+      "method": "GET",
+      "path": "/support/",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 2222
+    },
+    {
+      "method": "GET",
+      "path": "/inventory-api/api/inventory/suppliers",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 1087
+    },
+    {
+      "method": "GET",
+      "path": "/api/order-returns/orders",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 202
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/customer/tickets",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 1320
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 9198
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/admin/ai/customer-insight",
+      "expected_status": 503,
+      "passed": true,
+      "disabled_integration": "customer_loyalty:ai",
+      "status": 503,
+      "response_bytes": 59,
+      "safe_disabled": true
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/admin/mcp/loyalty-tier",
+      "expected_status": 503,
+      "passed": true,
+      "disabled_integration": "customer_loyalty:mcp",
+      "status": 503,
+      "response_bytes": 34,
+      "safe_disabled": true
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/admin/rag/answer",
+      "expected_status": 503,
+      "passed": true,
+      "disabled_integration": "customer_loyalty:rag",
+      "status": 503,
+      "response_bytes": 34,
+      "safe_disabled": true
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/admin/customers",
+      "expected_status": 201,
+      "passed": true,
+      "feature": "customer_loyalty",
+      "operation": "create",
+      "status": 201,
+      "response_bytes": 171
+    },
+    {
+      "method": "PUT",
+      "path": "/account-api/api/admin/customers/37",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "customer_loyalty",
+      "operation": "update",
+      "status": 200,
+      "response_bytes": 179
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/admin/customers",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "customer_loyalty",
+      "operation": "read",
+      "status": 200,
+      "response_bytes": 1999
+    },
+    {
+      "method": "POST",
+      "path": "/account-api/api/login",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 160
+    },
+    {
+      "method": "POST",
+      "path": "/inventory-api/api/inventory/products",
+      "expected_status": 201,
+      "passed": true,
+      "feature": "inventory",
+      "operation": "create",
+      "status": 201,
+      "response_bytes": 257
+    },
+    {
+      "method": "PUT",
+      "path": "/inventory-api/api/inventory/products/17",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "inventory",
+      "operation": "update",
+      "status": 200,
+      "response_bytes": 257
+    },
+    {
+      "method": "GET",
+      "path": "/inventory-api/api/inventory/products/17",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "inventory",
+      "operation": "read",
+      "status": 200,
+      "response_bytes": 257
+    },
+    {
+      "method": "GET",
+      "path": "/api/products",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 282
+    },
+    {
+      "method": "POST",
+      "path": "/api/chufeng/multi-agent/workflows",
+      "expected_status": 503,
+      "passed": true,
+      "disabled_integration": "product_catalogue:multi_agent",
+      "status": 503,
+      "response_bytes": 91,
+      "safe_disabled": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/cart-items",
+      "expected_status": 201,
+      "passed": true,
+      "feature": "product_catalogue",
+      "operation": "create",
+      "status": 201,
+      "response_bytes": 243
+    },
+    {
+      "method": "PUT",
+      "path": "/api/cart-items/4",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "product_catalogue",
+      "operation": "update",
+      "status": 200,
+      "response_bytes": 244
+    },
+    {
+      "method": "GET",
+      "path": "/api/cart-items",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "product_catalogue",
+      "operation": "read",
+      "status": 200,
+      "response_bytes": 241
+    },
+    {
+      "method": "POST",
+      "path": "/api/order-returns/orders",
+      "expected_status": 201,
+      "passed": true,
+      "feature": "order_returns",
+      "operation": "create",
+      "status": 201,
+      "response_bytes": 16
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/order-returns/orders/16/status",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "order_returns",
+      "operation": "update",
+      "status": 200,
+      "response_bytes": 35
+    },
+    {
+      "method": "GET",
+      "path": "/api/order-returns/orders/16",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "order_returns",
+      "operation": "read",
+      "status": 200,
+      "response_bytes": 110
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/customer/tickets",
+      "expected_status": 201,
+      "passed": true,
+      "feature": "customer_support",
+      "operation": "create",
+      "status": 201,
+      "response_bytes": 626
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets/2018",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "customer_support",
+      "operation": "read",
+      "status": 200,
+      "response_bytes": 590
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/customer/tickets/2018",
+      "expected_status": 404,
+      "passed": true,
+      "status": 404,
+      "response_bytes": 56
+    },
+    {
+      "method": "PUT",
+      "path": "/api/support/admin/tickets/2018",
+      "expected_status": 403,
+      "passed": true,
+      "status": 403,
+      "response_bytes": 58
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/tickets/2018/ai-analysis",
+      "expected_status": 503,
+      "passed": true,
+      "disabled_integration": "customer_support:ai",
+      "status": 503,
+      "response_bytes": 33,
+      "safe_disabled": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/mcp/tools/call",
+      "expected_status": 503,
+      "passed": true,
+      "disabled_integration": "customer_support:mcp",
+      "status": 503,
+      "response_bytes": 75,
+      "safe_disabled": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/rag/answer",
+      "expected_status": 503,
+      "passed": true,
+      "disabled_integration": "customer_support:rag",
+      "status": 503,
+      "response_bytes": 194,
+      "safe_disabled": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/multi-agent/tickets/2018/workflows",
+      "expected_status": 503,
+      "passed": true,
+      "disabled_integration": "customer_support:multi_agent",
+      "status": 503,
+      "response_bytes": 91,
+      "safe_disabled": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets/2018",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 590
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/tickets/2018/messages",
+      "expected_status": 201,
+      "passed": true,
+      "feature": "customer_support",
+      "operation": "reply",
+      "status": 201,
+      "response_bytes": 993
+    },
+    {
+      "method": "PUT",
+      "path": "/api/support/admin/tickets/2018",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "customer_support",
+      "operation": "update",
+      "status": 200,
+      "response_bytes": 800
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets/2018",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 772
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/support/admin/tickets/2018",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "customer_support",
+      "operation": "delete",
+      "status": 200,
+      "response_bytes": 55
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets/2018",
+      "expected_status": 404,
+      "passed": true,
+      "status": 404,
+      "response_bytes": 56
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/order-returns/orders/16",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "order_returns",
+      "operation": "delete",
+      "status": 200,
+      "response_bytes": 15
+    },
+    {
+      "method": "GET",
+      "path": "/api/order-returns/orders/16",
+      "expected_status": 404,
+      "passed": true,
+      "status": 404,
+      "response_bytes": 22
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/cart-items/4",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "product_catalogue",
+      "operation": "delete",
+      "status": 200,
+      "response_bytes": 248
+    },
+    {
+      "method": "GET",
+      "path": "/api/cart-items",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 52
+    },
+    {
+      "method": "DELETE",
+      "path": "/inventory-api/api/inventory/products/17",
+      "expected_status": 204,
+      "passed": true,
+      "feature": "inventory",
+      "operation": "delete",
+      "status": 204,
+      "response_bytes": 0
+    },
+    {
+      "method": "GET",
+      "path": "/inventory-api/api/inventory/products/17",
+      "expected_status": 404,
+      "passed": true,
+      "status": 404,
+      "response_bytes": 30
+    },
+    {
+      "method": "DELETE",
+      "path": "/account-api/api/admin/customers/37",
+      "expected_status": 200,
+      "passed": true,
+      "feature": "customer_loyalty",
+      "operation": "delete",
+      "status": 200,
+      "response_bytes": 218
+    },
+    {
+      "method": "GET",
+      "path": "/account-api/api/admin/customers",
+      "expected_status": 200,
+      "passed": true,
+      "status": 200,
+      "response_bytes": 1999
+    }
+  ],
+  "captured_at": "2026-10-16T23:40:08.017202+00:00",
+  "base_url": "http://127.0.0.1:55004",
+  "source_sha": "",
+  "release_id": "release2-s14a",
+  "temporary_identifier": "a57c06508c1a",
+  "cleanup_status": "passed",
+  "cleanup_errors": [],
+  "unconfirmed_creations": [],
+  "feature_crud": {
+    "customer_loyalty": [
+      "create",
+      "delete",
+      "read",
+      "update"
+    ],
+    "inventory": [
+      "create",
+      "delete",
+      "read",
+      "update"
+    ],
+    "product_catalogue": [
+      "create",
+      "delete",
+      "read",
+      "update"
+    ],
+    "order_returns": [
+      "create",
+      "delete",
+      "read",
+      "update"
+    ],
+    "customer_support": [
+      "create",
+      "delete",
+      "read",
+      "reply",
+      "update"
+    ]
+  },
+  "note": "Cleanup uses only IDs from successful creates. Account DELETE deactivates its data; other deletes use existing APIs. Inspect cleanup errors/unconfirmed creates on failure."
+}

@@ -63,7 +63,7 @@ def build_client(monkeypatch, tmp_path, user=None):
 
 
 def add_session_cookie(client):
-    client.set_cookie("localhost", "ethan_session", "verified-session")
+    client.set_cookie("ethan_session", "verified-session", domain="localhost")
 
 
 def test_private_data_requires_login(monkeypatch, tmp_path):

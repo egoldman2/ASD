@@ -9,11 +9,14 @@ from urllib.parse import urlencode
 
 from flask import Blueprint, Response, current_app, g, make_response, redirect, render_template, request
 from shared.mcp_client import MCPClientError
+from shared.multi_agent_client import MultiAgentClientError
 
 try:
     from . import ai, validation
     from . import mcp_client, mcp_routes, mcp_assistant
     from . import rag_client, rag_routes
+    from . import multi_agent
+    from .db_client import SupportDatabaseError
 except ImportError:  # Direct Docker script execution.
     import ai  # type: ignore
     import validation  # type: ignore
@@ -22,6 +25,8 @@ except ImportError:  # Direct Docker script execution.
     import mcp_assistant
     import rag_client
     import rag_routes
+    import multi_agent
+    from db_client import SupportDatabaseError
 
 
 def create_ui_blueprint(
@@ -385,6 +390,72 @@ def create_ui_blueprint(
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Cache-Control"] = "no-store"
         return response
+
+    def workflow_failure(failure):
+        body, status = error_fragment(failure)
+        response = make_response(body, status)
+        # Keep the question/reason forms intact when an operation fails.
+        response.headers["HX-Retarget"] = "#multi-agent-feedback"
+        response.headers["HX-Reswap"] = "innerHTML"
+        return response
+
+    @blueprint.after_request
+    def workflow_boundary_errors(response):
+        if (request.path.startswith("/api/support/ui/admin/multi-agent/")
+                and response.status_code >= 400 and response.is_json):
+            return workflow_failure((response, response.status_code))
+        return response
+
+    def workflow_panel(ticket_id, operation, status=200):
+        user, failure = principal("admin")
+        if failure is not None:
+            return workflow_failure(failure)
+        try:
+            multi_agent.ensure_enabled()
+            if request.method == "POST" and request.args:
+                raise validation.ValidationError("Workflow mutations do not accept query parameters.")
+            if request.method == "POST" and request.mimetype != "application/x-www-form-urlencoded":
+                raise validation.ValidationError("Submit the workflow form to continue.")
+            workflow, history = operation(database(), user)
+            return render_template(
+                "support_ui/admin/multi_agent_panel.html", loaded=True,
+                ticket_id=ticket_id, workflow=workflow,
+                history=history if history is not None else [workflow],
+                question=multi_agent.DEFAULT_QUESTION,
+            ), status
+        except validation.ValidationError as exc:
+            return workflow_failure((make_response({"error": str(exc)}), 400))
+        except MultiAgentClientError as exc:
+            return workflow_failure((make_response({"error": exc.message}), exc.status_code))
+        except SupportDatabaseError as exc:
+            return workflow_failure(db_error(exc))
+
+    @blueprint.get("/api/support/ui/admin/multi-agent/tickets/<int:ticket_id>/workflows")
+    def admin_workflow_history(ticket_id):
+        def history(db, _user):
+            selection = tool_arguments(request.args, {"workflow_id"}).get("workflow_id")
+            records = multi_agent.list_workflows(db, ticket_id)["workflows"]
+            selected = records[-1] if records else None
+            if selection:
+                selected = next((item for item in records if item["workflow_id"] == selection), None)
+                if selected is None:
+                    raise MultiAgentClientError("The requested ticket workflow was not found.", status_code=404)
+            return selected, records
+        return workflow_panel(ticket_id, history)
+
+    @blueprint.post("/api/support/ui/admin/multi-agent/tickets/<int:ticket_id>/workflows")
+    def admin_workflow_create(ticket_id):
+        def create(db, _user):
+            tool_arguments(request.form, {"question"})
+            return multi_agent.create_workflow(db, ticket_id, request.form.to_dict()), None
+        return workflow_panel(ticket_id, create, 201)
+
+    @blueprint.post("/api/support/ui/admin/multi-agent/tickets/<int:ticket_id>/workflows/<workflow_id>/review")
+    def admin_workflow_review(ticket_id, workflow_id):
+        return workflow_panel(ticket_id, lambda db, user: (
+            multi_agent.submit_review(db, ticket_id, workflow_id,
+                                      tool_arguments(request.form, {"decision", "reason"}), user), None,
+        ))
 
     @blueprint.get("/api/support/ui/admin/tickets/<int:ticket_id>")
     def admin_detail(ticket_id: int):

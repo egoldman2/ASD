@@ -1,0 +1,838 @@
+[
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 61,
+      "row": 91
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/mcp_server/config.py",
+    "fix": null,
+    "location": {
+      "column": 52,
+      "row": 91
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 91,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 45,
+      "row": 9
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/mcp_server/tests/test_configuration.py",
+    "fix": null,
+    "location": {
+      "column": 36,
+      "row": 9
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 9,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 38,
+      "row": 19
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/mcp_server/tests/test_configuration.py",
+    "fix": null,
+    "location": {
+      "column": 29,
+      "row": 19
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 19,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S102",
+    "end_location": {
+      "column": 9,
+      "row": 64
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/mcp_server/tests/test_ethan_ting_customer_tools.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 64
+    },
+    "message": "Use of `exec` detected",
+    "name": "exec-builtin",
+    "noqa_row": 64,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/exec-builtin"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 45,
+      "row": 123
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/mcp_server/tests/test_server_protocol.py",
+    "fix": null,
+    "location": {
+      "column": 36,
+      "row": 123
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 123,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 61,
+      "row": 129
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/multi_agent_server/config.py",
+    "fix": null,
+    "location": {
+      "column": 52,
+      "row": 129
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 129,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 29,
+      "row": 18
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/rag_server/config.py",
+    "fix": null,
+    "location": {
+      "column": 20,
+      "row": 18
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 18,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 61,
+      "row": 162
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/rag_server/config.py",
+    "fix": null,
+    "location": {
+      "column": 52,
+      "row": 162
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 162,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S101",
+    "end_location": {
+      "column": 15,
+      "row": 157
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/rag_server/rag_http_server.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 157
+    },
+    "message": "Use of `assert` detected",
+    "name": "assert",
+    "noqa_row": 157,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/assert"
+  },
+  {
+    "cell": null,
+    "code": "S101",
+    "end_location": {
+      "column": 15,
+      "row": 170
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/rag_server/rag_http_server.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 170
+    },
+    "message": "Use of `assert` detected",
+    "name": "assert",
+    "noqa_row": 170,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/assert"
+  },
+  {
+    "cell": null,
+    "code": "S101",
+    "end_location": {
+      "column": 15,
+      "row": 185
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/rag_server/rag_http_server.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 185
+    },
+    "message": "Use of `assert` detected",
+    "name": "assert",
+    "noqa_row": 185,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/assert"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 23,
+      "row": 33
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/rag_server/tests/conftest.py",
+    "fix": null,
+    "location": {
+      "column": 14,
+      "row": 33
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 33,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 45,
+      "row": 16
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/rag_server/tests/test_configuration.py",
+    "fix": null,
+    "location": {
+      "column": 36,
+      "row": 16
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 16,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 38,
+      "row": 31
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/ai-services/rag_server/tests/test_configuration.py",
+    "fix": null,
+    "location": {
+      "column": 29,
+      "row": 31
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 31,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S607",
+    "end_location": {
+      "column": 97,
+      "row": 52
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/docs/evidence/release1-ethan-ting/validate_local.py",
+    "fix": null,
+    "location": {
+      "column": 46,
+      "row": 52
+    },
+    "message": "Starting a process with a partial executable path",
+    "name": "start-process-with-partial-path",
+    "noqa_row": 52,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/start-process-with-partial-path"
+  },
+  {
+    "cell": null,
+    "code": "S310",
+    "end_location": {
+      "column": 6,
+      "row": 135
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/backend/controllers/ai_controller.py",
+    "fix": null,
+    "location": {
+      "column": 22,
+      "row": 130
+    },
+    "message": "Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.",
+    "name": "suspicious-url-open-usage",
+    "noqa_row": 130,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/suspicious-url-open-usage"
+  },
+  {
+    "cell": null,
+    "code": "S310",
+    "end_location": {
+      "column": 57,
+      "row": 138
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/backend/controllers/ai_controller.py",
+    "fix": null,
+    "location": {
+      "column": 14,
+      "row": 138
+    },
+    "message": "Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.",
+    "name": "suspicious-url-open-usage",
+    "noqa_row": 138,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/suspicious-url-open-usage"
+  },
+  {
+    "cell": null,
+    "code": "S101",
+    "end_location": {
+      "column": 11,
+      "row": 171
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/backend/controllers/multi_agent_controller.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 171
+    },
+    "message": "Use of `assert` detected",
+    "name": "assert",
+    "noqa_row": 171,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/assert"
+  },
+  {
+    "cell": null,
+    "code": "S101",
+    "end_location": {
+      "column": 11,
+      "row": 278
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/backend/controllers/multi_agent_controller.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 278
+    },
+    "message": "Use of `assert` detected",
+    "name": "assert",
+    "noqa_row": 278,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/assert"
+  },
+  {
+    "cell": null,
+    "code": "S101",
+    "end_location": {
+      "column": 11,
+      "row": 181
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/backend/controllers/rag_controller.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 181
+    },
+    "message": "Use of `assert` detected",
+    "name": "assert",
+    "noqa_row": 181,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/assert"
+  },
+  {
+    "cell": null,
+    "code": "S101",
+    "end_location": {
+      "column": 11,
+      "row": 190
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/backend/controllers/rag_controller.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 190
+    },
+    "message": "Use of `assert` detected",
+    "name": "assert",
+    "noqa_row": 190,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/assert"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 34,
+      "row": 50
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 13,
+      "row": 48
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 50,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 35,
+      "row": 58
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 13,
+      "row": 56
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 58,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 48,
+      "row": 91
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 89
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 91,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 121,
+      "row": 189
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 189
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 189,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 113,
+      "row": 245
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 245
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 245,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 120,
+      "row": 259
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 259
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 259,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 50,
+      "row": 306
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 13,
+      "row": 304
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 306,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 57,
+      "row": 319
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 317
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 319,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 62,
+      "row": 331
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 329
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 331,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 50,
+      "row": 388
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Chufeng/database/api.py",
+    "fix": null,
+    "location": {
+      "column": 41,
+      "row": 388
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 388,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S310",
+    "end_location": {
+      "column": 6,
+      "row": 139
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/backend/app.py",
+    "fix": null,
+    "location": {
+      "column": 27,
+      "row": 134
+    },
+    "message": "Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.",
+    "name": "suspicious-url-open-usage",
+    "noqa_row": 134,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/suspicious-url-open-usage"
+  },
+  {
+    "cell": null,
+    "code": "S310",
+    "end_location": {
+      "column": 49,
+      "row": 141
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/backend/app.py",
+    "fix": null,
+    "location": {
+      "column": 10,
+      "row": 141
+    },
+    "message": "Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.",
+    "name": "suspicious-url-open-usage",
+    "noqa_row": 141,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/suspicious-url-open-usage"
+  },
+  {
+    "cell": null,
+    "code": "S310",
+    "end_location": {
+      "column": 6,
+      "row": 158
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/backend/app.py",
+    "fix": null,
+    "location": {
+      "column": 24,
+      "row": 153
+    },
+    "message": "Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.",
+    "name": "suspicious-url-open-usage",
+    "noqa_row": 153,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/suspicious-url-open-usage"
+  },
+  {
+    "cell": null,
+    "code": "S310",
+    "end_location": {
+      "column": 52,
+      "row": 159
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/backend/app.py",
+    "fix": null,
+    "location": {
+      "column": 10,
+      "row": 159
+    },
+    "message": "Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.",
+    "name": "suspicious-url-open-usage",
+    "noqa_row": 159,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/suspicious-url-open-usage"
+  },
+  {
+    "cell": null,
+    "code": "S310",
+    "end_location": {
+      "column": 6,
+      "row": 310
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/backend/app.py",
+    "fix": null,
+    "location": {
+      "column": 22,
+      "row": 305
+    },
+    "message": "Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.",
+    "name": "suspicious-url-open-usage",
+    "noqa_row": 305,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/suspicious-url-open-usage"
+  },
+  {
+    "cell": null,
+    "code": "S310",
+    "end_location": {
+      "column": 54,
+      "row": 313
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/backend/app.py",
+    "fix": null,
+    "location": {
+      "column": 14,
+      "row": 313
+    },
+    "message": "Audit URL open for permitted schemes. Allowing use of `file:` or custom schemes is often unexpected.",
+    "name": "suspicious-url-open-usage",
+    "noqa_row": 313,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/suspicious-url-open-usage"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 23,
+      "row": 1770
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/backend/app.py",
+    "fix": null,
+    "location": {
+      "column": 14,
+      "row": 1770
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 1770,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 70,
+      "row": 477
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/database/app.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 477
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 477,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 23,
+      "row": 512
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ethan Ting/database/app.py",
+    "fix": null,
+    "location": {
+      "column": 14,
+      "row": 512
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 512,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 61,
+      "row": 27
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Howard/tests/test_api.py",
+    "fix": null,
+    "location": {
+      "column": 30,
+      "row": 27
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 27,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 53,
+      "row": 203
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ryan_Nolan/agentic/agentic_review.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 203
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 203,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S608",
+    "end_location": {
+      "column": 65,
+      "row": 207
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ryan_Nolan/agentic/agentic_review.py",
+    "fix": null,
+    "location": {
+      "column": 17,
+      "row": 207
+    },
+    "message": "Possible SQL injection vector through string-based query construction",
+    "name": "hardcoded-sql-expression",
+    "noqa_row": 207,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-sql-expression"
+  },
+  {
+    "cell": null,
+    "code": "S104",
+    "end_location": {
+      "column": 45,
+      "row": 148
+    },
+    "filename": "/Users/ethan/Desktop/ASD/assignment 1/ASD/student-Ryan_Nolan/backend/app.py",
+    "fix": null,
+    "location": {
+      "column": 36,
+      "row": 148
+    },
+    "message": "Possible binding to all interfaces",
+    "name": "hardcoded-bind-all-interfaces",
+    "noqa_row": 148,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/hardcoded-bind-all-interfaces"
+  }
+]

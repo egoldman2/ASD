@@ -1,0 +1,39 @@
+# Owned local demo only: loopback ports and retained orders data.
+services:
+  customer-support:
+    ports: !override
+      - "127.0.0.1:8005:80"
+  customer-support-backend:
+    ports: !override
+      - "127.0.0.1:6005:6005"
+  ethan-backend:
+    ports: !override
+      - "127.0.0.1:6002:6002"
+  ethan-frontend:
+    ports: !override
+      - "127.0.0.1:8003:80"
+  inventory-backend:
+    ports: !override
+      - "127.0.0.1:8102:8102"
+  inventory-frontend:
+    ports: !override
+      - "127.0.0.1:8002:80"
+  order-returns-frontend:
+    ports: !override
+      - "127.0.0.1:8004:80"
+  product-catalogue:
+    ports: !override
+      - "127.0.0.1:8001:80"
+  product-database:
+    ports: !override
+      - "127.0.0.1:6001:6001"
+  shared-backend:
+    ports: !override
+      - "127.0.0.1:5000:5000"
+    environment:
+      ORDERS_DATABASE_PATH: /data/orders.db
+    volumes:
+      - "/private/tmp/asd-release2-s15/orders-data:/data"
+  shared-home:
+    ports: !override
+      - "127.0.0.1:8000:80"

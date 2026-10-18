@@ -1,0 +1,56 @@
+{
+  "stage": "S00c",
+  "owner": "Ethan Goldman",
+  "source_parent_sha": "675e8d9d1138da4dd73cad039f30ee4d179d470f",
+  "captured_at": "2026-10-17T02:18:27.241570+00:00",
+  "checks": {
+    "new_real_sqlite_tests_before_annotation": 2,
+    "support_passed": 206,
+    "support_skipped": 10,
+    "shared_cloud_passed": 287,
+    "configured_support_ruff_findings": 0,
+    "sql_warnings_with_ignore_noqa": 18,
+    "global_ruff_findings": 46,
+    "global_ruff_exit_code": 1,
+    "global_by_directory": {
+      "ai-services": 16,
+      "docs": 1,
+      "student-Chufeng": 16,
+      "student-Ethan Ting": 9,
+      "student-Howard": 1,
+      "student-Ryan_Nolan": 3
+    }
+  },
+  "reviewed_sql_annotations": 18,
+  "global_rule_changes": 0,
+  "production_ast_proof": {
+    "student-Ethan Goldman/database_service/database.py": {
+      "ast_sha256": "e54c1a663774f0632b1995b6337cdd4965295ace06057d961f102339cf15d506",
+      "runtime_ast_unchanged": true,
+      "annotations": 15
+    },
+    "student-Ethan Goldman/database_service/init_db.py": {
+      "ast_sha256": "5e1dd19713e2f899b6c0fb6d00c6fd6a7234e565b999fa20831a58be331a7327",
+      "runtime_ast_unchanged": true,
+      "annotations": 3
+    }
+  },
+  "source_sha256": {
+    "student-Ethan Goldman/database_service/database.py": "1c585a5236d513a40cb7cce8106560bc62af974b40e470618fa9bf3575b288d2",
+    "student-Ethan Goldman/database_service/init_db.py": "f6577dcd762542b013b73a06ea42a7a26b2ead3119a36aaddb26bc37bb0f1c9c",
+    "student-Ethan Goldman/tests/test_database_query_security.py": "e2fa2a2864718da41ab553357c376beed6e8e2a464ccd0b2103fb28d03a3ae6b"
+  },
+  "commands": {
+    "support_ruff": "ruff check --select S --output-format json student-Ethan Goldman",
+    "unannotated_sql": "ruff check --select S608 --ignore-noqa --output-format json <both database modules>",
+    "all_ruff": "ruff check --select S --output-format json .",
+    "tests": "See s00c-checks.json; all four AI flags false and all seven live/proxy opt-ins zero"
+  },
+  "limitations": [
+    "These are 18 reviewed false positives, not 18 repaired SQL vulnerabilities; both new security tests pass before annotation",
+    "The new legacy test fixture initially had one extra placeholder; corrected to the eleven declared columns before the before-annotation safety run; no assertion relaxed",
+    "Only call-local S608 reasons added; no SQL statement, parameter binding, branch or production AST changed",
+    "Other owners/shared-server and historical-source findings remain; no whole-repository security or release pass",
+    "No new live model, AWS resource, human decision or current runtime source claim"
+  ]
+}

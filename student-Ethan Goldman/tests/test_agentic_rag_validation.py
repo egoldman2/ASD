@@ -197,7 +197,7 @@ def test_review_claims_do_not_replace_observed_answers_or_negative_checks(runner
 
 
 @pytest.mark.skipif(os.getenv('RUN_LIVE_RAG_AI') != '1', reason='Opt-in actual host-model generation')
-def test_actual_model_response_matches_runner_answer_and_sources(runner, feature_config, rag_host):
+def test_actual_model_response_matches_runner_answer_and_sources(runner, feature_config, rag_host, tmp_path):
     outputs = []
     model_type = rag_host['ollama_type']
     class ObservedModel(model_type):
@@ -213,7 +213,7 @@ def test_actual_model_response_matches_runner_answer_and_sources(runner, feature
     assert '5 to 160' in outputs[-1]['user'] and '1 to 2000' in outputs[-1]['user']
     assert all(value in answer for value in ('5', '160', '1', '2000'))
     assert not evidence['runtime']['probes'][1]['answer']['metadata']['model_invoked']
-    Path('/tmp/asd-g6-live-rag-validation.json').write_text(json.dumps({'evidence': evidence, 'native_model_outputs': outputs}, indent=2))
+    (tmp_path / 'live-rag-validation.json').write_text(json.dumps({'evidence': evidence, 'native_model_outputs': outputs}, indent=2))
 
 
 def test_review_summary_preserves_outcomes_but_does_not_duplicate_full_passages(runner, feature_config, rag_host):
@@ -234,17 +234,21 @@ def test_review_model_requires_complete_bounded_named_response(runner, monkeypat
     body = {'done': True, 'model': runner.OLLAMA_MODEL, 'done_reason': 'stop', 'message': {'content': 'Observed review text.'}}
     requested = []
     class Response:
+        status_code = 200
+        def raise_for_status(self):
+            pass
         def __enter__(self):
             return self
         def __exit__(self, *args):
             pass
-        def read(self, size):
-            return json.dumps(body).encode()[:size]
+        def iter_content(self, size):
+            yield json.dumps(body).encode()
     def open_response(*args, **kwargs):
-        requested.append(args)
+        requested.append((args, kwargs))
         return Response()
-    monkeypatch.setattr(runner.request, 'urlopen', open_response)
+    monkeypatch.setattr(runner.requests, 'post', open_response)
     assert runner._call_ollama('Review the collected evidence.') == 'Observed review text.'
+    assert requested[0][1]['allow_redirects'] is False
     for changes in ({'done': False}, {'model': 'invented-model'}, {'done_reason': 'length'}, {'message': {'content': []}}):
         original = copy.deepcopy(body)
         body.update(changes)
@@ -261,7 +265,7 @@ def test_review_model_requires_complete_bounded_named_response(runner, monkeypat
 
 
 @pytest.mark.skipif(os.getenv('RUN_LIVE_VALIDATION') != '1', reason='Opt-in actual Plan/Act/Observe/Adapt outputs for both modes')
-def test_live_agentic_modes_produce_actual_review_outputs(runner, feature_config, rag_host, live_mcp, monkeypatch):
+def test_live_agentic_modes_produce_actual_review_outputs(runner, feature_config, rag_host, live_mcp, monkeypatch, tmp_path):
     from hashlib import sha256
     from test_agentic_mcp_validation import session_context, feature_config as make_mcp_config
     # G6 exercises temporary feature configuration; E6 supplies persistent CLI files.
@@ -278,14 +282,14 @@ def test_live_agentic_modes_produce_actual_review_outputs(runner, feature_config
               'Separate observed runtime outcomes from source markers and evidence limitations. '
               'Never claim CI or test success; neither is collected by this review. '
               'Treat bounded excerpts as excerpts and not missing implementation.')
-    prompt_path = Path('/tmp/asd-g6-feature-review-prompt.txt')
+    prompt_path = tmp_path / 'feature-review-prompt.txt'
     prompt_path.write_text(prompt)
     before = sha256(live_mcp.database_path.read_bytes()).hexdigest()
     save_original = runner.save_evidence_report
     root = runner.PROJECT_ROOT
     def save_local(*args):
         try:
-            runner.PROJECT_ROOT = Path('/tmp/asd-g6-agentic-output')
+            runner.PROJECT_ROOT = tmp_path / 'agentic-output'
             return save_original(*args)
         finally:
             runner.PROJECT_ROOT = root
@@ -302,4 +306,4 @@ def test_live_agentic_modes_produce_actual_review_outputs(runner, feature_config
         assert secret not in json.dumps(result)
         results.append(result)
     assert sha256(live_mcp.database_path.read_bytes()).hexdigest() == before
-    Path('/tmp/asd-g6-live-agentic-modes.json').write_text(json.dumps(results, indent=2))
+    (tmp_path / 'live-agentic-modes.json').write_text(json.dumps(results, indent=2))

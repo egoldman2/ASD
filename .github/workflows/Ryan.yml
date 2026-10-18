@@ -5,14 +5,6 @@ on:
     branches:
       - main
       - Ryan_Nolan
-    paths:
-      - "student-Ryan_Nolan/**"
-      - "student-Chufeng/database/**"
-      - "shared/**"
-      - "app.py"
-      - "docker-compose.yml"
-      - "requirements.txt"
-      - ".github/workflows/RyanNolan.yml"
   pull_request:
     branches:
       - main
@@ -23,8 +15,21 @@ on:
       - "app.py"
       - "docker-compose.yml"
       - "requirements.txt"
-      - ".github/workflows/RyanNolan.yml"
+      - ".github/workflows/Ryan.yml"
   workflow_dispatch:
+
+env:
+  AI_MODE_ENABLED: "false"
+  MCP_ENABLED: "false"
+  RAG_ENABLED: "false"
+  MULTI_AGENT_ENABLED: "false"
+  RUN_LIVE_AI: "0"
+  RUN_LIVE_MCP_AI: "0"
+  RUN_LIVE_RAG_AI: "0"
+  RUN_LIVE_VALIDATION: "0"
+  RUN_LIVE_RELEASE1_VALIDATION: "0"
+  RUN_LIVE_MULTI_AGENT: "0"
+  RUN_NGINX_PROXY_CHECK: "0"
 
 permissions:
   contents: read
@@ -105,4 +110,10 @@ jobs:
           docker build --file "student-Ryan_Nolan/Dockerfile" --target test --tag asd-ryan-nolan-test:ci .
 
       - name: Run tests in the Docker test container
-        run: docker run --rm -e MCP_ENABLED=false -e RAG_ENABLED=false asd-ryan-nolan-test:ci
+        run: >-
+          docker run --rm
+          --env AI_MODE_ENABLED --env MCP_ENABLED --env RAG_ENABLED --env MULTI_AGENT_ENABLED
+          --env RUN_LIVE_AI --env RUN_LIVE_MCP_AI --env RUN_LIVE_RAG_AI
+          --env RUN_LIVE_VALIDATION --env RUN_LIVE_RELEASE1_VALIDATION
+          --env RUN_LIVE_MULTI_AGENT --env RUN_NGINX_PROXY_CHECK
+          asd-ryan-nolan-test:ci

@@ -3,7 +3,9 @@
   "contributor": "ASD 2026 Team",
   "prompt_file": "review_prompt.txt",
   "mode_prompt_files": {
-    "multi-agent": "multi_agent_prompt.txt"
+    "multi-agent": "multi_agent_prompt.txt",
+    "testing": "testing_prompt.txt",
+    "cloud-deployment": "cloud_deployment_prompt.txt"
   },
   "multi-agent_files": [
     "ai-services/multi_agent_server/app.py",
@@ -52,6 +54,10 @@
       "worker": "ai-services/multi_agent_server/agents/worker_agent.py",
       "reviewer": "ai-services/multi_agent_server/agents/reviewer_agent.py",
       "compose": "docker-compose.yml"
+    },
+    "log_files": {
+      "history": "ai-services/multi_agent_server/workflow_history.jsonl",
+      "audit": "ai-services/multi_agent_server/coordination_audit.jsonl"
     }
   },
   "source_checks": {
@@ -104,6 +110,48 @@
           "/review"
         ]
       }
+    ]
+  },
+  "testing_rules": {
+    "manifest": "docs/evidence/release2-testing-manifest.json",
+    "required_features": [
+      "product_catalogue",
+      "inventory",
+      "customer_loyalty",
+      "order_returns",
+      "customer_support"
+    ],
+    "expected_endpoints": {
+      "customer_support": [
+        {
+          "function": "customer_create",
+          "method": "POST",
+          "path": "/api/support/customer/tickets",
+          "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract"
+        },
+        {
+          "function": "admin_update",
+          "method": "PUT",
+          "path": "/api/support/admin/tickets/<int:ticket_id>",
+          "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract"
+        }
+      ]
+    },
+    "accepted_dependency_advisories": [
+      "PYSEC-2026-311",
+      "PYSEC-2026-3813",
+      "PYSEC-2026-3814",
+      "PYSEC-2026-3815"
+    ]
+  },
+  "cloud_deployment_rules": {
+    "manifest": "docs/evidence/release2-cloud-deployment-manifest.json",
+    "required_workflows": [
+      ".github/workflows/EthanGoldman.yml",
+      ".github/workflows/Chufeng.yml",
+      ".github/workflows/Ryan.yml",
+      ".github/workflows/student-3.yml",
+      ".github/workflows/Howard.yml"
     ]
   }
 }

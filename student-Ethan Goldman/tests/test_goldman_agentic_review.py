@@ -29,6 +29,9 @@ def test_goldman_review_config_is_discoverable_and_complete():
         "devops",
         "mcp",
         "rag",
+        "multi-agent",
+        "testing",
+        "cloud-deployment",
     }
     assert "read-only" in prompt
     for key in ("implementation_files", "architecture_files", "devops_files", "mcp_files", "rag_files"):

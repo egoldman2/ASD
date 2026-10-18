@@ -1,0 +1,140 @@
+Browser tab: 1, Title: "Ticket Workspace | Customer Support", URL: "http://localhost:8005/staff-ticket.html?ticket=2013".
+1 AXWebArea Ticket Workspace | Customer Support, URL: localhost:8005/staff-ticket.html?ticket=2013
+	2 container
+		3 link Description: ASD 2026 home, Value: localhost:8000/
+		4 container Description: Main navigation, ID: mainNavigation
+			5 link Description: Catalogue, Value: localhost:8001/
+			6 link Description: Inventory, Value: localhost:8002/
+			7 link Description: Accounts, Value: localhost:8003/admin.html
+			8 link Description: Loyalty, Value: localhost:8003/admin-loyalty.html
+			9 link Description: Orders & Returns, Value: localhost:8004/
+			10 link Description: Support, Value: localhost:8005/
+			11 link Description: Search products, Value: localhost:8001/
+			12 pop up button (collapsed) Admin, Secondary Actions: Expand
+	129 container Release 2 local demo: damaged item enquiry, ID: ticket-detail-shell
+		130 link Description: Back to queue, Value: localhost:8005/staff.html
+		131 text STAFF-ONLY TICKET WORKSPACE
+		132 text Reply added.
+		133 container Release 2 local demo: damaged item enquiry
+			134 container
+				135 text TICKET #2013
+				136 heading Release 2 local demo: damaged item enquiry, Value: 1, ID: ticket-subject
+					137 text Release 2 local demo: damaged item enquiry
+				138 text Pending
+			139 container Customer
+				140 heading Customer, Value: 2, ID: customer-title
+					141 text Customer
+				142 definition list
+					143 container NAME
+						144 text NAME
+					145 text Demo Customer
+					146 container EMAIL
+						147 text EMAIL
+					148 text customer@asd.local
+					149 container CREATED
+						150 text CREATED
+					151 text 2026-10-17T00:20:30Z
+					152 container LAST UPDATED
+						153 text LAST UPDATED
+					154 text 2026-10-17T00:29:14Z
+			155 container Conversation
+				156 heading Conversation, Value: 2, ID: conversation-title
+					157 text Conversation
+				158 text 2 messages
+				159 content list
+					160 container
+						161 text Demo Customer Customer 2026-10-17T00:20:30Z Synthetic assessment demo: an item arrived damaged. Please explain what information staff need to review this ticket; no refund or warranty policy has been provided.
+					162 container
+						163 text Marketplace Administrator Staff 2026-10-17T00:29:14Z Assessment demo only: thanks for reporting the damaged item. Please provide the order reference and a photo so staff can review it. No outcome or entitlement is promised.
+			164 container
+				165 text Reply to customer
+				166 text entry area (settable) Reply to customer, ID: staff-reply
+				167 text Replies are added as the signed-in staff member. Do not include internal notes.
+				168 button Send reply
+		169 container
+			170 container Triage and assignment
+				171 heading Triage and assignment, Value: 2, ID: triage-title
+					172 text Triage and assignment
+				173 text Changes are saved only after you submit.
+				174 container
+					175 text Category
+					176 pop up button (collapsed, settable) Category, Value: Product, ID: ticket-category, Secondary Actions: Expand
+						177 menu
+							178 Unclassified
+							179 Order
+							180 Return
+							181 Payment
+							182 (selected) Product
+							183 Delivery
+							184 Account
+							185 Other
+					186 text Priority
+					187 pop up button (collapsed, settable) Priority, Value: Medium, ID: ticket-priority, Secondary Actions: Expand
+						188 menu
+							189 Unclassified
+							190 Low
+							191 (selected) Medium
+							192 High
+							193 Urgent
+					194 text Status
+					195 pop up button (collapsed, settable) Status, Value: Pending, ID: ticket-status-select, Secondary Actions: Expand
+						196 menu
+							197 Needs Triage
+							198 Open
+							199 (selected) Pending
+							200 Solved
+					201 text Assignee
+					202 text field (settable) Assignee, ID: ticket-assignee
+					203 button Save changes
+			204 container AI analysis, ID: ai-panel
+				205 heading AI analysis, Value: 2, ID: ai-title
+					206 text AI analysis
+				207 text Advisory only. Review every suggestion before applying it.
+				208 text The assistant cannot send replies or change tickets automatically.
+				209 button Analyse ticket
+			210 container Danger zone
+				211 heading Danger zone, Value: 2, ID: delete-title
+					212 text Danger zone
+				213 text Deleting a ticket permanently removes its conversation.
+				214 button Delete ticket
+		215 container Support data assistant
+			216 heading Support data assistant, Value: 2, ID: mcp-title
+				217 text Support data assistant
+			218 text Ask about recorded tickets and workload. Answers use current support data; review the evidence before acting.
+			219 container
+				220 text Ask a support question
+				221 text entry area (settable) Ask a support question, ID: mcp-question
+				222 button Ask assistant
+				223 container Example questions
+					224 button Summarise this ticket
+			225 text Enter a question, or choose an example and ask the assistant.
+			226 button (collapsed) Read support data directly, Secondary Actions: Expand
+				227 text Read support data directly
+		228 container Support knowledge assistant
+			229 heading Support knowledge assistant, Value: 2, ID: knowledge-title
+				230 text Support knowledge assistant
+			231 text Ask about ticket workflows, triage and queue metrics. Answers use the documented support guidance.
+			232 container
+				233 text Ask a workflow question
+				234 text entry area (settable) Ask a workflow question, ID: knowledge-question
+				235 button Ask knowledge assistant
+				236 container Example knowledge questions
+					237 button Ticket field limits
+					238 button Triage states
+					239 button Attention reasons
+			240 text Enter a workflow question, or choose an example to get started.
+		241 container Ticket workflow review, ID: multi-agent-panel
+			242 heading Ticket workflow review, Value: 2, ID: multi-agent-title
+				243 text Ticket workflow review
+			244 text Review this ticket's recorded conversation and a proposed reply/action.
+			245 text Acceptance records your decision only. Send replies and update tickets using the existing controls above. A partial acceptance stores corrections in your reason; it does not edit the generated reply.
+			246 text If a request fails, reload recorded history before retrying to check whether a decision was saved.
+			247 button Reload recorded history
+			248 container
+				249 text Review instruction for this ticket
+				250 text entry area (settable) Review instruction for this ticket, ID: multi-agent-question, Value: Review this ticket's recorded conversation, propose a suitable reply and next action, and identify missing information. Do not apply changes.
+				251 button Propose reply and action
+			252 text No workflows have been recorded for this ticket.
+	128 text ASD 2026 — Customer Support Ticket Management
+
+The focused UI element is 1 AXWebArea Ticket Workspace | Customer Support, URL: localhost:8005/staff-ticket.html?ticket=2013

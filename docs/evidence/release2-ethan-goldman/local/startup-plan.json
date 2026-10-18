@@ -1,0 +1,27 @@
+{
+  "source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "started_at": "2026-10-17T00:17:35.553655+00:00",
+  "project": "asd-release2-local",
+  "data": "Fresh project-specific named volumes; no reseeding of pre-existing data",
+  "ai_flags": {
+    "AI_MODE_ENABLED": "true",
+    "MCP_ENABLED": "true",
+    "RAG_ENABLED": "true",
+    "MULTI_AGENT_ENABLED": "true"
+  },
+  "multi_agent_log_dir": "/Users/ethan/Desktop/ASD/assignment 1/ASD/.aws-deployment/release2-local-multi-agent",
+  "private_config_mode": "0600",
+  "host_services_bind": "127.0.0.1",
+  "models": {
+    "support_advisory": "qwen2.5:0.5b",
+    "mcp_assistant": "qwen2.5:3b",
+    "rag": "qwen2.5:3b",
+    "planner": "qwen2.5:3b",
+    "worker": "qwen2.5:3b",
+    "reviewer": "llama3.1:8b"
+  },
+  "limitations": [
+    "Metadata describes configured startup, not passing inference or human approval",
+    "Existing unrelated Docker containers and host Ollama process retained"
+  ]
+}

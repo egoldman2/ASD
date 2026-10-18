@@ -1,0 +1,20 @@
+Ruff security rules......................................................Passed
+Detect committed secrets.................................................Passed
+Audit all Python dependencies............................................Passed
+[ethan-goldman 50fe5ad] ci(customer-support): verify Release 2 endpoint functions
+ 17 files changed, 444 insertions(+), 15 deletions(-)
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s08-actions.json
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-docker-support.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-docker-support.xml
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-docker-versions.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-endpoint-functions-local.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-endpoint-functions-local.xml
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-endpoint-mapping.json
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-mcp-rag.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-multi-agent.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-node-events.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-shared-cloud.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-support.txt
+ create mode 100644 docs/evidence/release2-ethan-goldman/ci/s09-tests.json
+ create mode 100644 docs/evidence/release2-ethan-goldman/security/s08-commit-hooks.txt
+ create mode 100644 student-Ethan Goldman/tests/test_release2_endpoint_functions.py

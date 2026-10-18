@@ -5,18 +5,6 @@ on:
     branches:
       - main
       - Ethan_Ting
-    paths:
-      - "student-Ethan Ting/**"
-      - "ai-services/mcp_server/**"
-      - "ai-services/rag_server/**"
-      - "ai-services/agentic_loop.py"
-      - "ai-services/mcp_validation.py"
-      - "ai-services/rag_validation.py"
-      - "shared/**"
-      - "app.py"
-      - "docker-compose.yml"
-      - "requirements.txt"
-      - ".github/workflows/student-3.yml"
   pull_request:
     branches:
       - main
@@ -38,6 +26,14 @@ env:
   AI_MODE_ENABLED: "false"
   MCP_ENABLED: "false"
   RAG_ENABLED: "false"
+  MULTI_AGENT_ENABLED: "false"
+  RUN_LIVE_AI: "0"
+  RUN_LIVE_MCP_AI: "0"
+  RUN_LIVE_RAG_AI: "0"
+  RUN_LIVE_VALIDATION: "0"
+  RUN_LIVE_RELEASE1_VALIDATION: "0"
+  RUN_LIVE_MULTI_AGENT: "0"
+  RUN_NGINX_PROXY_CHECK: "0"
 
 permissions:
   contents: read
@@ -123,7 +119,13 @@ jobs:
           docker build --file "student-Ethan Ting/Dockerfile" --target test --tag asd-ethan-ting-test:ci .
 
       - name: Run tests in the Docker test container
-        run: docker run --rm --env AI_MODE_ENABLED=false --env MCP_ENABLED=false --env RAG_ENABLED=false --env RUN_LIVE_MCP_AI=0 --env RUN_LIVE_RAG_AI=0 asd-ethan-ting-test:ci
+        run: >-
+          docker run --rm
+          --env AI_MODE_ENABLED --env MCP_ENABLED --env RAG_ENABLED --env MULTI_AGENT_ENABLED
+          --env RUN_LIVE_AI --env RUN_LIVE_MCP_AI --env RUN_LIVE_RAG_AI
+          --env RUN_LIVE_VALIDATION --env RUN_LIVE_RELEASE1_VALIDATION
+          --env RUN_LIVE_MULTI_AGENT --env RUN_NGINX_PROXY_CHECK
+          asd-ethan-ting-test:ci
 
       - name: Start Ethan Ting services
         run: docker compose up -d --build ethan-database ethan-backend ethan-frontend

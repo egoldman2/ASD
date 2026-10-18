@@ -1,0 +1,54 @@
+[
+  {
+    "name": "template-validation",
+    "captured_at": "2026-10-17T12:25:26.733612+00:00",
+    "command": [
+      "aws",
+      "cloudformation",
+      "validate-template",
+      "--template-body",
+      "file://cloud/infrastructure.yml",
+      "--profile",
+      "aws-toolkit",
+      "--region",
+      "ap-southeast-2"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "snapshot-permissions-data",
+    "captured_at": "2026-10-17T12:25:26.734039+00:00",
+    "command": [
+      "aws",
+      "ec2",
+      "describe-snapshot-attribute",
+      "--snapshot-id",
+      "snap-036e64b4a356e8578",
+      "--attribute",
+      "createVolumePermission",
+      "--profile",
+      "aws-toolkit",
+      "--region",
+      "ap-southeast-2"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "snapshot-permissions-root",
+    "captured_at": "2026-10-17T12:25:26.734139+00:00",
+    "command": [
+      "aws",
+      "ec2",
+      "describe-snapshot-attribute",
+      "--snapshot-id",
+      "snap-0e749c8a462661e04",
+      "--attribute",
+      "createVolumePermission",
+      "--profile",
+      "aws-toolkit",
+      "--region",
+      "ap-southeast-2"
+    ],
+    "exit_code": 0
+  }
+]

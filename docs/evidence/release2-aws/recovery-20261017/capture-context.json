@@ -1,0 +1,18 @@
+{
+  "stage": "S02a",
+  "owner": "Ethan Goldman",
+  "assembled_at": "2026-10-17T12:26:31.301645+00:00",
+  "repository_source_sha": "4cf926874458cf75b509d30b0ec1aff81e350e31",
+  "deployed_source_sha": null,
+  "accepted_release": "/srv/asd/releases/manual-20261009-aws2-d8cd072bf503",
+  "source_metadata_exists": false,
+  "environment": "Existing AWS EC2/Compose, ap-southeast-2; older manual release",
+  "result": "Host recovered by starting the existing stopped instance after both encrypted volume snapshots completed. SSM Online; EC2/system/EBS checks ok; four consistent database backups integrity ok, zero FK violations; session secret copied privately. No deployment performed.",
+  "limits": [
+    "Unauthenticated public HEAD is reachability only",
+    "No final Actions deployment, authenticated cloud CRUD, restore drill or 30-minute representative-load acceptance",
+    "Old manual release has no full source metadata; do not infer SHA from directory name",
+    "S03 root cause/resource fix unresolved; S04 provider listing explicitly denied; no human workflow/release decisions invented",
+    "Created snapshots retained pending owner choice; same-volume SQLite copies alone are not disaster recovery"
+  ]
+}

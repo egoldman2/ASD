@@ -1,0 +1,81 @@
+{
+  "stage": "S04a",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-17T01:54:19.277226+00:00",
+  "repository": "egoldman2/ASD",
+  "environment": "aws-cloud",
+  "source_parent_sha": "bec5890451f6010ec794ca7d190abb2e7b7203e3",
+  "operator": "Codex executing the authorized plan; not a human release decision",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/environments/aws-cloud",
+      "http_status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/environments/aws-cloud",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/environments/aws-cloud/deployment-branch-policies",
+      "http_status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/environments/aws-cloud/deployment-branch-policies",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/environments/aws-cloud",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/environments/aws-cloud/deployment-branch-policies",
+      "http_status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/environments/aws-cloud/variables/AWS_DEPLOY_ROLE_ARN",
+      "http_status": 404
+    }
+  ],
+  "aws_calls": 0,
+  "limitations": [
+    "Only deployment branch access is narrowed; no AWS capability, role, credentials or Git branch is changed",
+    "No successful OIDC assumption or deployment is established",
+    "Existing credential remains only in process memory and is excluded from captures"
+  ],
+  "before": {
+    "deployment_branch_policy": null,
+    "protection_rule_types": []
+  },
+  "after": {
+    "deployment_branch_policy": {
+      "protected_branches": false,
+      "custom_branch_policies": true
+    },
+    "branch_policies": [
+      {
+        "id": 63334832,
+        "name": "main",
+        "type": "branch"
+      }
+    ]
+  },
+  "main_only_verified": true,
+  "role_variable": {
+    "http_status": 404,
+    "configured": null,
+    "iam_role_arn_format": null,
+    "value_excluded": true
+  }
+}

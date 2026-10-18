@@ -38,7 +38,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app.py ./
 COPY shared/mcp_client.py ./shared/mcp_client.py
 COPY shared/feature_flags.py ./shared/feature_flags.py
+COPY shared/multi_agent_client.py ./shared/multi_agent_client.py
 COPY shared/runtime_config.py ./shared/runtime_config.py
+COPY shared/customer_cart.py ./shared/customer_cart.py
 COPY student-Chufeng/ ./student-Chufeng/
+COPY student-Howard/backend/ ./student-Howard/backend/
+COPY student-Howard/database/ ./student-Howard/database/
 
 CMD ["python", "-m", "pytest", "student-Chufeng/tests", "-q"]

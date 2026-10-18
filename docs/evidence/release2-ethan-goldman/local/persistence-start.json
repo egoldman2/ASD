@@ -1,0 +1,10 @@
+{
+  "started_at": "2026-10-17T00:38:20.169152+00:00",
+  "project": "asd-release2-local",
+  "ticket_id": 2013,
+  "expected_workflows": [
+    "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+    "67702aa8-4a5f-4cd0-a311-8bd952ed18d5"
+  ],
+  "method": "Restart owned containers and shared Multi-Agent host process, preserving all data/logs and private config"
+}

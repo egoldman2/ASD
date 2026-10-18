@@ -1,0 +1,20 @@
+{
+  "captured_at": "2026-10-17T12:18:24.673192+00:00",
+  "method": "HEAD",
+  "results": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/support/",
+      "status": 200
+    },
+    {
+      "path": "/account/",
+      "status": 200
+    }
+  ],
+  "credentials_supplied": false,
+  "limitations": "Reachability only, not authenticated CRUD or final release acceptance"
+}

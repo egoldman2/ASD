@@ -1,0 +1,28 @@
+{% set base = '/api/support/ui/admin/multi-agent/tickets/' ~ ticket_id ~ '/workflows' %}
+<section id="multi-agent-panel" class="panel supportMcpPanel" aria-labelledby="multi-agent-title" aria-busy="false"
+  {% if not loaded %}hx-get="{{ base }}" hx-trigger="load" hx-target="this" hx-swap="outerHTML"{% endif %}>
+  <div class="sectionHeader sectionHeader--compact"><div><h2 id="multi-agent-title">Ticket workflow review</h2><p>Review this ticket's recorded conversation and a proposed reply/action.</p></div></div>
+  <div class="adminReadOnlyNotice" role="note">Acceptance records your decision only. Send replies and update tickets using the existing controls above. A partial acceptance stores corrections in your reason; it does not edit the generated reply.</div>
+  <p class="adminFieldHint">If a request fails, reload recorded history before retrying to check whether a decision was saved.</p>
+  <div id="multi-agent-feedback" aria-live="polite" role="status">{% if not loaded %}Loading recorded workflow history…{% endif %}</div>
+  <button type="button" class="button button--secondary" hx-get="{{ base }}" hx-target="#multi-agent-panel" hx-swap="outerHTML" hx-disabled-elt="this" hx-sync="#multi-agent-panel:drop">Reload recorded history</button>
+  {% if loaded %}
+  <form class="adminFormStack" hx-post="{{ base }}" hx-target="#multi-agent-panel" hx-swap="outerHTML"
+    hx-disabled-elt="find button" hx-sync="#multi-agent-panel:drop" hx-request='{"timeout":380000}'>
+    <label for="multi-agent-question">Review instruction for this ticket</label>
+    <textarea id="multi-agent-question" name="question" rows="3" maxlength="1000" required>{{ question }}</textarea>
+    <div class="adminFormActions"><button class="button" type="submit">Propose reply and action</button><span class="htmx-indicator adminInlineStatus" role="status">Planner, Worker and Reviewer are running. This may take several minutes…</span></div>
+  </form>
+  {% if history %}
+  <form class="adminFormStack" hx-get="{{ base }}" hx-target="#multi-agent-panel" hx-swap="outerHTML" hx-disabled-elt="find button" hx-sync="#multi-agent-panel:drop">
+    <label for="multi-agent-history">Recorded workflows for this ticket</label>
+    <select id="multi-agent-history" name="workflow_id">{% for item in history %}<option value="{{ item.workflow_id }}"{% if workflow and item.workflow_id == workflow.workflow_id %} selected{% endif %}>{{ item.timestamp }} — {{ item.status|replace('_', ' ') }} — {{ item.workflow_id }}</option>{% endfor %}</select>
+    <button class="button button--secondary" type="submit">Load selected workflow</button>
+  </form>
+  {% endif %}
+  <div class="supportMcpResult" aria-live="polite">
+    {% if workflow %}{% include "support_ui/admin/multi_agent_result.html" %}
+    {% else %}<p>No workflows have been recorded for this ticket.</p>{% endif %}
+  </div>
+  {% endif %}
+</section>

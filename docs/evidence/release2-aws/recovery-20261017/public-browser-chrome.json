@@ -1,0 +1,31 @@
+{
+  "owner": "Ethan Goldman",
+  "browser": "Chrome",
+  "repository_source_sha": "78e21b7c6e63030fb01ea3331f54f845379cbf8a",
+  "deployed_source_sha": null,
+  "deployed_release": "/srv/asd/releases/manual-20261009-aws2-d8cd072bf503",
+  "home_url": "https://dww8d9hiqp0ce.cloudfront.net/",
+  "action": "Click observed Support navigation link",
+  "result_url": "https://dww8d9hiqp0ce.cloudfront.net/account/index.html?return_url=%2Fsupport%2F",
+  "observed_result": "Homepage renders five feature links and unavailable hosted-AI notice; protected Support navigation redirects to sign-in",
+  "credentials_entered": false,
+  "files": {
+    "public-home-chrome.jpg": {
+      "sha256": "5cff29df1ddebcb812eb1e6205be2c7d37928a0589b3d84f9081bfff45440a0a",
+      "captured_at": "2026-10-17T12:49:57.429338+00:00"
+    },
+    "public-support-signin-chrome.jpg": {
+      "sha256": "b2482ede01f5e63ec7e3fe65777304da8ade1deb1200294821a10dcd50ef3469",
+      "captured_at": "2026-10-17T12:50:06.180040+00:00"
+    },
+    "public-support-signin-chrome-ax.txt": {
+      "sha256": "eb6d1713bca94bf086105ce2c957294ee3a09104b033d869561160418c947f56",
+      "captured_at": "2026-10-17T12:50:53.129035+00:00"
+    }
+  },
+  "limits": [
+    "Recovery browser reachability only, no authenticated CRUD or S16 acceptance",
+    "Native images and AX bytes unchanged; screenshot footer is historical UI text, not confirmation of official group number",
+    "No billing, team-member email, auth code, customer record or secret in these public page captures"
+  ]
+}

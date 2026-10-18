@@ -1,0 +1,52 @@
+{
+  "source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "started_at": "2026-10-17T00:28:11.528282+00:00",
+  "completed_at": "2026-10-17T00:28:14.742604+00:00",
+  "elapsed_seconds": 3.214,
+  "request": {
+    "path": "/api/support/admin/rag/answer",
+    "method": "POST",
+    "payload": {
+      "question": "What subject and initial message lengths are required when creating a customer support ticket?"
+    }
+  },
+  "http_status": 200,
+  "body": {
+    "citations": [
+      {
+        "document_id": "ethan_goldman_support:ticket_workflow.md:0",
+        "label": "Customer Support ticket workflow: Creating a customer ticket",
+        "rank": 1,
+        "scope": "ethan_goldman_support",
+        "source_id": "ethan_goldman_support/ticket_workflow.md"
+      }
+    ],
+    "confidence": "medium",
+    "data": {
+      "answer": "According to source [1], when creating a customer support ticket, the subject must contain 5 to 160 characters, and the initial message must contain 1 to 2000 characters.",
+      "model": "qwen2.5:3b",
+      "question": "What subject and initial message lengths are required when creating a customer support ticket?",
+      "retrieved_count": 5,
+      "scope": "ethan_goldman_support"
+    },
+    "error": null,
+    "insufficient_context": false,
+    "metadata": {
+      "confidence_basis": "retrieval_similarity_not_probability_of_correctness",
+      "context_characters": 3489,
+      "distance_metric": "cosine",
+      "embedding": "deterministic_sha256",
+      "generation_attempts": 1,
+      "grounded": true,
+      "minimum_relevance_score": 0.25,
+      "model_invoked": true,
+      "requested_top_k": 5
+    },
+    "operation": "answer_question",
+    "success": true
+  },
+  "limitations": [
+    "Fresh isolated local dataset and actual local model; no AWS or human approval implied",
+    "Request credentials and response headers excluded"
+  ]
+}

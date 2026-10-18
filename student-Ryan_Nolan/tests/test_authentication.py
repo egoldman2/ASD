@@ -19,7 +19,7 @@ def test_customer_session_returns_403_without_accessing_inventory(monkeypatch):
 
     monkeypatch.setattr(module.requests, "get", lambda *args, **kwargs: SessionResponse())
     client = module.create_app().test_client()
-    client.set_cookie("localhost", "ethan_session", "valid-customer-session")
+    client.set_cookie("ethan_session", "valid-customer-session", domain="localhost")
     response = client.get("/api/inventory/products")
     assert response.status_code == 403
     assert response.json == {"error": "Administrator access required."}

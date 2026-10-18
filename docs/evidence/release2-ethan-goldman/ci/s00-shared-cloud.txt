@@ -1,0 +1,115 @@
+.FFFF..........................                                          [100%]
+=================================== FAILURES ===================================
+_____________ test_customer_only_receives_owned_orders_and_returns _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10cfed250>
+tmp_path = PosixPath('/private/var/folders/2v/3rkymt0559g8cz4knd6yfk680000gn/T/pytest-of-ethan/pytest-17/test_customer_only_receives_ow0')
+
+    def test_customer_only_receives_owned_orders_and_returns(monkeypatch, tmp_path):
+        client = build_client(
+            monkeypatch,
+            tmp_path,
+            user={"id": 2, "role": "customer"},
+        )
+>       add_session_cookie(client)
+
+shared/tests/test_integrated_access_control.py:83:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <FlaskClient <Flask 'app'>>
+
+    def add_session_cookie(client):
+>       client.set_cookie("localhost", "ethan_session", "verified-session")
+E       TypeError: Client.set_cookie() takes from 2 to 3 positional arguments but 4 were given
+
+shared/tests/test_integrated_access_control.py:66: TypeError
+___________________ test_customer_cannot_change_order_status ___________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d321d10>
+tmp_path = PosixPath('/private/var/folders/2v/3rkymt0559g8cz4knd6yfk680000gn/T/pytest-of-ethan/pytest-17/test_customer_cannot_change_or0')
+
+    def test_customer_cannot_change_order_status(monkeypatch, tmp_path):
+        client = build_client(
+            monkeypatch,
+            tmp_path,
+            user={"id": 2, "role": "customer"},
+        )
+>       add_session_cookie(client)
+
+shared/tests/test_integrated_access_control.py:101:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <FlaskClient <Flask 'app'>>
+
+    def add_session_cookie(client):
+>       client.set_cookie("localhost", "ethan_session", "verified-session")
+E       TypeError: Client.set_cookie() takes from 2 to 3 positional arguments but 4 were given
+
+shared/tests/test_integrated_access_control.py:66: TypeError
+__________________ test_admin_receives_all_orders_and_returns __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d314dd0>
+tmp_path = PosixPath('/private/var/folders/2v/3rkymt0559g8cz4knd6yfk680000gn/T/pytest-of-ethan/pytest-17/test_admin_receives_all_orders0')
+
+    def test_admin_receives_all_orders_and_returns(monkeypatch, tmp_path):
+        client = build_client(
+            monkeypatch,
+            tmp_path,
+            user={"id": 1, "role": "admin"},
+        )
+>       add_session_cookie(client)
+
+shared/tests/test_integrated_access_control.py:119:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <FlaskClient <Flask 'app'>>
+
+    def add_session_cookie(client):
+>       client.set_cookie("localhost", "ethan_session", "verified-session")
+E       TypeError: Client.set_cookie() takes from 2 to 3 positional arguments but 4 were given
+
+shared/tests/test_integrated_access_control.py:66: TypeError
+__________________ test_each_customer_has_an_independent_cart __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d41fe90>
+tmp_path = PosixPath('/private/var/folders/2v/3rkymt0559g8cz4knd6yfk680000gn/T/pytest-of-ethan/pytest-17/test_each_customer_has_an_inde0')
+
+    def test_each_customer_has_an_independent_cart(monkeypatch, tmp_path):
+        application_module = importlib.import_module("app")
+        database_api = importlib.import_module("student-Chufeng.database.api")
+        server = make_server(
+            "127.0.0.1",
+            0,
+            database_api.create_app(tmp_path / "products.db"),
+        )
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        monkeypatch.setenv(
+            "PRODUCT_DATABASE_API_URL",
+            f"http://127.0.0.1:{server.server_port}/api/database",
+        )
+        active_user = {"id": 2, "role": "customer"}
+        monkeypatch.setattr(
+            application_module,
+            "_authenticated_user",
+            lambda: (active_user, None),
+        )
+        client = application_module.create_app().test_client()
+>       add_session_cookie(client)
+
+shared/tests/test_integrated_access_control.py:149:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <FlaskClient <Flask 'app'>>
+
+    def add_session_cookie(client):
+>       client.set_cookie("localhost", "ethan_session", "verified-session")
+E       TypeError: Client.set_cookie() takes from 2 to 3 positional arguments but 4 were given
+
+shared/tests/test_integrated_access_control.py:66: TypeError
+=========================== short test summary info ============================
+FAILED shared/tests/test_integrated_access_control.py::test_customer_only_receives_owned_orders_and_returns
+FAILED shared/tests/test_integrated_access_control.py::test_customer_cannot_change_order_status
+FAILED shared/tests/test_integrated_access_control.py::test_admin_receives_all_orders_and_returns
+FAILED shared/tests/test_integrated_access_control.py::test_each_customer_has_an_independent_cart
+4 failed, 27 passed in 5.02s

@@ -1,0 +1,105 @@
+{
+  "captured_at": "2026-10-17T12:18:25.550669+00:00",
+  "historical_window_utc": [
+    "2026-10-15T13:18:30Z",
+    "2026-10-15T13:20:00Z"
+  ],
+  "native_journal_path": "/srv/asd/recovery/release2-20261017T121611Z/historical-oom-kernel-private.jsonl",
+  "native_journal_sha256": "0b92bab89c080d4af8d6bf0fb96457ae6302aad997be11f34f067ee90035ee98",
+  "native_record_count": 137,
+  "task_header": [
+    "[  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name"
+  ],
+  "largest_task_rows_by_native_rss_field": [
+    {
+      "pid": 2353,
+      "rss_field": 15363,
+      "native_row": "[   2353]     0  2353   531004    15363    15355        8         0   376832        0          -998 containerd-shim"
+    },
+    {
+      "pid": 2491,
+      "rss_field": 15208,
+      "native_row": "[   2491]     0  2491   549869    15208    15208        0         0   376832        0          -998 containerd-shim"
+    },
+    {
+      "pid": 2963,
+      "rss_field": 14475,
+      "native_row": "[   2963]     0  2963   549741    14475    14470        5         0   364544        0          -998 containerd-shim"
+    },
+    {
+      "pid": 2521,
+      "rss_field": 13698,
+      "native_row": "[   2521]     0  2521   566075    13698    13698        0         0   356352        0          -998 containerd-shim"
+    },
+    {
+      "pid": 4055057,
+      "rss_field": 13402,
+      "native_row": "[4055057]     0 4055057    39763    13402    13385       17         0   208896        0             0 gunicorn"
+    },
+    {
+      "pid": 2477,
+      "rss_field": 13395,
+      "native_row": "[   2477]     0  2477   549797    13395    13372       23         0   356352        0          -998 containerd-shim"
+    },
+    {
+      "pid": 2322,
+      "rss_field": 13336,
+      "native_row": "[   2322]     0  2322   547198    13336    13308       28         0   348160        0          -998 containerd-shim"
+    },
+    {
+      "pid": 4054837,
+      "rss_field": 13307,
+      "native_row": "[4054837]     0 4054837    58570    13307    13288       19         0   225280        0             0 gunicorn"
+    },
+    {
+      "pid": 2914,
+      "rss_field": 13198,
+      "native_row": "[   2914]     0  2914   547126    13198    13191        7         0   360448        0          -998 containerd-shim"
+    },
+    {
+      "pid": 4055102,
+      "rss_field": 13123,
+      "native_row": "[4055102]     0 4055102    39261    13123    13091       32         0   204800        0             0 gunicorn"
+    },
+    {
+      "pid": 4055061,
+      "rss_field": 13016,
+      "native_row": "[4055061]     0 4055061    37756    13016    12987       29         0   200704        0             0 gunicorn"
+    },
+    {
+      "pid": 1979,
+      "rss_field": 10319,
+      "native_row": "[   1979]     0  1979   662618    10319    10293       26         0   602112        0          -500 dockerd"
+    },
+    {
+      "pid": 4055060,
+      "rss_field": 6684,
+      "native_row": "[4055060]     0 4055060    30778     6684     6638       46         0   147456        0             0 gunicorn"
+    },
+    {
+      "pid": 4055090,
+      "rss_field": 6471,
+      "native_row": "[4055090]     0 4055090    30569     6471     6464        7         0   143360        0             0 gunicorn"
+    },
+    {
+      "pid": 4055094,
+      "rss_field": 6410,
+      "native_row": "[4055094]     0 4055094    11624     6410     6372       38         0   131072        0             0 gunicorn"
+    }
+  ],
+  "selected_memory_messages": [
+    "systemd invoked oom-killer: gfp_mask=0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), order=0, oom_score_adj=0",
+    "Mem-Info:",
+    "active_anon:48049 inactive_anon:266783 isolated_anon:0\n active_file:26 inactive_file:260 isolated_file:141\n unevictable:0 dirty:0 writeback:0\n slab_reclaimable:39639 slab_unreclaimable:107535\n mapped:40 shmem:57873 pagetables:3086\n sec_pagetables:0 bounce:0\n kernel_misc_reclaimable:0\n free:13129 free_pcp:69 free_cma:0",
+    "Node 0 active_anon:192196kB inactive_anon:1067132kB active_file:104kB inactive_file:924kB unevictable:0kB isolated(anon):0kB isolated(file):640kB mapped:160kB dirty:0kB writeback:0kB shmem:231492kB shmem_thp:0kB shmem_pmdmapped:0kB anon_thp:0kB kernel_stack:6432kB pagetables:12344kB sec_pagetables:0kB all_unreclaimable? no Balloon:0kB",
+    "Node 0 DMA free:7892kB boost:0kB min:356kB low:444kB high:532kB reserved_highatomic:0KB free_highatomic:0KB active_anon:1172kB inactive_anon:3220kB active_file:8kB inactive_file:16kB unevictable:0kB writepending:0kB zspages:0kB present:15996kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB",
+    "Node 0 DMA32 free:44708kB boost:0kB min:44696kB low:55868kB high:67040kB reserved_highatomic:0KB free_highatomic:0KB active_anon:191024kB inactive_anon:1063912kB active_file:100kB inactive_file:900kB unevictable:0kB writepending:0kB zspages:0kB present:2021808kB managed:1940140kB mlocked:0kB bounce:0kB free_pcp:316kB local_pcp:0kB free_cma:0kB",
+    "oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=init.scope,mems_allowed=0,global_oom,task_memcg=/system.slice/docker-22668e99aeadbf07ee97a006c13877c2576c678267c4ef54109c3acd19509d0b.scope,task=gunicorn,pid=4055057,uid=0",
+    "Out of memory: Killed process 4055057 (gunicorn) total-vm:159052kB, anon-rss:53540kB, file-rss:68kB, shmem-rss:0kB, UID:0 pgtables:204kB oom_score_adj:0"
+  ],
+  "page_size_bytes": 4096,
+  "limitations": [
+    "Historical process snapshot; the killed Gunicorn process is a victim and is not by itself proof of the root cause",
+    "Complete native kernel JSONL retained privately on encrypted data volume; no application log payloads collected"
+  ]
+}

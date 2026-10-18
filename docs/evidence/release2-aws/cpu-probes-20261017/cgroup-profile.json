@@ -1,0 +1,126 @@
+{
+  "captured_at": "2026-10-17T12:34:56.864971+00:00",
+  "window_start": "2026-10-17T12:34:26.840202+00:00",
+  "elapsed_seconds": 30.02433079399998,
+  "read_only": true,
+  "container_cpu_and_exec": [
+    {
+      "service": "gateway",
+      "cpu_seconds": 0.0,
+      "user_cpu_seconds": 0.0,
+      "system_cpu_seconds": 0.0,
+      "exec_start_count": 0,
+      "exec_die_count": 0
+    },
+    {
+      "service": "product-catalogue",
+      "cpu_seconds": 0.0,
+      "user_cpu_seconds": 0.0,
+      "system_cpu_seconds": 0.0,
+      "exec_start_count": 0,
+      "exec_die_count": 0
+    },
+    {
+      "service": "customer-support",
+      "cpu_seconds": 0.0,
+      "user_cpu_seconds": 0.0,
+      "system_cpu_seconds": 0.0,
+      "exec_start_count": 0,
+      "exec_die_count": 0
+    },
+    {
+      "service": "shared-backend",
+      "cpu_seconds": 1.472421,
+      "user_cpu_seconds": 1.324844,
+      "system_cpu_seconds": 0.147577,
+      "exec_start_count": 4,
+      "exec_die_count": 3
+    },
+    {
+      "service": "order-returns-frontend",
+      "cpu_seconds": 0.0,
+      "user_cpu_seconds": 0.0,
+      "system_cpu_seconds": 0.0,
+      "exec_start_count": 0,
+      "exec_die_count": 0
+    },
+    {
+      "service": "inventory-backend",
+      "cpu_seconds": 1.673212,
+      "user_cpu_seconds": 1.609455,
+      "system_cpu_seconds": 0.063757,
+      "exec_start_count": 3,
+      "exec_die_count": 4
+    },
+    {
+      "service": "customer-support-backend",
+      "cpu_seconds": 1.954185,
+      "user_cpu_seconds": 1.82682,
+      "system_cpu_seconds": 0.127366,
+      "exec_start_count": 4,
+      "exec_die_count": 4
+    },
+    {
+      "service": "ethan-backend",
+      "cpu_seconds": 2.131105,
+      "user_cpu_seconds": 2.042698,
+      "system_cpu_seconds": 0.088407,
+      "exec_start_count": 4,
+      "exec_die_count": 4
+    },
+    {
+      "service": "product-database",
+      "cpu_seconds": 1.544146,
+      "user_cpu_seconds": 1.460441,
+      "system_cpu_seconds": 0.083705,
+      "exec_start_count": 3,
+      "exec_die_count": 3
+    },
+    {
+      "service": "ethan-database",
+      "cpu_seconds": 1.583642,
+      "user_cpu_seconds": 1.454777,
+      "system_cpu_seconds": 0.128864,
+      "exec_start_count": 3,
+      "exec_die_count": 4
+    },
+    {
+      "service": "shared-home",
+      "cpu_seconds": 0.0,
+      "user_cpu_seconds": 0.0,
+      "system_cpu_seconds": 0.0,
+      "exec_start_count": 0,
+      "exec_die_count": 0
+    },
+    {
+      "service": "ethan-frontend",
+      "cpu_seconds": 0.0,
+      "user_cpu_seconds": 0.0,
+      "system_cpu_seconds": 0.0,
+      "exec_start_count": 0,
+      "exec_die_count": 0
+    },
+    {
+      "service": "customer-support-database",
+      "cpu_seconds": 1.873142,
+      "user_cpu_seconds": 1.750877,
+      "system_cpu_seconds": 0.122266,
+      "exec_start_count": 4,
+      "exec_die_count": 4
+    },
+    {
+      "service": "inventory-frontend",
+      "cpu_seconds": 0.0,
+      "user_cpu_seconds": 0.0,
+      "system_cpu_seconds": 0.0,
+      "exec_start_count": 0,
+      "exec_die_count": 0
+    }
+  ],
+  "limits": [
+    "Old manual release; observation only, no health settings changed",
+    "Container CPU includes healthcheck children and API requests; no per-command CPU attribution",
+    "Full event attributes/commands/identities excluded",
+    "No representative CRUD load or final resource-fix acceptance"
+  ]
+}

@@ -1,0 +1,16 @@
+[
+    {
+        "SnapshotId": "snap-0e749c8a462661e04",
+        "State": "completed",
+        "Progress": "100%",
+        "Encrypted": true,
+        "VolumeId": "vol-0abdeffdf216c8ed3"
+    },
+    {
+        "SnapshotId": "snap-036e64b4a356e8578",
+        "State": "completed",
+        "Progress": "100%",
+        "Encrypted": true,
+        "VolumeId": "vol-02087b3eeb07eec99"
+    }
+]

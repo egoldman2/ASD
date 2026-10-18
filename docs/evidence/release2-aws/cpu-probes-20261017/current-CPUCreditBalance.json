@@ -1,0 +1,33 @@
+{
+    "Label": "CPUCreditBalance",
+    "Datapoints": [
+        {
+            "Timestamp": "2026-10-17T23:15:00+11:00",
+            "Average": 0.0006367,
+            "Minimum": 0.0006367,
+            "Maximum": 0.0006367,
+            "Unit": "Count"
+        },
+        {
+            "Timestamp": "2026-10-17T23:20:00+11:00",
+            "Average": 0.0018222166666666667,
+            "Minimum": 0.0018222166666666667,
+            "Maximum": 0.0018222166666666667,
+            "Unit": "Count"
+        },
+        {
+            "Timestamp": "2026-10-17T23:25:00+11:00",
+            "Average": 0.00032155,
+            "Minimum": 0.00032155,
+            "Maximum": 0.00032155,
+            "Unit": "Count"
+        },
+        {
+            "Timestamp": "2026-10-17T23:30:00+11:00",
+            "Average": 0.00044093333333333334,
+            "Minimum": 0.00044093333333333334,
+            "Maximum": 0.00044093333333333334,
+            "Unit": "Count"
+        }
+    ]
+}

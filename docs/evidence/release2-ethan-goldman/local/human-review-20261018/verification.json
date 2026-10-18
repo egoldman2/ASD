@@ -1,0 +1,108 @@
+{
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-18T09:17:17.508372+00:00",
+  "repository_source_sha": "d389a49d066f759831fc7411c19b1677bb1f8d96",
+  "application_source_sha": "37e859a36492aeaf20994556750d4a5acb66a05a",
+  "environment": "isolated local asd-release2-local demo; http://localhost:8005",
+  "decision_authorization": "Ethan explicitly supplied Accept, nothing needed. for each workflow in chat; recorded through existing Chrome staff controls.",
+  "ticket_id": 2013,
+  "workflows": {
+    "ui": {
+      "workflow_id": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+      "status": "accepted",
+      "human_review": {
+        "decision": "accept",
+        "reason": "nothing needed.",
+        "reviewed_at": "2026-10-18T09:12:41.420750Z",
+        "reviewed_by": "user:1"
+      },
+      "request_and_all_model_outputs_unchanged": true,
+      "history_matches_live_get": true,
+      "one_matching_human_audit_event": true
+    },
+    "terminal": {
+      "workflow_id": "67702aa8-4a5f-4cd0-a311-8bd952ed18d5",
+      "status": "accepted",
+      "human_review": {
+        "decision": "accept",
+        "reason": "nothing needed.",
+        "reviewed_at": "2026-10-18T09:11:43.993558Z",
+        "reviewed_by": "user:1"
+      },
+      "request_and_all_model_outputs_unchanged": true,
+      "history_matches_live_get": true,
+      "one_matching_human_audit_event": true
+    }
+  },
+  "ticket_and_two_messages_byte_equivalent_as_json_objects": true,
+  "reply_sent": false,
+  "ticket_updated": false,
+  "limitations": [
+    "Ticket review decisions are not a group release decision.",
+    "This is local demo evidence, not public AWS/main deployment acceptance.",
+    "Agentic review will report any model-grounding issues separately."
+  ],
+  "post_decision_server_restart": {
+    "checked_at": "2026-10-18T09:23:00.105765+00:00",
+    "method": "SIGTERM verified repository-local server, then start same loopback service with retained JSONL files",
+    "service_source_sha": "d389a49d066f759831fc7411c19b1677bb1f8d96",
+    "health_http_status": 200,
+    "both_full_workflows_match_before_restart": true,
+    "history_and_audit_bytes_unchanged": true,
+    "existing_admin_session_and_ticket_unchanged": true
+  },
+  "regression": {
+    "command": "python -m pytest 'student-Ethan Goldman/tests' -q",
+    "ai_flags": "AI_MODE_ENABLED/MCP_ENABLED/RAG_ENABLED/MULTI_AGENT_ENABLED=false; RUN_LIVE_AI/RUN_LIVE_MULTI_AGENT=0",
+    "source_sha": "d389a49d066f759831fc7411c19b1677bb1f8d96",
+    "passed": 206,
+    "skipped": 10,
+    "failed": 0,
+    "errors": 0,
+    "junit_tests": 216,
+    "duration_seconds": 102.415
+  },
+  "original_capture_manifest_verified_files": 58,
+  "private_cookie_and_session_key_substring_check_passed": true,
+  "artifacts": {
+    "docs/evidence/release2-ethan-goldman/local/human-review-20261018/README.md": {
+      "bytes": 2883,
+      "sha256": "77804a4bf0de04b987b8fde3ce61caefba137c342297013ca47a195090696af1"
+    },
+    "docs/evidence/release2-ethan-goldman/local/human-review-20261018/agentic-console.txt": {
+      "bytes": 10513,
+      "sha256": "4c6b8261f80321e12c1529915e190ce6234946dc5923af6e600a75009ebaedc6"
+    },
+    "docs/evidence/release2-ethan-goldman/local/human-review-20261018/agentic-validation.json": {
+      "bytes": 21859,
+      "sha256": "aeceb00a3fe042a5e5ab4c982f2371d79be9f4dcdee667e67c98cda4fdcafba8"
+    },
+    "docs/evidence/release2-ethan-goldman/local/human-review-20261018/coordination_audit.jsonl": {
+      "bytes": 1262,
+      "sha256": "5d6a5c3f2176eb43297aca72cfabb96333341302ebc6588407fa5cd238c2a42e"
+    },
+    "docs/evidence/release2-ethan-goldman/local/human-review-20261018/terminal-accepted-after-restart.jpg": {
+      "bytes": 94454,
+      "sha256": "fb06242c1d6dd23c17c713959fe5f64d2a1416e857b16187c8b7b10f3009fb8e"
+    },
+    "docs/evidence/release2-ethan-goldman/local/human-review-20261018/ui-accepted.jpg": {
+      "bytes": 92837,
+      "sha256": "06ffbac1d32a418c4cb0c17ff2ebf8425cd778db3cdd6b7fad71ebc7f4543956"
+    },
+    "docs/evidence/release2-ethan-goldman/local/human-review-20261018/workflow_history.jsonl": {
+      "bytes": 8806,
+      "sha256": "f9b5c5b25de99d0c3e6f7f432e8f05250a103ceeab1542184caacac5db36d141"
+    },
+    "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261018-201915-878486.md": {
+      "bytes": 28072,
+      "sha256": "9b8307ff6beec9d27d6532546f3f4d9fada0b79af46072bb7697230b0ad79392"
+    }
+  },
+  "verified_at": "2026-10-18T09:26:17.337505+00:00",
+  "secret_scan": {
+    "command": "detect-secrets scan --all-files <new human-review evidence directory> <generated review report>",
+    "classified_provenance_and_content_hash_findings": 19,
+    "unclassified_findings": 0,
+    "new_ignores": 0
+  }
+}
