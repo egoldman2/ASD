@@ -10,6 +10,8 @@ from routes.products import products_blueprint
 from routes.suppliers import suppliers_blueprint
 from routes.assistant import assistant_blueprint
 
+from routes.multi_agent import multi_agent_blueprint
+
 from shared.runtime_config import allowed_origins
 
 ALLOWED_ORIGINS = allowed_origins()
@@ -87,6 +89,7 @@ def create_app():
     app.register_blueprint(assistant_blueprint)
     app.register_blueprint(mcp_blueprint)
     app.register_blueprint(rag_blueprint)
+    app.register_blueprint(multi_agent_blueprint)
 
     @app.route("/health")
     def health():
@@ -145,7 +148,7 @@ def create_app():
 app = create_app()
 if __name__ == "__main__":
     app.run(
-        host=os.getenv("APP_HOST", "0.0.0.0"),
+        host=os.getenv("APP_HOST", "127.0.0.1"),
         port=int(os.getenv("APP_PORT", "8102")),
         debug=os.getenv("APP_DEBUG", "false").lower() == "true",
         use_reloader=False,

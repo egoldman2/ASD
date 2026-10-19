@@ -1,0 +1,3 @@
+Ruff security rules......................................................Passed
+Detect committed secrets.................................................Passed
+Audit all Python dependencies............................................Passed

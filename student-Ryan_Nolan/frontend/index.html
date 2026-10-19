@@ -12,7 +12,8 @@
   <script src="js/auth_guard.js?v=4" defer></script>
   <script src="js/inventory.js?v=4" defer></script>
   <script src="js/mcp_tools.js?v=1" defer></script>
-    <script src="js/rag_tools.js?v=1" defer></script>
+  <script src="js/rag_tools.js?v=1" defer></script>
+  <script src="js/multi_agent.js?v=6" defer></script>
 </head>
 
 <body>
@@ -204,6 +205,62 @@
 
         <p id="ragConfidence" class="productMeta"></p>
         <div id="ragCitations" class="productMeta"></div>
+      </details>
+
+      <details class="collapsibleSection">
+        <summary class="collapsibleSummary">
+          <p class="sectionEyebrow">Multi-Agent</p>
+          <h3>Restock Planning Agents</h3>
+        </summary>
+
+        <p id="maStatusLine" class="productMeta">Checking Multi-Agent status...</p>
+        <p id="maTimeLimit" class="productMeta"></p>
+
+        <form id="maForm" class="aiForm">
+          <div class="aiField">
+            <label for="maQuestion">Task for the agents</label>
+            <textarea id="maQuestion" rows="2" maxlength="1000">Which low-stock products should be restocked first, and how much should be ordered?</textarea>
+          </div>
+          <div class="aiField">
+            <label for="maProductId">Product ID (optional, blank = all low-stock products)</label>
+            <input id="maProductId" type="number" min="1" step="1">
+          </div>
+          <button id="maRunButton" class="askAiButton" type="submit">Run Agents</button>
+        </form>
+
+        <p id="maWorkflowLine" class="productMeta" aria-live="polite"></p>
+
+        <div class="aiField aiResponseField">
+          <label for="maPlan">Planner</label>
+          <textarea id="maPlan" rows="5" readonly></textarea>
+        </div>
+        <div class="aiField aiResponseField">
+          <label for="maWorker">Worker</label>
+          <textarea id="maWorker" rows="5" readonly></textarea>
+        </div>
+        <div class="aiField aiResponseField">
+          <label for="maReviewer">Reviewer</label>
+          <textarea id="maReviewer" rows="6" readonly></textarea>
+        </div>
+
+        <form id="maReviewForm" class="aiForm" hidden>
+          <div class="aiField">
+            <label for="maDecision">Human review decision</label>
+            <select id="maDecision">
+              <option value="accept">Accept</option>
+              <option value="partially_accept">Partially accept</option>
+              <option value="reject">Reject</option>
+            </select>
+          </div>
+          <div class="aiField">
+            <label for="maReason">Reason</label>
+            <textarea id="maReason" rows="2" maxlength="2000" required></textarea>
+          </div>
+          <button id="maReviewButton" class="askAiButton" type="submit">Submit Review</button>
+        </form>
+
+        <p id="maReviewLine" class="productMeta" aria-live="polite"></p>
+        <pre id="maJson" class="productMeta"></pre>
       </details>
 
       <details class="collapsibleSection" open>
