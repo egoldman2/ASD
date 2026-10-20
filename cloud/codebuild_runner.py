@@ -180,7 +180,7 @@ def run():
             )
             if configured.returncode:
                 raise RuntimeError('Ephemeral runner registration failed.')
-            runner_id = json.loads((directory / '.runner').read_text())['agentId']
+            runner_id = json.loads((directory / '.runner').read_text(encoding='utf-8-sig'))['agentId']
             if type(runner_id) is not int or runner_id < 1:
                 raise RuntimeError('Invalid registered runner identity.')
             EXPECTED.parent.mkdir(exist_ok=True, mode=0o700)

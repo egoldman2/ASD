@@ -58,7 +58,9 @@ def test_cloud_deploy_requires_gate_matrix_build_main_and_fresh_candidate():
     assert "needs.student_workflows.outputs.current == 'true'" in deploy['if']
     assert gate['permissions'] == {'contents': 'read', 'actions': 'read'}
     assert 'actions' not in workflow['permissions'] and 'actions' not in deploy['permissions']
-    assert deploy['permissions']['id-token'] == 'write' and deploy['environment'] == 'aws-cloud'
+    assert deploy['permissions'] == {'contents': 'read'} and deploy['environment'] == 'aws-cloud'
+    assert deploy['runs-on'] == 'asd-main-${{ github.run_id }}-${{ github.run_attempt }}'
+    assert deploy['timeout-minutes'] == 60
     assert int(gate['timeout-minutes']) <= 25
     assert ['ai-services/multi_agent_server/tests'] in jobs['validate']['strategy']['matrix']['suite']
     assert 'workflow_run' not in workflow['on']
@@ -69,9 +71,10 @@ def test_cloud_deploy_requires_gate_matrix_build_main_and_fresh_candidate():
     steps = deploy['steps']
     candidate = next(step for step in steps if step.get('id') == 'candidate')
     assert '--head-only' in candidate['run'] and 'cloud/check_workflows.py' in candidate['run']
-    mutations = [step for step in steps if step.get('uses', '').startswith('aws-actions/')
-                 or step.get('name') in {'Require configured deployment role', 'Publish and deploy validated release'}]
-    assert len(mutations) == 3
+    assert not any(step.get('uses', '').startswith('aws-actions/') for step in steps)
+    mutations = [step for step in steps if step.get('name') in {
+        'Verify temporary CodeBuild credentials', 'Publish and deploy validated release'}]
+    assert len(mutations) == 2
     assert all(step['if'] == "steps.candidate.outputs.current == 'true'" for step in mutations)
     assert steps.index(candidate) < min(steps.index(step) for step in mutations)
     uploads = [step for step in gate['steps'] + steps if step.get('uses', '').startswith('actions/upload-artifact')]

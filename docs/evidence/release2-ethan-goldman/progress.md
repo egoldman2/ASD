@@ -63,6 +63,17 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
 
 ## Current verification and remaining work
 
+- S04d: the separate `asd-release2-actions` stack is CREATE_COMPLETE with only
+  a main-push CodeBuild project, scoped service role and seven-day logs. All three
+  S04c `421c71a` [exact-head checks](https://github.com/egoldman2/ASD/actions/runs/39417240957)
+  pass. Workflow wiring preserves all existing gates and native Actions artifacts.
+  The real registration preflight exposed the vendor config's UTF-8 BOM; the
+  reader repair has a reproducing lifecycle test. The repeat native preflight
+  succeeds and removes all three disposable registrations without starting a
+  listener. Shared/cloud: 363 passed; lint, three guard rules, AWS validation,
+  IAM validation and change-set preflight pass. [Native evidence](../release2-aws/codebuild-deployment-20261020.json).
+  Application deployment is pending PR #23 integration; the AWS plan is unchanged.
+
 - S04c: main-source bootstrap admits only the exact native cloud deploy job after
   its nine prerequisites and five student workflows pass. A private pre-job hook
   checks the native run/attempt/job/runner assignment and current main before any
@@ -137,7 +148,7 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
 - Canvas confirms Group 33. Release 2 displays 25 October, 23:59 with the profile
   timezone Sydney; its brief says AEST. The timezone wording still needs confirmation.
 
-Next: retain this required native evidence checkpoint, then resume S16 only when
-supported AWS deployment-role access exists under the owner's capability decision.
+Next: integrate PR #23 after exact-head CI and separate merge authorization, then
+verify S16 through the native main Actions deployment and public acceptance checks.
 Resolve remaining source-owner security findings and rerun affected reviews before
 release sign-off. Report/video assembly is deferred at Ethan's request.

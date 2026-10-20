@@ -1,0 +1,285 @@
+{
+  "owner": "Ethan Goldman",
+  "region": "ap-southeast-2",
+  "scope": "Provisioning and native runner registration preflight; no Actions job or application deployment",
+  "application_stack_updated": false,
+  "plan_changed": false,
+  "stack": {
+    "id": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-release2-actions/fb6a7de0-cc7b-11f1-af2c-02ffcc6689cb",
+    "name": "asd-release2-actions",
+    "status": "CREATE_COMPLETE",
+    "last_updated": "2026-10-20T11:48:19.591000+00:00"
+  },
+  "change_set": {
+    "id": "arn:aws:cloudformation:ap-southeast-2:059643396979:changeSet/main-actions-bootstrap-20261020/893d75b7-554b-442b-952b-a12e85f3b546",
+    "status": "CREATE_COMPLETE",
+    "changes": [
+      {
+        "Action": "Add",
+        "LogicalResourceId": "RunnerLogs",
+        "ResourceType": "AWS::Logs::LogGroup",
+        "Scope": [],
+        "Details": []
+      },
+      {
+        "Action": "Add",
+        "LogicalResourceId": "RunnerProject",
+        "ResourceType": "AWS::CodeBuild::Project",
+        "Scope": [],
+        "Details": []
+      },
+      {
+        "Action": "Add",
+        "LogicalResourceId": "RunnerRole",
+        "ResourceType": "AWS::IAM::Role",
+        "Scope": [],
+        "Details": []
+      }
+    ],
+    "preflight_events": [
+      {
+        "EventId": "db8c550c-b608-44e9-ba14-b65633bb5ba8",
+        "StackId": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-release2-actions/fb6a7de0-cc7b-11f1-af2c-02ffcc6689cb",
+        "OperationId": "893d75b7-554b-442b-952b-a12e85f3b546",
+        "OperationType": "CREATE_CHANGESET",
+        "OperationStatus": "SUCCEEDED",
+        "EventType": "STACK_EVENT",
+        "Timestamp": "2026-10-20T11:47:12.569000+00:00",
+        "StartTime": "2026-10-20T11:47:09.755000+00:00",
+        "EndTime": "2026-10-20T11:47:12.569000+00:00"
+      },
+      {
+        "EventId": "1e2ba899-9a56-49fd-bbb6-0b31e5dde8cd",
+        "StackId": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-release2-actions/fb6a7de0-cc7b-11f1-af2c-02ffcc6689cb",
+        "OperationId": "893d75b7-554b-442b-952b-a12e85f3b546",
+        "OperationType": "CREATE_CHANGESET",
+        "OperationStatus": "IN_PROGRESS",
+        "EventType": "STACK_EVENT",
+        "Timestamp": "2026-10-20T11:47:09.755000+00:00",
+        "StartTime": "2026-10-20T11:47:09.755000+00:00"
+      }
+    ]
+  },
+  "project": {
+    "name": "asd-release2-actions-deploy",
+    "arn": "arn:aws:codebuild:ap-southeast-2:059643396979:project/asd-release2-actions-deploy",
+    "source": {
+      "type": "GITHUB",
+      "location": "https://github.com/egoldman2/ASD",
+      "gitCloneDepth": 1,
+      "buildspec": "version: 0.2\nenv:\n  git-credential-helper: yes\nphases:\n  install:\n    runtime-versions:\n      python: 3.11\n  build:\n    commands:\n      - python3 cloud/codebuild_runner.py run\n",
+      "auth": {
+        "type": "CODECONNECTIONS",
+        "resource": "arn:aws:codeconnections:ap-southeast-2:059643396979:connection/9bcc3dff-5c8d-40da-b509-cf23f4cec214"
+      }
+    },
+    "source_version": "main",
+    "role": "arn:aws:iam::059643396979:role/asd-release2-actions-RunnerRole-ZSiHOGhkKAZi",
+    "environment": {
+      "type": "LINUX_CONTAINER",
+      "image": "aws/codebuild/standard:7.0",
+      "computeType": "BUILD_GENERAL1_SMALL",
+      "environmentVariables": [],
+      "privilegedMode": false,
+      "imagePullCredentialsType": "CODEBUILD"
+    },
+    "webhook_filters": [
+      [
+        {
+          "type": "EVENT",
+          "pattern": "PUSH",
+          "excludeMatchedPattern": false
+        },
+        {
+          "type": "HEAD_REF",
+          "pattern": "^refs/heads/main$",
+          "excludeMatchedPattern": false
+        }
+      ]
+    ],
+    "timeout": 90,
+    "queued_timeout": 30,
+    "concurrent_build_limit": 1,
+    "logs": {
+      "cloudWatchLogs": {
+        "status": "ENABLED",
+        "groupName": "/aws/codebuild/asd-release2-actions"
+      }
+    }
+  },
+  "role_trust": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "codebuild.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole",
+        "Condition": {
+          "StringEquals": {
+            "aws:SourceAccount": "059643396979"
+          },
+          "ArnEquals": {
+            "aws:SourceArn": "arn:aws:codebuild:ap-southeast-2:059643396979:project/asd-release2-actions-deploy"
+          }
+        }
+      }
+    ]
+  },
+  "role_policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": [
+          "codeconnections:GetConnection",
+          "codeconnections:GetConnectionToken"
+        ],
+        "Resource": "arn:aws:codeconnections:ap-southeast-2:059643396979:connection/9bcc3dff-5c8d-40da-b509-cf23f4cec214",
+        "Effect": "Allow"
+      },
+      {
+        "Action": [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        "Resource": "arn:aws:logs:ap-southeast-2:059643396979:log-group:/aws/codebuild/asd-release2-actions:*",
+        "Effect": "Allow"
+      },
+      {
+        "Action": "s3:PutObject",
+        "Resource": "arn:aws:s3:::asd-release2-releasebucket-6xxwoto09slr/releases/*",
+        "Effect": "Allow"
+      },
+      {
+        "Action": "ssm:SendCommand",
+        "Resource": [
+          "arn:aws:ssm:ap-southeast-2::document/AWS-RunShellScript",
+          "arn:aws:ec2:ap-southeast-2:059643396979:instance/i-03a217a6a7f61d3ae"
+        ],
+        "Effect": "Allow"
+      },
+      {
+        "Action": "ssm:GetCommandInvocation",
+        "Resource": "*",
+        "Effect": "Allow"
+      },
+      {
+        "Action": "cloudformation:DescribeStacks",
+        "Resource": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-release2/*",
+        "Effect": "Allow"
+      }
+    ]
+  },
+  "iam_validation": {
+    "findings": []
+  },
+  "registration_preflight": {
+    "id": "asd-release2-source-check-source:ba15daa3-c706-4170-850f-36f383e67d45",
+    "status": "SUCCEEDED",
+    "source_version": "main",
+    "source_sha": "d4660ff94152ccc3d44567908466824424118c08",
+    "start_time": "2026-10-20T11:53:12.060000+00:00",
+    "end_time": "2026-10-20T11:53:51.153000+00:00",
+    "public_results": [
+      {
+        "name": "RUNNER_PREFLIGHT",
+        "value": {
+          "result": "PINNED_RUNNER_REGISTERED_AND_REMOVED",
+          "config_prefix": [
+            239,
+            187,
+            191
+          ],
+          "removed_prior": [
+            23,
+            22
+          ],
+          "removed_runner_id": 24,
+          "listener_started": false,
+          "bytes": 226430031
+        }
+      }
+    ],
+    "phases": [
+      {
+        "type": "SUBMITTED",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "QUEUED",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "PROVISIONING",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "DOWNLOAD_SOURCE",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "INSTALL",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "PRE_BUILD",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "BUILD",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "POST_BUILD",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "UPLOAD_ARTIFACTS",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "FINALIZING",
+        "status": "SUCCEEDED"
+      },
+      {
+        "type": "COMPLETED"
+      }
+    ]
+  },
+  "earlier_preflights": [
+    {
+      "id": "asd-release2-source-check-source:daafbac0-48b6-41b0-85ac-8a165495fdab",
+      "status": "FAILED",
+      "limitation": "Config parsing failed after registration; no listener started."
+    },
+    {
+      "id": "asd-release2-source-check-source:233fc96a-0a4e-4ccb-991b-e7aa308e03e0",
+      "status": "FAILED",
+      "error": {
+        "phase": "configure",
+        "error_type": "JSONDecodeError"
+      },
+      "repair": "Read vendor UTF-8 BOM with utf-8-sig; lifecycle test reproduced failure before repair."
+    }
+  ],
+  "checks": {
+    "shared_cloud": {
+      "passed": 363
+    },
+    "runner_cases": {
+      "passed": 37
+    },
+    "cfn_lint": "PASS",
+    "guard_rules": [
+      "CODEBUILD_ENCRYPTION_KEY_RULE",
+      "CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK",
+      "CODEBUILD_PROJECT_SOURCE_REPO_URL_CHECK"
+    ],
+    "aws_template_validation": "PASS"
+  },
+  "limitations": [
+    "A successful main Actions deployment and public acceptance remain required.",
+    "The source-only probe has no deployment permissions; bootstrap labels and native assignment checks are tested separately."
+  ]
+}

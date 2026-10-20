@@ -197,7 +197,7 @@ def test_ephemeral_runner_uses_private_admission_and_always_cleans_up(monkeypatc
         if command[0].endswith('/config.sh'):
             assert '--ephemeral' in command and '--disableupdate' in command and '--no-default-labels' in command
             assert command[-1] == 'asd-main-42-2'
-            (cwd / '.runner').write_text(json.dumps({'agentId': 17}))
+            (cwd / '.runner').write_text('\ufeff' + json.dumps({'agentId': 17}))
         else:
             assert command == [str(cwd / 'run.sh')]
             assert private.stat().st_mode & 0o777 == 0o600
