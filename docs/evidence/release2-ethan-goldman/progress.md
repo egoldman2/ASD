@@ -63,6 +63,16 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
 
 ## Current verification and remaining work
 
+- S04b, 20 October: `asd-release2-github` is AVAILABLE. The isolated CodeBuild
+  source probe downloads and verifies main `d4660ff`; native build
+  `asd-release2-source-check-source:a25c9bf0-e7ac-42c1-8550-bf23b22332d2`
+  succeeds. Five focused tests, 324 shared/cloud tests, cfn-lint, three AWS guard
+  rules, IAM policy validation and change-set preflight pass. The source-only
+  role has no release permissions or webhook. [Native verification](../release2-aws/codebuild-source-20261020.json)
+  and [reusable template](../../../cloud/codebuild-source.yml) are retained;
+  exact commit/Actions results follow in the checkpoint PR. Deployment integration
+  remains required; the AWS plan is unchanged.
+
 - Main `137c298`: all five student workflows and all ten named endpoint cases pass
   without failures/errors/skips. Seven cloud suites, image build and exact-main
   gate pass. The actual deployment stops at the missing role before credentials;
