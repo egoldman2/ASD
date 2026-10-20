@@ -63,6 +63,16 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
 
 ## Current verification and remaining work
 
+- S04c: main-source bootstrap admits only the exact native cloud deploy job after
+  its nine prerequisites and five student workflows pass. A private pre-job hook
+  checks the native run/attempt/job/runner assignment and current main before any
+  workflow steps. The pinned, digest-verified runner is ephemeral; credentials
+  and registration are cleaned up after success or failure. Shared/cloud: 361
+  passed, including 37 runner cases; shell syntax and Ruff security checks pass.
+  This checkpoint supplies the bootstrap; infrastructure/workflow wiring follows.
+  S01b `1d21590`: all three [exact-head checks](https://github.com/egoldman2/ASD/actions/runs/39414922522)
+  pass. Checkpoint SHA/CI are recorded in PR #23 to avoid bookkeeping-only commits.
+
 - S01b: [S04b cloud PR CI](https://github.com/egoldman2/ASD/actions/runs/39412209238)
   exposed a random workflow UUID containing `0412`, incorrectly matched as phone
   leakage. A deterministic colliding-ID fixture reproduces it. API/review/UI
