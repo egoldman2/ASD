@@ -23,6 +23,7 @@ COPY shared/feature_flags.py /app/shared/feature_flags.py
 COPY shared/runtime_config.py /app/shared/runtime_config.py
 COPY shared/mcp_client.py /app/shared/mcp_client.py
 COPY shared/loyalty_history.py /app/shared/loyalty_history.py
+COPY shared/multi_agent_client.py /app/shared/multi_agent_client.py
 
 COPY ["student-Ethan Ting/backend/app.py", "/app/app.py"]
 COPY ["student-Ethan Ting/agentic/customer_insight_prompt.txt", "/app/agentic/customer_insight_prompt.txt"]
@@ -48,6 +49,7 @@ COPY shared/feature_flags.py /app/shared/feature_flags.py
 COPY shared/runtime_config.py /app/shared/runtime_config.py
 COPY shared/mcp_client.py /app/shared/mcp_client.py
 COPY shared/loyalty_history.py /app/shared/loyalty_history.py
+COPY shared/multi_agent_client.py /app/shared/multi_agent_client.py
 
 COPY ["student-Ethan Ting/backend/", "/app/backend/"]
 COPY ["student-Ethan Ting/database/", "/app/database/"]

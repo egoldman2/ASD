@@ -474,6 +474,12 @@
 .assistantCustomerFields .formField { margin: 0; min-width: 0; }
 .customerAssistant .assistantGuide { border-top: 0; margin-top: 0; padding-top: 0; }
 .customerAssistant .aiInsightResult { overflow-wrap: anywhere; }
+.loyaltyReviewStage { margin: 1rem 0; padding: 1rem; border: 1px solid #cbd8e7; border-radius: .6rem; background: #f8fafc; }
+.loyaltyReviewStage p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.loyaltyReviewEvidence { padding: .8rem; max-height: 20rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; background: #f1f5f9; }
+#loyaltyReviewMessage { color: #4b637d; }
+#loyaltyReviewMessage.success { color: #18794e; }
+#loyaltyReviewMessage.error { color: #a12f2f; }
 .customerAssistant .tableWrapper { max-width: 100%; }
 .customerAssistant [hidden] { display: none !important; }
 @media (max-width: 600px) {

@@ -5,7 +5,7 @@ if (!host) return;
 host.innerHTML = `
 <div class="panelHeading"><div><p class="dashboardEyebrow">Customer support tools</p><h2 id="customerInsightTitle">Customer assistant</h2><p class="panelDescription">Check live loyalty records, ask AI or look up the approved guide.</p></div></div>
 <div class="assistantStatusRow"><div id="assistantServiceStatus" class="assistantStatus" role="status" aria-live="polite" hx-get="/api/admin/assistant/service-status" hx-trigger="load, every 30s" hx-request='{"timeout":9000}' hx-swap="innerHTML">Checking MCP and RAG connections...</div><button class="secondaryButton" type="button" hx-get="/api/admin/assistant/service-status" hx-target="#assistantServiceStatus" hx-request='{"timeout":9000}'>Check connections</button></div>
-<div class="assistantTabs" role="tablist" aria-label="Assistant task"><button id="assistantTab0" type="button" role="tab" aria-controls="assistantPane0" aria-selected="true" tabindex="0" data-assistant-tab="tools">Customer tools</button><button id="assistantTab1" type="button" role="tab" aria-controls="assistantPane1" aria-selected="false" tabindex="-1" data-assistant-tab="ai">Ask AI</button><button id="assistantTab2" type="button" role="tab" aria-controls="assistantPane2" aria-selected="false" tabindex="-1" data-assistant-tab="guide">Ask the guide</button></div>
+<div class="assistantTabs" role="tablist" aria-label="Assistant task"><button id="assistantTab0" type="button" role="tab" aria-controls="assistantPane0" aria-selected="true" tabindex="0" data-assistant-tab="tools">Customer tools</button><button id="assistantTab1" type="button" role="tab" aria-controls="assistantPane1" aria-selected="false" tabindex="-1" data-assistant-tab="ai">Ask AI</button><button id="assistantTab2" type="button" role="tab" aria-controls="assistantPane2" aria-selected="false" tabindex="-1" data-assistant-tab="guide">Ask the guide</button><button id="assistantTab3" type="button" role="tab" aria-controls="assistantPane3" aria-selected="false" tabindex="-1" data-assistant-tab="workflow">Loyalty review</button></div>
 <div id="assistantCustomerFields" class="assistantCustomerFields">
   <div class="formField"><label for="assistantCustomerSearch">Find a customer</label><input id="assistantCustomerSearch" class="searchField" type="search" placeholder="Search name, email or ID" maxlength="254"></div>
           <div class="formField">
@@ -167,7 +167,26 @@ host.innerHTML = `
           </section>
         </div>
 
-`;
+<section id="assistantPane3" role="tabpanel" aria-labelledby="assistantTab3" hidden>
+  <h3>Loyalty review</h3>
+  <p class="panelDescription">Planner, Worker and Reviewer assess the selected customer's balance and five recent point changes. You make the final decision. This records a review only, never an account or points change.</p>
+  <div class="assistantQuickActions"><button id="startLoyaltyReview" class="primaryButton" type="button" disabled>Start review</button><button id="loadLoyaltyReview" class="secondaryButton" type="button" disabled>Load latest review</button></div>
+  <p id="loyaltyReviewMessage" class="dashboardMessage" role="status" aria-live="polite"></p>
+  <div id="loyaltyReviewResult" hidden>
+    <p id="loyaltyReviewMeta" class="panelDescription"></p>
+    <p id="loyaltyVerifiedProgress" class="mcpTierResult"></p>
+    <p class="panelDescription">The following AI outputs can contain mistakes, including the reviewer's checks. Compare them with the rules-based result and evidence before deciding.</p>
+    <details><summary>Evidence snapshot</summary><pre id="loyaltyReviewEvidence" class="loyaltyReviewEvidence"></pre></details>
+    <div id="loyaltyReviewStages"></div>
+    <form id="loyaltyHumanReview" class="aiInsightForm" hidden>
+      <h4>Your decision</h4>
+      <label for="loyaltyReviewDecision">Decision</label><select id="loyaltyReviewDecision" class="searchField" required><option value="">Choose a decision</option><option value="accept">Accept recommendation</option><option value="partially_accept">Partially accept</option><option value="reject">Reject recommendation</option></select>
+      <label for="loyaltyReviewReason">Reason or corrections</label><textarea id="loyaltyReviewReason" rows="3" maxlength="2000" required></textarea>
+      <div><button id="saveLoyaltyReview" class="primaryButton" type="submit">Record decision</button></div>
+    </form>
+    <p id="loyaltyReviewDecisionResult" role="status"></p>
+  </div>
+</section>`;
 const AUTH_API_URL = "http://localhost:6002";
 const customerInsightForm = document.querySelector("#customerInsightForm");
 const customerInsightQuestion = document.querySelector("#customerInsightQuestion");
@@ -495,6 +514,7 @@ let customerLoadVersion = 0;
 try { selectedId = sessionStorage.getItem("ethan.assistant.customer") || ""; } catch (_) {}
 
 function clearCustomerResults() {
+  clearLoyaltyWorkflow();
   tierResult.hidden = true;
   toolRetry.hidden = true;
   toolMessage.textContent = "";
@@ -528,10 +548,11 @@ tabs.forEach((tab, index) => {
 
 function setToolBusy(value) {
   busy = value;
-  for (const button of [tierButton, historyButton]) button.disabled = busy || !selectedId;
+  for (const button of [tierButton, historyButton, startReviewButton, loadReviewButton]) button.disabled = busy || !selectedId;
   for (const control of [customerSelect, customerFilter, customerInsightQuestion, ragGuideQuestion,
     confirmCustomerChangeButton, cancelCustomerChangeButton, askCustomerInsightButton, askRagGuideButton,
     refreshRagGuideButton, toolRetry, document.querySelector("#assistantReloadCustomers"),
+    reviewDecision, reviewReason, saveReviewButton,
     ...tabs, ...host.querySelectorAll("[data-insight-question], [data-customer-prompt], [data-rag-question]")]) {
     control.disabled = busy;
   }
@@ -682,6 +703,93 @@ document.addEventListener("htmx:beforeRequest", event => {
   else if (event.detail.elt === status || event.detail.elt?.getAttribute("hx-target") === "#assistantServiceStatus") {
     status.textContent = "Checking MCP and RAG connections...";
   }
+});
+const startReviewButton = document.querySelector("#startLoyaltyReview");
+const loadReviewButton = document.querySelector("#loadLoyaltyReview");
+const reviewDecision = document.querySelector("#loyaltyReviewDecision");
+const reviewReason = document.querySelector("#loyaltyReviewReason");
+const saveReviewButton = document.querySelector("#saveLoyaltyReview");
+const reviewMessage = document.querySelector("#loyaltyReviewMessage");
+const reviewResult = document.querySelector("#loyaltyReviewResult");
+const humanReviewForm = document.querySelector("#loyaltyHumanReview");
+let currentLoyaltyWorkflow = null;
+
+function clearLoyaltyWorkflow() {
+  currentLoyaltyWorkflow = null;
+  reviewResult.hidden = true;
+  humanReviewForm.hidden = true;
+  reviewMessage.textContent = "";
+  reviewReason.value = "";
+  reviewDecision.value = "";
+  for (const button of [startReviewButton, loadReviewButton]) button.disabled = busy || !selectedId;
+}
+function renderLoyaltyWorkflow(record) {
+  const customerId = record?.request?.evidence?.[0]?.data?.customer_id;
+  if (record?.request?.feature !== "customer_loyalty" || customerId !== Number(selectedId)
+      || typeof record.workflow_id !== "string") throw new Error("Review does not match the selected customer.");
+  const stages = document.querySelector("#loyaltyReviewStages");
+  const progress = record.verified_progress;
+  if (!progress || typeof progress.tier !== "string" || !Number.isSafeInteger(progress.points_to_next_tier)) throw new Error("Verified loyalty progress is missing.");
+  document.querySelector("#loyaltyVerifiedProgress").textContent = `Application rules, not AI: ${record.request.evidence[0].data.points_balance} points · ${progress.tier}${progress.next_tier ? ` · ${progress.points_to_next_tier} points to ${progress.next_tier}` : " · Highest tier"}.`;
+  stages.replaceChildren();
+  for (const [name, key] of [["planner", "plan"], ["worker", "output"], ["reviewer", "review"]]) {
+    const stage = record[`${name}_result`];
+    if (stage?.status !== "completed" || typeof stage[key] !== "string") throw new Error("The agent chain is incomplete.");
+    const section = document.createElement("section");
+    section.className = "loyaltyReviewStage";
+    const title = document.createElement("h4"); title.textContent = `${name[0].toUpperCase()}${name.slice(1)} · ${stage.model}`;
+    const output = document.createElement("p"); output.textContent = stage[key];
+    section.append(title, output); stages.appendChild(section);
+  }
+  const when = new Intl.DateTimeFormat("en-AU", {dateStyle: "medium", timeStyle: "short", timeZone: "Australia/Sydney"}).format(new Date(record.timestamp));
+  document.querySelector("#loyaltyReviewMeta").textContent = `Customer #${customerId} · ${when} Sydney time · ${record.status.replaceAll("_", " ")} · ID ${record.workflow_id}`;
+  document.querySelector("#loyaltyReviewEvidence").textContent = JSON.stringify(record.request.evidence[0].data, null, 2);
+  const decision = record.human_review;
+  document.querySelector("#loyaltyReviewDecisionResult").textContent = decision
+    ? `${decision.reviewed_by}: ${decision.decision.replaceAll("_", " ")}. ${decision.reason} No customer data changed.` : "Awaiting your review. Approval records your decision only.";
+  humanReviewForm.hidden = record.status !== "awaiting_human_review";
+  currentLoyaltyWorkflow = record;
+  reviewResult.hidden = false;
+}
+async function requestLoyaltyWorkflow(action) {
+  if (busy || !selectedId) return;
+  setToolBusy(true);
+  reviewMessage.className = "dashboardMessage";
+  reviewMessage.textContent = action === "start" ? "Running Planner, Worker and Reviewer. This may take several minutes..." : "Loading the latest stored review...";
+  reviewResult.hidden = true;
+  try {
+    const record = action === "start"
+      ? await authRequest("/api/admin/multi-agent/workflows", {method: "POST", body: JSON.stringify({user_id: Number(selectedId)}), signal: AbortSignal.timeout(330000)})
+      : (await authRequest(`/api/admin/multi-agent/workflows?user_id=${encodeURIComponent(selectedId)}`)).workflows.at(-1);
+    if (!record) throw new Error("No saved review for this customer. Start a review first.");
+    renderLoyaltyWorkflow(record);
+    reviewMessage.classList.add("success");
+    reviewMessage.textContent = record.human_review ? "Saved decision loaded. No customer data changed." : "Review loaded. Read all three stages before deciding.";
+  } catch (error) {
+    currentLoyaltyWorkflow = null;
+    reviewMessage.classList.add("error");
+    humanReviewForm.hidden = true;
+    reviewMessage.textContent = `${error.message} After a timeout, use Load latest review before starting another.`;
+  } finally { setToolBusy(false); }
+}
+startReviewButton.addEventListener("click", () => requestLoyaltyWorkflow("start"));
+loadReviewButton.addEventListener("click", () => requestLoyaltyWorkflow("load"));
+humanReviewForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (busy || !currentLoyaltyWorkflow) return;
+  const reason = reviewReason.value.trim();
+  if (!reason) { reviewMessage.textContent = "Enter a reason for your decision."; return; }
+  setToolBusy(true);
+  reviewMessage.className = "dashboardMessage";
+  reviewMessage.textContent = "Recording your decision...";
+  try {
+    const record = await authRequest(`/api/admin/multi-agent/workflows/${encodeURIComponent(currentLoyaltyWorkflow.workflow_id)}/review`, {
+      method: "POST", body: JSON.stringify({decision: reviewDecision.value, reason})});
+    renderLoyaltyWorkflow(record);
+    reviewMessage.classList.add("success");
+    reviewMessage.textContent = "Decision recorded. No points or account details changed.";
+  } catch (error) { reviewMessage.classList.add("error"); reviewMessage.textContent = `${error.message} Use Load latest review to check the saved decision before retrying.`; }
+  finally { setToolBusy(false); }
 });
 loadAssistantCustomers();
 })();
