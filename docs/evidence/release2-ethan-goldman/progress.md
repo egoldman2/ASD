@@ -47,6 +47,20 @@ removed. Code, tests, required report drafts and native local/cloud captures rem
 | S15c | Collection `cc84d7c`; retained S15 runtime | Ethan authorized deletion of disposable #2015 through the staff UI; queue search returns zero, API returns 404, #2013 snapshot hash and all 13 pre-existing ticket IDs remain unchanged | [native screenshots and verification](local/ui-delete-20261018/verification.json); no rebuild, new model call or API DELETE |
 | S00e | Source parent `d36fd7a`; fix follows in Git history | RAG defaults to loopback; explicit host override retained. Regression reproduced one default-bind failure before repair; MCP/RAG 141 passed/2 opt-in skips, Support 206 passed/10 opt-in skips and shared/cloud 319 passed. Docker Support reaches the existing loopback RAG health endpoint (200). Changed-source Ruff passes; global scan retains 42 findings | [entrypoint regression](../../../ai-services/rag_server/tests/test_server_protocol.py), [configuration and deployment guidance](../../../ai-services/rag_server/README.md); exact pushed-SHA CI results recorded in the fix PR |
 
+## Integration security follow-up — 20 October 2026
+
+S00f removes the inventory email-based administrator override introduced on main
+in `cb1908f`. On source `d046a4f`, customer sessions using `admin@asd.com` and its
+case/whitespace variant reproduced HTTP 200 instead of 403 (two failed, two
+passed baseline cases). The repair restores the authentication service's role
+as the authority. All six role/email cases pass, with rejected customers making
+no database call and genuine administrators retaining access. Inventory's 46
+checks and all 319 shared/cloud checks pass locally. Support retains 206 passes
+and 10 opt-in skips; changed-source Ruff and all three security hooks pass.
+The [regression test](../../../student-Ryan_Nolan/tests/test_authentication.py)
+and fix are retained in this checkpoint. Its commit and exact-SHA Actions results
+are recorded in the fix PR; no separate bookkeeping commit is required.
+
 ## Current verification and remaining work
 
 - Main `137c298`: all five student workflows and all ten named endpoint cases pass
