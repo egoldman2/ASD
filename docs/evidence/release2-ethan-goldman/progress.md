@@ -63,6 +63,14 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
 
 ## Current verification and remaining work
 
+- S01b: [S04b cloud PR CI](https://github.com/egoldman2/ASD/actions/runs/39412209238)
+  exposed a random workflow UUID containing `0412`, incorrectly matched as phone
+  leakage. A deterministic colliding-ID fixture reproduces it. API/review/UI
+  checks now distinguish metadata from customer content, retaining fragment
+  checks on model input/review reasons and full/normalized phone checks on all
+  output. The UI also proves the redaction marker is rendered. Support: 206
+  passed, 10 opt-in skips; route suite: 19 passed. No production code changed.
+
 - S04b, 20 October: `asd-release2-github` is AVAILABLE. The isolated CodeBuild
   source probe downloads and verifies main `d4660ff`; native build
   `asd-release2-source-check-source:a25c9bf0-e7ac-42c1-8550-bf23b22332d2`

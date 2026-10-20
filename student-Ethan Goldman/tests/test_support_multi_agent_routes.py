@@ -2,6 +2,7 @@
 
 from hashlib import sha256
 from importlib import import_module
+from itertools import count
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -49,6 +50,7 @@ def multi_agent_host(tmp_path, monkeypatch):
             **common(workflow),
         )
 
+    workflow_ids = count(1)
     coordinator = WorkflowCoordinator(
         SimpleNamespace(plan=plan),
         SimpleNamespace(
@@ -67,6 +69,7 @@ def multi_agent_host(tmp_path, monkeypatch):
             )
         ),
         store,
+        id_factory=lambda: f"00000412-0000-4000-8000-{next(workflow_ids):012x}",
     )
     app = create_app(coordinator=coordinator)
 
@@ -128,13 +131,17 @@ def test_create_redacts_bounded_snapshot_and_leaves_tickets_unchanged(
     for private in (
         "Jane Hidden",
         "jane.private",
-        "0412",
+        "0412 345 678",
+        "0412345678",
         "customer_user_id",
         "author_name",
         "customer_email_snapshot",
         admin.cookies.get("ethan_session"),
     ):
         assert private not in json.dumps(payload) + response.text
+    # Phone fragments belong to customer content, not opaque IDs or timestamps.
+    assert "0412" not in payload["user_request"] + json.dumps(data)
+    assert result["workflow_id"].startswith("00000412-")
     assert "do not invent refund promises" in payload["user_request"]
     workflow_id = result["workflow_id"]
     assert (
@@ -515,8 +522,10 @@ def test_review_reason_is_redacted_before_history(support_stack, multi_agent_hos
     )
     assert response.status_code == 200
     history = multi_agent_host.store.history_path.read_text()
-    for private in ("Jane Hidden", "jane.private", "0412"):
+    for private in ("Jane Hidden", "jane.private", "0412 345 678", "0412345678"):
         assert private not in response.text + history
+    assert "0412" not in response.json()["human_review"]["reason"]
+    assert "0412" not in multi_agent_host.store.get_workflow(created["workflow_id"])["human_review"]["reason"]
 
 
 def test_review_outage_leaves_workflow_pending(
