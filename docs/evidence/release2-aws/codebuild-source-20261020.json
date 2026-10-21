@@ -1,0 +1,107 @@
+{
+  "stage": "S04b",
+  "captured_at": "2026-10-20T10:57:29.446000+00:00",
+  "scope": "CodeConnections source authentication only; no Actions deployment or release acceptance",
+  "region": "ap-southeast-2",
+  "tested_source_sha": "d4660ff94152ccc3d44567908466824424118c08",
+  "connection": {
+    "name": "asd-release2-github",
+    "status": "AVAILABLE",
+    "provider": "GitHub"
+  },
+  "stack": {
+    "name": "asd-release2-source-check",
+    "status": "CREATE_COMPLETE",
+    "changes": [
+      "Add AWS::IAM::Role SourceRole",
+      "Add AWS::CodeBuild::Project SourceProject"
+    ]
+  },
+  "build": {
+    "id": "asd-release2-source-check-source:a25c9bf0-e7ac-42c1-8550-bf23b22332d2",
+    "source_version": "main",
+    "resolved_source_version": "d4660ff94152ccc3d44567908466824424118c08",
+    "status": "SUCCEEDED",
+    "complete": true,
+    "phases": [
+      {
+        "phaseType": "DOWNLOAD_SOURCE",
+        "phaseStatus": "SUCCEEDED",
+        "startTime": "2026-10-20T10:57:22.065000+00:00",
+        "endTime": "2026-10-20T10:57:26.205000+00:00",
+        "durationInSeconds": 4,
+        "contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "phaseType": "BUILD",
+        "phaseStatus": "SUCCEEDED",
+        "startTime": "2026-10-20T10:57:26.370000+00:00",
+        "endTime": "2026-10-20T10:57:29.065000+00:00",
+        "durationInSeconds": 2,
+        "contexts": [
+          {
+            "statusCode": "",
+            "message": ""
+          }
+        ]
+      },
+      {
+        "phaseType": "COMPLETED",
+        "startTime": "2026-10-20T10:57:29.446000+00:00"
+      }
+    ]
+  },
+  "permissions": {
+    "service_principal": "codebuild.amazonaws.com",
+    "source_arn_restricted": true,
+    "source_account_restricted": true,
+    "actions": [
+      "codeconnections:GetConnection",
+      "codeconnections:GetConnectionToken"
+    ],
+    "resource": "one connection ARN",
+    "deployment_access": false,
+    "webhook": false,
+    "privileged_mode": false,
+    "logs": "disabled for this fixed public-source identity probe; native phase status retained"
+  },
+  "checks": {
+    "pytest_shared_cloud": {
+      "passed": 324
+    },
+    "pytest_source_cases": {
+      "passed": 5
+    },
+    "cfn_lint": {
+      "version": "1.57.2",
+      "errors": 0,
+      "warnings": 0
+    },
+    "cfn_guard": {
+      "version": "3.2.1",
+      "passed_rules": [
+        "CODEBUILD_ENCRYPTION_KEY_RULE",
+        "CODEBUILD_PROJECT_ENVVAR_AWSCRED_CHECK",
+        "CODEBUILD_PROJECT_SOURCE_REPO_URL_CHECK"
+      ]
+    },
+    "iam_access_analyzer": {
+      "findings": []
+    },
+    "cloudformation_service_validation": {
+      "change_set": "source-connection-validation-20261020",
+      "validation_errors": 0
+    }
+  },
+  "plan": {
+    "type": "FREE",
+    "status": "ACTIVE",
+    "capability_change": false
+  },
+  "next": "Implement a main-push deployment build with Actions orchestration; do not grant release permissions to a public queued-job runner."
+}

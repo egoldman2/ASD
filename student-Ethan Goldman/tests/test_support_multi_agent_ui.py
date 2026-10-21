@@ -53,13 +53,14 @@ def test_ticket_panel_loads_history_and_displays_escaped_outputs(support_stack, 
 def test_panel_shows_truncation_without_private_ticket_data(support_stack, multi_agent_host):
     ticket_id = seed_ticket(support_stack, messages=25)
     response = support_stack.admin().post(url(support_stack, ticket_id=ticket_id),
-                                         data={"question": "Fixture: review recorded messages."},
+                                         data={"question": "Fixture: review recorded messages; contact phone 0412 345 678."},
                                          headers=support_stack.htmx_headers, timeout=10)
     assert response.status_code == 201
     assert "20 of 26 messages included" in response.text
     assert "Conversation truncated to the latest 20 messages" in response.text
-    for private in ("Jane Hidden", "jane.private", "0412"):
+    for private in ("Jane Hidden", "jane.private", "0412 345 678", "0412345678"):
         assert private not in response.text
+    assert "[phone removed]" in response.text
 
 
 @pytest.mark.parametrize("decision,status", [

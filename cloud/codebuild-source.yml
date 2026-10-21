@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Validate the GitHub App source connection in an isolated build without deployment permissions.
+Metadata:
+  AWSToolsMetrics:
+    AWSAgentToolkit: aws-cloudformation@3
+Parameters:
+  ConnectionArn:
+    Type: String
+    AllowedPattern: 'arn:aws:codeconnections:ap-southeast-2:[0-9]{12}:connection/[a-f0-9-]{36}'
+  ExpectedMainSha:
+    Type: String
+    AllowedPattern: '[a-f0-9]{40}'
+Resources:
+  SourceRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: test the source connection before granting any release access
+        must: [only the named build project may assume this role, no deployment or secret-reading permissions]
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: codebuild.amazonaws.com}
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals: {aws:SourceAccount: !Ref 'AWS::AccountId'}
+              ArnEquals:
+                aws:SourceArn: !Sub 'arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${AWS::StackName}-source'
+      Policies:
+        - PolicyName: ReadSourceConnection
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [codeconnections:GetConnection, codeconnections:GetConnectionToken]
+                Resource: !Ref ConnectionArn
+  SourceProject:
+    Type: AWS::CodeBuild::Project
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: isolate real source authentication from production deployment
+        must: [fixed inline probe only, no webhook or public pull-request runner, no privileged container]
+    Properties:
+      Name: !Sub '${AWS::StackName}-source'
+      ServiceRole: !GetAtt SourceRole.Arn
+      Artifacts: {Type: NO_ARTIFACTS}
+      EncryptionKey: alias/aws/s3
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+        PrivilegedMode: false
+        EnvironmentVariables:
+          - {Name: EXPECTED_MAIN_SHA, Type: PLAINTEXT, Value: !Ref ExpectedMainSha}
+      Source:
+        Type: GITHUB
+        Location: https://github.com/egoldman2/ASD
+        GitCloneDepth: 1
+        Auth: {Type: CODECONNECTIONS, Resource: !Ref ConnectionArn}
+        BuildSpec: |
+          version: 0.2
+          phases:
+            build:
+              commands:
+                - |
+                  python3 - <<'PY'
+                  import os
+                  import subprocess
+                  expected = os.environ['EXPECTED_MAIN_SHA']
+                  head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+                  if os.environ['CODEBUILD_SOURCE_VERSION'] != 'main' or head != expected or os.environ['CODEBUILD_RESOLVED_SOURCE_VERSION'] != expected:
+                      raise SystemExit('Source is not the expected main commit.')
+                  print('Verified main source:', head)
+                  PY
+      SourceVersion: main
+      TimeoutInMinutes: 5
+      QueuedTimeoutInMinutes: 5
+      ConcurrentBuildLimit: 1
+      LogsConfig:
+        CloudWatchLogs: {Status: DISABLED}
+        S3Logs: {Status: DISABLED}
+Outputs:
+  ProjectName:
+    Description: Source-only project; this does not grant or perform deployment.
+    Value: !Ref SourceProject

@@ -15,15 +15,12 @@ flowchart LR
     S3[Private release bucket] -->|SSM deployment| Gateway
 ```
 
-Current status (17 October 2026): shared gates, smoke/provenance and local model
-support are implemented on `ethan-goldman`. Actual local cloud-bundle checks pass;
-AWS access was renewed through Chrome with explicit human approval. S02a recovered
-the existing host after private encrypted snapshots; SSM, EC2/EBS checks and four
-consistent SQLite backup integrity checks pass. The project remains FREE in
-Sydney. The running app is still the old manual release with unverified full SHA.
-S03 stability, OIDC, main integration and final public Actions deployment remain
-incomplete. See [17 October recovery](../evidence/release2-aws/recovery-20261017/README.md). See the [current shared handoff](../reports/release2-shared-cloud-and-testing.md)
-and [ledger](../evidence/release2-ethan-goldman/progress.md).
+Current status (20 October 2026): the existing application is still the older
+manual release. The GitHub App connection is AVAILABLE and a source-only CodeBuild
+probe successfully downloaded main. The new main-push runner setup preserves the
+existing Actions tests, deployment script and native artifact uploads; a successful
+integrated main deployment and public acceptance checks are still required. The
+AWS plan is unchanged. See the [ledger](../evidence/release2-ethan-goldman/progress.md).
 
 ## Design choices
 
@@ -104,51 +101,53 @@ must pass; a PR run, stale SHA, missing/skipped job or old green attempt is
 insufficient. The gate alone receives Actions read permission and uploads its
 sanitized report even on failure. The source deployment remains main-only.
 
-The deployment job rechecks main before requesting AWS credentials. The CLI
-checks it before upload and immediately before SSM, and the locked host checks
-again before replacement and acceptance. Superseded candidates are skipped by
-the workflow/CLI; a host-side change fails acceptance and attempts previous-code
-restoration. The host reads this public repository reference without receiving
-the GitHub token; an unavailable API fails acceptance. This handles stale queued candidates without deploying artifacts
-from an untrusted workflow_run. A stable current main and real five-student
-Actions/SSM evidence remain required in S16. Configure a GitHub environment named `aws-cloud`, with `AWS_DEPLOY_ROLE_ARN` and optionally `AWS_STACK_NAME` environment variables. The AWS role trusts only this repository and that environment using OIDC; no long-lived access keys are needed.
+The deployment job runs on an ephemeral GitHub runner inside CodeBuild, using
+the build's temporary service credentials. `cloud/codebuild-deployment.yml`
+provisions a separate main-push project, its role and seven-day CloudWatch logs.
+It does not update the application stack, data volume or AWS plan. The existing
+GitHub environment `aws-cloud` retains its main-only branch restriction. No AWS
+access keys or role variables are needed in GitHub.
 
-On 17 October, GitHub's public subject configuration verified immutable prefix
-`repo:egoldman2@200193881/ASD@1326270780`. The template's `GitHubRepository` parameter
-therefore uses `egoldman2@200193881/ASD@1326270780`, not the old name-only value.
-`cloud/provision.sh` explicitly passes this parameter, defaults to profile
-`aws-toolkit`, and rejects malformed identities before AWS calls. For an intended
-repository change, first verify its current OIDC prefix and supply
-`GITHUB_OIDC_REPOSITORY_IDENTITY`; do not guess IDs or widen subject matching.
-The aws-cloud environment now has an actual main-only branch policy. The role
-variable endpoint returned 404. After explicit login renewal, AWS template
-service validation passed on 17 October; [native response](../evidence/release2-aws/recovery-20261017/template-validation.json). [Native S04a evidence](../evidence/release2-ethan-goldman/ci/s04a-verification.json)
-records zero local lint findings and four targeted Guard passes; it does not prove
-role assumption or deploy acceptance. GitHub documents [immutable OIDC subjects](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws).
+AWS's webhook accepts only `PUSH` events for `refs/heads/main`. The bootstrap
+waits for the seven suites, container build, gate and five student workflows;
+then it registers a digest-verified, pinned runner for that run's unique label.
+Before workflow steps, the administrator hook checks the native run, attempt,
+job and assigned runner against current main. Workflow labels or environment
+values alone cannot authorize deployment. The private App credential file is
+removed before steps; the ephemeral registration is removed on exit. Public
+queued-job webhooks and privileged containers are not enabled.
 
-The template's `EnableGitHubOidc` parameter defaults to `false`. This project's managed policies explicitly denied IAM OIDC provider creation, read and list operations during setup. Fresh provider listing on 17 October again fails with an explicit SCP deny; [sanitized result](../evidence/release2-aws/recovery-20261017/oidc-capability.json). The live stack still has OIDC disabled and its old name-only repository parameter; the corrected source trust has not been deployed. The actual GitHub role and a successful GitHub deployment run remain to be established; preparing a workflow does not verify CI/CD. If the project permits OIDC, enable the template option with `ENABLE_GITHUB_OIDC=true`; supply `GITHUB_OIDC_PROVIDER_ARN` when reusing an existing provider. Project capability changes belong in AWS Settings and require the project owner's decision. AWS documents these restrictions in its [project capability guide](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
+The job rechecks main again before publishing. The CLI checks before upload and
+SSM, and the locked host checks before replacement and acceptance. An unavailable
+reference check fails closed. Failed replacement attempts restore previous code;
+database changes are not rolled back. Native Actions artifacts and SSM captures
+remain the release evidence; a source probe is not deployment acceptance.
 
-### Concrete capability decision for the project owner
+After validating the template and reviewing its change set, the separate runner
+stack can be provisioned with the existing project identifiers:
 
-The published Free and Paid project policies both include `iam:*Provider*` in
-`DenyIAMRestrictedActions`. This matches the observed provider-list denial;
-the published policy is explanatory evidence, not a retrieved copy of this
-project's exact SCP. A paid upgrade alone therefore does not establish OIDC
-access. [AWS managed-policy reference](https://docs.aws.amazon.com/accounts/latest/reference/scps-and-rcps-for-projects.html).
+```bash
+aws cloudformation deploy --profile aws-toolkit --region ap-southeast-2 \
+  --stack-name asd-release2-actions --template-file cloud/codebuild-deployment.yml \
+  --capabilities CAPABILITY_IAM --parameter-overrides \
+  ConnectionArn=arn:aws:codeconnections:ap-southeast-2:059643396979:connection/9bcc3dff-5c8d-40da-b509-cf23f4cec214 \
+  ReleaseBucketArn=arn:aws:s3:::asd-release2-releasebucket-6xxwoto09slr \
+  InstanceId=i-03a217a6a7f61d3ae
+```
 
-AWS's documented route is **Projects → Actions → Explore advanced features** in
-AWS Settings. It requires a paid upgrade first. Activation is irreversible,
-transfers organization security/governance administration to the owner and
-removes spend limits permanently. The owner must decide separately whether to
-upgrade and whether to activate, review billing/spend first, and personally
-complete any root email/password setup. No such decision or action has occurred.
-[AWS activation requirements and consequences](https://docs.aws.amazon.com/accounts/latest/reference/activate-advanced-features.html).
+Main pushes start both Actions validation and the CodeBuild bootstrap. A manual
+Actions rerun does not create a push webhook; if its deploy job queues, start a
+fresh bootstrap for the current main:
 
-After an authorized capability change, recheck provider permissions and the
-restricted trust, review a CloudFormation change set for replacement/data risks,
-and verify a main-only Actions role assumption. Keep Sydney, private data,
-short-lived credentials and the existing identity source; do not replace OIDC
-with copied human credentials. PR #16 still needs separate merge authorization.
+```bash
+aws codebuild start-build --profile aws-toolkit --region ap-southeast-2 \
+  --project-name asd-release2-actions-deploy --source-version main
+```
+
+Keep the pinned runner current: GitHub stops assigning jobs to old disabled-update
+runners after its update window. Review hook isolation and update the release URL
+and digest together before upgrading. The bootstrap and job timeouts bound each
+build; cloud-host CPU stability remains a separate acceptance requirement.
 
 ## Validation and limitations
 
@@ -160,7 +159,7 @@ Two private encrypted pre-recovery snapshots and consistent SQLite/session backu
 
 ## Group decisions still needed
 
-Decide who owns the AWS project and invites team members; whether to keep this shared environment running; the acceptable credit budget; how demo credentials are shared privately; who can approve deployments; whether the current availability, logging and backup limits are sufficient; and how OIDC capability will be enabled. The support Multi-Agent implementation, explicit support endpoint CI and review modes are implemented. Genuine human review, remaining member evidence, final integrated deployment and report/showcase acceptance remain required.
+Decide who owns the AWS project and invites team members; whether to keep this shared environment running; the acceptable credit budget; how demo credentials are shared privately; who can approve deployments; whether the current availability, logging and backup limits are sufficient. The support Multi-Agent implementation, explicit support endpoint CI and review modes are implemented. Genuine human review, remaining member evidence, final integrated deployment and report/showcase acceptance remain required.
 
 Cloud matrix/build validation also runs on relevant PRs. Gate and deployment
 remain main-only; concurrency is separated by ref so PR validation cannot replace

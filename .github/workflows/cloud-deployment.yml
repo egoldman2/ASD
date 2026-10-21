@@ -108,11 +108,11 @@ jobs:
   deploy:
     needs: [validate, cloud-build, student_workflows]
     if: github.ref == 'refs/heads/main' && needs.student_workflows.outputs.current == 'true'
-    runs-on: ubuntu-latest
+    runs-on: asd-main-${{ github.run_id }}-${{ github.run_attempt }}
+    timeout-minutes: 60
     environment: aws-cloud
     permissions:
       contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@v4
       - name: Recheck that this candidate is still main
@@ -123,16 +123,9 @@ jobs:
       - name: Skip a superseded candidate
         if: steps.candidate.outputs.current == 'false'
         run: echo 'Candidate superseded; deploy the newer main release.'
-      - name: Require configured deployment role
+      - name: Verify temporary CodeBuild credentials
         if: steps.candidate.outputs.current == 'true'
-        env:
-          ROLE_ARN: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
-        run: test -n "$ROLE_ARN" || { echo 'Configure AWS_DEPLOY_ROLE_ARN in the aws-cloud environment.' >&2; exit 1; }
-      - uses: aws-actions/configure-aws-credentials@v4
-        if: steps.candidate.outputs.current == 'true'
-        with:
-          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
-          aws-region: ap-southeast-2
+        run: aws sts get-caller-identity --region ap-southeast-2
       - name: Publish and deploy validated release
         if: steps.candidate.outputs.current == 'true'
         env:

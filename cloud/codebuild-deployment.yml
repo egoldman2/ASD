@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Run one validated main GitHub Actions deployment in an ephemeral CodeBuild build using temporary service credentials.
+Metadata:
+  AWSToolsMetrics:
+    AWSAgentToolkit: aws-cloudformation@3
+Parameters:
+  ConnectionArn:
+    Type: String
+    AllowedPattern: 'arn:aws:codeconnections:ap-southeast-2:[0-9]{12}:connection/[a-f0-9-]{36}'
+  ApplicationStack:
+    Type: String
+    Default: asd-release2
+    AllowedPattern: '[A-Za-z][A-Za-z0-9-]{0,127}'
+  ReleaseBucketArn:
+    Type: String
+    AllowedPattern: 'arn:aws:s3:::[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]'
+  InstanceId:
+    Type: String
+    AllowedPattern: 'i-([a-f0-9]{8}|[a-f0-9]{17})'
+Resources:
+  RunnerLogs:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      LogGroupName: !Sub '/aws/codebuild/${AWS::StackName}'
+      RetentionInDays: 7
+  RunnerRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: temporary deployment credentials belong to a main-push build, never a public queued-job runner
+        must: [one CodeBuild project only, no secret-reading or IAM permissions, one application's release bucket and SSM host only]
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: codebuild.amazonaws.com}
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals: {aws:SourceAccount: !Ref 'AWS::AccountId'}
+              ArnEquals:
+                aws:SourceArn: !Sub 'arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${AWS::StackName}-deploy'
+      Policies:
+        - PolicyName: ValidatedMainDeployment
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [codeconnections:GetConnection, codeconnections:GetConnectionToken]
+                Resource: !Ref ConnectionArn
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}:*'
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub '${ReleaseBucketArn}/releases/*'
+              - Effect: Allow
+                Action: ssm:SendCommand
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:ssm:${AWS::Region}::document/AWS-RunShellScript'
+                  - !Sub 'arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${InstanceId}'
+              - Effect: Allow
+                Action: ssm:GetCommandInvocation
+                Resource: '*' # This API does not support resource-level permissions.
+              - Effect: Allow
+                Action: cloudformation:DescribeStacks
+                Resource: !Sub 'arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${ApplicationStack}/*'
+  RunnerProject:
+    Type: AWS::CodeBuild::Project
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: AWS filters main pushes before code executes; the reviewed pre-job hook verifies the exact native Actions assignment
+        must: [no WORKFLOW_JOB_QUEUED trigger, no PR source, verify pinned runner digest, refuse every other job before its steps]
+    Properties:
+      Name: !Sub '${AWS::StackName}-deploy'
+      ServiceRole: !GetAtt RunnerRole.Arn
+      Artifacts: {Type: NO_ARTIFACTS}
+      EncryptionKey: alias/aws/s3
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+        PrivilegedMode: false
+      Source:
+        Type: GITHUB
+        Location: https://github.com/egoldman2/ASD
+        GitCloneDepth: 1
+        Auth: {Type: CODECONNECTIONS, Resource: !Ref ConnectionArn}
+        BuildSpec: |
+          version: 0.2
+          env:
+            git-credential-helper: yes
+          phases:
+            install:
+              runtime-versions:
+                python: 3.11
+            build:
+              commands:
+                - python3 cloud/codebuild_runner.py run
+      SourceVersion: main
+      TimeoutInMinutes: 90
+      QueuedTimeoutInMinutes: 30
+      ConcurrentBuildLimit: 1
+      LogsConfig:
+        CloudWatchLogs: {Status: ENABLED, GroupName: !Ref RunnerLogs}
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - {Type: EVENT, Pattern: PUSH}
+            - {Type: HEAD_REF, Pattern: '^refs/heads/main$'}
+Outputs:
+  ProjectName:
+    Description: Main-push project that hosts one admitted Actions job.
+    Value: !Ref RunnerProject
+  RoleArn:
+    Description: Temporary service role; no AWS credentials are stored in GitHub.
+    Value: !GetAtt RunnerRole.Arn
