@@ -111,6 +111,8 @@ def create_app():
     app.register_blueprint(rag_routes.rag_blueprint)
     app.register_blueprint(multi_agent_routes.multi_agent_blueprint)
     app.register_blueprint(order_routes.order_blueprint)
+    howard_multi_agent = import_module("student-Howard.backend.routes.multi_agent")
+    app.register_blueprint(howard_multi_agent.multi_agent_blueprint)
 
 
 
