@@ -85,6 +85,9 @@ def cloud_capture(capture):
         "customer_loyalty:mcp": "/account-api/api/admin/mcp/loyalty-tier",
         "customer_loyalty:rag": "/account-api/api/admin/rag/answer",
         "product_catalogue:multi_agent": "/api/chufeng/multi-agent/workflows",
+        "customer_loyalty:multi_agent": "/account-api/api/admin/multi-agent/workflows",
+        "inventory:multi_agent": "/inventory-api/api/inventory/multi-agent/workflows",
+        "order_returns:multi_agent": "/api/order-returns/multi-agent/workflows",
     }
     checks.extend(
         {
@@ -304,6 +307,17 @@ def test_smoke_needs_public_crud_and_actual_disabled_behaviour(cloud_capture, ch
     else:
         smoke["cleanup_status"] = "failed"
     assert cloud_capture.cloud_collect()["status"] in {"fail", "incomplete"}
+
+
+@pytest.mark.parametrize("feature", ["customer_loyalty", "inventory", "order_returns"])
+def test_cloud_review_requires_each_integrated_multi_agent_disabled_check(cloud_capture, feature):
+    smoke = cloud_capture.reports["public_smoke"]
+    missing = feature + ":multi_agent"
+    smoke["checks"] = [row for row in smoke["checks"] if row.get("disabled_integration") != missing]
+    result = cloud_capture.cloud_collect()
+    assert result["status"] in {"fail", "incomplete"}
+    check = next(row for row in result["checks"] if row["name"] == "public_smoke")
+    assert missing in check["missing_disabled"]
 
 
 @pytest.mark.parametrize(

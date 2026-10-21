@@ -223,8 +223,12 @@ def test_smoke_records_crud_disabled_responses_and_cleans_only_created_records(g
     )
     assert "reply" in result["feature_crud"]["customer_support"]
     assert (
-        len([row for row in result["checks"] if row.get("disabled_integration")]) == 8
+        len([row for row in result["checks"] if row.get("disabled_integration")]) == 11
     )
+    assert {
+        "customer_support:multi_agent", "customer_loyalty:multi_agent",
+        "product_catalogue:multi_agent", "inventory:multi_agent", "order_returns:multi_agent",
+    } <= {row.get("disabled_integration") for row in result["checks"]}
     assert any(row["status"] == 404 for row in result["checks"])
     rendered = json.dumps(result)
     assert all(
@@ -252,6 +256,11 @@ def test_cleanup_attempts_every_record_and_preserves_the_original_failure(gatewa
         and len(report["cleanup_errors"]) == 2
     )
     assert report["status"] == report["cleanup_status"] == "failed"
+
+
+def test_loyalty_multi_agent_disabled_message_is_recognised(gateway):
+    gateway.state["disabled_body"] = {"error": "Multi-Agent mode is disabled."}
+    assert smoke.run("https://fixture.cloudfront.net", gateway.values)["status"] == "passed"
 
 
 @pytest.mark.parametrize("change", ["outage", "misleading_field", "mutates"])
