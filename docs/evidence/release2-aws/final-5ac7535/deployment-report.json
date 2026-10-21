@@ -1,0 +1,25 @@
+{
+  "release_id": "5ac753508cca8fdc10b57475c5be5aac3d70ab08-1",
+  "environment": "aws-cloud",
+  "region": "ap-southeast-2",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T05:28:44.066002+00:00",
+  "command": "python3 cloud/deploy.py",
+  "status": "Success",
+  "acceptance": "passed",
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "trigger": "github_actions",
+  "run_id": 39548953172,
+  "run_attempt": 1,
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "public_url": "https://dww8d9hiqp0ce.cloudfront.net",
+  "source_sha256": "cd1dc281aa1cf97941fdec76862c342a062c5fb5165503fc96bb7d6a62e39c46",
+  "command_id": "cbb1bf79-8912-4344-95ae-e5a35de8adf7",
+  "current_release": "/srv/asd/releases/5ac753508cca8fdc10b57475c5be5aac3d70ab08-1-cd1dc281aa1c",
+  "evidence_files": {
+    "deployment-result.json": {
+      "path": "deployment-evidence/deployment-result.json",
+      "sha256": "ad3e0dee503e95bf59762be62f2069f0d1a6b2c1c5dfdf92ce161ab591c0ccc8"
+    }
+  }
+}

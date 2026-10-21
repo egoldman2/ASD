@@ -1,0 +1,231 @@
+{
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "owner": "Ethan Goldman",
+  "reviews": [
+    {
+      "owner": "Ethan Goldman",
+      "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+      "started_at": "2026-10-21T05:21:11.009810+00:00",
+      "captured_at": "2026-10-21T05:22:16.323824+00:00",
+      "command": [
+        "/private/tmp/asd-release2-venv/bin/python",
+        "/private/tmp/asd-release2-run-final-review.py",
+        "multi-agent",
+        ".aws-deployment/release2-runtime-support-review",
+        "/private/tmp/asd-release2-final-5ac7535/reviews"
+      ],
+      "model": "qwen2.5:3b",
+      "environment": {
+        "AI_MODE_ENABLED": "true",
+        "MULTI_AGENT_ENABLED": "true",
+        "MULTI_AGENT_REVIEW_WORKFLOW_ID": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+        "MULTI_AGENT_SERVER_URL": "http://127.0.0.1:5004",
+        "OLLAMA_URL": "http://127.0.0.1:11434",
+        "OLLAMA_MODEL": "qwen2.5:3b",
+        "RELEASE_REVIEW_SOURCE_SHA": "5ac753508cca8fdc10b57475c5be5aac3d70ab08"
+      },
+      "review": "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261021-162216-322523.md",
+      "review_sha256": "f6b27843b4c5999c3eb3422e1783a50faedd4148bae68efd6b7cc21d17baf138",
+      "limitations": [
+        "Real local model review; model recommendations do not grant release approval.",
+        "Review entry-point completion does not imply passing deterministic checks or model grounding."
+      ],
+      "console": "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261021-162216-322523.console.txt",
+      "console_sha256": "d02ce7632ccf3951e9b26bccb09d1f17e6f6c0c3a4d06006752d5813a6b6da47",
+      "deterministic_validation": {
+        "verified_checks": {
+          "configured_files": 24,
+          "present_files": 24,
+          "missing_files": [],
+          "truncated_files": [
+            "ai-services/multi_agent_server/app.py",
+            "ai-services/multi_agent_server/config.py",
+            "ai-services/multi_agent_server/contracts.py",
+            "ai-services/multi_agent_server/coordinator.py",
+            "ai-services/multi_agent_server/evidence_context.py",
+            "ai-services/multi_agent_server/model_client.py",
+            "ai-services/multi_agent_server/workflow_store.py",
+            "ai-services/multi_agent_server/workflow_runner.py",
+            "ai-services/multi_agent_server/agents/planner_agent.py",
+            "ai-services/multi_agent_server/agents/worker_agent.py",
+            "ai-services/multi_agent_server/agents/reviewer_agent.py",
+            "ai-services/multi_agent_server/tests/test_coordinator.py",
+            "ai-services/multi_agent_server/tests/test_app.py",
+            "docker-compose.yml",
+            "shared/multi_agent_client.py",
+            "ai-services/multi_agent_validation.py",
+            "student-Ethan Goldman/support_backend/multi_agent.py",
+            "student-Ethan Goldman/support_backend/multi_agent_routes.py",
+            "student-Ethan Goldman/support_backend/ui.py",
+            "student-Ethan Goldman/support_backend/templates/support_ui/admin/multi_agent_panel.html",
+            "student-Ethan Goldman/support_backend/templates/support_ui/admin/multi_agent_result.html",
+            "student-Ethan Goldman/tests/test_support_multi_agent_routes.py",
+            "student-Ethan Goldman/tests/test_support_multi_agent_ui.py",
+            "student-Ethan Goldman/tests/test_agentic_multi_agent_validation.py"
+          ],
+          "source_checks": {
+            "coordinator_runs_three_agents_in_order": true,
+            "contracts_support_all_group_features": true,
+            "server_exposes_workflow_and_human_review_routes": true,
+            "store_requires_and_records_human_review": true,
+            "tests_cover_coordinator_and_http_contract": true,
+            "support_review_records_decision_without_ticket_actions": true,
+            "support_tests_cover_all_three_decisions": true
+          },
+          "required_agents": [
+            "planner",
+            "worker",
+            "reviewer"
+          ],
+          "required_features": [
+            "product_catalogue",
+            "inventory",
+            "customer_loyalty",
+            "order_returns",
+            "customer_support"
+          ],
+          "required_endpoints": [
+            "/health",
+            "/api/workflows",
+            "/api/workflows/latest",
+            "/api/workflows/<workflow_id>",
+            "/api/workflows/<workflow_id>/review"
+          ],
+          "all_required_agents_wired": true,
+          "agent_order_in_coordinator": true,
+          "all_group_features_supported": true,
+          "all_required_endpoints_registered": true,
+          "human_review_gate_present": true,
+          "multi_agent_server_not_in_compose": true
+        },
+        "runtime": {
+          "available": true,
+          "expected_feature": "customer_support",
+          "selected_workflow_id": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+          "latest_workflow_verified": true,
+          "three_agents_completed": true,
+          "human_review_recorded": true,
+          "human_review_approved": true,
+          "history_verified": true,
+          "audit_chain_verified": true,
+          "evidence_ids_verified": true,
+          "scope_verified": true,
+          "review_evidence_complete": true,
+          "logs": {
+            "history": {
+              "path": "docs/evidence/release2-ethan-goldman/local/human-review-20261018/workflow_history.jsonl",
+              "sha256": "f9b5c5b25de99d0c3e6f7f432e8f05250a103ceeab1542184caacac5db36d141",
+              "records": 2
+            },
+            "audit": {
+              "path": "docs/evidence/release2-ethan-goldman/local/human-review-20261018/coordination_audit.jsonl",
+              "sha256": "5d6a5c3f2176eb43297aca72cfabb96333341302ebc6588407fa5cd238c2a42e",
+              "records": 4
+            }
+          }
+        }
+      },
+      "runtime_configuration": {
+        "original_path": "student-Ethan Goldman/agentic/review_config.json",
+        "original_sha256": "10e6ab4a6bcd3e03249eeff21c0025a65ffc397edfab1c623000e514ce694a1f",
+        "runtime_sha256": "4f57d66d8cee622858b1a077dd77fb48196c99101fc8b00080c980c3433163da",
+        "only_override": {
+          "multi_agent_rules.log_files": {
+            "history": "docs/evidence/release2-ethan-goldman/local/human-review-20261018/workflow_history.jsonl",
+            "audit": "docs/evidence/release2-ethan-goldman/local/human-review-20261018/coordination_audit.jsonl"
+          }
+        },
+        "purpose": "Read immutable native logs identical to the running local store; tracked configuration unchanged."
+      },
+      "equivalent_cli": [
+        "/private/tmp/asd-release2-venv/bin/python",
+        "ai-services/agentic_loop.py",
+        "--feature",
+        ".aws-deployment/release2-runtime-support-review",
+        "--mode",
+        "multi-agent"
+      ],
+      "entry_point": "agentic_loop.run_agentic_loop(feature, mode), with native report saving enabled"
+    },
+    {
+      "owner": "Ethan Goldman",
+      "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+      "started_at": "2026-10-21T05:28:21.140131+00:00",
+      "captured_at": "2026-10-21T05:28:59.288801+00:00",
+      "command": [
+        "/private/tmp/asd-release2-venv/bin/python",
+        "/private/tmp/asd-release2-run-final-review.py",
+        "testing",
+        "shared",
+        "/private/tmp/asd-release2-final-5ac7535/reviews"
+      ],
+      "model": "qwen2.5:3b",
+      "environment": {
+        "AI_MODE_ENABLED": "true",
+        "OLLAMA_URL": "http://127.0.0.1:11434",
+        "OLLAMA_MODEL": "qwen2.5:3b",
+        "RELEASE_REVIEW_SOURCE_SHA": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+        "TESTING_REVIEW_MANIFEST": "docs/evidence/release2-testing-manifest.json"
+      },
+      "review": "docs/evidence/agentic/shared-asd-group-services-testing-20261021-162859-285651.md",
+      "review_sha256": "a8bb71945f9ae2279d10f92e6a1c3eaf53f4736681ae4b4930a1cd35fc7c60b6",
+      "limitations": [
+        "Real local model review; model recommendations do not grant release approval.",
+        "Review entry-point completion does not imply passing deterministic checks or model grounding."
+      ],
+      "console": "docs/evidence/agentic/shared-asd-group-services-testing-20261021-162859-285651.console.txt",
+      "console_sha256": "4139247f175770ab8a186be795a511436629abb796deedcd72d7f3e8bf249a8f",
+      "validation": "docs/evidence/agentic/shared-asd-group-services-testing-20261021-162859-285651.validation.json",
+      "validation_sha256": "299be5790730bd029de3274aefe1b1bbedd51626f0fd742ed1cb5a3594d89560",
+      "equivalent_cli": [
+        "/private/tmp/asd-release2-venv/bin/python",
+        "ai-services/agentic_loop.py",
+        "--feature",
+        "shared",
+        "--mode",
+        "testing"
+      ],
+      "entry_point": "agentic_loop.run_agentic_loop(feature, mode), with native report saving enabled"
+    },
+    {
+      "owner": "Ethan Goldman",
+      "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+      "started_at": "2026-10-21T05:35:39.633768+00:00",
+      "captured_at": "2026-10-21T05:36:25.542813+00:00",
+      "command": [
+        "/private/tmp/asd-release2-venv/bin/python",
+        "/private/tmp/asd-release2-run-final-review.py",
+        "cloud-deployment",
+        "shared",
+        "/private/tmp/asd-release2-final-5ac7535/reviews"
+      ],
+      "model": "qwen2.5:3b",
+      "environment": {
+        "AI_MODE_ENABLED": "true",
+        "OLLAMA_URL": "http://127.0.0.1:11434",
+        "OLLAMA_MODEL": "qwen2.5:3b",
+        "RELEASE_REVIEW_SOURCE_SHA": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+        "CLOUD_DEPLOYMENT_REVIEW_MANIFEST": "docs/evidence/release2-cloud-deployment-manifest.json"
+      },
+      "review": "docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261021-163625-540723.md",
+      "review_sha256": "9c48c12afd24f68b083511cc3361e8f82afb29d3ec9e519110bdc4a9f073f4a0",
+      "limitations": [
+        "Real local model review; model recommendations do not grant release approval.",
+        "Review entry-point completion does not imply passing deterministic checks or model grounding."
+      ],
+      "console": "docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261021-163625-540723.console.txt",
+      "console_sha256": "5aa4cdee241aeb9d1e915f00a1148524099e49dec73aaa5b5dd8152d79bcc762",
+      "validation": "docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261021-163625-540723.validation.json",
+      "validation_sha256": "322058d36dd68e5a3145affc702550a4d070e390aed7555fb71d8c0876bd827f",
+      "equivalent_cli": [
+        "/private/tmp/asd-release2-venv/bin/python",
+        "ai-services/agentic_loop.py",
+        "--feature",
+        "shared",
+        "--mode",
+        "cloud-deployment"
+      ],
+      "entry_point": "agentic_loop.run_agentic_loop(feature, mode), with native report saving enabled"
+    }
+  ]
+}

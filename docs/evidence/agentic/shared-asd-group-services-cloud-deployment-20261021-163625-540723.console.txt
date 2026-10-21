@@ -1,0 +1,88 @@
+
+[START] Feature=shared, mode=cloud-deployment
+
+[PLAN] Loaded Shared ASD Group Services prompt and prepared a read-only cloud-deployment review.
+
+[ACT] Collecting cloud-deployment evidence without modifying the application.
+
+[VALIDATE] Deterministic cloud-deployment status: incomplete; supplied captures checked offline.
+
+[OBSERVE] Collected 2093 characters of structured evidence.
+
+[PROMPTS] Using feature prompt: /Users/ethan/Desktop/ASD/assignment 1/ASD/shared/agentic/review_prompt.txt
+
+[LLM] Sending the initial evidence review to qwen2.5:3b.
+DETERMINISTIC STATUS: incomplete, technical_status: pass, checks: [ssm_acceptance (pass), actions (pass, run_url provided), workflow_gate (pass, 5 workflows deployed), public_smoke (pass, check_count and missing_crud/missing_disabled details present), runtime (pass, baseline_flags_disabled confirmed, current_release URL available)], issues: human_release_decision_missing
+
+OBSERVATIONS:
+- The release is marked as 'incomplete' due to the absence of a recorded human decision for approval.
+- All technical checks have passed except for one issue related to missing human input.
+
+FINDINGS:
+The shared ASD 2026 group services are in an incomplete state, specifically because there has been no documented human decision approving this release. The deployment was technically successful as all required checks (including the SSM acceptance and actions run) were completed successfully.
+- Technical status: Pass
+- Human approval missing
+
+RECOMMENDATIONS:
+1. Request a manual review to confirm the technical readiness of the shared ASD 2026 group services for production use based on the provided evidence.
+2. Ensure that all future releases are accompanied by an explicit human decision, even if it's in favor of proceeding with existing automated checks.
+
+PROPOSED ADAPTATION:
+No adaptation is needed as per current status; however, a manual review should be scheduled to validate and approve this release before moving forward into production.
+
+[REVIEW] Checking the first response against the same evidence.
+DECISION: ADAPT
+Deterministic evidence checks found:
+- The report does not preserve the exact deterministic status.
+- The report omits the offline capture authenticity limitation.
+
+Model reviewer feedback:
+DECISION: ADAPT
+
+REVIEW FEEDBACK:
+- The review is evidence-based as it relies solely on the provided EVIDENCE DIGEST and DETERMINISTIC GROUNDING RULES for observations and findings.
+- The scope of recommendations aligns with the specific issues identified (human release decision missing) without overstepping into broader areas like production capacity or unrecorded CRUD operations.
+- Recommendations are specific, focusing directly on requesting a manual review to confirm human approval before proceeding. 
+- Proposed adaptation is scoped appropriately by suggesting scheduling a manual review rather than making changes that could affect the current state of services.
+
+The first line and overall approach adhere closely to the guidelines provided for this feature review process.
+
+[ADAPT] Reviewer requested an evidence-based revision.
+**OBSEVATIONS**
+- The release is marked as 'incomplete' due to a missing human decision for approval.
+- All technical checks have passed, including SSM acceptance, actions run, workflow deployment count verification, public smoke test results (pass with details provided), runtime status confirmation of baseline flags and current release URL.
+
+**FINDINGS**
+The shared ASD 2026 group services are in an incomplete state due to the absence of a recorded human decision approving this release. The technical checks have all passed successfully but there is no documented human input for approval, as indicated by the 'human_release_decision_missing' issue.
+
+**RECOMMENDATIONS**
+1. Request a manual review from the team responsible for ASD 2026 group services to confirm that the shared infrastructure and applications are ready for production use based on the provided evidence.
+2. Ensure all future releases include an explicit human decision, even if it is in favor of proceeding with existing automated checks.
+
+**ADAPTATION APPLIED**
+No adaptation was needed as per current status; however, a manual review should be scheduled to validate and approve this release before moving forward into production.
+
+[ADAPT] Using the deterministic evidence summary to preserve validation results.
+DETERMINISTIC STATUS: incomplete
+OBSERVATIONS
+- Selected code SHA: 5ac753508cca8fdc10b57475c5be5aac3d70ab08; read-only captured evidence review.
+- Independently configured student workflow paths: 5/5.
+- Technical status: pass; recorded human decision: missing.
+- Captured check: {"name": "ssm_acceptance", "status": "pass"}
+- Captured check: {"name": "actions", "status": "pass", "run_url": "https://github.com/egoldman2/ASD/actions/runs/39548953172"}
+- Captured check: {"name": "workflow_gate", "status": "pass", "workflow_count": 5}
+- Captured check: {"name": "public_smoke", "status": "pass", "check_count": 64, "missing_crud": {"customer_support": [], "inventory": [], "order_returns": [], "product_catalogue": [], "customer_loyalty": []}, "missing_disabled": [], "cleanup_status": "passed"}
+- Captured check: {"name": "runtime", "status": "pass", "baseline_flags_disabled": true, "current_release": "/srv/asd/releases/5ac753508cca8fdc10b57475c5be5aac3d70ab08-1-cd1dc281aa1c"}
+- Captured check: {"name": "health", "status": "pass", "observation_seconds": 180, "capacity_limit": "Only the recorded observation window is covered."}
+- Recorded release: {"release_id": "5ac753508cca8fdc10b57475c5be5aac3d70ab08-1", "source_sha256": "cd1dc281aa1cf97941fdec76862c342a062c5fb5165503fc96bb7d6a62e39c46", "target_url": "https://dww8d9hiqp0ce.cloudfront.net", "command_id": "cbb1bf79-8912-4344-95ae-e5a35de8adf7", "environment": "aws-cloud", "region": "ap-southeast-2"}
+FINDINGS
+- Deterministic issues: human_release_decision_missing
+- Offline captures: remote authenticity is not independently verified.
+RECOMMENDATIONS
+- Verify current exact-SHA Actions runs and resolve failed/missing evidence before release.
+ADAPTATION APPLIED
+- Preserved deterministic results; this review generates no application change or human release approval.
+
+[VALIDATE] Saved deterministic status incomplete to /Users/ethan/Desktop/ASD/assignment 1/ASD/docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261021-163625-540723.validation.json
+
+[DONE] Agentic review completed. Evidence saved to /Users/ethan/Desktop/ASD/assignment 1/ASD/docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261021-163625-540723.md

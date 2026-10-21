@@ -1,0 +1,26 @@
+{
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "source_sha256": "cd1dc281aa1cf97941fdec76862c342a062c5fb5165503fc96bb7d6a62e39c46",
+  "release_id": "5ac753508cca8fdc10b57475c5be5aac3d70ab08-1",
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "public_url": "https://dww8d9hiqp0ce.cloudfront.net",
+  "region": "ap-southeast-2",
+  "acceptance": "passed",
+  "phase": "acceptance",
+  "captured_at": "2026-10-21T05:28:39.531680+00:00",
+  "current_release": "/srv/asd/releases/5ac753508cca8fdc10b57475c5be5aac3d70ab08-1-cd1dc281aa1c",
+  "artifact_refs": {
+    "local-smoke.json": {
+      "path": "/srv/asd/releases/5ac753508cca8fdc10b57475c5be5aac3d70ab08-1-cd1dc281aa1c/local-smoke.json",
+      "sha256": "e47c1aaf3b55e2d2c0eefbd224b483a9908c181e0bddbef648e98d04b994fd7e"
+    },
+    "public-smoke.json": {
+      "path": "/srv/asd/releases/5ac753508cca8fdc10b57475c5be5aac3d70ab08-1-cd1dc281aa1c/public-smoke.json",
+      "sha256": "ccd8c4d4c79f7021d8975124c5d6e266f1836f9149940bcb1a863dd9333c806f"
+    },
+    "runtime.json": {
+      "path": "/srv/asd/releases/5ac753508cca8fdc10b57475c5be5aac3d70ab08-1-cd1dc281aa1c/runtime.json",
+      "sha256": "89848f27584d0ac32a75bd0fc3a820123ebce18748de7dad2c869ce0deea28ca"
+    }
+  }
+}

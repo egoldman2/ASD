@@ -1,0 +1,38 @@
+{
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "release_id": "5ac753508cca8fdc10b57475c5be5aac3d70ab08-1",
+  "decision": "conditional_accept",
+  "identity": "Ethan Goldman",
+  "decided_at": "2026-10-21T05:44:08.137537+00:00",
+  "recorded_at": "2026-10-21T05:44:08.137537+00:00",
+  "timestamp_basis": "UTC record created on receipt of explicit user approval in this chat; not a browser-click timestamp.",
+  "reason": "Deployment, public CRUD, endpoint tests, persistence and measured demo stability pass. Keep the demo available for marking. Preserve the failed raw Testing Review.",
+  "conditions": "Source owners must review/resolve the 39 Ruff findings and 78 detector candidates before unconditional group sign-off. The four Chroma exceptions remain disclosed, cloud AI stays disabled, and report/video work is deferred.",
+  "approval_evidence": {
+    "channel": "Direct user response in this chat",
+    "response": "Approve this conditional decision",
+    "proposal": "Conditional accept with the reason and conditions recorded above; exact deployed code 5ac7535."
+  },
+  "reviews": [
+    {
+      "path": "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261021-162216-322523.md",
+      "sha256": "f6b27843b4c5999c3eb3422e1783a50faedd4148bae68efd6b7cc21d17baf138"
+    },
+    {
+      "path": "docs/evidence/agentic/shared-asd-group-services-testing-20261021-162859-285651.md",
+      "sha256": "a8bb71945f9ae2279d10f92e6a1c3eaf53f4736681ae4b4930a1cd35fc7c60b6"
+    },
+    {
+      "path": "docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261021-163625-540723.md",
+      "sha256": "9c48c12afd24f68b083511cc3361e8f82afb29d3ec9e519110bdc4a9f073f4a0"
+    }
+  ],
+  "resource_retention": {
+    "decision": "Keep the demo running for marking",
+    "source": "Explicit direct user response in this chat; no cleanup authorized."
+  },
+  "limitations": [
+    "This conditional decision does not turn failed security validation into a pass.",
+    "Ticket review decisions and PR merge permissions are separate."
+  ]
+}

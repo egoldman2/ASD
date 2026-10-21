@@ -1,16 +1,32 @@
 {
   "schema_version": 1,
   "kind": "cloud-deployment",
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
   "owner": "Ethan Goldman",
-  "source_sha": "137c2987eee913d531e724d8c665118135d76181",
-  "captured_at": "2026-10-18T11:17:41.183924+00:00",
-  "command": "Assemble actual completed main cloud run/job/step metadata and digest-verified native workflow gate; accepted deployment evidence is absent.",
+  "captured_at": "2026-10-21T05:35:39.317188+00:00",
+  "command": "Validate downloaded native Actions deploy/gate, SSM hash-verified accepted smoke/runtime and successful final-source health observation; human release decision is separate.",
+  "deployment": {
+    "path": "docs/evidence/release2-aws/final-5ac7535/deployment-report.json",
+    "sha256": "56ee7026d245fcf0893ee36ac16f3210b782137d442727463e87ca1fac3898ee"
+  },
   "actions": {
-    "path": "docs/evidence/release2-aws/main-137c298/actions.json",
-    "sha256": "f8533b38ff4f211b6801545faeab89726dfea3e4ddadbc2944e2269fa328c253"
+    "path": "docs/evidence/release2-aws/final-5ac7535/actions.json",
+    "sha256": "7c6f21d155d3de0e2f03a4b595bcf996251032fe57eef52763e93df805b28ad4"
   },
   "workflow_gate": {
-    "path": "docs/evidence/release2-aws/main-137c298/workflow-gate.json",
-    "sha256": "b2ad4c483b041e162e421d720814359b9a139397a46f56e417b18e3d7cbd882f"
+    "path": "docs/evidence/release2-aws/final-5ac7535/workflow-gate.json",
+    "sha256": "89068bc2a504d05f719f9831cf0fa67d43ae9c23f33140925c97012d2639a77e"
+  },
+  "public_smoke": {
+    "path": "docs/evidence/release2-aws/final-5ac7535/public-smoke.json",
+    "sha256": "ccd8c4d4c79f7021d8975124c5d6e266f1836f9149940bcb1a863dd9333c806f"
+  },
+  "runtime": {
+    "path": "docs/evidence/release2-aws/final-5ac7535/runtime.json",
+    "sha256": "89848f27584d0ac32a75bd0fc3a820123ebce18748de7dad2c869ce0deea28ca"
+  },
+  "health": {
+    "path": "docs/evidence/release2-aws/final-5ac7535/health.json",
+    "sha256": "96056f119a87998d37c43e3dc8617c8323463b23bfbc1135c0f32a7d4c4d20fb"
   }
 }

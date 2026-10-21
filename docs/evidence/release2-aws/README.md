@@ -1,5 +1,13 @@
 # AWS port evidence
 
+Current release, 21 October 2026: main `5ac7535` passes automatic native Actions
+deployment, public CRUD/disabled-AI checks, redeployment persistence and the Chrome
+redirect repair check. [Final native evidence](final-5ac7535/verification.json)
+and [30-minute infrastructure observation](stability-20261021/verification.json)
+supersede the historical availability/deployment status below. Ethan requested
+keeping the demo running for marking. Final security/release conditions remain
+in the [ledger](../release2-ethan-goldman/progress.md).
+
 Validation date: 9 October 2026. Scope: cloud baseline and compatibility changes, not the whole Release 2 submission.
 
 | Check | Result |

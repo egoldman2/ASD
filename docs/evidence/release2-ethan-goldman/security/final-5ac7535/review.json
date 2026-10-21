@@ -1,0 +1,27 @@
+{
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T05:40:34.038229+00:00",
+  "review_method": "Inspected every detector candidate source line and compared the Ruff findings with feature ownership; raw reports unchanged.",
+  "ruff": {
+    "findings": 39,
+    "support_findings": 0,
+    "status": "Retained for source-owner review; no blanket false-positive classification."
+  },
+  "detect_secrets": {
+    "candidates": 78,
+    "baseline_metadata_hash_rows": 48,
+    "cloudformation_generation_reference_rows": 3,
+    "test_fixture_negative_url_rows": 27,
+    "result": "Inspected static test/dummy values and generated-secret references; no deployed credential values observed. No new baseline or exclusion."
+  },
+  "dependencies": {
+    "raw_entries": 5,
+    "unique_chroma_advisories": 4,
+    "existing_exceptions_retained": true,
+    "cloud_package_excludes_chroma": true
+  },
+  "actual_repair_hooks": "b640997-commit-hooks.txt",
+  "testing_review_status": "fail",
+  "limitation": "Context review does not overwrite raw findings or the deterministic Testing Review result."
+}

@@ -1,0 +1,82 @@
+{
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "captured_at": "2026-10-21T05:27:05.713630+00:00",
+  "owner": "Ethan Goldman",
+  "command": "Download native Actions ZIPs, verify SHA-256 and two endpoint cases/context/versions; capture completed main push runs and every job.",
+  "students": [
+    {
+      "feature": "order_returns",
+      "run_id": 39548953084,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39548953084",
+      "archive_id": 12322134733,
+      "archive_sha256": "0d8a825f0205204e3b28dfd92c0cac425d561e3d9371db9b8ffdd01d37510ff3",
+      "archive_url": "https://github.com/egoldman2/ASD/actions/runs/39548953084/artifacts/12322134733",
+      "files": {
+        "endpoint-functions.xml": "cd7e65e741c82eb3e061a318625023349b54ce12ff4eff0b747ab81dcfa6c4aa",
+        "python-versions.txt": "f695b44c996c06b99a36275a54cb46c96dfe22a75efbd691b45972ef82024b6c",
+        "test-context.json": "86376c3e935ef2f3fc03e618122a00361bc2e3538df09ebbd5e5948d97d5d79c",
+        "actions.json": "eb43025b68850302ddd61b8ea3e7d65197604f7f9d30be3f44b838a950d63c38"
+      }
+    },
+    {
+      "feature": "product_catalogue",
+      "run_id": 39548953058,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39548953058",
+      "archive_id": 12322967710,
+      "archive_sha256": "9a2e20bbeba995af51a8be2f2125749ed2eae77830f16bc9f9133d88d8cda41c",
+      "archive_url": "https://github.com/egoldman2/ASD/actions/runs/39548953058/artifacts/12322967710",
+      "files": {
+        "endpoint-functions.xml": "b69015ef1a296f7e991907c4545ab21b54699aaec6c7e259f4e64aa1ca570310",
+        "test-context.json": "cb4add9db0e6b16fd0fec2b0fd51db70bd2e41307c1faa6ed2b4e973acfeff12",
+        "actions.json": "8004061975ec24145dc178d0923bfbd1ae3c309f4ff3ccde2ab2b73c3e9484d4",
+        "../python-versions.txt": "f0adea71b38d1dae1676e636949f315daeda5751d55f8add2fbd93de096417d6"
+      },
+      "python_versions_capture": "../python-versions.txt"
+    },
+    {
+      "feature": "inventory",
+      "run_id": 39548953055,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39548953055",
+      "archive_id": 12322449603,
+      "archive_sha256": "95a4a3d87f81618f17f5c93aa7110523a5865465bc1476f827941e12d91cbe32",
+      "archive_url": "https://github.com/egoldman2/ASD/actions/runs/39548953055/artifacts/12322449603",
+      "files": {
+        "endpoint-functions.xml": "85670a1284e9522f07a430783f9644139e8cdccfe6873ba446726130ca43efb3",
+        "test-context.json": "4dbdfd7c2f7cd487dbbb3548b0bcc4b89d34458589811f63e78c96bf37a10cde",
+        "actions.json": "d90c92bcef32f4010dacec1bd2fcdac2b1e00e6dfc0f8cb9bd20da9ab037da37",
+        "../python-versions.txt": "f0adea71b38d1dae1676e636949f315daeda5751d55f8add2fbd93de096417d6"
+      },
+      "python_versions_capture": "../python-versions.txt"
+    },
+    {
+      "feature": "customer_loyalty",
+      "run_id": 39548953053,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39548953053",
+      "archive_id": 12323012554,
+      "archive_sha256": "dbb9c9b7afa4a72d7c15432c2bf33e0cd0ae6eb105a75f4f0b1e082a480d9af5",
+      "archive_url": "https://github.com/egoldman2/ASD/actions/runs/39548953053/artifacts/12323012554",
+      "files": {
+        "endpoint-functions.xml": "825e43ed7bbe5395b06e6fa8072927af54f911cd5ebb00a158fa93d4b166cb03",
+        "test-context.json": "e17a19fd9d25f1b7663b8ddb16bc6c657cbabc1cc8621211f0f56aa1f23b274d",
+        "actions.json": "eb64a35fac8d230f98a1f73e1f3ef80ae791798332aab7a9efe4f296b01c02db",
+        "../python-versions.txt": "f0adea71b38d1dae1676e636949f315daeda5751d55f8add2fbd93de096417d6"
+      },
+      "python_versions_capture": "../python-versions.txt"
+    },
+    {
+      "feature": "customer_support",
+      "run_id": 39548953095,
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39548953095",
+      "archive_id": 12323180311,
+      "archive_sha256": "80f919f03bf618f99f5340963d4d42b466942144121f80ccc4dc2f276f424768",
+      "archive_url": "https://github.com/egoldman2/ASD/actions/runs/39548953095/artifacts/12323180311",
+      "files": {
+        "endpoint-functions.xml": "60ef82036b65e88e083b1166bb02ee16aefe183d8d96cf131e7fe43b360449fe",
+        "test-context.json": "7ee602dbf9cb2aa47eab9cb6aed373c2dc2f7b815aa833b4c2048bf1b542ce0b",
+        "actions.json": "acd8d66045d46fda3e776bf67cf94844e43877e8828619a8b1177857c985a0e3",
+        "../python-versions.txt": "f0adea71b38d1dae1676e636949f315daeda5751d55f8add2fbd93de096417d6"
+      },
+      "python_versions_capture": "../python-versions.txt"
+    }
+  ]
+}

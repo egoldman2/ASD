@@ -1,0 +1,25 @@
+{
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "release_id": "5ac753508cca8fdc10b57475c5be5aac3d70ab08-1",
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "owner": "Ethan Goldman",
+  "command": "SSM: existing cloud.smoke.run on public origin every 120 seconds; Docker/proc/kernel observations",
+  "captured_at": "2026-10-21T05:34:46.693639+00:00",
+  "new_oom_events": 0,
+  "unexpected_restarts": 0,
+  "observation_seconds": 180,
+  "status": "stable",
+  "instance_status": "ok",
+  "system_status": "ok",
+  "observation_command_id": "fc6d0030-786c-4655-a1e2-7324fbd8ec80",
+  "ssm_status": "Success",
+  "ssm_response_code": 0,
+  "window_start": "2026-10-21T05:31:46.588546+00:00",
+  "public_checks": 128,
+  "raw_capture": "health-observation.json.gz",
+  "infrastructure_baseline": "../stability-20261021/verification.json",
+  "limitations": [
+    "Three-minute final redirect-only revision recheck; the separate 30-minute infrastructure baseline belongs to 2e72743.",
+    "One sequential synthetic client does not prove production capacity."
+  ]
+}

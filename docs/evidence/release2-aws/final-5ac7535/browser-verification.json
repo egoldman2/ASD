@@ -1,0 +1,38 @@
+{
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T05:34:27.167324+00:00",
+  "candidate_source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "browser": "Chrome",
+  "steps": [
+    {
+      "ticket": 2019,
+      "source_before_redeploy": "0e0321bc96cdfa97a5e3b6eefec517ed38a62f57",
+      "source_after_redeploy": "2e7274304a4d196d45a36e295b1be0c5792310e8",
+      "result": "Customer UI create; staff read, manual reply/update and reload persisted; explicit user-approved UI deletion succeeded but exposed /staff.html 404.",
+      "screenshots": [
+        "public-customer-create.png",
+        "public-staff-update.png"
+      ],
+      "baseline": "../public-delete-redirect-20261021/baseline.json"
+    },
+    {
+      "ticket": 2039,
+      "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+      "setup": "Existing customer login and customer-create HTTP API; not a second manual customer UI creation.",
+      "approval": "User explicitly replied: Delete test ticket #2039",
+      "action": "Staff UI Delete ticket and native Chrome OK confirmation.",
+      "result": "Returned automatically to /support/staff.html; queue rendered; search 2039 returned zero matches.",
+      "final_url": "https://dww8d9hiqp0ce.cloudfront.net/support/staff.html",
+      "screenshot": "public-redirect-pass.png"
+    }
+  ],
+  "images": {
+    "public-customer-create.png": "5300873a57b1813c5881f2ffa47b725682be94a8a018d3543c5510713438233a",
+    "public-staff-update.png": "8584b6ec5c9dcd6dbd2547fdf907794bd99bddc6d033698ac41d662d7e7dae20",
+    "public-redirect-pass.png": "f55471bd5613916d45d79a0c8be61174ddec54f09994ef28f1a2fb67ad14fea4"
+  },
+  "limitations": [
+    "Synthetic disposable test tickets; no real customer correspondence.",
+    "Screenshot absence is supplemented by a separate read-only SQLite deletion/persistence capture."
+  ]
+}

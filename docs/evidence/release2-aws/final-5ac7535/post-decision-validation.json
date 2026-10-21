@@ -1,0 +1,113 @@
+{
+  "kind": "cloud-deployment",
+  "read_only": true,
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "status": "incomplete",
+  "technical_status": "pass",
+  "checks": [
+    {
+      "name": "ssm_acceptance",
+      "status": "pass"
+    },
+    {
+      "name": "actions",
+      "status": "pass",
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39548953172"
+    },
+    {
+      "name": "workflow_gate",
+      "status": "pass",
+      "workflow_count": 5
+    },
+    {
+      "name": "public_smoke",
+      "status": "pass",
+      "check_count": 64,
+      "missing_crud": {
+        "customer_support": [],
+        "order_returns": [],
+        "inventory": [],
+        "product_catalogue": [],
+        "customer_loyalty": []
+      },
+      "missing_disabled": [],
+      "cleanup_status": "passed"
+    },
+    {
+      "name": "runtime",
+      "status": "pass",
+      "baseline_flags_disabled": true,
+      "current_release": "/srv/asd/releases/5ac753508cca8fdc10b57475c5be5aac3d70ab08-1-cd1dc281aa1c"
+    },
+    {
+      "name": "health",
+      "status": "pass",
+      "observation_seconds": 180,
+      "capacity_limit": "Only the recorded observation window is covered."
+    }
+  ],
+  "issues": [],
+  "human_release": {
+    "recorded": true,
+    "decision": "conditional_accept",
+    "identity": "Ethan Goldman",
+    "reason_present": true,
+    "conditions_pending": true
+  },
+  "remote_authenticity_verified": false,
+  "limitations": [
+    "Supplied captures are checked offline; remote authenticity is not independently verified.",
+    "A technical result or model recommendation cannot grant a human release approval.",
+    "Recorded core CRUD does not establish unrecorded returns/supplier operations or production capacity."
+  ],
+  "release": {
+    "release_id": "5ac753508cca8fdc10b57475c5be5aac3d70ab08-1",
+    "source_sha256": "cd1dc281aa1cf97941fdec76862c342a062c5fb5165503fc96bb7d6a62e39c46",
+    "target_url": "https://dww8d9hiqp0ce.cloudfront.net",
+    "command_id": "cbb1bf79-8912-4344-95ae-e5a35de8adf7",
+    "environment": "aws-cloud",
+    "region": "ap-southeast-2"
+  },
+  "inputs": [
+    {
+      "path": "docs/evidence/release2-aws/final-5ac7535/post-decision-cloud-manifest.json",
+      "sha256": "8739823de24aed8d74998b32b1f39dea1731a80203b380a8e3acd91390fd3b67",
+      "bytes": 1556
+    },
+    {
+      "path": "docs/evidence/release2-aws/final-5ac7535/deployment-report.json",
+      "sha256": "56ee7026d245fcf0893ee36ac16f3210b782137d442727463e87ca1fac3898ee",
+      "bytes": 980
+    },
+    {
+      "path": "docs/evidence/release2-aws/final-5ac7535/actions.json",
+      "sha256": "7c6f21d155d3de0e2f03a4b595bcf996251032fe57eef52763e93df805b28ad4",
+      "bytes": 2954
+    },
+    {
+      "path": "docs/evidence/release2-aws/final-5ac7535/workflow-gate.json",
+      "sha256": "89068bc2a504d05f719f9831cf0fa67d43ae9c23f33140925c97012d2639a77e",
+      "bytes": 5154
+    },
+    {
+      "path": "docs/evidence/release2-aws/final-5ac7535/public-smoke.json",
+      "sha256": "ccd8c4d4c79f7021d8975124c5d6e266f1836f9149940bcb1a863dd9333c806f",
+      "bytes": 14823
+    },
+    {
+      "path": "docs/evidence/release2-aws/final-5ac7535/runtime.json",
+      "sha256": "89848f27584d0ac32a75bd0fc3a820123ebce18748de7dad2c869ce0deea28ca",
+      "bytes": 1215
+    },
+    {
+      "path": "docs/evidence/release2-aws/final-5ac7535/health.json",
+      "sha256": "96056f119a87998d37c43e3dc8617c8323463b23bfbc1135c0f32a7d4c4d20fb",
+      "bytes": 1060
+    },
+    {
+      "path": "docs/evidence/release2-aws/final-5ac7535/human-release.json",
+      "sha256": "4663f861ee59c2ea10292b4e17902be73301053872860cafa4645f83df15acdc",
+      "bytes": 2061
+    }
+  ]
+}

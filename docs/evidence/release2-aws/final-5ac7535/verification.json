@@ -1,0 +1,91 @@
+{
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T05:36:21.385078+00:00",
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "pull_request": 25,
+  "approved_head_sha": "b6409975be675f21b6515689e25d6bb685b86f3b",
+  "merge_authorization": "Explicit human authorization, after the live 30-minute observation completed.",
+  "actions_url": "https://github.com/egoldman2/ASD/actions/runs/39548953172",
+  "actions_conclusion": "success",
+  "support_native_junit": {
+    "tests": 220,
+    "skipped": 10,
+    "failures": 0,
+    "errors": 0,
+    "passed": 210
+  },
+  "deployment_command_id": "cbb1bf79-8912-4344-95ae-e5a35de8adf7",
+  "deployment_ssm_status": "Success",
+  "deployment_response_code": 0,
+  "deployment_elapsed": "PT59.306S",
+  "automatic_builds": [
+    {
+      "id": "asd-release2-actions-deploy:d0278567-2a2f-49a3-86a1-9e16cd87d0b8",
+      "status": "SUCCEEDED",
+      "sourceVersion": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+      "resolvedSourceVersion": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+      "initiator": "asd-release2-actions-PushRole-dMrL6EhzqrnM/AWSCodeBuild-d883fca5-ef0b-44af-b1bd-4327fec51bc4",
+      "startTime": "2026-10-21T05:20:32.323000+00:00",
+      "endTime": "2026-10-21T05:28:53.883000+00:00"
+    },
+    {
+      "id": "asd-release2-actions-push:d883fca5-ef0b-44af-b1bd-4327fec51bc4",
+      "status": "SUCCEEDED",
+      "sourceVersion": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+      "resolvedSourceVersion": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+      "initiator": "GitHub-Hookshot/1e3a603",
+      "startTime": "2026-10-21T05:20:04.801000+00:00",
+      "endTime": "2026-10-21T05:20:33.014000+00:00"
+    }
+  ],
+  "archives": [
+    {
+      "id": 12323290997,
+      "name": "aws-deployment-evidence",
+      "digest": "sha256:409bbfe228b9b061c80797a4de9401694961ffa8e8bfa326b850bb7636b5a760",
+      "size_in_bytes": 1647
+    },
+    {
+      "id": 12322353757,
+      "name": "student-workflow-gate-5ac753508cca8fdc10b57475c5be5aac3d70ab08-1",
+      "digest": "sha256:430cb78fc491852ca0f5a19f38f161a064e953ac1689f92ef5ec5e01681e20be",
+      "size_in_bytes": 1002
+    }
+  ],
+  "hash_verified_native_capture_commands": {
+    "public_smoke_and_runtime": "6b55b821-bab6-49b3-959c-acca7c327ef7",
+    "local_smoke": "5960fb02-4cc0-4cbc-b443-298e538e2ada"
+  },
+  "persistence_and_deletion_command": "d0469de3-8733-4475-abed-c15f3fdc5d14",
+  "health_command": "fc6d0030-786c-4655-a1e2-7324fbd8ec80",
+  "limitations": [
+    "Cloud deployment and individual endpoint validations pass; broader raw security findings remain visible in Testing Review.",
+    "Human release decision is separate from PR merge and ticket review approvals.",
+    "Report/video work deferred by Ethan; no bonus inference deployment claimed."
+  ],
+  "files": {
+    "runtime.json": "89848f27584d0ac32a75bd0fc3a820123ebce18748de7dad2c869ce0deea28ca",
+    "deployment-result.json": "ad3e0dee503e95bf59762be62f2069f0d1a6b2c1c5dfdf92ce161ab591c0ccc8",
+    "deployment-report.json": "56ee7026d245fcf0893ee36ac16f3210b782137d442727463e87ca1fac3898ee",
+    "post-decision-cloud-manifest.json": "8739823de24aed8d74998b32b1f39dea1731a80203b380a8e3acd91390fd3b67",
+    "health.json": "96056f119a87998d37c43e3dc8617c8323463b23bfbc1135c0f32a7d4c4d20fb",
+    "public-staff-update.png": "8584b6ec5c9dcd6dbd2547fdf907794bd99bddc6d033698ac41d662d7e7dae20",
+    "browser-verification.json": "c13dfc5a3d0c8221c89e3bd90e446d0be4d1432bb18f1a0b11fc4b9923b12c34",
+    "local-smoke.json.gz": "6c00cf2018fbaedb36eb14ba8fdd4c1e1a9739e459d43ac78de31397a2d83c9c",
+    "human-release.json": "4663f861ee59c2ea10292b4e17902be73301053872860cafa4645f83df15acdc",
+    "deployment-candidate.json": "c4ccf743256535f4814be6b590b07e4ee72ece6c670dbf7423af872c99663c2f",
+    "workflow-gate.json": "89068bc2a504d05f719f9831cf0fa67d43ae9c23f33140925c97012d2639a77e",
+    "public-smoke.json": "ccd8c4d4c79f7021d8975124c5d6e266f1836f9149940bcb1a863dd9333c806f",
+    "public-redirect-pass.png": "f55471bd5613916d45d79a0c8be61174ddec54f09994ef28f1a2fb67ad14fea4",
+    "post-decision-validation.json": "82e8ce7c58e8d3d24645dfa74b0fb70bee4d8a3cd5f2b7ce14ead3d945d20597",
+    "health-observation.json.gz": "ccdf53a6c606408d91afdbd1947026191ba09215a8574799016f7fda9257e14f",
+    "actions.json": "7c6f21d155d3de0e2f03a4b595bcf996251032fe57eef52763e93df805b28ad4",
+    "public-customer-create.png": "5300873a57b1813c5881f2ffa47b725682be94a8a018d3543c5510713438233a",
+    "persistence.json": "235c3b83bba4a03f683253ce753e1c5b1a84760794280e405e2c5f6168de0588"
+  },
+  "local_smoke_capture": {
+    "path": "local-smoke.json.gz",
+    "uncompressed_sha256": "e47c1aaf3b55e2d2c0eefbd224b483a9908c181e0bddbef648e98d04b994fd7e",
+    "note": "Native accepted JSON bytes preserved; the public review input remains uncompressed."
+  }
+}
