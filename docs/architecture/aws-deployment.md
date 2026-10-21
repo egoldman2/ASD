@@ -101,15 +101,21 @@ must pass; a PR run, stale SHA, missing/skipped job or old green attempt is
 insufficient. The gate alone receives Actions read permission and uploads its
 sanitized report even on failure. The source deployment remains main-only.
 
-The deployment job runs on an ephemeral GitHub runner inside CodeBuild, using
-the build's temporary service credentials. `cloud/codebuild-deployment.yml`
-provisions a separate main-push project, its role and seven-day CloudWatch logs.
+The deployment job runs on an ephemeral GitHub runner inside an API-started
+CodeBuild build, using the build's temporary service credentials.
+`cloud/codebuild-deployment.yml` provisions a main-push relay, a dedicated runner
+project, scoped service roles and seven-day CloudWatch logs.
 It does not update the application stack, data volume or AWS plan. The existing
 GitHub environment `aws-cloud` retains its main-only branch restriction. No AWS
 access keys or role variables are needed in GitHub.
 
-AWS's webhook accepts only `PUSH` events for `refs/heads/main`. The bootstrap
-waits for the seven suites, container build, gate and five student workflows;
+AWS's webhook accepts only `PUSH` events for `refs/heads/main` on the relay.
+Its fixed inline code checks the checkout against remote main and starts only
+the dedicated runner project at that exact SHA, with no build overrides. It
+never executes checkout code and has no S3-release or SSM permissions. The runner
+project has no webhook. This separation is required because AWS [suppresses the
+Git credential helper on public webhook builds](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.git-credential-helper).
+The API-started bootstrap waits for seven suites, the container build, gate and five student workflows;
 then it registers a digest-verified, pinned runner for that run's unique label.
 Before workflow steps, the administrator hook checks the native run, attempt,
 job and assigned runner against current main. Workflow labels or environment
@@ -135,13 +141,13 @@ aws cloudformation deploy --profile aws-toolkit --region ap-southeast-2 \
   InstanceId=i-03a217a6a7f61d3ae
 ```
 
-Main pushes start both Actions validation and the CodeBuild bootstrap. A manual
+Main pushes start both Actions validation and the relay. A manual
 Actions rerun does not create a push webhook; if its deploy job queues, start a
 fresh bootstrap for the current main:
 
 ```bash
 aws codebuild start-build --profile aws-toolkit --region ap-southeast-2 \
-  --project-name asd-release2-actions-deploy --source-version main
+  --project-name asd-release2-actions-push --source-version main
 ```
 
 Keep the pinned runner current: GitHub stops assigning jobs to old disabled-update

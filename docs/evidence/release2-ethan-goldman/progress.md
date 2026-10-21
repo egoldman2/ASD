@@ -63,6 +63,17 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
 
 ## Current verification and remaining work
 
+- S04e: main `0e0321b` exposes AWS's documented public-webhook Git-helper
+  restriction before runner registration. The API-started retry admits the real
+  main Actions job and verifies its temporary AWS identity; application deployment
+  is still running. The automatic repair separates a fixed main-push relay from
+  the API-only runner project. Relay permission is limited to starting that one
+  project; all existing deployment gates remain. Shared/cloud: 373 passed;
+  12 relay/configuration cases, lint, three guard rules, IAM validation and
+  change-set preflight pass. [Native baseline and repair](../release2-aws/codebuild-relay-20261021.json).
+  Apply the webhook update after the live bootstrap completes; checkpoint SHA/CI
+  follow in its PR. Automatic main-trigger verification remains required in S16.
+
 - S04d: the separate `asd-release2-actions` stack is CREATE_COMPLETE with only
   a main-push CodeBuild project, scoped service role and seven-day logs. All three
   S04c `421c71a` [exact-head checks](https://github.com/egoldman2/ASD/actions/runs/39417240957)

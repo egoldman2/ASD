@@ -1,0 +1,46 @@
+{
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T04:30:17.478Z",
+  "source_sha": "0e0321bc96cdfa97a5e3b6eefec517ed38a62f57",
+  "baseline": {
+    "build_id": "asd-release2-actions-deploy:e7af66fa-00e8-4866-9eec-ac03e6218964",
+    "log_group": "/aws/codebuild/asd-release2-actions",
+    "log_stream": "e7af66fa-00e8-4866-9eec-ac03e6218964",
+    "errors": [
+      "Deployment runner failed: Source connection did not supply a temporary GitHub credential.\n",
+      "[Container] 2026/10/21 04:20:44.891339 Phase context status code: COMMAND_EXECUTION_ERROR Message: Error while executing command: python3 cloud/codebuild_runner.py run. Reason: exit status 1\n"
+    ]
+  },
+  "restriction": {
+    "documentation_url": "https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.git-credential-helper",
+    "finding": "CodeBuild suppresses the Git credential helper in public-repository webhook builds."
+  },
+  "repair": {
+    "template": "cloud/codebuild-deployment.yml",
+    "boundary": "A main-only, fixed inline relay can StartBuild only on the dedicated runner project; the runner project has no webhook.",
+    "local_tests": {
+      "shared_cloud_passed": 373,
+      "relay_cases_passed": 12
+    },
+    "cfn_lint": "PASS",
+    "guard_rules": "All three CodeBuild rules PASS",
+    "iam_validation": {
+      "findings": []
+    },
+    "change_set_id": "arn:aws:cloudformation:ap-southeast-2:059643396979:changeSet/public-main-webhook-relay-20261021/101c9b10-215c-482c-8ffd-6ed3e28ee32a",
+    "change_set_preflight": "CREATE_COMPLETE; no validation errors",
+    "application_stack_changed": false,
+    "execution": "Awaiting completion of the live main bootstrap before applying the runner webhook update."
+  },
+  "live_retry": {
+    "build_id": "asd-release2-actions-deploy:597348e4-ab90-4b47-adab-970ea1058b2e",
+    "start_method": "AWS API StartBuild at the exact current main SHA; not a manual application deployment",
+    "actions_run_id": 39543495322,
+    "actions_job_id": 119038397578,
+    "runner_id": 25,
+    "runner_name": "asd-deploy-597348e4-ab90-4b47-adab-970ea1058b2e",
+    "native_job_admission": "Set up runner succeeded",
+    "temporary_aws_identity_check": "success",
+    "application_acceptance": "pending"
+  }
+}
