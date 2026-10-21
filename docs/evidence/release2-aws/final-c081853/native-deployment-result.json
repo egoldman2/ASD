@@ -1,0 +1,29 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "source_sha256": "7b085fc0f189552d2407bbc31f932771c67e4afc92926853e6db894d17d1d785",
+  "release_id": "c081853fd559faf47c284861626d759cd41f2d8c-1",
+  "public_url": "https://dww8d9hiqp0ce.cloudfront.net",
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T21:45:37.672913+00:00",
+  "command": "SSM: cloud/install.sh; local and public cloud/smoke.py; cloud/provenance.py",
+  "acceptance": "passed",
+  "phase": "acceptance",
+  "current_release": "/srv/asd/releases/c081853fd559faf47c284861626d759cd41f2d8c-1-7b085fc0f189",
+  "artifact_refs": {
+    "local-smoke.json": {
+      "path": "/srv/asd/releases/c081853fd559faf47c284861626d759cd41f2d8c-1-7b085fc0f189/local-smoke.json",
+      "sha256": "a070d691e69fb580362ec357e37674fc7bb3496dbf7710afc9c7e1b3a91ac1af"
+    },
+    "public-smoke.json": {
+      "path": "/srv/asd/releases/c081853fd559faf47c284861626d759cd41f2d8c-1-7b085fc0f189/public-smoke.json",
+      "sha256": "0bad7ed8066049df257298dfc52fe34e20da2a67838a42a4ae139a12a580a82b"
+    },
+    "runtime.json": {
+      "path": "/srv/asd/releases/c081853fd559faf47c284861626d759cd41f2d8c-1-7b085fc0f189/runtime.json",
+      "sha256": "b444dc5873161dd5a6e2e25764ca297ee3f8c748db152080192052ad6d272731"
+    }
+  },
+  "rollback_limit": "Code rollback preserves database changes; it does not restore a database snapshot."
+}

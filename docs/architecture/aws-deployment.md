@@ -15,13 +15,18 @@ flowchart LR
     S3[Private release bucket] -->|SSM deployment| Gateway
 ```
 
-Current status (21 October 2026): main `5ac7535` is deployed through the automatic
+Current status (22 October 2026): main `c081853` is deployed through the automatic
 GitHub PUSH relay, temporary runner and native Actions job. All five student
-workflows, seven suites, image build, gate and SSM acceptance pass. The public
-Support deletion redirect is verified in Chrome. [Native deployment, persistence
-and browser evidence](../evidence/release2-aws/final-5ac7535/verification.json).
-The AWS plan is unchanged; Ethan requested keeping the demo running for marking.
-Security findings and the separate human release decision remain in the [ledger](../evidence/release2-ethan-goldman/progress.md).
+workflows, seven suites, image build, gate and SSM acceptance pass. Local and
+public smoke each pass 67 checks, including disabled Multi-Agent routes for all
+five features; 14 containers are healthy and persistence checks pass. Historical
+Chrome Support deletion proof remains applicable because Support/proxy bytes
+are unchanged. [Native verification and continuity](../evidence/release2-aws/final-c081853/verification.json).
+Ethan conditionally accepted this code with the raw failed Testing Review
+retained: 28 Ruff findings and 75 detector candidates require source-owner
+review/resolution before unconditional group sign-off; four Chroma exceptions
+remain disclosed. The AWS plan is unchanged; keep the demo running for marking.
+[Decision and verification ledger](../evidence/release2-ethan-goldman/progress.md).
 
 ## Design choices
 
@@ -41,7 +46,8 @@ time also includes probe execution. All HTTP validations remain enabled. This
 repair is deployed: all seven API/database health schedules were inspected.
 A 30-minute observation of `2e72743` passes 960 public checks with no new OOM
 events or unexpected restarts and at least 891,892 KiB available memory.
-The redirect-only `5ac7535` revision also passes a separate three-minute check.
+The latest `c081853` revision passes a separate three-minute observation: 134
+public checks, no new OOM/restarts and minimum 906,404 KiB available memory.
 These measurements do not uniquely establish the historical OOM cause.
 [Observation and native captures](../evidence/release2-aws/stability-20261021/verification.json).
 

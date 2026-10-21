@@ -1,0 +1,41 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "source_sha256": "7b085fc0f189552d2407bbc31f932771c67e4afc92926853e6db894d17d1d785",
+  "release_id": "c081853fd559faf47c284861626d759cd41f2d8c-1",
+  "public_url": "https://dww8d9hiqp0ce.cloudfront.net",
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T21:45:37.618172+00:00",
+  "command": "SSM: Docker inspect and host /proc/net/tcp{,6}",
+  "origin": "ssm-runtime",
+  "current_release": "/srv/asd/releases/c081853fd559faf47c284861626d759cd41f2d8c-1-7b085fc0f189",
+  "ai_flags": {
+    "AI_MODE_ENABLED": "false",
+    "MCP_ENABLED": "false",
+    "RAG_ENABLED": "false",
+    "MULTI_AGENT_ENABLED": "false"
+  },
+  "service_names": [
+    "customer-support",
+    "customer-support-backend",
+    "customer-support-database",
+    "ethan-backend",
+    "ethan-database",
+    "ethan-frontend",
+    "gateway",
+    "inventory-backend",
+    "inventory-frontend",
+    "order-returns-frontend",
+    "product-catalogue",
+    "product-database",
+    "shared-backend",
+    "shared-home"
+  ],
+  "listening_ports": [
+    22,
+    80,
+    38541
+  ],
+  "checked_running_container_count": 14
+}

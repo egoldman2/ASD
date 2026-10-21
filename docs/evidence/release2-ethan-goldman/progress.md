@@ -214,8 +214,43 @@ passed; repaired focused suite: 65 passed. Shared/cloud: 377 passed; Support:
 Tests are in `cloud/tests/test_smoke.py` and
 `shared/tests/test_cloud_report_validation.py`; this checkpoint's PR records its
 commit, hooks and exact-SHA Actions links without a follow-up bookkeeping commit.
-Live checks for the three added routes remain pending integration; the AWS
-connector currently returns “Unknown tool”. Current raw scans retain 28 Ruff
-findings and 75 detector candidates; prior human approval and raw reviews remain
-historical and unchanged. Source-owner security review remains required before
-unconditional group sign-off; report/video work stays deferred.
+Explicitly approved [PR #29](https://github.com/egoldman2/ASD/pull/29), authored as
+`32a97b0`, merged as `c081853`. All three authoring-SHA CI runs passed; all seven
+main/synchronized-branch runs passed. The main gate verifies all five owners.
+Live acceptance now covers all five Multi-Agent routes with all AI flags false.
+
+## Current release verification — 22 October 2026
+
+- S16e: exact main `c081853` automatically deploys through the existing push relay,
+  child runner and [Actions deployment](https://github.com/egoldman2/ASD/actions/runs/39680184997).
+  All ten deployment jobs succeed; SSM acceptance is Success/0. Native archives
+  retain their verified Actions digests. Both local and public smoke pass 67 checks;
+  all 14 containers are healthy. Four-database integrity, foreign keys, baseline
+  keys and pre-existing Support rows survive. The approved-deleted #2039 remains
+  absent. Its earlier Chrome deletion proof is carried forward only because
+  Support and proxy source bytes are unchanged; no fresh browser run is claimed.
+  The three-minute observation passes 134 public checks with no new OOM/restarts
+  and minimum available memory 906,404 KiB. One sequential demo client does not
+  establish production capacity. [Native verification](../release2-aws/final-c081853/verification.json).
+- All five main workflows and ten allocated endpoint cases pass:
+  [Catalogue](https://github.com/egoldman2/ASD/actions/runs/39680185023),
+  [Inventory](https://github.com/egoldman2/ASD/actions/runs/39680185076),
+  [Accounts/Loyalty](https://github.com/egoldman2/ASD/actions/runs/39680184988),
+  [Orders/Returns](https://github.com/egoldman2/ASD/actions/runs/39680185027),
+  [Support main](https://github.com/egoldman2/ASD/actions/runs/39680184983) and
+  [synchronized Support branch](https://github.com/egoldman2/ASD/actions/runs/39680214295).
+  [Native ZIPs, JUnit, contexts and hashes](ci/main-c081853/verification.json).
+- S17c: three real Qwen2.5:3b reviews use current source and actual captures;
+  [execution provenance](../agentic/release2-c081853-execution.json) includes
+  matching console and validation hashes. Support history/audit checks pass.
+  Shared Testing passes all five endpoint captures but retains the raw failed
+  security review: 28 Ruff findings, 75 detector candidates and four existing
+  Chroma exceptions. Model grounding/fallback limitations remain disclosed.
+  Cloud technical validation passes. Ethan explicitly approves
+  [Conditional accept for c081853](../release2-aws/final-c081853/human-release.json);
+  [post-decision validation](../release2-aws/final-c081853/post-decision-validation.json)
+  records the actual decision and pending source-owner security conditions.
+  Original pre-decision model inputs and earlier decisions remain unchanged.
+- Keep the Free-plan demo running for marking. Cloud AI remains disabled;
+  report/PDF/video and bonuses remain deferred. The final evidence-only commit
+  and exact-head CI are recorded in its PR metadata to avoid bookkeeping commits.

@@ -1,0 +1,106 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "captured_at": "2026-10-21T21:51:00.876249+00:00",
+  "deployment_command_id": "37f2e08e-122a-42d9-b6aa-c5b10b1715e5",
+  "deployment_status": "Success",
+  "deployment_response_code": 0,
+  "post_deploy_command_id": "744b26fc-b8b7-4912-bdc0-15c27d0b5f83",
+  "automation": [
+    {
+      "id": "asd-release2-actions-push:badcaa93-91c5-4772-b21c-0a5c07d95137",
+      "buildStatus": "SUCCEEDED",
+      "sourceVersion": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "resolvedSourceVersion": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "initiator": "GitHub-Hookshot/edb4508",
+      "startTime": "2026-10-22 08:36:39.920000+11:00",
+      "endTime": "2026-10-22 08:37:07.194000+11:00"
+    },
+    {
+      "id": "asd-release2-actions-deploy:699fa979-8204-4016-ad61-8f553a4a3447",
+      "buildStatus": "SUCCEEDED",
+      "sourceVersion": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "resolvedSourceVersion": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "initiator": "asd-release2-actions-PushRole-dMrL6EhzqrnM/AWSCodeBuild-badcaa93-91c5-4772-b21c-0a5c07d95137",
+      "startTime": "2026-10-22 08:37:06.497000+11:00",
+      "endTime": "2026-10-22 08:45:51.873000+11:00"
+    }
+  ],
+  "owner": "Ethan Goldman",
+  "scope": "Native exact-main deployment and read-only follow-up; human conditional acceptance is recorded separately.",
+  "actions_url": "https://github.com/egoldman2/ASD/actions/runs/39680184997",
+  "post_deploy_status": "Success",
+  "post_deploy_response_code": 0,
+  "health_command_id": "65c3cd05-1d7f-400b-9988-037972ff6ee2",
+  "health_command_status": "Success",
+  "health_command_response_code": 0,
+  "native_archives": [
+    {
+      "id": 12383353474,
+      "name": "student-workflow-gate-c081853fd559faf47c284861626d759cd41f2d8c-1",
+      "digest": "sha256:6d24e844aeadd25e18ee97d9b58010dd0910802328669cb32eb65ef4d4a8110a"
+    },
+    {
+      "id": 12383189049,
+      "name": "aws-deployment-evidence",
+      "digest": "sha256:d90a703d6156c38fc7004589658a42165b8c532c7ffda25d82d398ce70df3f9f"
+    }
+  ],
+  "endpoint_evidence": "docs/evidence/release2-ethan-goldman/ci/main-c081853/verification.json",
+  "main_run_ids": [
+    39680184983,
+    39680214295,
+    39680185023,
+    39680185076,
+    39680184988,
+    39680185027,
+    39680184997
+  ],
+  "results": {
+    "local_checks": 67,
+    "public_checks": 67,
+    "healthy_containers": 14,
+    "ai_flags_enabled": false,
+    "persistence": "All four database integrity/foreign-key checks and baseline key sets pass; pre-existing Support rows unchanged; approved-deleted #2039 remains absent.",
+    "health": {
+      "duration_seconds": 180.11226581399387,
+      "cycles": 2,
+      "public_checks": 134,
+      "new_oom_events": 0,
+      "unexpected_restarts": 0,
+      "minimum_available_memory_kib": 906404
+    },
+    "browser": "Historical approved #2039 deletion at 5ac7535; Support and proxy source unchanged at c081853. No new browser CRUD claim.",
+    "human_release": "conditional_accept; security conditions pending"
+  },
+  "compression": {
+    "local-smoke.json.gz": {
+      "uncompressed_sha256": "a070d691e69fb580362ec357e37674fc7bb3496dbf7710afc9c7e1b3a91ac1af",
+      "method": "Lossless gzip; original JSON bytes preserved."
+    },
+    "health-observation.json.gz": {
+      "uncompressed_sha256": "850a2af02f03dbe3ded8bd7e9d532be0d06de8d4e028bd35aede25a53e2090c6",
+      "method": "Lossless gzip; original JSON bytes preserved."
+    }
+  },
+  "files": {
+    "actions.json": "4a1a266bfcfc654a8689b0076a2f3d7231e1f5b6d6e2dc3aa39a350e5db7ce6b",
+    "cloud-manifest.json": "73801bbf669427497ba9a1edca017ceefaa3763c47f01fd5cd0728c1cd44f4a0",
+    "cloud-validation.json": "25fe5f1103ad47df8edd5b7fc6ab8b602e93be50fb9783f8ea697a8435e1d8cd",
+    "deployment-report.json": "661a378daa8dcb1dde77b3e4395d00c82b4eb590dc1f4f5c4bfa31e624aa51ed",
+    "deployment.zip": "d90a703d6156c38fc7004589658a42165b8c532c7ffda25d82d398ce70df3f9f",
+    "health-observation.json.gz": "c11f1a8df8ee89034d93a8637ba6b9b84f15c158d4fe46b3e3a96cad74d67700",
+    "health.json": "3d4cb4c0d9d85cd45389d3094da5aadebf7a8964ba6551e6ba2793c2c9157d86",
+    "human-release.json": "83c2b484a3b11feadb464c00bed7bb9759f9f5975ef4b2791618f81d71d748cd",
+    "local-smoke.json.gz": "9bb5733b1a1074016549983997165a2a9b9ddddbd6f449e9bac4693d6ab17076",
+    "native-archives.json": "7eed1b420b67904cabb5f1e68e4fbb29bb9961b548510ccf3c3e0d226f38095f",
+    "native-deployment-result.json": "f54731938f6f0bf5fcf0937742b930db5a5597e13c6529c8f088aecb46ce3e26",
+    "persistence.json": "9622dfd02a19be85a3c2e35335bd39dc2c5c26e8b2ddeb4aeb2a714c755fa5a3",
+    "post-decision-cloud-manifest.json": "2b1d4a3d5c526a35d376367e2dff0e99e2105603204b850bfb02a78c4071e897",
+    "post-decision-validation.json": "0f9fd396fff8ebed710783714cd7b030157d63025c1f9cab262cf6a5e502c0b8",
+    "public-smoke.json": "0bad7ed8066049df257298dfc52fe34e20da2a67838a42a4ae139a12a580a82b",
+    "runtime.json": "b444dc5873161dd5a6e2e25764ca297ee3f8c748db152080192052ad6d272731",
+    "support-ui-continuity.json": "bee275aa5a2011715ce4be59a975a6ee0d4d76ea18b277a4e590028b183bc2a8",
+    "workflow-gate.json": "777c30449f4cd24026f9c03a723e975e22a4c0cc950f4cde67fde17a4d1e0877",
+    "workflow-gate.zip": "6d24e844aeadd25e18ee97d9b58010dd0910802328669cb32eb65ef4d4a8110a"
+  }
+}

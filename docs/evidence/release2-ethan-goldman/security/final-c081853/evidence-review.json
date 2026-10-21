@@ -1,0 +1,36 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T22:00:30.270549+00:00",
+  "command": "detect-secrets scan --all-files --no-verify <exact staged paths plus all expanded ZIP/gzip members>; independently recomputed hash/context review; Markdown links; source-specific deterministic collectors; native archive and member digests; git diff --cached --check",
+  "staged_paths_scanned": 63,
+  "expanded_native_members_scanned": 27,
+  "detector_candidates_reviewed": 332,
+  "unclassified_findings": 0,
+  "classification": "Recomputed Git/file/archive/config/scanner digests, authenticated native bundle/baseline checksums and disposable public smoke identifier.",
+  "native_scan": {
+    "path": "evidence-secrets.json.gz",
+    "uncompressed_sha256": "bc880c3a2bc92f153baba3952963cc8e96298009d0385198b9d8d3231fb2680b"
+  },
+  "new_ignores_or_baseline_changes": 0,
+  "repository_path_hash_pairs_verified": 112,
+  "relative_markdown_links": "verified",
+  "staged_diff_check": {
+    "exit_code": 2,
+    "native_model_trailing_space_warnings": 4,
+    "disposition": "Original native model Markdown/console bytes retained; no other diff-check findings."
+  },
+  "cloud_technical_status": "pass",
+  "human_release": {
+    "recorded": true,
+    "decision": "conditional_accept",
+    "identity": "Ethan Goldman",
+    "reason_present": true,
+    "conditions_pending": true
+  },
+  "testing_status": "fail",
+  "limitations": [
+    "This evidence scan does not clear retained application security findings.",
+    "Scan and summary contain only scanner hashes/provenance and cannot scan their own future hash fields."
+  ]
+}

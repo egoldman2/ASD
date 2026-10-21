@@ -1,0 +1,24 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "release_id": "c081853fd559faf47c284861626d759cd41f2d8c-1",
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T21:51:03.335802+00:00",
+  "command": "SSM: existing cloud.smoke.run on public origin with 120-second pauses after completed cycles; Docker/proc/kernel observations",
+  "new_oom_events": 0,
+  "unexpected_restarts": 0,
+  "status": "stable",
+  "observation_seconds": 180,
+  "instance_status": "ok",
+  "system_status": "ok",
+  "command_id": "65c3cd05-1d7f-400b-9988-037972ff6ee2",
+  "native_capture": {
+    "path": "docs/evidence/release2-aws/final-c081853/health-observation.json.gz",
+    "sha256": "c11f1a8df8ee89034d93a8637ba6b9b84f15c158d4fe46b3e3a96cad74d67700"
+  },
+  "limitations": [
+    "One sequential synthetic demo client, not a production capacity guarantee.",
+    "Existing account DELETE deactivates disposable accounts; those rows remain.",
+    "Cycles pause 120 seconds after completing requests; this is not a fixed request rate."
+  ]
+}

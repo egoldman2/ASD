@@ -1,0 +1,38 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "release_id": "c081853fd559faf47c284861626d759cd41f2d8c-1",
+  "decision": "conditional_accept",
+  "identity": "Ethan Goldman",
+  "decided_at": "2026-10-21T21:56:23.053304+00:00",
+  "recorded_at": "2026-10-21T21:56:23.053304+00:00",
+  "timestamp_basis": "UTC record created on receipt of explicit user approval in this chat; not a browser-click timestamp.",
+  "reason": "All five endpoint workflows, main deployment, 67 local and 67 public checks, persistence, and the three-minute/134-check health observation pass. Keep the demo running for marking. Retain the failed Testing Review.",
+  "conditions": "Source owners must review/resolve the 28 Ruff findings and 75 detector candidates before unconditional group sign-off. Four Chroma exceptions and model grounding limitations remain disclosed; cloud AI stays disabled and report/video work stays deferred.",
+  "approval_evidence": {
+    "channel": "Direct user response in this chat",
+    "response": "Approve this conditional decision",
+    "proposal": "Conditional acceptance for deployed c081853 with the reason and conditions recorded above; PR merge approval and the earlier 5ac7535 release decision are separate."
+  },
+  "reviews": [
+    {
+      "path": "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261022-084030-768704.md",
+      "sha256": "678120c4b7c69e1ed87a332acaf42d5a20a4fd1d85b1b610c7773e504cf10a00"
+    },
+    {
+      "path": "docs/evidence/agentic/shared-asd-group-services-testing-20261022-084540-703617.md",
+      "sha256": "d5802a737a2131875e89171d2701df6adb81c7e3d07304c0df17065320781234"
+    },
+    {
+      "path": "docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261022-085303-599778.md",
+      "sha256": "009ba23b2c752a8344d84ad2f72b2d9d9d6bd7dd985cec5d36642d409dbabacb"
+    }
+  ],
+  "resource_retention": {
+    "decision": "Keep the demo running for marking",
+    "source": "Explicit user instruction, reaffirmed in the approved decision; no cleanup authorized."
+  },
+  "limitations": [
+    "Conditional acceptance does not turn failed raw security validation into a pass.",
+    "Report/video work and bonus inference deployment remain deferred."
+  ]
+}

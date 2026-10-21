@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "cloud-deployment",
+  "owner": "Ethan Goldman",
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "captured_at": "2026-10-21T21:56:23.053304+00:00",
+  "command": "Separate deterministic validation of the explicit post-review human decision; original review inputs and outputs unchanged.",
+  "deployment": {
+    "path": "docs/evidence/release2-aws/final-c081853/deployment-report.json",
+    "sha256": "661a378daa8dcb1dde77b3e4395d00c82b4eb590dc1f4f5c4bfa31e624aa51ed"
+  },
+  "actions": {
+    "path": "docs/evidence/release2-aws/final-c081853/actions.json",
+    "sha256": "4a1a266bfcfc654a8689b0076a2f3d7231e1f5b6d6e2dc3aa39a350e5db7ce6b"
+  },
+  "workflow_gate": {
+    "path": "docs/evidence/release2-aws/final-c081853/workflow-gate.json",
+    "sha256": "777c30449f4cd24026f9c03a723e975e22a4c0cc950f4cde67fde17a4d1e0877"
+  },
+  "public_smoke": {
+    "path": "docs/evidence/release2-aws/final-c081853/public-smoke.json",
+    "sha256": "0bad7ed8066049df257298dfc52fe34e20da2a67838a42a4ae139a12a580a82b"
+  },
+  "runtime": {
+    "path": "docs/evidence/release2-aws/final-c081853/runtime.json",
+    "sha256": "b444dc5873161dd5a6e2e25764ca297ee3f8c748db152080192052ad6d272731"
+  },
+  "health": {
+    "path": "docs/evidence/release2-aws/final-c081853/health.json",
+    "sha256": "3d4cb4c0d9d85cd45389d3094da5aadebf7a8964ba6551e6ba2793c2c9157d86"
+  },
+  "human_release": {
+    "path": "docs/evidence/release2-aws/final-c081853/human-release.json",
+    "sha256": "83c2b484a3b11feadb464c00bed7bb9759f9f5975ef4b2791618f81d71d748cd"
+  }
+}

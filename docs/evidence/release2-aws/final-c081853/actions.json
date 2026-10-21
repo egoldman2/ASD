@@ -1,0 +1,73 @@
+{
+  "id": 39680184997,
+  "head_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "head_branch": "main",
+  "event": "push",
+  "html_url": "https://github.com/egoldman2/ASD/actions/runs/39680184997",
+  "path": ".github/workflows/cloud-deployment.yml",
+  "status": "completed",
+  "conclusion": "success",
+  "run_attempt": 1,
+  "jobs": [
+    {
+      "id": 119500329942,
+      "name": "validate (student-Chufeng/tests)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119500330280,
+      "name": "student_workflows",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119500330297,
+      "name": "validate (student-Howard/tests)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119500330326,
+      "name": "validate (student-Ryan_Nolan/tests/inventory_tests.py, student-Ryan_Nolan/tests/mcp_route_test.py...",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119500330347,
+      "name": "cloud-build",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119500330371,
+      "name": "validate (ai-services/multi_agent_server/tests)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119500330424,
+      "name": "validate (student-Ethan Ting/tests)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119500330427,
+      "name": "validate (student-Ethan Goldman/tests)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119500330584,
+      "name": "validate (shared/tests, cloud/tests, ai-services/mcp_server/tests, ai-services/rag_server/tests)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119503574841,
+      "name": "deploy",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

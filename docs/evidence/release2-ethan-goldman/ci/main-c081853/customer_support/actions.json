@@ -1,0 +1,25 @@
+{
+  "id": 39680184983,
+  "head_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "head_branch": "main",
+  "event": "push",
+  "html_url": "https://github.com/egoldman2/ASD/actions/runs/39680184983",
+  "path": ".github/workflows/EthanGoldman.yml",
+  "status": "completed",
+  "conclusion": "success",
+  "run_attempt": 1,
+  "jobs": [
+    {
+      "id": 119500330365,
+      "name": "Test Customer Support integration",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119501655169,
+      "name": "Build and validate Customer Support services",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}
