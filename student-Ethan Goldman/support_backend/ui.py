@@ -588,7 +588,7 @@ def create_ui_blueprint(
         except Exception as exc:
             return database_failure(exc)
         response = make_response("", 204)
-        response.headers["HX-Redirect"] = "/staff.html"
+        response.headers["HX-Redirect"] = os.getenv("SUPPORT_PUBLIC_URL", "").rstrip("/") + "/staff.html"
         return response
 
     return blueprint

@@ -479,6 +479,29 @@ def test_live_htmx_admin_workflow(support_stack):
     assert deleted.headers["HX-Redirect"] == "/staff.html"
 
 
+@pytest.mark.parametrize("public_url,expected", [
+    (None, "/staff.html"),
+    ("/support", "/support/staff.html"),
+    ("/support/", "/support/staff.html"),
+    ("https://fixture.example.test/support/", "https://fixture.example.test/support/staff.html"),
+])
+def test_live_htmx_delete_returns_to_configured_support_queue(support_stack, monkeypatch, public_url, expected):
+    if public_url is None:
+        monkeypatch.delenv("SUPPORT_PUBLIC_URL", raising=False)
+    else:
+        monkeypatch.setenv("SUPPORT_PUBLIC_URL", public_url)
+    admin = support_stack.admin()
+    response = admin.delete(
+        support_url(support_stack, "/api/support/ui/admin/tickets/2002"),
+        headers=support_stack.htmx_headers,
+        timeout=10,
+    )
+    assert response.status_code == 204
+    assert response.headers["HX-Redirect"] == expected
+    assert admin.get(support_url(support_stack, "/api/support/admin/tickets/2002"), timeout=10).status_code == 404
+    assert admin.get(support_url(support_stack, "/api/support/admin/tickets/2003"), timeout=10).status_code == 200
+
+
 def test_live_auth_service_outage_returns_503():
     support_app = import_module("student-Ethan Goldman.support_backend.app")
     application = support_app.create_app(

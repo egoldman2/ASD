@@ -1,0 +1,45 @@
+{
+  "stage": "S16d",
+  "owner": "Ethan Goldman",
+  "source_sha": "2e7274304a4d196d45a36e295b1be0c5792310e8",
+  "captured_at": "2026-10-21T04:56:40.623Z",
+  "command": "Chrome customer/staff UI against the public application, followed by real HTTP regression tests.",
+  "native_actions_url": "https://github.com/egoldman2/ASD/actions/runs/39545291195",
+  "baseline": {
+    "ticket_id": 2019,
+    "created_before_redeployment": true,
+    "original_conversation_persisted": true,
+    "manual_staff_reply_persisted": true,
+    "manual_status_and_assignee_persisted": true,
+    "deletion_explicitly_authorized": true,
+    "deleted_ticket_rows": 0,
+    "deleted_message_rows": 0,
+    "pre_existing_seed_tickets_preserved": 12,
+    "verification_command_id": "12744307-b1ae-4bf6-90a8-25c2fbb12aeb",
+    "actual_redirect": "/staff.html",
+    "expected_hosted_redirect": "/support/staff.html",
+    "observed_redirect_status": 404,
+    "screenshot": "redirect-404.png",
+    "screenshot_sha256": "736aac6c85da41d90149b109958ddf352c672d5987b4240e42ccdc1a2a82cd0a"
+  },
+  "regression": {
+    "command": "python -m pytest 'student-Ethan Goldman/tests/test_live_services.py::test_live_htmx_delete_returns_to_configured_support_queue' -q",
+    "before": {
+      "exit_code": 1,
+      "failed": 3,
+      "passed": 1
+    },
+    "repair": "Use existing SUPPORT_PUBLIC_URL for the post-delete queue redirect.",
+    "support_suite": {
+      "exit_code": 0,
+      "passed": 210,
+      "skipped_opt_in": 10
+    },
+    "shared_cloud_suite": {
+      "exit_code": 0,
+      "passed": 373
+    },
+    "changed_source_ruff": "PASS",
+    "hosted_repair": "Pending integration and native browser verification."
+  }
+}
