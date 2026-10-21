@@ -63,16 +63,22 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
 
 ## Current verification and remaining work
 
-- S04e: main `0e0321b` exposes AWS's documented public-webhook Git-helper
-  restriction before runner registration. The API-started retry admits the real
-  main Actions job and verifies its temporary AWS identity; application deployment
-  is still running. The automatic repair separates a fixed main-push relay from
-  the API-only runner project. Relay permission is limited to starting that one
-  project; all existing deployment gates remain. Shared/cloud: 373 passed;
-  12 relay/configuration cases, lint, three guard rules, IAM validation and
-  change-set preflight pass. [Native baseline and repair](../release2-aws/codebuild-relay-20261021.json).
-  Apply the webhook update after the live bootstrap completes; checkpoint SHA/CI
-  follow in its PR. Automatic main-trigger verification remains required in S16.
+- S16d: public browser ticket #2019 survives the automatic `2e72743` deployment;
+  manual reply/update/reload and explicitly approved deletion succeed. Deletion
+  exposes a real 404 redirect to `/staff.html`. The one-line repair uses the
+  existing `SUPPORT_PUBLIC_URL`; four regression cases replace three reproduced
+  failures and one pass. Support: 210 passed/10 opt-in skips; shared/cloud: 373
+  passed. [Native baseline and repair checks](../release2-aws/public-delete-redirect-20261021/baseline.json).
+  Repair commit/CI follow in its PR; hosted redirect verification remains pending.
+
+- S04e `9d19caa`: all three exact-head checks pass, including [cloud CI](https://github.com/egoldman2/ASD/actions/runs/39544531203).
+  The scoped relay update is UPDATE_COMPLETE. Approved PR #24 integrates as
+  `2e72743`; the genuine GitHub PUSH relay, API-started child and [native main
+  Actions deployment](https://github.com/egoldman2/ASD/actions/runs/39545291195)
+  succeed after all five student workflows. Both 64-check smoke captures pass,
+  all four AI flags are false, and four-database persistence is verified.
+  [Native baseline](../release2-aws/codebuild-relay-20261021.json); [subsequent native results](https://github.com/egoldman2/ASD/pull/24).
+  Thirty-minute load observation is running; final release acceptance is pending.
 
 - S04d: the separate `asd-release2-actions` stack is CREATE_COMPLETE with only
   a main-push CodeBuild project, scoped service role and seven-day logs. All three
