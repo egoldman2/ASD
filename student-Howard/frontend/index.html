@@ -388,6 +388,21 @@
             </div>
             <div id="rag-result" class="ai-box">Ask a question grounded in the project knowledge base.</div>
         </div>
+        <div class="card">
+            <h2>Multi-Agent Review &mdash; Return Assessment</h2>
+            <div class="aiRow">
+                <input type="number" id="ma-return-id" placeholder="Return ID (e.g. 1)" style="width:160px;">
+                <input type="text" id="ma-question" value="Assess whether this return should be approved." style="flex:1; min-width:280px;">
+                <button class="actionBtn" onclick="runMultiAgent()">Run Multi-Agent Review</button>
+            </div>
+            <div id="ma-result" class="ai-box">Enter a return ID and run the Planner &rarr; Worker &rarr; Reviewer workflow.</div>
+            <div id="ma-review" style="display:none; margin-top:12px;">
+                <input type="text" id="ma-reason" placeholder="Reason for your decision..." style="width:100%; margin-bottom:8px;">
+                <button class="actionBtn" onclick="submitMaReview('accept')">Accept</button>
+                <button class="actionBtn" onclick="submitMaReview('partially_accept')">Partially accept</button>
+                <button class="actionBtn" onclick="submitMaReview('reject')">Reject</button>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">
@@ -710,6 +725,101 @@
                 box.innerHTML = html;
             } catch (e) {
                 box.textContent = "Could not reach the RAG server: " + e.message;
+            }
+        }
+
+        let maWorkflowId = null;
+
+        async function runMultiAgent() {
+            const rid = parseInt(document.getElementById("ma-return-id").value, 10);
+            const q = document.getElementById("ma-question").value.trim();
+            const box = document.getElementById("ma-result");
+            document.getElementById("ma-review").style.display = "none";
+            maWorkflowId = null;
+            if (!rid || rid <= 0) { box.textContent = "Please enter a valid return ID."; return; }
+            if (!q) { box.textContent = "Please enter a question for the agents."; return; }
+            box.textContent = "Starting the Multi-Agent workflow (Planner \u2192 Worker \u2192 Reviewer)... this can take a few minutes.";
+            try {
+                const res = await fetch(API + "/multi-agent/workflows", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question: q, return_id: rid })
+                });
+                const d = await res.json();
+                if (!d.job_id) {
+                    box.textContent = "Error: " + ((d.error && d.error.message) || ("HTTP " + res.status));
+                    return;
+                }
+                pollMaJob(d.job_id);
+            } catch (e) {
+                box.textContent = "Could not reach the Multi-Agent server: " + e.message;
+            }
+        }
+
+        async function pollMaJob(jobId) {
+            const box = document.getElementById("ma-result");
+            try {
+                const res = await fetch(API + "/multi-agent/jobs/" + jobId, { credentials: "include" });
+                const d = await res.json();
+                if (d.status === "running" || d.status === "recovering") {
+                    box.textContent = "Agents are working (" + d.status + ")... please wait.";
+                    setTimeout(() => pollMaJob(jobId), 5000);
+                    return;
+                }
+                if (d.status === "failed") {
+                    box.textContent = "Workflow failed: " + ((d.error && d.error.message) || "unknown error") + "  (try running it again)";
+                    return;
+                }
+                if (d.status === "completed" && d.workflow) {
+                    renderWorkflow(d.workflow);
+                    return;
+                }
+                box.textContent = "Unexpected status: " + d.status;
+            } catch (e) {
+                box.textContent = "Lost contact while polling: " + e.message;
+            }
+        }
+
+        function renderWorkflow(wf) {
+            const box = document.getElementById("ma-result");
+            maWorkflowId = wf.workflow_id;
+            const plan = (wf.planner_result && wf.planner_result.plan) || "";
+            const work = (wf.worker_result && wf.worker_result.output) || "";
+            const rev = (wf.reviewer_result && wf.reviewer_result.review) || "";
+            let html = '<span class="badge badge-amber">Status: ' + escapeHtml(wf.status) + '</span><br><br>';
+            html += "<strong>Planner</strong><br>" + escapeHtml(plan) + "<br><br>";
+            html += "<strong>Worker</strong><br>" + escapeHtml(work) + "<br><br>";
+            html += "<strong>Reviewer</strong><br>" + escapeHtml(rev);
+            box.innerHTML = html;
+            document.getElementById("ma-review").style.display =
+                (wf.status === "awaiting_human_review") ? "block" : "none";
+        }
+
+        async function submitMaReview(decision) {
+            const box = document.getElementById("ma-result");
+            const reason = document.getElementById("ma-reason").value.trim();
+            if (!maWorkflowId) { return; }
+            if (!reason) { alert("Please enter a reason for your decision."); return; }
+            try {
+                const res = await fetch(API + "/multi-agent/workflows/" + maWorkflowId + "/review", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ decision: decision, reason: reason })
+                });
+                const d = await res.json();
+                if (d.error) {
+                    box.innerHTML += '<br><br><span class="badge badge-red">Review error: ' + escapeHtml(d.error.message || "failed") + '</span>';
+                    return;
+                }
+                const hr = d.human_review || {};
+                const cls = d.status === "accepted" ? "badge-green" : (d.status === "rejected" ? "badge-red" : "badge-amber");
+                box.innerHTML += '<br><br><span class="badge ' + cls + '">Human decision: ' + escapeHtml(d.status) + '</span>';
+                if (hr.reviewed_by) { box.innerHTML += "<br>Reviewed by: " + escapeHtml(hr.reviewed_by); }
+                document.getElementById("ma-review").style.display = "none";
+            } catch (e) {
+                box.innerHTML += "<br><br>Could not submit decision: " + e.message;
             }
         }
 
