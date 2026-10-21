@@ -1,0 +1,73 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "captures": [
+    {
+      "tool": "ruff",
+      "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "owner": "Ethan Goldman",
+      "captured_at": "2026-10-21T21:39:30.440414+00:00",
+      "command": "/private/tmp/asd-release2-oct22-venv/bin/ruff check . --select S --output-format json",
+      "argv": [
+        "/private/tmp/asd-release2-oct22-venv/bin/ruff",
+        "check",
+        ".",
+        "--select",
+        "S",
+        "--output-format",
+        "json"
+      ],
+      "exit_code": 1,
+      "report": {
+        "path": "docs/evidence/release2-ethan-goldman/security/final-c081853/ruff.json",
+        "sha256": "aeebf89568360d56b354bb07dabc4d02c89ce715c9f6e3b0a3529c2fbe5672a8"
+      }
+    },
+    {
+      "tool": "detect-secrets",
+      "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "owner": "Ethan Goldman",
+      "captured_at": "2026-10-21T21:39:35.005060+00:00",
+      "command": "/private/tmp/asd-release2-oct22-venv/bin/detect-secrets scan --no-verify --exclude-files (?x)^(docs/evidence/.*|ai-services/multi_agent_server/(coordination_audit|workflow_history)\\.jsonl|.*\\.min\\.js|.*\\.log)$",
+      "argv": [
+        "/private/tmp/asd-release2-oct22-venv/bin/detect-secrets",
+        "scan",
+        "--no-verify",
+        "--exclude-files",
+        "(?x)^(docs/evidence/.*|ai-services/multi_agent_server/(coordination_audit|workflow_history)\\.jsonl|.*\\.min\\.js|.*\\.log)$"
+      ],
+      "exit_code": 0,
+      "report": {
+        "path": "docs/evidence/release2-ethan-goldman/security/final-c081853/detect-secrets.json",
+        "sha256": "95096f542bd0fb5e85e8f84b9437b7ed850f3e278d7e9acba77aae6a5cd6ca9f"
+      }
+    },
+    {
+      "tool": "pip-audit",
+      "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "owner": "Ethan Goldman",
+      "captured_at": "2026-10-21T21:39:42.561024+00:00",
+      "command": "/private/tmp/asd-release2-oct22-venv/bin/pip-audit -r requirements-audit.txt --format json --progress-spinner off --timeout 45",
+      "argv": [
+        "/private/tmp/asd-release2-oct22-venv/bin/pip-audit",
+        "-r",
+        "requirements-audit.txt",
+        "--format",
+        "json",
+        "--progress-spinner",
+        "off",
+        "--timeout",
+        "45"
+      ],
+      "exit_code": 1,
+      "report": {
+        "path": "docs/evidence/release2-ethan-goldman/security/final-c081853/pip-audit.json",
+        "sha256": "3e6c137b4c3479614d894a8c743f148c70e1ca889c37dc8e440e6b2c25d58112"
+      }
+    }
+  ],
+  "versions": {
+    "ruff": "0.17.0",
+    "detect-secrets": "1.5.0",
+    "pip-audit": "2.10.1"
+  }
+}

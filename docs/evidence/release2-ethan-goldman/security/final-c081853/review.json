@@ -1,0 +1,37 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T21:51:53.177181+00:00",
+  "review_method": "Current native captures and context triage from the byte-identical 32a97b0 source; raw results and exclusions unchanged.",
+  "source_tree_equivalence_to_32a97b0": true,
+  "ruff": {
+    "findings": 28,
+    "support_findings": 0,
+    "status": "Retained for source-owner review; context triage does not overwrite deterministic failure."
+  },
+  "detect_secrets": {
+    "candidates": 75,
+    "new_distinct_candidates": 0,
+    "baseline_metadata_hash_rows": 48,
+    "cloudformation_generation_reference_rows": 3,
+    "test_fixture_rows": 24,
+    "status": "All path/type/digest identities occur in the previously inspected capture; no new baseline or exclusion."
+  },
+  "dependencies": {
+    "raw_entries": 5,
+    "unique_chroma_advisories": 4,
+    "fixed_versions_listed": false,
+    "existing_exceptions_retained": true
+  },
+  "context_checks": {
+    "shared_config_and_protocol_tests": 21,
+    "optimized_python_malformed_json_cases": 21,
+    "unexpected_pipeline_calls": 0,
+    "isolated_sql_checks": 6,
+    "static_sql_interpolation_sites": 9,
+    "execution_source": "32a97b05a40efc65e2d8923ecf45afb44086556a",
+    "provenance": "PR #29 native verification record; no teammate feature changes."
+  },
+  "testing_review_status": "fail",
+  "limitation": "Agent context review is not a human source-owner waiver or final release approval."
+}

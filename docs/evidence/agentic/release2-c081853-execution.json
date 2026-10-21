@@ -1,0 +1,289 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "owner": "Ethan Goldman",
+  "reviews": [
+    {
+      "owner": "Ethan Goldman",
+      "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "started_at": "2026-10-21T21:39:31.572745+00:00",
+      "captured_at": "2026-10-21T21:40:30.770866+00:00",
+      "model": "qwen2.5:3b",
+      "environment": {
+        "AI_MODE_ENABLED": "true",
+        "MULTI_AGENT_ENABLED": "true",
+        "MULTI_AGENT_REVIEW_WORKFLOW_ID": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+        "MULTI_AGENT_SERVER_URL": "http://127.0.0.1:5004",
+        "OLLAMA_URL": "http://127.0.0.1:11434",
+        "OLLAMA_MODEL": "qwen2.5:3b",
+        "RELEASE_REVIEW_SOURCE_SHA": "c081853fd559faf47c284861626d759cd41f2d8c"
+      },
+      "review": "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261022-084030-768704.md",
+      "review_sha256": "678120c4b7c69e1ed87a332acaf42d5a20a4fd1d85b1b610c7773e504cf10a00",
+      "limitations": [
+        "Real local model review; model recommendations do not grant release approval.",
+        "CLI completion does not imply passing deterministic checks or model grounding."
+      ],
+      "command": [
+        "/private/tmp/asd-release2-oct22-venv/bin/python",
+        "/private/tmp/asd-release2-run-final-review.py",
+        "multi-agent",
+        ".aws-deployment/release2-runtime-support-review",
+        ".aws-deployment/release2-final-c081853/reviews"
+      ],
+      "equivalent_cli": [
+        "/private/tmp/asd-release2-oct22-venv/bin/python",
+        "ai-services/agentic_loop.py",
+        "--feature",
+        ".aws-deployment/release2-runtime-support-review",
+        "--mode",
+        "multi-agent"
+      ],
+      "entry_point": "agentic_loop.run_agentic_loop(feature, mode), with native report saving enabled",
+      "console": "docs/evidence/agentic/ethan-goldman-customer-support-multi-agent-20261022-084030-768704.console.txt",
+      "console_sha256": "c953154eb41c04c38d1e8d6545a6ad98f8438fceeb89f03c9b2d8541c124b51d",
+      "runtime_configuration": {
+        "original_path": "student-Ethan Goldman/agentic/review_config.json",
+        "original_sha256": "10e6ab4a6bcd3e03249eeff21c0025a65ffc397edfab1c623000e514ce694a1f",
+        "runtime_sha256": "4f57d66d8cee622858b1a077dd77fb48196c99101fc8b00080c980c3433163da",
+        "only_override": {
+          "multi_agent_rules.log_files": {
+            "history": "docs/evidence/release2-ethan-goldman/local/human-review-20261018/workflow_history.jsonl",
+            "audit": "docs/evidence/release2-ethan-goldman/local/human-review-20261018/coordination_audit.jsonl"
+          }
+        },
+        "purpose": "Read immutable native logs identical to the running local store; tracked configuration unchanged."
+      },
+      "deterministic_validation": {
+        "verified_checks": {
+          "configured_files": 24,
+          "present_files": 24,
+          "missing_files": [],
+          "truncated_files": [
+            "ai-services/multi_agent_server/app.py",
+            "ai-services/multi_agent_server/config.py",
+            "ai-services/multi_agent_server/contracts.py",
+            "ai-services/multi_agent_server/coordinator.py",
+            "ai-services/multi_agent_server/evidence_context.py",
+            "ai-services/multi_agent_server/model_client.py",
+            "ai-services/multi_agent_server/workflow_store.py",
+            "ai-services/multi_agent_server/workflow_runner.py",
+            "ai-services/multi_agent_server/agents/planner_agent.py",
+            "ai-services/multi_agent_server/agents/worker_agent.py",
+            "ai-services/multi_agent_server/agents/reviewer_agent.py",
+            "ai-services/multi_agent_server/tests/test_coordinator.py",
+            "ai-services/multi_agent_server/tests/test_app.py",
+            "docker-compose.yml",
+            "shared/multi_agent_client.py",
+            "ai-services/multi_agent_validation.py",
+            "student-Ethan Goldman/support_backend/multi_agent.py",
+            "student-Ethan Goldman/support_backend/multi_agent_routes.py",
+            "student-Ethan Goldman/support_backend/ui.py",
+            "student-Ethan Goldman/support_backend/templates/support_ui/admin/multi_agent_panel.html",
+            "student-Ethan Goldman/support_backend/templates/support_ui/admin/multi_agent_result.html",
+            "student-Ethan Goldman/tests/test_support_multi_agent_routes.py",
+            "student-Ethan Goldman/tests/test_support_multi_agent_ui.py",
+            "student-Ethan Goldman/tests/test_agentic_multi_agent_validation.py"
+          ],
+          "source_checks": {
+            "coordinator_runs_three_agents_in_order": true,
+            "contracts_support_all_group_features": true,
+            "server_exposes_workflow_and_human_review_routes": true,
+            "store_requires_and_records_human_review": true,
+            "tests_cover_coordinator_and_http_contract": true,
+            "support_review_records_decision_without_ticket_actions": true,
+            "support_tests_cover_all_three_decisions": true
+          },
+          "required_agents": [
+            "planner",
+            "worker",
+            "reviewer"
+          ],
+          "required_features": [
+            "product_catalogue",
+            "inventory",
+            "customer_loyalty",
+            "order_returns",
+            "customer_support"
+          ],
+          "required_endpoints": [
+            "/health",
+            "/api/workflows",
+            "/api/workflows/latest",
+            "/api/workflows/<workflow_id>",
+            "/api/workflows/<workflow_id>/review"
+          ],
+          "all_required_agents_wired": true,
+          "agent_order_in_coordinator": true,
+          "all_group_features_supported": true,
+          "all_required_endpoints_registered": true,
+          "human_review_gate_present": true,
+          "multi_agent_server_not_in_compose": true
+        },
+        "runtime": {
+          "attempted": true,
+          "available": true,
+          "expected_feature": "customer_support",
+          "selected_workflow_required": true,
+          "server_url": "http://127.0.0.1:5004",
+          "health_status": 200,
+          "health": {
+            "status": "ok",
+            "service": "asd-marketplace-multi-agent"
+          },
+          "latest_workflow_available": true,
+          "latest_workflow_verified": true,
+          "three_agents_completed": true,
+          "human_review_recorded": true,
+          "selection": "selected",
+          "selected_workflow_id": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+          "history_verified": true,
+          "audit_chain_verified": true,
+          "human_review_approved": true,
+          "latest_status": 200,
+          "latest_workflow": {
+            "workflow_id": "3a970ca5-0b90-4e7f-ab84-cd7beb089c28",
+            "feature": "customer_support",
+            "status": "accepted",
+            "timestamp": "2026-10-17T00:30:07.421588Z",
+            "evidence_count": 1,
+            "agents": {
+              "planner": {
+                "present": true,
+                "completed": true,
+                "agent": "planner",
+                "model": "qwen2.5:3b",
+                "evidence_ids": [
+                  "support-ticket-2013"
+                ],
+                "human_approval_required": true,
+                "output_present": true
+              },
+              "worker": {
+                "present": true,
+                "completed": true,
+                "agent": "worker",
+                "model": "qwen2.5:3b",
+                "evidence_ids": [
+                  "support-ticket-2013"
+                ],
+                "human_approval_required": true,
+                "output_present": true
+              },
+              "reviewer": {
+                "present": true,
+                "completed": true,
+                "agent": "reviewer",
+                "model": "llama3.1:8b",
+                "evidence_ids": [
+                  "support-ticket-2013"
+                ],
+                "human_approval_required": true,
+                "output_present": true
+              }
+            },
+            "human_review": {
+              "decision": "accept",
+              "reviewed_at": "2026-10-18T09:12:41.420750Z",
+              "reviewed_by": "user:1"
+            }
+          },
+          "evidence_ids_verified": true,
+          "scope_verified": true,
+          "logs": {
+            "history": {
+              "path": "docs/evidence/release2-ethan-goldman/local/human-review-20261018/workflow_history.jsonl",
+              "sha256": "f9b5c5b25de99d0c3e6f7f432e8f05250a103ceeab1542184caacac5db36d141",
+              "records": 2
+            },
+            "audit": {
+              "path": "docs/evidence/release2-ethan-goldman/local/human-review-20261018/coordination_audit.jsonl",
+              "sha256": "5d6a5c3f2176eb43297aca72cfabb96333341302ebc6588407fa5cd238c2a42e",
+              "records": 4
+            }
+          },
+          "review_evidence_complete": true
+        }
+      }
+    },
+    {
+      "owner": "Ethan Goldman",
+      "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "started_at": "2026-10-21T21:45:14.935993+00:00",
+      "captured_at": "2026-10-21T21:45:40.708782+00:00",
+      "model": "qwen2.5:3b",
+      "environment": {
+        "AI_MODE_ENABLED": "true",
+        "OLLAMA_URL": "http://127.0.0.1:11434",
+        "OLLAMA_MODEL": "qwen2.5:3b",
+        "RELEASE_REVIEW_SOURCE_SHA": "c081853fd559faf47c284861626d759cd41f2d8c",
+        "TESTING_REVIEW_MANIFEST": "docs/evidence/release2-ethan-goldman/ci/main-c081853/testing-manifest.json"
+      },
+      "review": "docs/evidence/agentic/shared-asd-group-services-testing-20261022-084540-703617.md",
+      "review_sha256": "d5802a737a2131875e89171d2701df6adb81c7e3d07304c0df17065320781234",
+      "limitations": [
+        "Real local model review; model recommendations do not grant release approval.",
+        "CLI completion does not imply passing deterministic checks or model grounding."
+      ],
+      "command": [
+        "/private/tmp/asd-release2-oct22-venv/bin/python",
+        "/private/tmp/asd-release2-run-final-review.py",
+        "testing",
+        "shared",
+        ".aws-deployment/release2-final-c081853/reviews"
+      ],
+      "equivalent_cli": [
+        "/private/tmp/asd-release2-oct22-venv/bin/python",
+        "ai-services/agentic_loop.py",
+        "--feature",
+        "shared",
+        "--mode",
+        "testing"
+      ],
+      "entry_point": "agentic_loop.run_agentic_loop(feature, mode), with native report saving enabled",
+      "console": "docs/evidence/agentic/shared-asd-group-services-testing-20261022-084540-703617.console.txt",
+      "console_sha256": "f6028db892485864e1a1e9b1c4f852e50809a4672f92dd263eb737ab4d7a615b",
+      "validation": "/Users/ethan/Desktop/ASD/assignment 1/ASD/docs/evidence/agentic/shared-asd-group-services-testing-20261022-084540-703617.validation.json",
+      "validation_sha256": "df731176ebe48bcc54dfa91bb02d1188fac58589a5e1085537d71be1494e9f5c"
+    },
+    {
+      "owner": "Ethan Goldman",
+      "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+      "started_at": "2026-10-21T21:52:40.816192+00:00",
+      "captured_at": "2026-10-21T21:53:03.603876+00:00",
+      "model": "qwen2.5:3b",
+      "environment": {
+        "AI_MODE_ENABLED": "true",
+        "OLLAMA_URL": "http://127.0.0.1:11434",
+        "OLLAMA_MODEL": "qwen2.5:3b",
+        "RELEASE_REVIEW_SOURCE_SHA": "c081853fd559faf47c284861626d759cd41f2d8c",
+        "CLOUD_DEPLOYMENT_REVIEW_MANIFEST": "docs/evidence/release2-aws/final-c081853/cloud-manifest.json"
+      },
+      "review": "docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261022-085303-599778.md",
+      "review_sha256": "009ba23b2c752a8344d84ad2f72b2d9d9d6bd7dd985cec5d36642d409dbabacb",
+      "limitations": [
+        "Real local model review; model recommendations do not grant release approval.",
+        "CLI completion does not imply passing deterministic checks or model grounding."
+      ],
+      "command": [
+        "/private/tmp/asd-release2-oct22-venv/bin/python",
+        "/private/tmp/asd-release2-run-final-review.py",
+        "cloud-deployment",
+        "shared",
+        ".aws-deployment/release2-final-c081853/reviews"
+      ],
+      "equivalent_cli": [
+        "/private/tmp/asd-release2-oct22-venv/bin/python",
+        "ai-services/agentic_loop.py",
+        "--feature",
+        "shared",
+        "--mode",
+        "cloud-deployment"
+      ],
+      "entry_point": "agentic_loop.run_agentic_loop(feature, mode), with native report saving enabled",
+      "console": "docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261022-085303-599778.console.txt",
+      "console_sha256": "6509cf80bdda9bf6d0e4f1efc177210078b883b95a5bebaccb8ef9eff34789e8",
+      "validation": "/Users/ethan/Desktop/ASD/assignment 1/ASD/docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261022-085303-599778.validation.json",
+      "validation_sha256": "0dadfb0f738de7e8b878b256050a33b8404a1acc91175d60b0de786ccd951233"
+    }
+  ]
+}

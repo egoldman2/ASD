@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "mode": "testing",
+  "status": "fail",
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "captured_at": "2026-10-21T21:45:40.708117+00:00",
+  "review_file": "shared-asd-group-services-testing-20261022-084540-703617.md",
+  "review_sha256": "d5802a737a2131875e89171d2701df6adb81c7e3d07304c0df17065320781234",
+  "model_grounding_issues": [
+    "The report omits the offline capture authenticity limitation.",
+    "The report does not preserve the exact deterministic status."
+  ],
+  "evidence": {
+    "kind": "testing",
+    "read_only": true,
+    "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+    "required_features": [
+      "product_catalogue",
+      "inventory",
+      "customer_loyalty",
+      "order_returns",
+      "customer_support"
+    ],
+    "status": "fail",
+    "security": [
+      {
+        "tool": "ruff",
+        "execution_ok": true,
+        "exit_code": 1,
+        "finding_count": 28,
+        "unexcepted_findings": 28,
+        "accepted_advisories": [],
+        "rejected_exceptions": 0,
+        "status": "fail"
+      },
+      {
+        "tool": "detect-secrets",
+        "execution_ok": true,
+        "exit_code": 0,
+        "finding_count": 75,
+        "unexcepted_findings": 75,
+        "accepted_advisories": [],
+        "rejected_exceptions": 0,
+        "status": "fail"
+      },
+      {
+        "tool": "pip-audit",
+        "execution_ok": true,
+        "exit_code": 1,
+        "finding_count": 4,
+        "unexcepted_findings": 0,
+        "accepted_advisories": [
+          "PYSEC-2026-311",
+          "PYSEC-2026-3813",
+          "PYSEC-2026-3814",
+          "PYSEC-2026-3815"
+        ],
+        "rejected_exceptions": 0,
+        "status": "pass_with_exceptions"
+      }
+    ],
+    "students": [
+      {
+        "feature": "product_catalogue",
+        "owner": "Chufeng Li",
+        "run_url": "https://github.com/egoldman2/ASD/actions/runs/39680185023",
+        "ci_passed": true,
+        "test_count": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "endpoints": [
+          {
+            "function": "get_products",
+            "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_get_and_search_products",
+            "passed": true
+          },
+          {
+            "function": "create_cart_item",
+            "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_add_cart_item",
+            "passed": true
+          }
+        ],
+        "status": "pass"
+      },
+      {
+        "feature": "inventory",
+        "owner": "Ryan Nolan",
+        "run_url": "https://github.com/egoldman2/ASD/actions/runs/39680185076",
+        "ci_passed": true,
+        "test_count": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "endpoints": [
+          {
+            "function": "create_product",
+            "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_create_product",
+            "passed": true
+          },
+          {
+            "function": "update_product",
+            "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_update_product",
+            "passed": true
+          }
+        ],
+        "status": "pass"
+      },
+      {
+        "feature": "customer_loyalty",
+        "owner": "Ethan Ting",
+        "run_url": "https://github.com/egoldman2/ASD/actions/runs/39680184988",
+        "ci_passed": true,
+        "test_count": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "endpoints": [
+          {
+            "function": "register",
+            "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_customer_registration_creates_customer_session",
+            "passed": true
+          },
+          {
+            "function": "create_loyalty_adjustment",
+            "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_admin_adjustment_includes_authenticated_admin_id",
+            "passed": true
+          }
+        ],
+        "status": "pass"
+      },
+      {
+        "feature": "order_returns",
+        "owner": "Howard",
+        "run_url": "https://github.com/egoldman2/ASD/actions/runs/39680185027",
+        "ci_passed": true,
+        "test_count": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "endpoints": [
+          {
+            "function": "create_order",
+            "test_node_id": "student-Howard/tests/test_api.py::test_create_order",
+            "passed": true
+          },
+          {
+            "function": "create_return",
+            "test_node_id": "student-Howard/tests/test_api.py::test_create_return",
+            "passed": true
+          }
+        ],
+        "status": "pass"
+      },
+      {
+        "feature": "customer_support",
+        "owner": "Ethan Goldman",
+        "run_url": "https://github.com/egoldman2/ASD/actions/runs/39680184983",
+        "ci_passed": true,
+        "test_count": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "endpoints": [
+          {
+            "function": "customer_create",
+            "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract",
+            "passed": true
+          },
+          {
+            "function": "admin_update",
+            "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract",
+            "passed": true
+          }
+        ],
+        "status": "pass"
+      }
+    ],
+    "issues": [],
+    "limitations": [
+      "Supplied Actions/scan captures are parsed offline; their remote authenticity is not independently verified.",
+      "Recorded findings/exceptions and skipped tests remain visible; prose cannot change gate results.",
+      "Official workflow/endpoint allocation is not verified by offline captures."
+    ],
+    "inputs": [
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/testing-manifest.json",
+        "sha256": "7719fd6c3b1c6ab3ad6b9b9c559b031ce0f01127f06fc90827c3f50be2ac621f",
+        "bytes": 11698
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/security/final-c081853/ruff.json",
+        "sha256": "aeebf89568360d56b354bb07dabc4d02c89ce715c9f6e3b0a3529c2fbe5672a8",
+        "bytes": 14412
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/security/final-c081853/detect-secrets.json",
+        "sha256": "95096f542bd0fb5e85e8f84b9437b7ed850f3e278d7e9acba77aae6a5cd6ca9f",
+        "bytes": 20710
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/security/final-c081853/pip-audit.json",
+        "sha256": "3e6c137b4c3479614d894a8c743f148c70e1ca889c37dc8e440e6b2c25d58112",
+        "bytes": 8356
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+        "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8",
+        "bytes": 2947
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+        "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8",
+        "bytes": 2947
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+        "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8",
+        "bytes": 2947
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+        "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8",
+        "bytes": 2947
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/product_catalogue/test-context.json",
+        "sha256": "541b21314910f5133d471377118f5e2bea2fb006b9b1c5b6c615f19f09abcab1",
+        "bytes": 1266
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/product_catalogue/actions.json",
+        "sha256": "eff7bfe74b1ca4d076ece9a76d89fc6272b23cfd0a50a6b17160e52d1c024286",
+        "bytes": 599
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/product_catalogue/endpoint-functions.xml",
+        "sha256": "50570b3836a82b7c9571de59ebe803a3fcc8c641f36cefe469e0b68f9b39c8e3",
+        "bytes": 459
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/inventory/test-context.json",
+        "sha256": "aff46481a02ffa78434089c35749cb33627aeada7b595a8b6ece9c9832a6a8e8",
+        "bytes": 1290
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/inventory/actions.json",
+        "sha256": "b7968cf0309b036b29d17e3ff799c1186e344b9c19ae73281fcf27406c48c532",
+        "bytes": 621
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/inventory/endpoint-functions.xml",
+        "sha256": "a4eac090834567cad35e85191c737312a93ccfb53a70ba684ce2b5e9dee2d763",
+        "bytes": 459
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/customer_loyalty/test-context.json",
+        "sha256": "9c18887716f099ec26c2ca2f0c648d4fd667f2fdc1c6882c1cf1851f632f32b2",
+        "bytes": 1372
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/customer_loyalty/actions.json",
+        "sha256": "efb87a0acc88e28895a7ca4a369c9b71eaa4a5cb0be4ac5581d1bb9862132895",
+        "bytes": 655
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/customer_loyalty/endpoint-functions.xml",
+        "sha256": "ccd049a06c4341ec096ed503fd068898b180e811b4986689a509b195658da01f",
+        "bytes": 529
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/order_returns/test-context.json",
+        "sha256": "7af87b37adb822b71d1d6cdcb705eb187e9e7485eafeaebe066f3dad7b3794eb",
+        "bytes": 1253
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/order_returns/actions.json",
+        "sha256": "d13848c1961eb5212b37f6d944477e13e7911bf93e7fc8bddf58e2eb9d878fd7",
+        "bytes": 465
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/order_returns/endpoint-functions.xml",
+        "sha256": "8825bf7a9391a85e9f5ee2aa1b9efe346b7115bcc0b0bdc2d4ac37cdd78b643d",
+        "bytes": 434
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/customer_support/test-context.json",
+        "sha256": "d18ef19bf04d9ee423cad98861f3b71e229eeb390af82386c887c13f88580cd5",
+        "bytes": 1372
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/customer_support/actions.json",
+        "sha256": "0f566ecd70fef8f93fe62682b9ab3fccd0faa9f159c8d2a13ded0dd878aa7b9d",
+        "bytes": 646
+      },
+      {
+        "path": "docs/evidence/release2-ethan-goldman/ci/main-c081853/customer_support/endpoint-functions.xml",
+        "sha256": "ea4088c5c0f0e474e7524f4cc5817db2f5aa08f966f381051a966a3ea7f1353f",
+        "bytes": 516
+      }
+    ],
+    "remote_authenticity_verified": false
+  }
+}

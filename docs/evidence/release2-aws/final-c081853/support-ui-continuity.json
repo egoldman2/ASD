@@ -1,0 +1,6 @@
+{
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "historical_browser_source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "support_source_and_proxy_equal": true,
+  "limitation": "Browser CRUD was captured at the historical SHA; current main has fresh native HTTP CRUD, authentication, disabled-AI, runtime and persistence checks."
+}

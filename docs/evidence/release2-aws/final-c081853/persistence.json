@@ -1,0 +1,129 @@
+{
+  "captured_at": "2026-10-21T21:48:03.192667+00:00",
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "release_id": "c081853fd559faf47c284861626d759cd41f2d8c-1",
+  "owner": "Ethan Goldman",
+  "command": "SSM: read-only SQLite integrity, baseline-key subset and unchanged pre-existing Support rows across native Actions redeployment",
+  "current_release": "/srv/asd/releases/c081853fd559faf47c284861626d759cd41f2d8c-1-7b085fc0f189",
+  "before_release": "/srv/asd/releases/0e0321bc96cdfa97a5e3b6eefec517ed38a62f57-1-190de64dcd2c",
+  "read_only_sources": true,
+  "databases": {
+    "accounts/users.db": {
+      "integrity": "ok",
+      "foreign_key_violations": 0,
+      "tables": {
+        "loyalty_accounts": {
+          "baseline_count": 17,
+          "current_count": 50,
+          "all_baseline_keys_preserved": true
+        },
+        "loyalty_transactions": {
+          "baseline_count": 10,
+          "current_count": 10,
+          "all_baseline_keys_preserved": true
+        },
+        "users": {
+          "baseline_count": 18,
+          "current_count": 51,
+          "all_baseline_keys_preserved": true
+        }
+      }
+    },
+    "products/products.db": {
+      "integrity": "ok",
+      "foreign_key_violations": 0,
+      "tables": {
+        "cart_items": {
+          "baseline_count": 10,
+          "current_count": 10,
+          "all_baseline_keys_preserved": true
+        },
+        "customer_cart_items": {
+          "baseline_count": 8,
+          "current_count": 8,
+          "all_baseline_keys_preserved": true
+        },
+        "products": {
+          "baseline_count": 13,
+          "current_count": 13,
+          "all_baseline_keys_preserved": true
+        },
+        "suppliers": {
+          "baseline_count": 5,
+          "current_count": 5,
+          "all_baseline_keys_preserved": true
+        }
+      }
+    },
+    "orders/orders.db": {
+      "integrity": "ok",
+      "foreign_key_violations": 0,
+      "tables": {
+        "order_items": {
+          "baseline_count": 12,
+          "current_count": 12,
+          "all_baseline_keys_preserved": true
+        },
+        "orders": {
+          "baseline_count": 12,
+          "current_count": 12,
+          "all_baseline_keys_preserved": true
+        },
+        "returns": {
+          "baseline_count": 12,
+          "current_count": 12,
+          "all_baseline_keys_preserved": true
+        }
+      }
+    },
+    "support/support_tickets.db": {
+      "integrity": "ok",
+      "foreign_key_violations": 0,
+      "tables": {
+        "support_ticket_messages": {
+          "baseline_count": 20,
+          "current_count": 20,
+          "all_baseline_keys_preserved": true
+        },
+        "support_tickets": {
+          "baseline_count": 12,
+          "current_count": 12,
+          "all_baseline_keys_preserved": true
+        }
+      }
+    }
+  },
+  "pre_existing_support_rows_unchanged": true,
+  "baseline_support_snapshot_sha256": "978a9437fc6b19a6387009cf823f1bd94c440a311389ac32e4542697766ccb6f",
+  "approved_test_ticket_2039_deleted": {
+    "support_tickets": 0,
+    "support_ticket_messages": 0
+  },
+  "public_homepage_status": 200,
+  "native_accepted_captures": {
+    "local-smoke.json": {
+      "status": "passed",
+      "cleanup_status": "passed",
+      "checks": 67,
+      "sha256": "a070d691e69fb580362ec357e37674fc7bb3496dbf7710afc9c7e1b3a91ac1af"
+    },
+    "public-smoke.json": {
+      "status": "passed",
+      "cleanup_status": "passed",
+      "checks": 67,
+      "sha256": "0bad7ed8066049df257298dfc52fe34e20da2a67838a42a4ae139a12a580a82b"
+    },
+    "runtime.json": {
+      "ai_flags": {
+        "AI_MODE_ENABLED": "false",
+        "MCP_ENABLED": "false",
+        "RAG_ENABLED": "false",
+        "MULTI_AGENT_ENABLED": "false"
+      },
+      "checked_running_container_count": 14,
+      "sha256": "b444dc5873161dd5a6e2e25764ca297ee3f8c748db152080192052ad6d272731"
+    }
+  },
+  "bundle_sha256": "7b085fc0f189552d2407bbc31f932771c67e4afc92926853e6db894d17d1d785",
+  "status": "passed"
+}

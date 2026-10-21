@@ -1,0 +1,43 @@
+{
+  "owner": "Chufeng Li",
+  "feature": "product_catalogue",
+  "source_sha": "c081853fd559faf47c284861626d759cd41f2d8c",
+  "event": "push",
+  "ref": "refs/heads/main",
+  "run_id": "39680185023",
+  "run_attempt": "1",
+  "run_url": "https://github.com/egoldman2/ASD/actions/runs/39680185023",
+  "captured_at": "2026-10-21T21:37:15.323378+00:00",
+  "python": "3.11.17",
+  "workflow": ".github/workflows/Chufeng.yml",
+  "ai_flags": {
+    "AI_MODE_ENABLED": "false",
+    "MCP_ENABLED": "false",
+    "RAG_ENABLED": "false",
+    "MULTI_AGENT_ENABLED": "false"
+  },
+  "live_opt_ins": {
+    "RUN_LIVE_AI": "0",
+    "RUN_LIVE_MCP_AI": "0",
+    "RUN_LIVE_RAG_AI": "0",
+    "RUN_LIVE_VALIDATION": "0",
+    "RUN_LIVE_RELEASE1_VALIDATION": "0",
+    "RUN_LIVE_MULTI_AGENT": "0",
+    "RUN_NGINX_PROXY_CHECK": "0"
+  },
+  "endpoint_junit": "endpoint-functions.xml",
+  "endpoint_functions": [
+    {
+      "function": "get_products",
+      "method": "GET",
+      "path": "/api/products",
+      "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_get_and_search_products"
+    },
+    {
+      "function": "create_cart_item",
+      "method": "POST",
+      "path": "/api/cart-items",
+      "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_add_cart_item"
+    }
+  ]
+}
