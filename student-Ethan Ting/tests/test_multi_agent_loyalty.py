@@ -3,6 +3,7 @@
 from copy import deepcopy
 import importlib.util
 from pathlib import Path
+from secrets import token_hex
 from urllib.error import HTTPError, URLError
 
 import pytest
@@ -20,7 +21,7 @@ def setup(monkeypatch):
     spec = importlib.util.spec_from_file_location("ethan_loyalty_workflow_test", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    module.app.config.update(TESTING=True, SECRET_KEY="workflow-test-key")
+    module.app.config.update(TESTING=True, SECRET_KEY=token_hex(32))
     monkeypatch.setenv("AI_MODE_ENABLED", "true")
     monkeypatch.setenv("MULTI_AGENT_ENABLED", "true")
     db_calls, http_calls, records = [], [], {}
@@ -32,7 +33,7 @@ def setup(monkeypatch):
             return {"user": {"id": 1, "role": "admin", "is_active": 1,
                 "full_name": "Private admin", "email": "admin@private.test"}}
         if path == "/internal/users/2":
-            return {"user": {"id": 2, "role": "customer", "password_hash": "private-hash",
+            return {"user": {"id": 2, "role": "customer", "password_hash": "private-hash",  # pragma: allowlist secret - Intentionally invalid hash in a test-only database stub.
                 "email": "private@example.test", "full_name": "Private customer"}}
         if path == "/internal/loyalty/2":
             return {"loyalty": {"points_balance": 720, "email": "private@example.test"}}
@@ -209,8 +210,8 @@ def test_host_cannot_forge_verified_progress(setup):
 def test_unknown_host_fields_are_removed(setup):
     create(setup)
     record = setup[4]["workflow-1"]
-    record["secret"] = "not-approved"
-    record["worker_result"]["secret"] = "not-approved"
+    record["unexpected_private_field"] = "not-approved"
+    record["worker_result"]["unexpected_private_field"] = "not-approved"
     result = setup[1].get(BASE + "/workflow-1")
     assert result.status_code == 200
     assert "not-approved" not in result.get_data(as_text=True)

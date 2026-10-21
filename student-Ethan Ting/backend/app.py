@@ -12,7 +12,7 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.request import Request as URLRequest
-from urllib.request import urlopen
+from urllib.request import HTTPRedirectHandler, build_opener
 
 import httpx
 from flask import Flask, Response, g, jsonify, request, session
@@ -124,6 +124,39 @@ def valid_email(email):
     )
 
 
+def service_http_url(base, path):
+    """Only configured HTTP(S) origins and application-owned absolute paths."""
+    if (not isinstance(base, str) or not isinstance(path, str)
+        or any(ord(character) < 32 or ord(character) == 127 for character in base + path)):
+        raise ValueError("Invalid service URL.")
+    try:
+        origin = urlsplit(base)
+        port = origin.port
+        relative = urlsplit(path)
+    except ValueError as error:
+        raise ValueError("Invalid service URL.") from error
+    if (origin.scheme not in {"http", "https"} or not origin.hostname
+        or origin.username is not None or origin.password is not None
+        or origin.path not in {"", "/"} or origin.query or origin.fragment
+        or (port is not None and not 1 <= port <= 65535)
+        or not path.startswith("/") or path.startswith("//")
+        or relative.scheme or relative.netloc or relative.fragment):
+        raise ValueError("Service URL must use an HTTP(S) origin and local API path.")
+    return base.rstrip("/") + path
+
+
+class NoServiceRedirect(HTTPRedirectHandler):
+    """Internal API requests must not redirect to a different destination."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise HTTPError(req.full_url, code, "Service redirects are not allowed.", headers, fp)
+
+
+def urlopen(service_request, *, timeout):
+    # Keep the injectable transport used by existing tests, with redirects disabled.
+    return build_opener(NoServiceRedirect()).open(service_request, timeout=timeout)
+
+
 def database_request(path, method="GET", payload=None):
     data = None
     headers = {}
@@ -132,8 +165,8 @@ def database_request(path, method="GET", payload=None):
         data = json.dumps(payload).encode("utf-8")
         headers["Content-Type"] = "application/json"
 
-    request_to_database = URLRequest(
-        f"{DATABASE_API_URL}{path}",
+    request_to_database = URLRequest(  # noqa: S310 - service_http_url rejects non-HTTP(S) origins and external paths.
+        service_http_url(DATABASE_API_URL, path),
         data=data,
         headers=headers,
         method=method,
@@ -151,8 +184,8 @@ def rag_request(path, payload):
     timeout = float(os.environ.get("RAG_CLIENT_TIMEOUT_SECONDS", "60"))
     if not 0 < timeout <= 120:
         raise ValueError("RAG_CLIENT_TIMEOUT_SECONDS must be between 0 and 120.")
-    rag_http_request = URLRequest(
-        f"{server_url}{path}",
+    rag_http_request = URLRequest(  # noqa: S310 - service_http_url restricts the configured host RAG origin to HTTP(S).
+        service_http_url(server_url, path),
         data=json.dumps({**payload, "scope": ACCOUNTS_LOYALTY_RAG_SCOPE}).encode("utf-8"),
         headers={"Content-Type": "application/json"},
         method="POST",
@@ -303,8 +336,8 @@ def ollama_chat(system_prompt, prompt, num_predict, *, timeout=90, response_form
     if response_format is not None:
         body_data["format"] = response_format
     body = json.dumps(body_data).encode("utf-8")
-    ollama_request = URLRequest(
-        f"{OLLAMA_URL}/api/chat",
+    ollama_request = URLRequest(  # noqa: S310 - service_http_url validates the configured HTTP(S) Ollama origin and fixed path.
+        service_http_url(OLLAMA_URL, "/api/chat"),
         data=body,
         headers={"Content-Type": "application/json"},
         method="POST",
@@ -1977,7 +2010,7 @@ def review_loyalty_workflow(workflow_id):
 
 if __name__ == "__main__":
     app.run(
-        host="0.0.0.0",
+        host=os.environ.get("APP_HOST", "127.0.0.1"),
         port=6002,
         debug=os.environ.get("APP_DEBUG", "false").lower() == "true",
         use_reloader=False,

@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 
 FROM python-base AS backend
+ENV APP_HOST=0.0.0.0
 
 COPY shared/feature_flags.py /app/shared/feature_flags.py
 COPY shared/runtime_config.py /app/shared/runtime_config.py
@@ -35,6 +36,7 @@ CMD ["python", "app.py"]
 
 
 FROM python-base AS database
+ENV APP_HOST=0.0.0.0
 
 COPY ["student-Ethan Ting/database/", "/app/"]
 

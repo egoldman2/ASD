@@ -1,0 +1,361 @@
+{
+  "owner": "Ethan Ting",
+  "source_sha": "4d635cc87541fe97331c8640ff73e7f40a007232",
+  "captured_at": "2026-10-21T02:31:48.183444+11:00",
+  "scope": "Local working tree, not a new commit or a GitHub Actions run",
+  "commit_executed": false,
+  "tools": {
+    "pre-commit": "4.7.0",
+    "ruff": "0.17.0",
+    "detect-secrets": "1.5.0",
+    "pip-audit": "2.10.1"
+  },
+  "hook_installed": true,
+  "hook_sha256": "90b716fcadc826574806333d5016676c78c0e9fe48a230826aed2ea3fa215461",
+  "configuration_files": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "4529f2b54f2ff991063bf830720368a18d64538abb4bedc9585f8b3e260d7322"
+    },
+    {
+      "path": ".secrets.baseline",
+      "sha256": "9f573338f5aff1132ccc30e74bf664fb8ac69358a95adb4c58f324cd8296acc9"
+    },
+    {
+      "path": "requirements-audit.txt",
+      "sha256": "a012d7981e4a0319cd08c999f2f67b61ab7dbda5e4e3cbf4b96ccab25eb79384"
+    }
+  ],
+  "working_tree_status": [
+    " M ai-services/mcp_server/tests/test_ethan_ting_customer_tools.py",
+    " M \"student-Ethan Ting/Dockerfile\"",
+    " M \"student-Ethan Ting/RELEASE2.md\"",
+    " M \"student-Ethan Ting/backend/app.py\"",
+    " M \"student-Ethan Ting/database/app.py\"",
+    " M \"student-Ethan Ting/tests/test_multi_agent_loyalty.py\"",
+    "?? docs/evidence/release2-ethan-ting/step2/",
+    "?? \"student-Ethan Ting/scripts/\"",
+    "?? \"student-Ethan Ting/tests/test_security_boundaries.py\""
+  ],
+  "source_files": [
+    {
+      "path": "ai-services/mcp_server/tests/test_ethan_ting_customer_tools.py",
+      "sha256": "fed23657c9df3cb80911ae7f9582f25328650b2da500744709995e3478afb1b0"
+    },
+    {
+      "path": "student-Ethan Ting/.DS_Store",
+      "sha256": "1c383eeadca9d3cfb8868b69b8587b98825aac2f1e090616545255e15ef92dcd"
+    },
+    {
+      "path": "student-Ethan Ting/Dockerfile",
+      "sha256": "ad4702e4ae05e7f23206f8f78b81f5f7c2fe20f3bcedb2e3b0908d40fd55b942"
+    },
+    {
+      "path": "student-Ethan Ting/RELEASE1.md",
+      "sha256": "65718cd8cfcb9d250ae087d9acafc808ca61685583b82b0a8a4a2df68cc184cf"
+    },
+    {
+      "path": "student-Ethan Ting/RELEASE2.md",
+      "sha256": "67649865add54fbc87ed8df5364c0d96846e25441dbc8733c04a780f320da70c"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/architecture_prompt.txt",
+      "sha256": "1ef63fdb2768cff438b85dddf1ea3c320bb1ca874fbe1bf870519eda5ba12ea3"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/customer_change_prompt.txt",
+      "sha256": "c81cabc0dc7c0b17e52dfa1c2a0f96da03de57735a8ce7bc5281e87aeb01dd3f"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/customer_insight_prompt.txt",
+      "sha256": "e15104d2f7ef67909eb2f72a1a93d761729f090f4f550918393e99234129a255"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/database_prompt.txt",
+      "sha256": "06d65f68acfbbb601ea3cb7efa842fa24c0ff0318384c15cf12f81b032a5b52a"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/endpoints_prompt.txt",
+      "sha256": "76fccd5f44aa6688c657e4f47fd3ad5de162787739e8cec1615244867e10e845"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/mcp_prompt.txt",
+      "sha256": "da3a62448822b400852648cf4de668a89219b0d84045c5c9f4bb9607672e9ff5"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/rag_prompt.txt",
+      "sha256": "375337818e67879cfa4c052bfd9bcdfb26aedf80e802f80fe135a5773bfec1c7"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/review_config.json",
+      "sha256": "2dfeb3071dd99c26d5c052d6c959b6536e39a79482b05a33ba5994f6deeec22e"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/review_prompt.txt",
+      "sha256": "175608096acc6827b5650a5f5a069a468785d45fccedffd41c0989980f25b55b"
+    },
+    {
+      "path": "student-Ethan Ting/backend/app.py",
+      "sha256": "08fcbc0b5e2f55aab0576e316bd0db34a90fe3425ba9df523edae3e37a013f5b"
+    },
+    {
+      "path": "student-Ethan Ting/database/app.py",
+      "sha256": "4f5f2e6f1b1484e864e15b8b31c67969f95a7f4e5f331ff3894d4e533b8abe84"
+    },
+    {
+      "path": "student-Ethan Ting/database/init_db.py",
+      "sha256": "3bb22ac371cbed4c88eb18c156bf94eb467b3cc571be69ebec8d0a4e9a41e4a5"
+    },
+    {
+      "path": "student-Ethan Ting/database/schema.sql",
+      "sha256": "f3b95960291d229be506832dedb1fda8dbc3e1ae228353f8490855c05d5cbc4d"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/admin-loyalty.html",
+      "sha256": "5aa1d8da08f434cb6a8d110778dae369465353f4464ca570e6f0c4c4106cc50b"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/admin.html",
+      "sha256": "9bcec4b1ecf325eafc5964a578a399ac99fe7e81d940d6e3b9310f4784d8b292"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/css/dashboard.css",
+      "sha256": "cccb5c8fad8823c91fbb4304c120668fd72d3609c7eb55224118f0dc2e29d203"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/css/login.css",
+      "sha256": "5c817b425eadb1b47e556006c95c9a3415add8a99d1cab84dc9e79de88234519"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/customer.html",
+      "sha256": "bcc97a46666e2aff33b91c3bff08c135bf2c8965136572c59579646d30de8562"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/index.html",
+      "sha256": "616f0a0fc9c2f98a0b71ef48768c3aa0de89bdd1c3d86aa3a0016d3a7298569b"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/js/admin-loyalty.js",
+      "sha256": "4424757f072701554a3050c8b3e1ef98270dd7a3517ac06f2536fed98ed60679"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/js/admin.js",
+      "sha256": "8b01ac2c9bc17c94e1a1869cc6d297db40d77f22ae6f32a06a76d9298eac056c"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/js/customer-assistant.js",
+      "sha256": "4661eff1ef3b35ec0cad6b7c76ce32a8c570cb5dc2046712bd140cda1c9614b7"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/js/customer.js",
+      "sha256": "f64de26f40a18e6bd785aa60bbbbc5e5f41c107aaeaf1048a1154c97baf6b5e6"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/js/login.js",
+      "sha256": "ac95d8170bc029a16a5320b731b3a769f98f0098622cac2b480e5586a088ef43"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/nginx.conf",
+      "sha256": "4195e9a33c2c467d49a229523bb5acefbdce98417dc319703a3451896efd9a23"
+    },
+    {
+      "path": "student-Ethan Ting/scripts/capture_release2_security.py",
+      "sha256": "69d9543e47233c6b7436507a06ac30d6c7e0f49fd78281d471fbc90277c011f0"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_agentic_review.py",
+      "sha256": "e18440be6eefc683fa63e2e76e6d9c1142fc520da4dfd09d52ddedbf100c348c"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_assistant_service_status.py",
+      "sha256": "11f4ba63bb9f3ab82cffb6efe2f19617cfc3f6646f798a754136b450da00c621"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_customer_insight_ai.py",
+      "sha256": "a745c3e4b2840a4135126f441c6d80e5944c84514625aa2a4dc335e349d302bd"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_login_system.py",
+      "sha256": "1d8f5301c27055d11bed36c3ffa5e32e79176b3e04ab409cf656131390b1e66a"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_loyalty_edge_cases.py",
+      "sha256": "061361a2ee6b2593a58e3d93dde749de1d10876e4381deb1b1bf3b2a7ec19baf"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_mcp_history_chat.py",
+      "sha256": "1ad3ab98dbed42515cdc02435f69ccbebaff357eee197acb43a336350fd0fa4d"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_mcp_loyalty.py",
+      "sha256": "20d9715444e62aa398e914b77f7fe2e08c5a07fab73f58b4c6ff3b27bea722bc"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_multi_agent_loyalty.py",
+      "sha256": "17dbee3aff034c9d4daecbe3d7ca5055209d919ccfb3beeec8ae065a83fbb010"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_rag_accounts_loyalty.py",
+      "sha256": "a35d41467f4f16255fc4a135bb062b19c7fdbe95a0fd41622e8dca5c9be28d6d"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_security_boundaries.py",
+      "sha256": "5e38647ef983a69b993a89bb65aa7d2580cf7c3baae2231084bfcf1f991b9b4c"
+    }
+  ],
+  "commands": [
+    {
+      "name": "ruff-feature",
+      "command": [
+        "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "--select",
+        "S",
+        "student-Ethan Ting",
+        "ai-services/mcp_server/tests/test_ethan_ting_customer_tools.py",
+        "--output-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/evidence/release2-ethan-ting/step2/ruff-feature.stdout.txt",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "stderr": {
+        "path": "docs/evidence/release2-ethan-ting/step2/ruff-feature.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "ruff-whole-repository",
+      "command": [
+        "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "--select",
+        "S",
+        ".",
+        "--output-format",
+        "json"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": "docs/evidence/release2-ethan-ting/step2/ruff-whole-repository.stdout.txt",
+        "sha256": "c982f9b987be37e6d876ce25c9ce4cb00bbfd77521e8c47f4e5d3b6ec3e5b4bb"
+      },
+      "stderr": {
+        "path": "docs/evidence/release2-ethan-ting/step2/ruff-whole-repository.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "detect-secrets-feature",
+      "command": [
+        "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python",
+        "-m",
+        "detect_secrets",
+        "scan",
+        "--all-files",
+        "student-Ethan Ting",
+        "ai-services/mcp_server/tests/test_ethan_ting_customer_tools.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/evidence/release2-ethan-ting/step2/detect-secrets-feature.stdout.txt",
+        "sha256": "568d9c3872cdfa95c48c914ff09250a55646d4a4fe009d089dcdda5dd0dab188"
+      },
+      "stderr": {
+        "path": "docs/evidence/release2-ethan-ting/step2/detect-secrets-feature.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "pip-audit-unfiltered",
+      "command": [
+        "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python",
+        "-m",
+        "pip_audit",
+        "-r",
+        "requirements-audit.txt",
+        "--format",
+        "json",
+        "--progress-spinner",
+        "off"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": "docs/evidence/release2-ethan-ting/step2/pip-audit-unfiltered.stdout.txt",
+        "sha256": "0017820340b1b8ffa5df56c194833a8c22a5b329c355a49ee12e808d698a0bae"
+      },
+      "stderr": {
+        "path": "docs/evidence/release2-ethan-ting/step2/pip-audit-unfiltered.stderr.txt",
+        "sha256": "61d5d77486aa7224bb5fd485da0869261c2d8adcebb7bbab373bbe1224fcf5c7"
+      }
+    },
+    {
+      "name": "pre-commit-owned-files",
+      "command": [
+        "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python",
+        "-m",
+        "pre_commit",
+        "run",
+        "--hook-stage",
+        "pre-commit",
+        "--files",
+        "ai-services/mcp_server/tests/test_ethan_ting_customer_tools.py",
+        "student-Ethan Ting/.DS_Store",
+        "student-Ethan Ting/Dockerfile",
+        "student-Ethan Ting/RELEASE1.md",
+        "student-Ethan Ting/RELEASE2.md",
+        "student-Ethan Ting/agentic/architecture_prompt.txt",
+        "student-Ethan Ting/agentic/customer_change_prompt.txt",
+        "student-Ethan Ting/agentic/customer_insight_prompt.txt",
+        "student-Ethan Ting/agentic/database_prompt.txt",
+        "student-Ethan Ting/agentic/endpoints_prompt.txt",
+        "student-Ethan Ting/agentic/mcp_prompt.txt",
+        "student-Ethan Ting/agentic/rag_prompt.txt",
+        "student-Ethan Ting/agentic/review_config.json",
+        "student-Ethan Ting/agentic/review_prompt.txt",
+        "student-Ethan Ting/backend/app.py",
+        "student-Ethan Ting/database/app.py",
+        "student-Ethan Ting/database/init_db.py",
+        "student-Ethan Ting/database/schema.sql",
+        "student-Ethan Ting/frontend/admin-loyalty.html",
+        "student-Ethan Ting/frontend/admin.html",
+        "student-Ethan Ting/frontend/css/dashboard.css",
+        "student-Ethan Ting/frontend/css/login.css",
+        "student-Ethan Ting/frontend/customer.html",
+        "student-Ethan Ting/frontend/index.html",
+        "student-Ethan Ting/frontend/js/admin-loyalty.js",
+        "student-Ethan Ting/frontend/js/admin.js",
+        "student-Ethan Ting/frontend/js/customer-assistant.js",
+        "student-Ethan Ting/frontend/js/customer.js",
+        "student-Ethan Ting/frontend/js/login.js",
+        "student-Ethan Ting/frontend/nginx.conf",
+        "student-Ethan Ting/scripts/capture_release2_security.py",
+        "student-Ethan Ting/tests/test_agentic_review.py",
+        "student-Ethan Ting/tests/test_assistant_service_status.py",
+        "student-Ethan Ting/tests/test_customer_insight_ai.py",
+        "student-Ethan Ting/tests/test_login_system.py",
+        "student-Ethan Ting/tests/test_loyalty_edge_cases.py",
+        "student-Ethan Ting/tests/test_mcp_history_chat.py",
+        "student-Ethan Ting/tests/test_mcp_loyalty.py",
+        "student-Ethan Ting/tests/test_multi_agent_loyalty.py",
+        "student-Ethan Ting/tests/test_rag_accounts_loyalty.py",
+        "student-Ethan Ting/tests/test_security_boundaries.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "docs/evidence/release2-ethan-ting/step2/pre-commit-owned-files.stdout.txt",
+        "sha256": "afca3d5f9b0d007ac04b940226bcb6effdd2766cf79f79447243e4d7674011ae"
+      },
+      "stderr": {
+        "path": "docs/evidence/release2-ethan-ting/step2/pre-commit-owned-files.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

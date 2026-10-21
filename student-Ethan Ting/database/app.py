@@ -474,7 +474,7 @@ def update_user(user_id):
     try:
         with get_connection() as connection:
             cursor = connection.execute(
-                f"UPDATE users SET {', '.join(updates)} WHERE id = ?",
+                f"UPDATE users SET {', '.join(updates)} WHERE id = ?",  # noqa: S608 - updates contains fixed column assignments only; every request value and ID is a bound parameter.
                 parameters,
             )
     except sqlite3.IntegrityError:
@@ -509,7 +509,7 @@ def deactivate_user(user_id):
 
 if __name__ == "__main__":
     app.run(
-        host="0.0.0.0",
+        host=os.environ.get("APP_HOST", "127.0.0.1"),
         port=6003,
         debug=os.environ.get("APP_DEBUG", "false").lower() == "true",
         use_reloader=False,

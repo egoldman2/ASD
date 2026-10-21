@@ -61,7 +61,7 @@ def test_tool_matches_customer_database_tier_rules():
     )
     namespace = {}
     isolated_function = ast.Module(body=[loyalty_function], type_ignores=[])
-    exec(compile(isolated_function, str(database_app), "exec"), namespace)
+    exec(compile(isolated_function, str(database_app), "exec"), namespace)  # noqa: S102 - Executes only this repository's parsed loyalty_status function in a test namespace, never user input or module startup.
     loyalty_status = namespace["loyalty_status"]
     for points in (0, 1, 499, 500, 501, 999, 1000, 1500):
         expected = loyalty_status(points)

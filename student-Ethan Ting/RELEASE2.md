@@ -79,10 +79,32 @@ Live review results can contain factual errors even when every agent completes.
 Keep incorrect results and the human correction/rejection as evidence, rather than
 describing schema validation as factual verification.
 
+## Step 2: security hooks and endpoint CI
+
+The existing pre-commit hook is installed in this Desktop checkout. Native
+backend/database servers default to loopback, while their Docker targets explicitly
+set `APP_HOST=0.0.0.0`. Backend service URLs are restricted to configured HTTP(S)
+origins and application API paths; service redirects are rejected. Regression tests
+check malicious URL inputs, redirect rejection, fixed SQL assignments and literal
+storage of SQL-looking customer names in an isolated test database.
+
+Capture current scans without changing the Git index or creating a commit:
+
+```bash
+.venv311/bin/python 'student-Ethan Ting/scripts/capture_release2_security.py'
+```
+
+The [Step 2 report and actual output](../docs/evidence/release2-ethan-ting/step2/README.md)
+distinguish passing feature-scoped hooks from remaining whole-repository findings
+and the four existing dependency-advisory exceptions. The published `student-3.yml`
+run for `4d635cc` already passed both allocated endpoint tests and Docker validation.
+That run does **not** cover subsequent uncommitted security changes. No commit-time
+execution is claimed until the user makes a real commit; the hook will run then.
+
 ## Remaining steps
 
-- Install/run security hooks and capture scan evidence during a real commit.
-- Identify and report two endpoint functions in the assigned student-3 CI workflow.
+- Review these local security changes, then retain hook execution during a real commit.
+- Publish the final version and retain a new passing student-3 CI run for that commit.
 - Configure this feature's Release 2 review evidence using the latest shared modes.
 - Validate the integrated local application and final cloud deployment.
 - Update individual diagrams, report contribution and demonstration evidence.

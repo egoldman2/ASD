@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 12276037467,
+      "node_id": "MDg6QXJ0aWZhY3QxMjI3NjAzNzQ2Nw==",
+      "name": "ethan-ting-release2-endpoints-4d635cc87541fe97331c8640ff73e7f40a007232-1",
+      "size_in_bytes": 2338,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12276037467",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12276037467/zip",
+      "expired": false,
+      "digest": "sha256:45686bd660c756b6acbb005f85cd79013401eba0ee5e258e426586f7b6bd6da5",
+      "created_at": "2026-10-20T15:16:55Z",
+      "updated_at": "2026-10-20T15:16:55Z",
+      "expires_at": "2027-01-18T15:15:18Z",
+      "workflow_run": {
+        "id": 39446704204,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "4d635cc87541fe97331c8640ff73e7f40a007232"
+      }
+    }
+  ]
+}
