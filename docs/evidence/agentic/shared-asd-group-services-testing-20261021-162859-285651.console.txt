@@ -1,0 +1,108 @@
+
+[START] Feature=shared, mode=testing
+
+[PLAN] Loaded Shared ASD Group Services prompt and prepared a read-only testing review.
+
+[ACT] Collecting testing evidence without modifying the application.
+
+[VALIDATE] Deterministic testing status: fail; supplied captures checked offline.
+
+[OBSERVE] Collected 4142 characters of structured evidence.
+
+[PROMPTS] Using feature prompt: /Users/ethan/Desktop/ASD/assignment 1/ASD/shared/agentic/review_prompt.txt
+
+[LLM] Sending the initial evidence review to qwen2.5:3b.
+DETERMINISTIC STATUS: fail
+
+**Observations**
+- The review is conducted in testing mode, focusing solely on feature tests and gate statuses for Release 2 of the project.
+
+**Findings**
+1. All five features (product_catalogue, inventory, customer_loyalty, order_returns, customer_support) have passed their respective test gates.
+2. However, all three security tools (`ruff`, `detect-secrets`, and `pip-audit`) reported failures:
+   - RUFF tool found 39 issues with code style violations (status: fail).
+   - Detect-Secrets identified 78 potential secrets or sensitive information leaks in the project's dependencies and configurations (status: fail).
+   - PIP-Audit flagged four vulnerabilities that were not accepted advisories but had exceptions for specific security patches (status: pass_with_exceptions).
+
+**Recommendations**
+1. Address code style violations by Chufeng Li, Ryan Nolan, Ethan Ting, Howard, and Ethan Goldman through their respective feature tests.
+2. Investigate the 78 potential secrets or sensitive information leaks identified by Detect-Secrets tool:
+   - Review all configurations for any hardcoded credentials, API keys, database passwords, etc., that should be managed securely (e.g., environment variables).
+   - Ensure proper use of secure practices such as using secret management tools and encrypting sensitive data.
+3. Mitigate the four vulnerabilities identified by PIP-Audit tool:
+   - Apply security patches for PYSEC-2026-311, 3811, 3813, and 3814 to their respective feature repositories.
+
+**Proposed Adaptation**
+Implement a comprehensive code review process that includes static analysis tools like `ruff` as part of the CI pipeline. For sensitive information management, introduce secure practices such as environment variables for configuration files instead of hardcoding credentials or use secrets managers (e.g., HashiCorp Vault). Additionally, update all feature repositories to include security patches recommended by PIP-Audit tool and ensure that these updates are tested in a staging environment before being deployed.
+
+[REVIEW] Checking the first response against the same evidence.
+DECISION: ADAPT
+Deterministic evidence checks found:
+- The report omits the offline capture authenticity limitation.
+
+Model reviewer feedback:
+DECISION: FAIL
+
+REVIEW FEEDBACK:
+- The review status is correctly set to fail based on the provided evidence of all features passing their test gates but security tools reporting failures.
+
+- Recommendations are specific and actionable for addressing code style violations, sensitive information leaks, and vulnerabilities. They align with best practices in software development security.
+
+- Proposed adaptation includes concrete steps such as integrating static analysis into CI pipelines, using secure configuration management techniques like environment variables or secrets managers, and ensuring patches are tested before deployment.
+
+The review is evidence-based and scoped to the selected feature tests for Release 2 of ASD 2026. The recommendations provide specific guidance without making assumptions about missing features or untested code paths.
+
+[ADAPT] Reviewer requested an evidence-based revision.
+**Observations**
+- The review is conducted in testing mode, focusing solely on feature tests for Release 2 of ASD 2026 project.
+
+**Findings**
+1. All five features (product_catalogue, inventory, customer_loyalty, order_returns, customer_support) have passed their respective test gates.
+2. Security tools (`ruff`, `detect-secrets`, and `pip-audit`) reported failures:
+   - RUFF tool found 39 code style violations (status: fail).
+   - Detect-Secrets identified 78 potential secrets or sensitive information leaks in the project's dependencies and configurations (status: fail).
+   - PIP-Audit flagged four vulnerabilities that were not accepted advisories but had exceptions for specific security patches (status: pass_with_exceptions).
+
+**Recommendations**
+1. Address code style violations by Chufeng Li, Ryan Nolan, Ethan Ting, Howard, and Ethan Goldman through their respective feature tests.
+2. Investigate the 78 potential secrets or sensitive information leaks identified by Detect-Secrets tool:
+   - Review all configurations for any hardcoded credentials, API keys, database passwords, etc., that should be managed securely (e.g., environment variables).
+3. Mitigate the four vulnerabilities identified by PIP-Audit tool:
+   - Apply security patches for PYSEC-2026-311, 3811, 3813, and 3814 to their respective feature repositories.
+
+**Adaptation Applied**
+Implement a comprehensive code review process that includes static analysis tools like `ruff` as part of the CI pipeline. For sensitive information management, introduce secure practices such as using environment variables for configuration files instead of hardcoding credentials or use secrets managers (e.g., HashiCorp Vault). Additionally, update all feature repositories to include security patches recommended by PIP-Audit tool and ensure that these updates are tested in a staging environment before being deployed.
+
+[ADAPT] Using the deterministic evidence summary to preserve validation results.
+DETERMINISTIC STATUS: fail
+OBSERVATIONS
+- Selected code SHA: 5ac753508cca8fdc10b57475c5be5aac3d70ab08; read-only captured evidence review.
+- ruff: fail; executed successfully: True; findings: 39; unexcepted: 39; accepted advisories: none.
+- detect-secrets: fail; executed successfully: True; findings: 78; unexcepted: 78; accepted advisories: none.
+- pip-audit: pass_with_exceptions; executed successfully: True; findings: 4; unexcepted: 0; accepted advisories: PYSEC-2026-311, PYSEC-2026-3813, PYSEC-2026-3814, PYSEC-2026-3815.
+- product_catalogue: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39548953058.
+- get_products: passed=True; student-Chufeng/tests/test_catalogue.py::test_get_and_search_products.
+- create_cart_item: passed=True; student-Chufeng/tests/test_catalogue.py::test_add_cart_item.
+- inventory: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39548953055.
+- create_product: passed=True; student-Ryan_Nolan/tests/inventory_tests.py::test_create_product.
+- update_product: passed=True; student-Ryan_Nolan/tests/inventory_tests.py::test_update_product.
+- customer_loyalty: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39548953053.
+- register: passed=True; student-Ethan Ting/tests/test_login_system.py::test_customer_registration_creates_customer_session.
+- create_loyalty_adjustment: passed=True; student-Ethan Ting/tests/test_login_system.py::test_admin_adjustment_includes_authenticated_admin_id.
+- order_returns: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39548953084.
+- create_order: passed=True; student-Howard/tests/test_api.py::test_create_order.
+- create_return: passed=True; student-Howard/tests/test_api.py::test_create_return.
+- customer_support: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39548953095.
+- customer_create: passed=True; student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract.
+- admin_update: passed=True; student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract.
+FINDINGS
+- Deterministic issues: none
+- Offline captures: remote authenticity is not independently verified.
+RECOMMENDATIONS
+- Verify current exact-SHA Actions runs and resolve failed/missing evidence before release.
+ADAPTATION APPLIED
+- Preserved deterministic results; this review generates no application change or human release approval.
+
+[VALIDATE] Saved deterministic status fail to /Users/ethan/Desktop/ASD/assignment 1/ASD/docs/evidence/agentic/shared-asd-group-services-testing-20261021-162859-285651.validation.json
+
+[DONE] Agentic review completed. Evidence saved to /Users/ethan/Desktop/ASD/assignment 1/ASD/docs/evidence/agentic/shared-asd-group-services-testing-20261021-162859-285651.md

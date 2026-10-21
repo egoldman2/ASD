@@ -15,12 +15,13 @@ flowchart LR
     S3[Private release bucket] -->|SSM deployment| Gateway
 ```
 
-Current status (20 October 2026): the existing application is still the older
-manual release. The GitHub App connection is AVAILABLE and a source-only CodeBuild
-probe successfully downloaded main. The new main-push runner setup preserves the
-existing Actions tests, deployment script and native artifact uploads; a successful
-integrated main deployment and public acceptance checks are still required. The
-AWS plan is unchanged. See the [ledger](../evidence/release2-ethan-goldman/progress.md).
+Current status (21 October 2026): main `5ac7535` is deployed through the automatic
+GitHub PUSH relay, temporary runner and native Actions job. All five student
+workflows, seven suites, image build, gate and SSM acceptance pass. The public
+Support deletion redirect is verified in Chrome. [Native deployment, persistence
+and browser evidence](../evidence/release2-aws/final-5ac7535/verification.json).
+The AWS plan is unchanged; Ethan requested keeping the demo running for marking.
+Security findings and the separate human release decision remain in the [ledger](../evidence/release2-ethan-goldman/progress.md).
 
 ## Design choices
 
@@ -30,15 +31,19 @@ AWS plan is unchanged. See the [ledger](../evidence/release2-ethan-goldman/progr
 - EC2 ingress accepts port 80 only from the AWS-managed CloudFront origin-facing prefix list. A generated secret header rejects requests from other distributions. No SSH port is opened; administration uses Systems Manager.
 - The host fetches release files and generated credentials with an instance role. IMDSv2 and a hop limit of one prevent bridge-network application containers from using that role.
 - Accounts, products, support and orders databases live under `/srv/asd/data` on encrypted EBS, outside release directories. The generated session key also survives releases. Initial seed passwords come from Secrets Manager; existing database hashes are not replaced.
-- The EC2 default is `t3.small`, verified eligible for this project's Free plan. Local idle measurements were approximately 550 MiB across the 14 containers. This is an assessment baseline; load and sustained CPU usage still need measurement.
+- The EC2 default is `t3.small`, verified eligible for this project's Free plan. Local idle measurements were approximately 550 MiB across the 14 containers. The recorded sequential demo load is a bounded observation, not a production capacity guarantee.
 
 S03a measured recurring Python health-probe CPU overhead on the recovered old
 manual release. Source healthchecks now run every 30 seconds after startup, with
 five-second checks during the existing 30-second startup grace period. Five
 failures preserve the 150-second configured interval budget; actual detection
 time also includes probe execution. All HTTP validations remain enabled. This
-repair is not deployed and does not close the historical OOM diagnosis or final
-S03 stability gate. [Measurements and verification](../evidence/release2-aws/cpu-probes-20261017/README.md).
+repair is deployed: all seven API/database health schedules were inspected.
+A 30-minute observation of `2e72743` passes 960 public checks with no new OOM
+events or unexpected restarts and at least 891,892 KiB available memory.
+The redirect-only `5ac7535` revision also passes a separate three-minute check.
+These measurements do not uniquely establish the historical OOM cause.
+[Observation and native captures](../evidence/release2-aws/stability-20261021/verification.json).
 
 ## Provision and release
 
@@ -67,9 +72,8 @@ SSM commands retain safe failure status/identity when available, and Actions
 attempts artifact upload on failure. A rollback attempt is not proof of restored
 health; inspect the previous release afterward. No database rollback is performed.
 
-S14's local fixture checks establish the code paths; actual SSM/public/resource
-stability and five same-SHA workflow evidence still belong to S16. No successful
-live deployment is claimed by these source changes.
+S14's earlier local fixtures establish code paths. S16's linked native main
+captures now establish actual SSM/public acceptance and five same-SHA workflows.
 
 SSM command IDs and sanitized deployment reports provide evidence. Do not paste `cloud.env`, Secrets Manager values, cookies or raw `docker inspect` output into reports. The seed password can be retrieved privately from the stack's `DemoPasswordArn` for `admin@asd.local` and `customer@asd.local`; it is not published in source or stack outputs.
 
@@ -165,7 +169,11 @@ Two private encrypted pre-recovery snapshots and consistent SQLite/session backu
 
 ## Group decisions still needed
 
-Decide who owns the AWS project and invites team members; whether to keep this shared environment running; the acceptable credit budget; how demo credentials are shared privately; who can approve deployments; whether the current availability, logging and backup limits are sufficient. The support Multi-Agent implementation, explicit support endpoint CI and review modes are implemented. Genuine human review, remaining member evidence, final integrated deployment and report/showcase acceptance remain required.
+Ethan requested keeping the shared demo running for marking on 21 October.
+Retained disks, release storage, secrets and recovery snapshots remain; no
+assessment data was deleted. The ledger distinguishes passing deployment checks
+from remaining security findings and human release conditions. Report/showcase
+assembly is deferred at Ethan's request.
 
 Cloud matrix/build validation also runs on relevant PRs. Gate and deployment
 remain main-only; concurrency is separated by ref so PR validation cannot replace

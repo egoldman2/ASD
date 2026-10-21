@@ -1,0 +1,49 @@
+{
+  "owner": "Ethan Goldman",
+  "source_sha": "2e7274304a4d196d45a36e295b1be0c5792310e8",
+  "release_id": "2e7274304a4d196d45a36e295b1be0c5792310e8-1",
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "window_start": "2026-10-21T04:49:31.213485+00:00",
+  "window_end": "2026-10-21T05:19:31.345569+00:00",
+  "observation_seconds": 1800.1320868090042,
+  "command_id": "12c1eb2d-fe72-4099-8453-eb53d789ecb1",
+  "ssm_status": "Success",
+  "response_code": 0,
+  "status": "passed",
+  "cycles": 15,
+  "public_checks": 960,
+  "all_cycles_passed": true,
+  "new_oom_events": 0,
+  "unexpected_restarts": 0,
+  "minimum_available_memory_kib": 891892,
+  "all_samples_healthy": true,
+  "raw_capture": {
+    "path": "stability.json.gz",
+    "uncompressed_sha256": "e9d6043b5c3a477c8b41bc27b714ecf9530499a31ad7d3be1eb73eb95cb9c1d8",
+    "uncompressed_bytes": 26259,
+    "compression": "gzip; native bytes preserved"
+  },
+  "health_schedules": {
+    "CommandId": "2df38297-c9c9-4136-a2d8-a5e2c68d08ad",
+    "Status": "Success",
+    "ResponseCode": 0,
+    "StandardOutputContent": "{\"captured_at\": \"2026-10-21T05:01:38.452419+00:00\", \"source_sha\": \"2e7274304a4d196d45a36e295b1be0c5792310e8\", \"current_release\": \"/srv/asd/releases/2e7274304a4d196d45a36e295b1be0c5792310e8-1-b1d73d705f34\", \"actual_running_healthchecks\": {\"inventory-backend\": {\"Interval\": 30000000000, \"Timeout\": 3000000000, \"StartPeriod\": 30000000000, \"StartInterval\": 5000000000, \"Retries\": 5}, \"shared-backend\": {\"Interval\": 30000000000, \"Timeout\": 3000000000, \"StartPeriod\": 30000000000, \"StartInterval\": 5000000000, \"Retries\": 5}, \"customer-support-backend\": {\"Interval\": 30000000000, \"Timeout\": 3000000000, \"StartPeriod\": 30000000000, \"StartInterval\": 5000000000, \"Retries\": 5}, \"ethan-backend\": {\"Interval\": 30000000000, \"Timeout\": 3000000000, \"StartPeriod\": 30000000000, \"StartInterval\": 5000000000, \"Retries\": 5}, \"ethan-database\": {\"Interval\": 30000000000, \"Timeout\": 3000000000, \"StartPeriod\": 30000000000, \"StartInterval\": 5000000000, \"Retries\": 5}, \"product-database\": {\"Interval\": 30000000000, \"Timeout\": 3000000000, \"StartPeriod\": 30000000000, \"StartInterval\": 5000000000, \"Retries\": 5}, \"customer-support-database\": {\"Interval\": 30000000000, \"Timeout\": 3000000000, \"StartPeriod\": 30000000000, \"StartInterval\": 5000000000, \"Retries\": 5}}, \"status\": \"passed\"}\n",
+    "StandardErrorContent": ""
+  },
+  "metrics_capture": "host-metrics.json.gz",
+  "limitations": [
+    "One sequential synthetic demo client, not a production capacity guarantee.",
+    "Existing account DELETE deactivates disposable accounts; those rows remain.",
+    "CloudWatch metric timestamps are service aggregation buckets; latest data may arrive after capture.",
+    "Historical OOM cause was not uniquely established. This observation validates the repaired schedule under the stated demo traffic.",
+    "The following change only repairs Support post-delete redirection; this 30-minute measurement belongs to the stated source SHA."
+  ],
+  "executed_harness": {
+    "path": "observe.py.gz",
+    "uncompressed_sha256": "4bae52a813114c5d47902500e07360297530d4c4e64b5d2884359c7caef2b7c2",
+    "purpose": "Immutable executed observation transcript, not application source; assertions validate the test window."
+  },
+  "metrics_uncompressed_sha256": "1532b78ad41c7488a07eb66b43ec4f402fc199a53ffc589f30e9d2099918c337",
+  "native_hash_verification_command": "ce515b33-1418-4663-93e7-d6d27d85bf25",
+  "all_native_cycle_artifact_hashes_verified": true
+}

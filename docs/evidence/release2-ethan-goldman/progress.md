@@ -61,7 +61,7 @@ The [regression test](../../../student-Ryan_Nolan/tests/test_authentication.py)
 and fix are retained in this checkpoint. Its commit and exact-SHA Actions results
 are recorded in the fix PR; no separate bookkeeping commit is required.
 
-## Current verification and remaining work
+## Historical operational checkpoints — 18–21 October 2026
 
 - S16d: public browser ticket #2019 survives the automatic `2e72743` deployment;
   manual reply/update/reload and explicitly approved deletion succeed. Deletion
@@ -165,7 +165,41 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
 - Canvas confirms Group 33. Release 2 displays 25 October, 23:59 with the profile
   timezone Sydney; its brief says AEST. The timezone wording still needs confirmation.
 
-Next: integrate PR #23 after exact-head CI and separate merge authorization, then
-verify S16 through the native main Actions deployment and public acceptance checks.
-Resolve remaining source-owner security findings and rerun affected reviews before
-release sign-off. Report/video assembly is deferred at Ethan's request.
+## Current release verification — 21 October 2026
+
+- S03b: deployed `2e72743` completes 1,800 seconds, 15 cycles and 960 passing
+  public checks. No new OOM events or unexpected restarts; minimum available
+  memory 891,892 KiB. Actual seven-service health schedules and native metric
+  captures are retained. [Observation](../release2-aws/stability-20261021/verification.json).
+- S16d: repair `b640997` passes all three exact-head CI runs and security hooks;
+  Support 210 passed/10 opt-in skips, shared/cloud 373 passed. Explicitly approved
+  [PR #25](https://github.com/egoldman2/ASD/pull/25) merges as `5ac7535` after the
+  observation. All five main workflows and ten endpoint cases pass;
+  [native owner captures](ci/main-5ac7535/verification.json). The automatic relay,
+  child runner and [main deployment](https://github.com/egoldman2/ASD/actions/runs/39548953172)
+  succeed. Both 64-check smoke captures pass with all AI flags false. All baseline
+  database keys and pre-existing Support rows survive; explicitly approved Chrome
+  deletion of #2039 returns to `/support/staff.html`, zero matches/rows afterward.
+  The final redirect-only revision also passes a three-minute/128-check health
+  observation. [Native acceptance/persistence/browser evidence](../release2-aws/final-5ac7535/verification.json).
+- S17b: three real Qwen 3B reviews of current source and actual captures are saved
+  with matching console, input hashes and validation logs;
+  [provenance](../agentic/release2-5ac7535-execution.json). Support's selected
+  workflow/history/audit validation passes. Shared Testing validates all five
+  owners but retains 39 Ruff findings and 78 detector candidates; four unique
+  Chroma advisories retain existing exceptions. Cloud technical validation passes.
+  Ethan explicitly approves [Conditional accept](../release2-aws/final-5ac7535/human-release.json)
+  for `5ac7535`: keep the assessment demo available, retain the failed Testing
+  Review and require source-owner security review/resolution before unconditional
+  group sign-off. [Separate post-decision validation](../release2-aws/final-5ac7535/post-decision-validation.json)
+  confirms the genuine decision and pending conditions; original model review
+  inputs/outputs remain unchanged. Model grounding failures/fallback stay visible.
+  No blanket security pass or production capacity claim is made.
+- Ethan requested keeping the demo running for marking. Report/PDF/video work and
+  bonuses remain deferred. Historical blocker statements above describe their
+  dated checkpoints and do not describe current deployment availability.
+
+For this evidence checkpoint, use its PR's commit list and exact-head Actions
+links. Next: integrate evidence through a separately approved PR. Source-owner
+security findings remain open before unconditional group sign-off; report/video
+work stays deferred.

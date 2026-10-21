@@ -1,0 +1,34 @@
+{
+  "source_sha": "5ac753508cca8fdc10b57475c5be5aac3d70ab08",
+  "owner": "Ethan Goldman",
+  "captured_at": "2026-10-21T05:49:09.258480+00:00",
+  "command": "detect-secrets scan --all-files --no-verify <exact staged paths plus expanded gzip captures>; hash/context review; Markdown links; git diff --cached --check; post-decision collector",
+  "staged_paths_scanned": 61,
+  "expanded_native_archives_scanned": 5,
+  "detector_candidates_reviewed": 311,
+  "unclassified_findings": 0,
+  "classification": "Recomputed Git/file/archive/config/scanner digests, authenticated native source/snapshot checksums and temporary public test identifier.",
+  "native_scan": {
+    "path": "evidence-secrets.json.gz",
+    "uncompressed_sha256": "39a8de4635ce7eb64a951b8142afb704e4a2061f5e1e8f31de6d8b0980ae6d11"
+  },
+  "new_ignores_or_baseline_changes": 0,
+  "relative_markdown_links": "verified",
+  "staged_diff_check": {
+    "exit_code": 2,
+    "native_model_trailing_space_warnings": 10,
+    "disposition": "Unmodified native model Markdown/console bytes retained; no other diff-check findings."
+  },
+  "human_release": {
+    "recorded": true,
+    "decision": "conditional_accept",
+    "identity": "Ethan Goldman",
+    "reason_present": true,
+    "conditions_pending": true
+  },
+  "cloud_technical_status": "pass",
+  "limitations": [
+    "This separate evidence scan does not clear the retained raw application security findings.",
+    "The new scan and summary contain only scanner hashes/provenance and cannot include their own future scan hashes."
+  ]
+}

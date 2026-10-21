@@ -11,15 +11,18 @@ Support, shared AWS deployment and the two shared report-review modes.
   [actual CI context](ci/s03a-actions-test-context.json) and [artifact provenance](ci/s03a-actions-artifact.json).
 - [Real local UI/terminal/model/history captures](local/README.md).
 - [Both genuine human decisions, restart persistence and completed Support review](local/human-review-20261018/README.md).
-- [Integrated main tests, five-workflow gate and actual deployment blocker](ci/main-cc6f1e4/verification.json).
+- [Final five-owner endpoint/Actions captures](ci/main-5ac7535/verification.json)
+  and [successful main deployment, persistence and public browser checks](../release2-aws/final-5ac7535/verification.json).
 - [AWS recovery and backups](../release2-aws/recovery-20261017/README.md),
   [CPU diagnosis and tested repair](../release2-aws/cpu-probes-20261017/README.md).
 - [Original failed baseline test summary](ci/s00-tests.json).
   Planning documents and duplicate intermediate scans are excluded.
 
-PR #16 is merged and all five main workflows pass at `cc6f1e4`. Deployment stopped
-at the missing role preflight; renewed AWS access confirms the managed OIDC deny.
-Ethan retained the Free plan. Owner evidence, Actions deployment, final group
-reviews/release decision and the group PDF/video remain pending.
-Cloud recovery is not final deployment acceptance. Native captures retain their
-actual historical SHAs after branch-history cleanup. No bonus work is claimed.
+Approved PR #25 is merged as `5ac7535` and automatically deployed. All five
+student workflows and ten endpoint cases pass. The three final real model
+reviews and matching console/validation records are indexed in
+[review provenance](../agentic/release2-5ac7535-execution.json). Raw security
+findings remain disclosed; release conditions are recorded in the ledger.
+Ethan retained the Free plan and requested keeping the demo running for marking.
+Report/video work is deferred. Historical captures retain their actual source
+SHAs after branch cleanup; no bonus inference deployment is claimed.

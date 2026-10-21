@@ -1,0 +1,7 @@
+Ruff security rules......................................................Passed
+Detect committed secrets.................................................Passed
+Audit all Python dependencies............................................Passed
+[ethan-goldman b640997] fix(support): retain hosted queue path after ticket deletion
+ 5 files changed, 85 insertions(+), 11 deletions(-)
+ create mode 100644 docs/evidence/release2-aws/public-delete-redirect-20261021/baseline.json
+ create mode 100644 docs/evidence/release2-aws/public-delete-redirect-20261021/redirect-404.png
