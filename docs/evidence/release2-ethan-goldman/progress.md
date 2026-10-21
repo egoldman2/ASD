@@ -199,7 +199,23 @@ are recorded in the fix PR; no separate bookkeeping commit is required.
   bonuses remain deferred. Historical blocker statements above describe their
   dated checkpoints and do not describe current deployment availability.
 
-For this evidence checkpoint, use its PR's commit list and exact-head Actions
-links. Next: integrate evidence through a separately approved PR. Source-owner
-security findings remain open before unconditional group sign-off; report/video
-work stays deferred.
+PR #26 was explicitly approved and merged as `b46e719`; its
+[main deployment](https://github.com/egoldman2/ASD/actions/runs/39552747817)
+passed. Newer integrated main `358cc29` also passes all six workflows and its
+[native deployment](https://github.com/egoldman2/ASD/actions/runs/39611233212)
+records SSM `37f83a20-be7c-417d-8608-9dd66a039b55`, Success/accepted. The downloaded
+archive digest matches Actions; this verifies that capture, not a fresh host read.
+
+S14c (22 October): extend shared disabled-AI smoke and Cloud Review requirements
+to the now-integrated Accounts/Loyalty, Inventory and Orders/Returns Multi-Agent
+routes, using only temporary CRUD fixtures. Regression baseline: 4 failed/60
+passed; repaired focused suite: 65 passed. Shared/cloud: 377 passed; Support:
+210 passed/10 opt-in skips; MCP/RAG: 141 passed/2 opt-in skips; agents: 82 passed.
+Tests are in `cloud/tests/test_smoke.py` and
+`shared/tests/test_cloud_report_validation.py`; this checkpoint's PR records its
+commit, hooks and exact-SHA Actions links without a follow-up bookkeeping commit.
+Live checks for the three added routes remain pending integration; the AWS
+connector currently returns “Unknown tool”. Current raw scans retain 28 Ruff
+findings and 75 detector candidates; prior human approval and raw reviews remain
+historical and unchanged. Source-owner security review remains required before
+unconditional group sign-off; report/video work stays deferred.

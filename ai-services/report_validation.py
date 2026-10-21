@@ -464,6 +464,9 @@ DISABLED_PATHS = {
     "customer_loyalty:mcp": r"/account-api/api/admin/mcp/loyalty-tier",
     "customer_loyalty:rag": r"/account-api/api/admin/rag/answer",
     "product_catalogue:multi_agent": r"/api/chufeng/multi-agent/workflows",
+    "customer_loyalty:multi_agent": r"/account-api/api/admin/multi-agent/workflows",
+    "inventory:multi_agent": r"/inventory-api/api/inventory/multi-agent/workflows",
+    "order_returns:multi_agent": r"/api/order-returns/multi-agent/workflows",
 }
 DISABLED_INTEGRATIONS = set(DISABLED_PATHS)
 

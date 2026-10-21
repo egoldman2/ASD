@@ -87,7 +87,7 @@ def run(base_url, values):
             message = error.get("message") if isinstance(error, dict) else error
             row["safe_disabled"] = code in {"AI_MODE_DISABLED", "MCP_DISABLED", "RAG_DISABLED", "MULTI_AGENT_DISABLED"} or message in {
                 "AI mode is disabled.", "MCP mode is disabled.", "RAG mode is disabled.", "AI or RAG mode is disabled.",
-                "MCP integration is disabled.", "Multi-Agent integration is disabled.",
+                "MCP integration is disabled.", "Multi-Agent integration is disabled.", "Multi-Agent mode is disabled.",
             }
             if not row["safe_disabled"]:
                 raise SmokeCheckError("The endpoint did not establish disabled behaviour.")
@@ -141,6 +141,8 @@ def run(base_url, values):
         account_id = created_id(account, "user", "id")
         account_path = f"/account-api/api/admin/customers/{account_id}"
         cleanup.append((account_path, admin, 200, "customer_loyalty"))
+        request("/account-api/api/admin/multi-agent/workflows", "POST", {"user_id": account_id},
+                cookie=admin, expected=503, disabled="customer_loyalty:multi_agent")
         request(account_path, "PUT", {"full_name": "Cloud deployment check updated"}, cookie=admin, feature="customer_loyalty", operation="update")
         accounts, _ = request("/account-api/api/admin/customers", cookie=admin, feature="customer_loyalty", operation="read")
         if not any(row["id"] == account_id and row["full_name"] == "Cloud deployment check updated" for row in accounts["users"]):
@@ -159,6 +161,8 @@ def run(base_url, values):
         persisted, _ = request(product_path, cookie=admin, feature="inventory", operation="read")
         if persisted.get("id") != product_id or persisted.get("price") != 6.0:
             raise SmokeCheckError("Product changes did not persist.")
+        request("/inventory-api/api/inventory/multi-agent/workflows", "POST", {"question": "Review this deployment fixture product.", "product_id": product_id},
+                cookie=admin, expected=503, disabled="inventory:multi_agent")
         catalogue, _ = request("/api/products?" + urlencode({"search": identifier}))
         if not any(row["id"] == product_id for row in catalogue["products"]):
             raise SmokeCheckError("The shared catalogue did not expose the new product.")
@@ -177,8 +181,11 @@ def run(base_url, values):
 
         order, _ = request("/api/order-returns/orders", "POST", {"customer_id": user["id"], "order_date": "2026-10-09T00:00:00", "total": 12.0},
                            cookie=customer, expected=201, feature="order_returns", operation="create")
-        order_path = f"/api/order-returns/orders/{created_id(order, 'order_id')}"
+        order_id = created_id(order, "order_id")
+        order_path = f"/api/order-returns/orders/{order_id}"
         cleanup.append((order_path, admin, 200, "order_returns"))
+        request("/api/order-returns/multi-agent/workflows", "POST", {"question": "Review this deployment fixture order.", "order_id": order_id},
+                cookie=admin, expected=503, disabled="order_returns:multi_agent")
         request(order_path + "/status", "PATCH", {"status": "shipped"}, cookie=admin, feature="order_returns", operation="update")
         order, _ = request(order_path, cookie=customer, feature="order_returns", operation="read")
         if order.get("status") != "shipped":
