@@ -24,7 +24,7 @@ def test_database_has_minimum_records():
     db = os.path.join(os.path.dirname(__file__), "..", "database", "orders.db")
     conn = sqlite3.connect(db)
     for table in ("orders", "order_items", "returns"):
-        count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+        count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]  # noqa: S608 - fixed literal table names, not user input
         assert count >= 10, f"{table} has only {count} records"
     conn.close()
 
