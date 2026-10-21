@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Run one validated main GitHub Actions deployment in an ephemeral CodeBuild build using temporary service credentials.
+Description: Relay main pushes to a validated ephemeral GitHub Actions deployment using temporary CodeBuild credentials.
 Metadata:
   AWSToolsMetrics:
     AWSAgentToolkit: aws-cloudformation@3
@@ -71,8 +71,8 @@ Resources:
     Type: AWS::CodeBuild::Project
     Metadata:
       com.aws.cloudformation.Context:
-        why: AWS filters main pushes before code executes; the reviewed pre-job hook verifies the exact native Actions assignment
-        must: [no WORKFLOW_JOB_QUEUED trigger, no PR source, verify pinned runner digest, refuse every other job before its steps]
+        why: API-started builds can use the Git helper that public webhook builds cannot use
+        must: [no webhook on this deployment role, verify pinned runner digest, refuse every other job before its steps]
     Properties:
       Name: !Sub '${AWS::StackName}-deploy'
       ServiceRole: !GetAtt RunnerRole.Arn
@@ -106,14 +106,103 @@ Resources:
       LogsConfig:
         CloudWatchLogs: {Status: ENABLED, GroupName: !Ref RunnerLogs}
       Triggers:
+        Webhook: false
+  PushRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: public webhook builds only relay a verified main SHA and never receive deployment permissions
+        must: [one push project trust, StartBuild on the one runner project only]
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: codebuild.amazonaws.com}
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals: {aws:SourceAccount: !Ref 'AWS::AccountId'}
+              ArnEquals:
+                aws:SourceArn: !Sub 'arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${AWS::StackName}-push'
+      Policies:
+        - PolicyName: MainPushRelay
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [codeconnections:GetConnection, codeconnections:GetConnectionToken]
+                Resource: !Ref ConnectionArn
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}:*'
+              - Effect: Allow
+                Action: codebuild:StartBuild
+                Resource: !GetAtt RunnerProject.Arn
+  PushProject:
+    Type: AWS::CodeBuild::Project
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: public GitHub webhook builds suppress the Git credential helper, so the fixed relay starts an API build
+        must: [only main PUSH events, no execution of checkout code, compare checkout and remote main, no build overrides]
+    Properties:
+      Name: !Sub '${AWS::StackName}-push'
+      ServiceRole: !GetAtt PushRole.Arn
+      Artifacts: {Type: NO_ARTIFACTS}
+      EncryptionKey: alias/aws/s3
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+        PrivilegedMode: false
+      Source:
+        Type: GITHUB
+        Location: https://github.com/egoldman2/ASD
+        GitCloneDepth: 1
+        Auth: {Type: CODECONNECTIONS, Resource: !Ref ConnectionArn}
+        BuildSpec: !Sub |
+          version: 0.2
+          phases:
+            build:
+              commands:
+                - |
+                  python3 - <<'PY'
+                  import json, os, re, subprocess
+                  sha = os.environ.get('CODEBUILD_RESOLVED_SOURCE_VERSION', '')
+                  source = os.environ.get('CODEBUILD_SOURCE_VERSION')
+                  head = os.environ.get('CODEBUILD_WEBHOOK_HEAD_REF')
+                  if (not re.fullmatch(r'[a-f0-9]{40}', sha) or source not in {'main', sha}
+                          or head not in {None, 'refs/heads/main'}
+                          or (head is not None and os.environ.get('CODEBUILD_WEBHOOK_EVENT') != 'PUSH')):
+                      raise SystemExit('Refusing an unexpected main push context.')
+                  actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True, timeout=15).strip()
+                  remote = subprocess.check_output(['git', 'ls-remote', 'https://github.com/egoldman2/ASD.git', 'refs/heads/main'],
+                                                   text=True, timeout=20, env={**os.environ, 'GIT_TERMINAL_PROMPT': '0'}).split()
+                  if actual != sha or not remote or remote[0] != sha:
+                      raise SystemExit('Refusing a mismatched or superseded main checkout.')
+                  started = subprocess.run(['aws', 'codebuild', 'start-build', '--project-name', '${AWS::StackName}-deploy',
+                                            '--source-version', sha, '--region', 'ap-southeast-2', '--output', 'json'],
+                                           check=True, capture_output=True, text=True, timeout=20)
+                  build_id = json.loads(started.stdout)['build']['id']
+                  print('Started main bootstrap: ' + build_id + ' for ' + sha)
+                  PY
+      SourceVersion: main
+      TimeoutInMinutes: 5
+      QueuedTimeoutInMinutes: 5
+      ConcurrentBuildLimit: 1
+      LogsConfig:
+        CloudWatchLogs: {Status: ENABLED, GroupName: !Ref RunnerLogs}
+      Triggers:
         Webhook: true
         FilterGroups:
           - - {Type: EVENT, Pattern: PUSH}
             - {Type: HEAD_REF, Pattern: '^refs/heads/main$'}
 Outputs:
   ProjectName:
-    Description: Main-push project that hosts one admitted Actions job.
+    Description: API-started project that hosts one admitted Actions job.
     Value: !Ref RunnerProject
+  PushProjectName:
+    Description: Main-push relay with no deployment permissions.
+    Value: !Ref PushProject
   RoleArn:
     Description: Temporary service role; no AWS credentials are stored in GitHub.
     Value: !GetAtt RunnerRole.Arn
