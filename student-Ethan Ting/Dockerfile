@@ -56,6 +56,8 @@ COPY shared/multi_agent_client.py /app/shared/multi_agent_client.py
 COPY ["student-Ethan Ting/backend/", "/app/backend/"]
 COPY ["student-Ethan Ting/database/", "/app/database/"]
 COPY ["student-Ethan Ting/tests/", "/app/tests/"]
+# Security tests inspect the build configuration beside backend/ and database/.
+COPY ["student-Ethan Ting/Dockerfile", "/app/Dockerfile"]
 COPY ["student-Ethan Ting/", "/app/student-Ethan Ting/"]
 COPY ["ai-services/", "/app/ai-services/"]
 COPY ["docker-compose.yml", "/app/docker-compose.yml"]
