@@ -1,0 +1,185 @@
+{
+  "total_count": 9,
+  "artifacts": [
+    {
+      "id": 12393490058,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5MzQ5MDA1OA==",
+      "name": "test-results-5",
+      "size_in_bytes": 1897,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12393490058",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12393490058/zip",
+      "expired": false,
+      "digest": "sha256:fedc1a2713530e3352ce0c29167a805edf7fa1a04e8c99cccbeec154886de429",
+      "created_at": "2026-10-22T00:45:46Z",
+      "updated_at": "2026-10-22T00:45:46Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    },
+    {
+      "id": 12393475826,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5MzQ3NTgyNg==",
+      "name": "test-results-3",
+      "size_in_bytes": 453,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12393475826",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12393475826/zip",
+      "expired": false,
+      "digest": "sha256:44b9002d50c7561c93c07739590ceeb64525630459a8ad1e7112f942beb2e99d",
+      "created_at": "2026-10-22T00:45:56Z",
+      "updated_at": "2026-10-22T00:45:56Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    },
+    {
+      "id": 12393185899,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5MzE4NTg5OQ==",
+      "name": "test-results-6",
+      "size_in_bytes": 11275,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12393185899",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12393185899/zip",
+      "expired": false,
+      "digest": "sha256:d2c420adcb2957348824fc8e494aae8e5b65c96df74e0f486d979ed5406f86c2",
+      "created_at": "2026-10-22T00:46:12Z",
+      "updated_at": "2026-10-22T00:46:12Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    },
+    {
+      "id": 12392914056,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5MjkxNDA1Ng==",
+      "name": "aws-deployment-evidence",
+      "size_in_bytes": 1650,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392914056",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392914056/zip",
+      "expired": false,
+      "digest": "sha256:5ccdc45248de878625b1abe6841f6a48926d9077fd919fc783f067fcbbb4422a",
+      "created_at": "2026-10-22T00:54:28Z",
+      "updated_at": "2026-10-22T00:54:28Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    },
+    {
+      "id": 12392873906,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5Mjg3MzkwNg==",
+      "name": "student-workflow-gate-7218c437182feb42c202abf15232b535675576e2-1",
+      "size_in_bytes": 1009,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392873906",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392873906/zip",
+      "expired": false,
+      "digest": "sha256:bc26fda54cfef8e0074cea1a7269be09c3c010bfd99015e5b881f523d313fa74",
+      "created_at": "2026-10-22T00:52:29Z",
+      "updated_at": "2026-10-22T00:52:29Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    },
+    {
+      "id": 12392698326,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5MjY5ODMyNg==",
+      "name": "test-results-0",
+      "size_in_bytes": 2539,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392698326",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392698326/zip",
+      "expired": false,
+      "digest": "sha256:50cfc6f7cc9903b4ba0b5a49d93b30ddd0c46333b5833aefc93c4f434556169f",
+      "created_at": "2026-10-22T00:46:19Z",
+      "updated_at": "2026-10-22T00:46:19Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    },
+    {
+      "id": 12392668317,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5MjY2ODMxNw==",
+      "name": "test-results-1",
+      "size_in_bytes": 928,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392668317",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392668317/zip",
+      "expired": false,
+      "digest": "sha256:ea34744722a68752c60dfb15008999ec9c673de423bc2a017916837f89ac6a8a",
+      "created_at": "2026-10-22T00:45:49Z",
+      "updated_at": "2026-10-22T00:45:49Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    },
+    {
+      "id": 12392514795,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5MjUxNDc5NQ==",
+      "name": "test-results-2",
+      "size_in_bytes": 5508,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392514795",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12392514795/zip",
+      "expired": false,
+      "digest": "sha256:e47741c7cf42998866eadf215b2237d1c4944d4c7ae53bda7f6d526f4d84723c",
+      "created_at": "2026-10-22T00:46:27Z",
+      "updated_at": "2026-10-22T00:46:27Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    },
+    {
+      "id": 12391959908,
+      "node_id": "MDg6QXJ0aWZhY3QxMjM5MTk1OTkwOA==",
+      "name": "test-results-4",
+      "size_in_bytes": 5507,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12391959908",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12391959908/zip",
+      "expired": false,
+      "digest": "sha256:a35f15cc612544c91c7a7bc384f7b544f9183281d914d47b834e37ec837b3774",
+      "created_at": "2026-10-22T00:47:35Z",
+      "updated_at": "2026-10-22T00:47:35Z",
+      "expires_at": "2027-01-20T00:45:07Z",
+      "workflow_run": {
+        "id": 39701565735,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "7218c437182feb42c202abf15232b535675576e2"
+      }
+    }
+  ]
+}

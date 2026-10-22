@@ -1,0 +1,41 @@
+{
+  "owner": "Ethan Ting",
+  "captured_at": "2026-10-22T17:21:12.250635+11:00",
+  "source_sha": "7218c437182feb42c202abf15232b535675576e2",
+  "run_id": 39701565735,
+  "working_tree_status": [
+    "?? docs/evidence/release2-ethan-ting/step5-cloud/",
+    "?? \"student-Ethan Ting/scripts/capture_cloud_review.py\""
+  ],
+  "source_scope": "Committed HEAD. Capture helper/evidence may be untracked; hashes below retain review inputs.",
+  "aws_commands_executed": false,
+  "cloud_mutations_performed": false,
+  "human_release_decision": "not_recorded",
+  "commit_or_push_performed": false,
+  "review_source_files": [
+    {
+      "path": "ai-services/agentic_loop.py",
+      "sha256": "87317870a4131ca27f2f4378632de50f1a7fca8192be67b81cfd64012f6f7a70"
+    },
+    {
+      "path": "ai-services/report_validation.py",
+      "sha256": "8ff694c60f0d85c3fadc85a6607c5f2fbea82ef93d9d12f785d85396ee576cc8"
+    },
+    {
+      "path": "shared/agentic/review_config.json",
+      "sha256": "259133c759d63d34c0dec8d40935442b43ca29ffb058ded5abca07b5ac38002a"
+    },
+    {
+      "path": "shared/agentic/review_prompt.txt",
+      "sha256": "51475b03ee0124a97d7daa4154db960b0b4219e08a6866e2abd2260ffb284f9d"
+    },
+    {
+      "path": "shared/agentic/cloud_deployment_prompt.txt",
+      "sha256": "a538356528f0cd7bb33e159f1ed6219d6ef81b0ab9d26979645047cc72c94f23"
+    },
+    {
+      "path": "student-Ethan Ting/scripts/capture_cloud_review.py",
+      "sha256": "754cf7ddec5400a1e4c9f8d9edca268f065d6ace5cd0a1dc6c660e58f1eb6014"
+    }
+  ]
+}

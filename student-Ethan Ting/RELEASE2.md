@@ -125,16 +125,32 @@ The [Multi-Agent Review evidence](../docs/evidence/release2-ethan-ting/step4-mul
 retains the initial review, the context-budget failure, the compact rerun, source
 hashes and test reports. The wrapper compares observations/log hashes before and
 after review. Historical automated UI acceptance is not new student participation
-or a release approval. New configuration/prompt/tests remain local until reviewed
-and published; the previous passing CI run cannot certify them.
+or a release approval. The configuration/prompt/tests were subsequently published
+in `7218c43`; its Ethan Ting CI run and AWS deployment succeeded. The Step 4
+captures retain their original, pre-publication provenance.
+
+## Step 5: shared Cloud Deployment Report Review
+
+The [Cloud Deployment Review evidence](../docs/evidence/release2-ethan-ting/step5-cloud/README.md)
+retains exact-source native Actions artifacts, verified ZIP/file hashes and a
+real shared Plan → Act → Observe → Adapt review with local `llama3.1:8b`.
+The existing default group manifest and teammates' evidence are unchanged.
+
+For `7218c43`, cloud Actions, the five-student workflow gate and recorded SSM
+acceptance pass. The full review remains **incomplete**: public-smoke/runtime
+capture bytes, a same-release health window and human release approval are not
+supplied. The model incorrectly inferred observed CRUD/disabled responses; the
+final deterministic summary preserves the missing evidence instead. Customer
+browser sign-in is separately pending. No AWS mutation or redeployment occurred.
+The new capture helper/tests and evidence remain local for review.
 
 ## Remaining steps
 
 - Retain genuine commit-hook output when available; manual hook runs are not commit-time evidence.
 - Resolve or specifically assess outstanding group security findings, then refresh Testing Review.
-- Review and publish the new review configuration/prompt/tests/evidence, then retain fresh CI for that commit.
+- Review the local Step 5 capture helper/tests/evidence before publishing; the old passing run cannot certify new files.
 - Record the student's own review/release decision and reasons; none was granted by this automation.
-- Validate the integrated local application and final cloud deployment.
+- Retrieve the missing same-release cloud records, observe health, finish customer browser sign-in and rerun Cloud Deployment Review.
 - Update individual diagrams, report contribution and demonstration evidence.
 
 This file does not certify the shared AWS deployment or the group's completion.

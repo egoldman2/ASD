@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "mode": "cloud-deployment",
+  "status": "incomplete",
+  "source_sha": "7218c437182feb42c202abf15232b535675576e2",
+  "captured_at": "2026-10-22T06:23:00.453380+00:00",
+  "review_file": "shared-asd-group-services-cloud-deployment-20261022-172300-449579.md",
+  "review_sha256": "02f150e641e147040fc339f9a29b5739693069edcb06203347664af0b924c9c3",
+  "model_grounding_issues": [
+    "The report does not preserve the exact deterministic status."
+  ],
+  "evidence": {
+    "kind": "cloud-deployment",
+    "read_only": true,
+    "source_sha": "7218c437182feb42c202abf15232b535675576e2",
+    "status": "incomplete",
+    "technical_status": "incomplete",
+    "checks": [
+      {
+        "name": "ssm_acceptance",
+        "status": "pass"
+      },
+      {
+        "name": "actions",
+        "status": "pass",
+        "run_url": "https://github.com/egoldman2/ASD/actions/runs/39701565735"
+      },
+      {
+        "name": "workflow_gate",
+        "status": "pass",
+        "workflow_count": 5
+      }
+    ],
+    "issues": [
+      "invalid_public_smoke_capture",
+      "invalid_runtime_capture",
+      "invalid_health_capture",
+      "human_release_decision_missing"
+    ],
+    "human_release": {
+      "recorded": false
+    },
+    "remote_authenticity_verified": false,
+    "limitations": [
+      "Supplied captures are checked offline; remote authenticity is not independently verified.",
+      "A technical result or model recommendation cannot grant a human release approval.",
+      "Recorded core CRUD does not establish unrecorded returns/supplier operations or production capacity.",
+      "Official workflow/endpoint allocation is not verified by offline captures."
+    ],
+    "release": {
+      "release_id": "7218c437182feb42c202abf15232b535675576e2-1",
+      "source_sha256": "384b8f0652e81dbc8b34d11a66297e9cdd4e61540bc97482028516036c6209cd",
+      "target_url": "https://dww8d9hiqp0ce.cloudfront.net",
+      "command_id": "f11d2243-eaad-40bf-9b31-914f0e1a3272",
+      "environment": "aws-cloud",
+      "region": "ap-southeast-2"
+    },
+    "inputs": [
+      {
+        "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/cloud-manifest.json",
+        "sha256": "787c3b5156097fd953a23222c930224abfdf061e68896d9a7a02ba8981ee4b89",
+        "bytes": 944
+      },
+      {
+        "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/native/deployment-report.json",
+        "sha256": "5a3a330a9b11275fc7dea9e0561cc20becb94218e01f8db1d12885b305052e4a",
+        "bytes": 980
+      },
+      {
+        "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/actions.json",
+        "sha256": "c337330bfd5c16474d09c04f9a9a107a0c9ace32cc4460eb0802b0c248c6029e",
+        "bytes": 46143
+      },
+      {
+        "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/native/workflow-gate.json",
+        "sha256": "684e8bff11e1dcbdfc4850a97e5f8c0212e4b130f80ee8bf50298c8bec3bf448",
+        "bytes": 5154
+      }
+    ],
+    "configured_workflow_count": 5
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "deployment.zip": {
+    "artifact_id": 12392914056,
+    "run_id": 39701565735,
+    "expected_digest": "sha256:5ccdc45248de878625b1abe6841f6a48926d9077fd919fc783f067fcbbb4422a",
+    "archive": {
+      "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/artifacts/deployment.zip",
+      "sha256": "5ccdc45248de878625b1abe6841f6a48926d9077fd919fc783f067fcbbb4422a"
+    },
+    "members": [
+      ".aws-deployment/deployment-candidate.json",
+      "deployment-report.json",
+      "deployment-evidence/deployment-result.json"
+    ]
+  },
+  "workflow-gate.zip": {
+    "artifact_id": 12392873906,
+    "run_id": 39701565735,
+    "expected_digest": "sha256:bc26fda54cfef8e0074cea1a7269be09c3c010bfd99015e5b881f523d313fa74",
+    "archive": {
+      "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/artifacts/workflow-gate.zip",
+      "sha256": "bc26fda54cfef8e0074cea1a7269be09c3c010bfd99015e5b881f523d313fa74"
+    },
+    "members": [
+      "workflow-gate.json"
+    ]
+  }
+}
