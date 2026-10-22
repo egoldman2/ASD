@@ -1,0 +1,108 @@
+
+[START] Feature=shared, mode=cloud-deployment
+
+[PLAN] Loaded Shared ASD Group Services prompt and prepared a read-only cloud-deployment review.
+
+[ACT] Collecting cloud-deployment evidence without modifying the application.
+
+[VALIDATE] Deterministic cloud-deployment status: incomplete; supplied captures checked offline.
+
+[OBSERVE] Collected 2118 characters of structured evidence.
+
+[PROMPTS] Using feature prompt: /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/shared/agentic/review_prompt.txt
+
+[LLM] Sending the initial evidence review to llama3.1:8b.
+**DETERMINISTIC STATUS:** incomplete
+
+**OBSERVATIONS**
+
+* The cloud deployment report indicates a technical status of "pass" but an overall status of "incomplete".
+* There are 7 inputs, including main Actions deployment and five same-SHA student workflows.
+* A public feature CRUD is present with missing features: customer_support, inventory, customer_loyalty, product_catalogue, order_returns.
+* Actual disabled AI responses were observed during the runtime check.
+
+**FINDINGS**
+
+* The human release decision is missing (issue "human_release_decision_missing").
+* Remote authenticity of the supplied captures cannot be independently verified ("remote_authenticity_verified": false).
+* Official workflow/endpoint allocation and production capacity are not established by recorded core CRUD.
+* A technical result or model recommendation does not grant a human release approval.
+
+**RECOMMENDATIONS**
+
+* Obtain missing human release decision to complete overall status.
+* Verify remote authenticity of supplied captures, if possible.
+* Establish official workflow/endpoint allocation for integrated releases.
+* Consider adding additional checks for production capacity and unrecorded CRUD operations.
+
+**PROPOSED ADAPTATION**
+
+None. The review is based solely on the collected evidence, which does not allow modification or execution of commands.
+
+[REVIEW] Checking the first response against the same evidence.
+DECISION: ADAPT
+Deterministic evidence checks found:
+- The report does not preserve the exact deterministic status.
+- The report omits the offline capture authenticity limitation.
+
+Model reviewer feedback:
+**DECISION:** PASS
+
+**REVIEW FEEDBACK**
+
+The review is evidence-based as it accurately cites specific fields and values from the provided JSON object.
+
+It correctly scopes its findings to the selected feature (cloud deployment) and does not claim general capacity or unrecorded CRUD operations, which are outside of recorded observation windows.
+
+Recommendations are specific: obtain missing human release decision, verify remote authenticity, establish official workflow/endpoint allocation, and consider additional checks for production capacity and unrecorded CRUD operations.
+
+The review is useful as it highlights the limitations of relying on offline captures to determine technical deployment status.
+
+[ADAPT] Reviewer requested an evidence-based revision.
+**DETERMINISTIC STATUS:** incomplete
+
+**OBSERVATIONS**
+
+* The cloud deployment report indicates a technical status of "pass" but an overall status of "incomplete".
+* There are 7 inputs, including main Actions deployment and five same-SHA student workflows.
+
+**FINDINGS**
+
+* The human release decision is missing (issue "human_release_decision_missing").
+* Remote authenticity of the supplied captures cannot be independently verified ("remote_authenticity_verified": false).
+* Official workflow/endpoint allocation and production capacity are not established by recorded core CRUD.
+* A technical result or model recommendation does not grant a human release approval.
+
+**RECOMMENDATIONS**
+
+* Obtain missing human release decision to complete overall status.
+* Verify remote authenticity of supplied captures, if possible.
+* Establish official workflow/endpoint allocation for integrated releases.
+
+**ADAPTATION APPLIED**
+The review has been updated to reflect the feedback provided. The deterministic evidence checks have been corrected and additional limitations noted in the original report are preserved.
+
+[ADAPT] Using the deterministic evidence summary to preserve validation results.
+DETERMINISTIC STATUS: incomplete
+OBSERVATIONS
+- Selected code SHA: d297a42f144cd645f38ca294a1ae42c639ff58be; read-only captured evidence review.
+- Independently configured student workflow paths: 5/5.
+- Technical status: pass; recorded human decision: missing.
+- Captured check: {"name": "ssm_acceptance", "status": "pass"}
+- Captured check: {"name": "actions", "status": "pass", "run_url": "https://github.com/egoldman2/ASD/actions/runs/39736987978"}
+- Captured check: {"name": "workflow_gate", "status": "pass", "workflow_count": 5}
+- Captured check: {"name": "public_smoke", "status": "pass", "check_count": 67, "missing_crud": {"customer_support": [], "inventory": [], "customer_loyalty": [], "product_catalogue": [], "order_returns": []}, "missing_disabled": [], "cleanup_status": "passed"}
+- Captured check: {"name": "runtime", "status": "pass", "baseline_flags_disabled": true, "current_release": "/srv/asd/releases/d297a42f144cd645f38ca294a1ae42c639ff58be-1-424f2a6f2ed4"}
+- Captured check: {"name": "health", "status": "pass", "observation_seconds": 120, "capacity_limit": "Only the recorded observation window is covered."}
+- Recorded release: {"release_id": "d297a42f144cd645f38ca294a1ae42c639ff58be-1", "source_sha256": "424f2a6f2ed49f1891645e00cdc086959a55d4e6f36e60dea71b52883f2c8ccd", "target_url": "https://dww8d9hiqp0ce.cloudfront.net", "command_id": "f880b0fb-2157-46ce-9698-a383aab8caa3", "environment": "aws-cloud", "region": "ap-southeast-2"}
+FINDINGS
+- Deterministic issues: human_release_decision_missing
+- Offline captures: remote authenticity is not independently verified.
+RECOMMENDATIONS
+- Verify current exact-SHA Actions runs and resolve failed/missing evidence before release.
+ADAPTATION APPLIED
+- Preserved deterministic results; this review generates no application change or human release approval.
+
+[VALIDATE] Saved deterministic status incomplete to /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261022-181356-625715.validation.json
+
+[DONE] Agentic review completed. Evidence saved to /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/docs/evidence/agentic/shared-asd-group-services-cloud-deployment-20261022-181356-625715.md

@@ -1,0 +1,36 @@
+{
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "command_id": "f84ced80-ba29-4553-8efa-10695beb142d",
+  "native_files": [
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/deployment-result.json",
+      "sha256": "0f608c92b5b0bb69ce5353538f6be00a52c16ee3f0137fcd11b0d86fc25f35bd"
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/public-smoke.json",
+      "sha256": "363dca3c8c62238fb387ee1f852d7ba6fc3634d16cd6db9efa132c543c9e1d95"
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/runtime.json",
+      "sha256": "2a260b5903874a052564c801f7aee705542d8b849e8131c611f2809ef867ed60"
+    }
+  ],
+  "health": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/health.json",
+    "sha256": "61031e0f20241b6cc579b0ec2ec7bf2e81be6791617f7966c19d5ac1a702bd98"
+  },
+  "host_result_comparison": "All accepted Actions projection fields match; full host file has additional provenance fields and different bytes.",
+  "observer_source": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/executed-observer.py",
+    "sha256": "fe3757e35a247ecff7576d9c34a38ad4296c2b4ee9d6d6b6c0fff5ba046afa6d"
+  },
+  "assembler_source": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/executed-assembler.py",
+    "sha256": "19cb4bc1de60e54c16947f005adf56f6a027ef1c9c935861049909113ebcd6cd"
+  },
+  "technical_status": "pass",
+  "review_status": "incomplete",
+  "human_release_recorded": false,
+  "customer_data_changed": false,
+  "committed_or_pushed": false
+}

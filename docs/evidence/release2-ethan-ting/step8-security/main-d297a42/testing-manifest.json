@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "kind": "testing",
+  "owner": "Ethan Ting",
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "captured_at": "2026-10-22T18:39:38.588209+11:00",
+  "command": "Capture native security scans and exact-main endpoint archives; verify archive digests and preserve findings.",
+  "security": [
+    {
+      "tool": "ruff",
+      "exit_code": 1,
+      "captured_at": "2026-10-22T18:38:55.406783+11:00",
+      "owner": "Ethan Ting",
+      "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "command": "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python -m ruff check . --select S --output-format json",
+      "report": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/security/ruff.json",
+        "sha256": "96c2e6f01cfa6f3ba6b78837bd484e953fa8ecd80879e8fddfe17d431e40bb39"
+      }
+    },
+    {
+      "tool": "detect-secrets",
+      "exit_code": 0,
+      "captured_at": "2026-10-22T18:38:57.322813+11:00",
+      "owner": "Ethan Ting",
+      "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "command": "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python -m detect_secrets scan --no-verify --exclude-files (?x)^(docs/evidence/.*|ai-services/multi_agent_server/(coordination_audit|workflow_history)\\.jsonl|.*\\.min\\.js|.*\\.log)$",
+      "report": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/security/detect-secrets.json",
+        "sha256": "997995eac2d3f2c81a49da55383eced4d547878fe49b3510854ea1e9c129e392"
+      }
+    },
+    {
+      "tool": "pip-audit",
+      "exit_code": 1,
+      "captured_at": "2026-10-22T18:39:08.956689+11:00",
+      "owner": "Ethan Ting",
+      "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "command": "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python -m pip_audit -r requirements-audit.txt --format json --progress-spinner off",
+      "report": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/security/pip-audit.json",
+        "sha256": "99b820efec3d4354abf48289b0fba4dd638b73d2ffea45964f333e6b945b037b"
+      },
+      "exceptions": [
+        {
+          "id": "PYSEC-2026-311",
+          "reason": "Existing documented ChromaDB exception; native raw findings retained, no newly granted human acceptance.",
+          "record": {
+            "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+            "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8"
+          }
+        },
+        {
+          "id": "PYSEC-2026-3813",
+          "reason": "Existing documented ChromaDB exception; native raw findings retained, no newly granted human acceptance.",
+          "record": {
+            "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+            "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8"
+          }
+        },
+        {
+          "id": "PYSEC-2026-3814",
+          "reason": "Existing documented ChromaDB exception; native raw findings retained, no newly granted human acceptance.",
+          "record": {
+            "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+            "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8"
+          }
+        },
+        {
+          "id": "PYSEC-2026-3815",
+          "reason": "Existing documented ChromaDB exception; native raw findings retained, no newly granted human acceptance.",
+          "record": {
+            "path": "docs/evidence/release2-ethan-goldman/security/README.md",
+            "sha256": "fc0fa6e9f27062fcccd9a7a0b810db9f9dfebaf61723494b50abe1c9ad4406e8"
+          }
+        }
+      ]
+    }
+  ],
+  "students": [
+    {
+      "feature": "product_catalogue",
+      "owner": "Chufeng Li",
+      "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "captured_at": "2026-10-22T18:39:38.585039+11:00",
+      "command": "python shared/endpoint_ci.py --feature product_catalogue --owner 'Chufeng Li'",
+      "endpoints": [
+        {
+          "function": "get_products",
+          "method": "GET",
+          "path": "/api/products",
+          "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_get_and_search_products"
+        },
+        {
+          "function": "create_cart_item",
+          "method": "POST",
+          "path": "/api/cart-items",
+          "test_node_id": "student-Chufeng/tests/test_catalogue.py::test_add_cart_item"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/product_catalogue/endpoint-functions.xml",
+        "sha256": "72afba8879009bb8db472af2c99e338cae0732f02d2fcceb9312bb6b994be338"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/product_catalogue/test-context.json",
+        "sha256": "f1d80d176598092307a7df39a25a234d618170934caee0393d3af15b4bf34ef0"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/product_catalogue/actions.json",
+        "sha256": "ece16dcbabfff6e99fb4c28acd79ea9b8208dd0ef67150099a098785ea5ae1a7"
+      }
+    },
+    {
+      "feature": "inventory",
+      "owner": "Ryan Nolan",
+      "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "captured_at": "2026-10-22T18:39:38.586116+11:00",
+      "command": "python shared/endpoint_ci.py --feature inventory --owner 'Ryan Nolan'",
+      "endpoints": [
+        {
+          "function": "create_product",
+          "method": "POST",
+          "path": "/api/inventory/products",
+          "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_create_product"
+        },
+        {
+          "function": "update_product",
+          "method": "PUT",
+          "path": "/api/inventory/products/<int:product_id>",
+          "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_update_product"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/inventory/endpoint-functions.xml",
+        "sha256": "67afaac5688e3b9cf0f7957f31d73c7d7c1e0a7eb1403d01976bc56583b21930"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/inventory/test-context.json",
+        "sha256": "dbe4f923c2f241fc814f50544ef8181db5a1621d56c156670c3561d80c56d1d1"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/inventory/actions.json",
+        "sha256": "3e3fdacbfc8770aff4101a342a54343b228fc7554002364ade621a8d07888b90"
+      }
+    },
+    {
+      "feature": "customer_loyalty",
+      "owner": "Ethan Ting",
+      "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "captured_at": "2026-10-22T18:39:38.586800+11:00",
+      "command": "python shared/endpoint_ci.py --feature customer_loyalty --owner 'Ethan Ting'",
+      "endpoints": [
+        {
+          "function": "register",
+          "method": "POST",
+          "path": "/api/register",
+          "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_customer_registration_creates_customer_session"
+        },
+        {
+          "function": "create_loyalty_adjustment",
+          "method": "POST",
+          "path": "/api/admin/loyalty/<int:user_id>/adjustments",
+          "test_node_id": "student-Ethan Ting/tests/test_login_system.py::test_admin_adjustment_includes_authenticated_admin_id"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/customer_loyalty/endpoint-functions.xml",
+        "sha256": "6dcd673af2ae0d5e23e9f74a4389437b5223e9953ddb21923c584e797a7b5744"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/customer_loyalty/test-context.json",
+        "sha256": "5b3f293b9bc8bf4f2f58652f88641f1531461e957f2e440c6f99ca42183669a6"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/customer_loyalty/actions.json",
+        "sha256": "91a9692060cbd23f8b8b8f6f7ebeefedb8b67b65527e162db6fc3cfbbd9796cb"
+      }
+    },
+    {
+      "feature": "order_returns",
+      "owner": "Howard",
+      "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "captured_at": "2026-10-22T18:39:38.587431+11:00",
+      "command": "python shared/endpoint_ci.py --feature order_returns --owner 'Howard'",
+      "endpoints": [
+        {
+          "function": "create_order",
+          "method": "POST",
+          "path": "/api/order-returns/orders",
+          "test_node_id": "student-Howard/tests/test_api.py::test_create_order"
+        },
+        {
+          "function": "create_return",
+          "method": "POST",
+          "path": "/api/order-returns/returns",
+          "test_node_id": "student-Howard/tests/test_api.py::test_create_return"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/order_returns/endpoint-functions.xml",
+        "sha256": "077ac9b094883562a5e7fb3bd98531efee540f695f0b6883c7c790ebcb2b3c6a"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/order_returns/test-context.json",
+        "sha256": "c4a4fcdf0c3d4e8b47305db0c352df71db49a93c4043ef588cf85c13afda26c3"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/order_returns/actions.json",
+        "sha256": "ae8c2eb04707584eddbb492341cdca4b29801232bca4c795115306755db78e0c"
+      }
+    },
+    {
+      "feature": "customer_support",
+      "owner": "Ethan Goldman",
+      "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "captured_at": "2026-10-22T18:39:38.588065+11:00",
+      "command": "python shared/endpoint_ci.py --feature customer_support --owner 'Ethan Goldman'",
+      "endpoints": [
+        {
+          "function": "customer_create",
+          "method": "POST",
+          "path": "/api/support/customer/tickets",
+          "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract"
+        },
+        {
+          "function": "admin_update",
+          "method": "PUT",
+          "path": "/api/support/admin/tickets/<int:ticket_id>",
+          "test_node_id": "student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract"
+        }
+      ],
+      "junit": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/customer_support/endpoint-functions.xml",
+        "sha256": "9b10ba0cd7102c9315792bf79fcf720ab3a421c93eb6902af98f7daaef18af3a"
+      },
+      "context": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/customer_support/test-context.json",
+        "sha256": "c1b857e02c021b7c4f0f62ac00a74969812b9c186d5b52b8cacf273314239cfa"
+      },
+      "actions": {
+        "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/customer_support/actions.json",
+        "sha256": "71c4a795be1d90f003429ad96b68e8f0932a1a8e39cdbcccda257739e25d1626"
+      }
+    }
+  ]
+}

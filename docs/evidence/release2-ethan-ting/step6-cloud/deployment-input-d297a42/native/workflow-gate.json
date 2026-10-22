@@ -1,0 +1,154 @@
+{
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "owner": "Ethan Goldman",
+  "command": "python3 cloud/check_workflows.py",
+  "status": "passed",
+  "workflows": [
+    {
+      "owner": "Ethan Goldman",
+      "feature": "customer_support",
+      "id": 39736987950,
+      "path": ".github/workflows/EthanGoldman.yml",
+      "workflow_id": 344339772,
+      "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987950",
+      "jobs": [
+        {
+          "id": 119684885822,
+          "name": "Test Customer Support integration",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987950/job/119684885822"
+        },
+        {
+          "id": 119685886065,
+          "name": "Build and validate Customer Support services",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987950/job/119685886065"
+        }
+      ]
+    },
+    {
+      "owner": "Chufeng",
+      "feature": "product_catalogue",
+      "id": 39736987922,
+      "path": ".github/workflows/Chufeng.yml",
+      "workflow_id": 335370198,
+      "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987922",
+      "jobs": [
+        {
+          "id": 119684886257,
+          "name": "Run Python tests",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987922/job/119684886257"
+        },
+        {
+          "id": 119685299770,
+          "name": "Build Docker images",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987922/job/119685299770"
+        }
+      ]
+    },
+    {
+      "owner": "Ryan Nolan",
+      "feature": "inventory",
+      "id": 39736988041,
+      "path": ".github/workflows/Ryan.yml",
+      "workflow_id": 349934041,
+      "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736988041",
+      "jobs": [
+        {
+          "id": 119684885979,
+          "name": "Run Ryan Nolan inventory tests",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736988041/job/119684885979"
+        },
+        {
+          "id": 119685162655,
+          "name": "Build Ryan Nolan Docker images",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736988041/job/119685162655"
+        }
+      ]
+    },
+    {
+      "owner": "Ethan Ting",
+      "feature": "customer_loyalty",
+      "id": 39736988007,
+      "path": ".github/workflows/student-3.yml",
+      "workflow_id": 334044998,
+      "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736988007",
+      "jobs": [
+        {
+          "id": 119684886289,
+          "name": "Test Ethan Ting customer accounts, loyalty and AI",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736988007/job/119684886289"
+        },
+        {
+          "id": 119685477198,
+          "name": "Build and smoke-test Ethan Ting services",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736988007/job/119685477198"
+        }
+      ]
+    },
+    {
+      "owner": "Howard",
+      "feature": "order_returns",
+      "id": 39736987913,
+      "path": ".github/workflows/Howard.yml",
+      "workflow_id": 340892125,
+      "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987913",
+      "jobs": [
+        {
+          "id": 119684885031,
+          "name": "build-and-validate",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987913/job/119684885031"
+        }
+      ]
+    }
+  ],
+  "issues": [],
+  "main_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "captured_at": "2026-10-22T07:02:33.523539+00:00"
+}

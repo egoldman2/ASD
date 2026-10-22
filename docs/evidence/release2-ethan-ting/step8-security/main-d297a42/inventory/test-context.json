@@ -1,0 +1,43 @@
+{
+  "owner": "Ryan Nolan",
+  "feature": "inventory",
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "event": "push",
+  "ref": "refs/heads/main",
+  "run_id": "39736988041",
+  "run_attempt": "1",
+  "run_url": "https://github.com/egoldman2/ASD/actions/runs/39736988041",
+  "captured_at": "2026-10-22T06:55:41.953145+00:00",
+  "python": "3.11.17",
+  "workflow": ".github/workflows/Ryan.yml",
+  "ai_flags": {
+    "AI_MODE_ENABLED": "false",
+    "MCP_ENABLED": "false",
+    "RAG_ENABLED": "false",
+    "MULTI_AGENT_ENABLED": "false"
+  },
+  "live_opt_ins": {
+    "RUN_LIVE_AI": "0",
+    "RUN_LIVE_MCP_AI": "0",
+    "RUN_LIVE_RAG_AI": "0",
+    "RUN_LIVE_VALIDATION": "0",
+    "RUN_LIVE_RELEASE1_VALIDATION": "0",
+    "RUN_LIVE_MULTI_AGENT": "0",
+    "RUN_NGINX_PROXY_CHECK": "0"
+  },
+  "endpoint_junit": "endpoint-functions.xml",
+  "endpoint_functions": [
+    {
+      "function": "create_product",
+      "method": "POST",
+      "path": "/api/inventory/products",
+      "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_create_product"
+    },
+    {
+      "function": "update_product",
+      "method": "PUT",
+      "path": "/api/inventory/products/<int:product_id>",
+      "test_node_id": "student-Ryan_Nolan/tests/inventory_tests.py::test_update_product"
+    }
+  ]
+}

@@ -1,0 +1,393 @@
+- navigation:
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://059643396979-wl5tuylh.ap-southeast-2.console.aws.amazon.com/console/home?region=ap-southeast-2
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://059643396979-wl5tuylh.ap-southeast-2.console.aws.amazon.com/cloudshell/home?region=ap-southeast-2
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Ethan Ting":
+        - generic: Console Dot Dream
+        - generic: Ethan Ting
+  - list
+- button "Open navigation drawer" [expanded]:
+- navigation "Breadcrumbs":
+  - list:
+    - link "EC2":
+      - /url: "#Home"
+      - generic: EC2
+    - link "Instances":
+      - /url: "#Instances:"
+      - generic: Instances
+    - link "i-03a217a6a7f61d3ae" [disabled]:
+      - generic: i-03a217a6a7f61d3ae
+  - list:
+    - link:
+      - /url: "#Home"
+      - generic: EC2
+    - link:
+      - /url: "#Instances:"
+      - generic: Instances
+    - generic: i-03a217a6a7f61d3ae
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Console-to-Code":
+- navigation "Side navigation":
+  - button "Close side navigation":
+  - heading "EC2" [level=2]:
+    - link "EC2":
+      - /url: "#Overview:"
+      - generic: EC2
+  - list:
+    - link "Dashboard":
+      - /url: "#Home:"
+      - generic: Dashboard
+    - link "AWS Global ViewOpens in a new tab":
+      - /url: /awsglobalview/home
+      - text: AWS Global View
+      - img "Opens in a new tab":
+    - link "Events":
+      - /url: "#Events:"
+      - generic: Events
+    - button "Instances" [expanded]:
+      - generic: Instances
+    - group "Instances":
+      - list:
+        - link "Instances":
+          - /url: "#Instances:"
+          - generic: Instances
+        - link "Instance Types":
+          - /url: "#InstanceTypes:"
+          - generic: Instance Types
+        - link "Launch Templates":
+          - /url: "#LaunchTemplates:"
+          - generic: Launch Templates
+        - link "Spot Requests":
+          - /url: "#SpotInstances:"
+          - generic: Spot Requests
+        - link "Savings Plans":
+          - /url: "#SavingsPlans:"
+          - generic: Savings Plans
+        - link "Reserved Instances":
+          - /url: "#ReservedInstances:"
+          - generic: Reserved Instances
+        - link "Dedicated Hosts":
+          - /url: "#Hosts:"
+          - generic: Dedicated Hosts
+        - link "Capacity Reservations":
+          - /url: "#CapacityReservations:"
+          - generic: Capacity Reservations
+        - link "UltraServers":
+          - /url: "#UltraServers:"
+          - generic: UltraServers
+        - button "New":
+          - generic: New
+        - link "Capacity Manager":
+          - /url: "#CapacityManagerHome:"
+          - generic: Capacity Manager
+        - button "New":
+          - generic: New
+    - button "Images" [expanded]:
+      - generic: Images
+    - group "Images":
+      - list:
+        - link "AMIs":
+          - /url: "#Images:"
+          - generic: AMIs
+        - link "AMI Catalog":
+          - /url: "#AMICatalog:"
+          - generic: AMI Catalog
+    - button "Elastic Block Store" [expanded]:
+      - generic: Elastic Block Store
+    - group "Elastic Block Store":
+      - list:
+        - link "Volumes":
+          - /url: "#Volumes:"
+          - generic: Volumes
+        - link "Snapshots":
+          - /url: "#Snapshots:"
+          - generic: Snapshots
+        - link "Lifecycle Manager":
+          - /url: "#Lifecycle:"
+          - generic: Lifecycle Manager
+    - button "Network & Security" [expanded]:
+      - generic: Network & Security
+    - group "Network & Security":
+      - list:
+        - link "Security Groups":
+          - /url: "#SecurityGroups:"
+          - generic: Security Groups
+        - link "Elastic IPs":
+          - /url: "#Addresses:"
+          - generic: Elastic IPs
+        - link "Placement Groups":
+          - /url: "#PlacementGroups:"
+          - generic: Placement Groups
+        - link "Key Pairs":
+          - /url: "#KeyPairs:"
+          - generic: Key Pairs
+        - link "Network Interfaces":
+          - /url: "#NIC:"
+          - generic: Network Interfaces
+    - button "Load Balancing" [expanded]:
+      - generic: Load Balancing
+    - group "Load Balancing":
+      - list:
+        - link "Load Balancers":
+          - /url: "#LoadBalancers:"
+          - generic: Load Balancers
+        - link "Target Groups":
+          - /url: "#TargetGroups:"
+          - generic: Target Groups
+        - link "Trust Stores":
+          - /url: "#TrustStores:"
+          - generic: Trust Stores
+    - button "Auto Scaling" [expanded]:
+      - generic: Auto Scaling
+    - group "Auto Scaling":
+      - list:
+        - link "Auto Scaling Groups":
+          - /url: "#AutoScalingGroups:"
+          - generic: Auto Scaling Groups
+  - separator
+  - list:
+    - link "Settings":
+      - /url: "#Settings:"
+      - generic: Settings
+- main:
+  - iframe [active] [id="compute-react-frame"]:
+    - main:
+      - region "Notifications":
+        - list "Notifications"
+      - heading "Instance summary for i-03a217a6a7f61d3ae (asd-release2-host)" [level=2]
+      - 'button "Info: Instance overview"': Info
+      - button "Refresh instance details":
+      - button "Connect opens in a new tab":
+        - text: Connect
+      - button "Instance state":
+        - text: Instance state
+      - button "Actions":
+        - text: Actions
+      - paragraph: Updated less than a minute ago
+      - term:
+        - generic: Instance ID
+      - definition:
+        - button "Copy Instance ID to clipboard":
+        - text: i-03a217a6a7f61d3ae
+      - term:
+        - generic: Public IPv4 address
+      - definition:
+        - button "Copy public IPv4 address to clipboard":
+        - text: 13.210.173.51 |
+        - link "Open public IPv4 address, opens in a new tab":
+          - /url: https://13.210.173.51
+          - text: open address
+          - img "Open public IPv4 address, opens in a new tab":
+      - term:
+        - generic: Private IPv4 addresses
+      - definition:
+        - button "Copy private IPv4 address to clipboard":
+        - text: 10.33.0.123
+      - term:
+        - generic: IPv6 address
+      - definition: –
+      - term:
+        - generic: Instance state
+      - definition:
+        - text: Running
+      - term:
+        - generic: Public DNS
+      - definition:
+        - button "Copy public DNS to clipboard":
+        - text: ec2-13-210-173-51.ap-southeast-2.compute.amazonaws.com |
+        - link "Open Public DNS address, opens in a new tab":
+          - /url: https://ec2-13-210-173-51.ap-southeast-2.compute.amazonaws.com
+          - text: open address
+          - img "Open Public DNS address, opens in a new tab":
+      - term:
+        - generic: Hostname type
+      - definition: "IP name: ip-10-33-0-123.ap-southeast-2.compute.internal"
+      - term:
+        - generic: Private IP DNS name (IPv4 only)
+      - definition:
+        - button "Copy Private IP DNS name (IPv4 only) to clipboard":
+        - text: ip-10-33-0-123.ap-southeast-2.compute.internal
+      - term:
+        - generic: Answer private resource DNS name
+      - definition: –
+      - term:
+        - generic: Instance type
+      - definition:
+        - link "t3.small":
+          - /url: "#InstanceTypes:instanceType=t3.small"
+      - term:
+        - generic: Elastic IP addresses
+      - definition:
+        - button "Copy elastic IP address to clipboard":
+        - link "13.210.173.51":
+          - /url: "#ElasticIpDetails:PublicIp=13.210.173.51"
+        - generic: "[Public IP]"
+      - term:
+        - generic: Auto-assigned IP address
+      - definition: –
+      - term:
+        - generic: VPC ID
+      - definition:
+        - button "Copy VPC ID to clipboard":
+        - link "vpc-0c7d5c2d7b272bf04 (asd-release2-vpc) vpc-0c7d5c2d7b272bf04 (asd-release2-vpc), opens in a new tab":
+          - /url: /vpc/home?region=ap-southeast-2#vpcs:vpcId=vpc-0c7d5c2d7b272bf04
+          - text: vpc-0c7d5c2d7b272bf04 (asd-release2-vpc)
+          - img "vpc-0c7d5c2d7b272bf04 (asd-release2-vpc), opens in a new tab":
+      - term:
+        - generic: AWS Compute Optimizer finding
+      - definition:
+        - text: Opt-in to AWS Compute Optimizer for recommendations.
+        - generic: "|"
+        - link "Learn more about Compute Optimizer":
+          - /url: /compute-optimizer/home?#/resource-details/ec2/arn:aws:ec2:ap-southeast-2:059643396979:instance/i-03a217a6a7f61d3ae
+          - text: Learn more
+          - 'img "Opens in a new tab: /compute-optimizer/home?#/resource-details/ec2/arn:aws:ec2:ap-southeast-2:059643396979:instance/i-03a217a6a7f61d3ae"':
+      - term:
+        - generic: IAM role
+      - definition:
+        - button "Copy IAM Role to clipboard":
+        - link "asd-release2-HostRole-rn9yFEmSwJ8x asd-release2-HostRole-rn9yFEmSwJ8x, opens in a new tab":
+          - /url: /iam/home?region=ap-southeast-2#roles/asd-release2-HostRole-rn9yFEmSwJ8x
+          - text: asd-release2-HostRole-rn9yFEmSwJ8x
+          - img "asd-release2-HostRole-rn9yFEmSwJ8x, opens in a new tab":
+      - term:
+        - generic: Subnet ID
+      - definition:
+        - button "Copy Subnet ID to clipboard":
+        - link "subnet-0dfdc3e168d210b32 subnet-0dfdc3e168d210b32, opens in a new tab":
+          - /url: /vpc/home?region=ap-southeast-2#subnets:subnetId=subnet-0dfdc3e168d210b32
+          - text: subnet-0dfdc3e168d210b32
+          - img "subnet-0dfdc3e168d210b32, opens in a new tab":
+      - term:
+        - generic: Auto Scaling group name
+      - definition: –
+      - term:
+        - generic: IMDSv2
+      - definition: Required
+      - term:
+        - generic: Instance ARN
+      - definition:
+        - button "Copy Instance ARN to clipboard":
+        - text: arn:aws:ec2:ap-southeast-2:059643396979:instance/i-03a217a6a7f61d3ae
+      - term:
+        - generic: Managed
+      - definition: "false"
+      - term:
+        - generic: Operator
+      - definition: –
+      - tablist "Instance details tabs":
+        - tab "Details":
+          - generic: Details
+        - tab "Status and alarms" [selected]:
+          - generic: Status and alarms
+        - tab "Monitoring":
+          - generic: Monitoring
+        - tab "Security":
+          - generic: Security
+        - tab "Networking":
+          - generic: Networking
+        - tab "Storage":
+          - generic: Storage
+        - tab "Tags":
+          - generic: Tags
+      - tabpanel "Status and alarms":
+        - heading "Status checks" [level=3]
+        - 'button "Info: Status checks"': Info
+        - button "Actions":
+          - text: Actions
+        - paragraph: Status checks detect problems that may impair i-03a217a6a7f61d3ae (asd-release2-host) from running your applications.
+        - term:
+          - generic: System status
+        - definition:
+          - text: Check passed
+        - term:
+          - generic: Instance status
+        - definition:
+          - text: Check passed
+        - term:
+          - generic: EBS status
+        - definition:
+          - text: Check passed
+        - term:
+          - text: Application status
+          - generic: "- new"
+        - definition:
+          - text: None associated or included |
+          - link "Manage":
+            - /url: "#ApplicationStatusChecks:instanceId=i-03a217a6a7f61d3ae"
+        - button "Application status details":
+          - generic: Application status details
+        - button "Metrics":
+          - generic: Metrics
+        - button "Alarms" [expanded]:
+          - generic: Alarms
+        - group "Alarms":
+          - searchbox "Find alarms by name"
+          - list:
+            - button "Previous page" [disabled]:
+            - button "Page 1 of all pages": "1"
+            - button "Next page" [disabled]:
+          - button "Preferences":
+          - table "Alarms":
+            - rowgroup:
+              - row "Name State Description Metric name State reason":
+                - columnheader "Name":
+                  - generic: Name
+                  - button "Name"
+                  - slider
+                - columnheader "State":
+                  - button "State":
+                    - generic: State
+                  - button "State"
+                  - slider
+                - columnheader "Description":
+                  - generic: Description
+                  - button "Description"
+                  - slider
+                - columnheader "Metric name":
+                  - generic: Metric name
+                  - button "Metric name"
+                  - slider
+                - columnheader "State reason":
+                  - generic: State reason
+                  - button "State reason"
+                  - slider
+            - rowgroup:
+              - row "Instance has no associated alarms":
+                - cell "Instance has no associated alarms":
+                  - generic: Instance has no associated alarms
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - link "Language":
+    - /url: https://059643396979-wl5tuylh.ap-southeast-2.console.aws.amazon.com/settings/home?region=ap-southeast-2#/localization/edit
+    - generic: Language
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"

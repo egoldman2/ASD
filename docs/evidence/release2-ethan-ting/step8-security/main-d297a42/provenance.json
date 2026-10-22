@@ -1,0 +1,9 @@
+{
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "captured_at": "2026-10-22T18:38:55.241488+11:00",
+  "owner": "Ethan Ting",
+  "working_tree_status": [],
+  "scope": "Source is committed HEAD; collector and generated evidence may be untracked.",
+  "commit_or_push_performed": false,
+  "human_release_decision": "not_recorded"
+}

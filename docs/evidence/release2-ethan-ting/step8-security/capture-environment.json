@@ -1,0 +1,30 @@
+{
+  "owner": "Ethan Ting",
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "captured_date_sydney": "2026-10-22",
+  "committed_scan_root": "/private/tmp/asd-security-review.2wwjEM/source",
+  "committed_scan_method": "Temporary shared clone checked out at the real published SHA; existing capture_testing_review.py executed from that clean source.",
+  "original_checkout": "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD",
+  "original_checkout_reset_or_stashed": false,
+  "git_index_changed_by_audit": false,
+  "source_fixes_applied": false,
+  "new_security_exceptions_added": false,
+  "baseline_changed_by_audit": false,
+  "baseline_sha256": "c1e8a5223c77fa76c657a650fd57d306ad6759e6f90f84169a32dfbd15657c35",
+  "hook_configuration_sha256": "4529f2b54f2ff991063bf830720368a18d64538abb4bedc9585f8b3e260d7322",
+  "dependency_manifest_sha256": "a012d7981e4a0319cd08c999f2f67b61ab7dbda5e4e3cbf4b96ccab25eb79384",
+  "working_tree_scan_scope": [
+    "student-Ethan Ting",
+    "ai-services/mcp_server/tests/test_ethan_ting_customer_tools.py"
+  ],
+  "working_tree_scope_includes_uncommitted_files": true,
+  "working_tree_ruff_exit_code": 0,
+  "working_tree_ruff_findings": 0,
+  "working_tree_secret_scan_exit_code": 0,
+  "working_tree_existing_baseline_matches": 21,
+  "working_tree_new_unclassified_matches": 0,
+  "commit_or_push_performed": false,
+  "aws_mutations_performed": false,
+  "human_release_decision_recorded": false,
+  "limitations": "A scanner warning is not automatically an exploitable vulnerability. Matching a baseline is not proof that a credential is harmless or a new human risk acceptance. Working-tree scans are not published CI evidence."
+}

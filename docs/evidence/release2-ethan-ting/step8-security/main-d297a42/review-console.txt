@@ -1,0 +1,111 @@
+
+[START] Feature=shared, mode=testing
+
+[PLAN] Loaded Shared ASD Group Services prompt and prepared a read-only testing review.
+
+[ACT] Collecting testing evidence without modifying the application.
+
+[VALIDATE] Deterministic testing status: fail; supplied captures checked offline.
+
+[OBSERVE] Collected 4181 characters of structured evidence.
+
+[PROMPTS] Using feature prompt: /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/shared/agentic/review_prompt.txt
+
+[LLM] Sending the initial evidence review to llama3.1:8b.
+**DETERMINISTIC STATUS:** fail (based on "status": "fail" in the collected evidence)
+
+**OBSERVATIONS**
+
+* The review is based solely on the provided repository and runtime evidence for Release 2 Testing Report.
+* Five feature owners are included: Chufeng Li, Ryan Nolan, Ethan Ting, Howard, and Ethan Goldman.
+
+**FINDINGS**
+
+* All five features have at least two passing assigned endpoints (product_catalogue, inventory, customer_loyalty, order_returns, and customer_support).
+* However, the overall testing status is marked as "fail" due to security tool findings.
+* The ruff tool reported 28 unexcepted findings with a fail status. 
+* detect-secrets also failed with 75 unexcepted findings.
+
+**RECOMMENDATIONS**
+
+* Review the specific findings from each security tool (ruff and detect-secrets) for more information on what is causing these failures.
+* Investigate why some features have passing endpoints but are still contributing to the overall "fail" status.
+
+**PROPOSED ADAPTATION**
+
+None at this time. Further investigation into the failed security tools' findings is required before any adaptation can be proposed.
+
+[REVIEW] Checking the first response against the same evidence.
+DECISION: ADAPT
+Deterministic evidence checks found:
+- The report does not preserve the exact deterministic status.
+- The report omits the offline capture authenticity limitation.
+
+Model reviewer feedback:
+**DECISION:** PASS
+
+**REVIEW FEEDBACK**
+
+* The review is evidence-based, correctly scoped to the selected feature (Release 2 Testing Report), and specific about findings from security tools ruff and detect-secrets.
+* It accurately identifies that all five features have at least two passing assigned endpoints but are still contributing to an overall "fail" status due to these tool failures.
+* The review is useful in highlighting areas for further investigation, specifically the need to examine the failed security tools' findings.
+
+However, it would be beneficial if the reviewer could provide more concrete evidence or specific examples of what constitutes a failure from each security tool. This would strengthen the review and make recommendations even more actionable.
+
+[ADAPT] Reviewer requested an evidence-based revision.
+**DETERMINISTIC STATUS:** fail (based on "status": "fail" in the collected evidence)
+
+**OBSERVATIONS**
+
+* The review is based solely on the provided repository and runtime evidence for Release 2 Testing Report.
+* Five feature owners are included: Chufeng Li, Ryan Nolan, Ethan Ting, Howard, and Ethan Goldman.
+
+**FINDINGS**
+
+* All five features have at least two passing assigned endpoints (product_catalogue, inventory, customer_loyalty, order_returns, and customer_support).
+* However, the overall testing status is marked as "fail" due to security tool findings.
+* The ruff tool reported 28 unexcepted findings with a fail status. 
+* detect-secrets also failed with 75 unexcepted findings.
+
+**RECOMMENDATIONS**
+
+* Review specific findings from each security tool (ruff and detect-secrets) for more information on what is causing these failures, citing concrete evidence such as "tool": "ruff", "finding_count": 28.
+* Investigate why some features have passing endpoints but are still contributing to the overall "fail" status.
+
+**ADAPTATION APPLIED**
+
+None at this time. Further investigation into the failed security tools' findings is required before any adaptation can be proposed, as stated in the original review and supported by evidence from the collected report ("status": "fail", "finding_count": 28 for ruff).
+
+[ADAPT] Using the deterministic evidence summary to preserve validation results.
+DETERMINISTIC STATUS: fail
+OBSERVATIONS
+- Selected code SHA: d297a42f144cd645f38ca294a1ae42c639ff58be; read-only captured evidence review.
+- ruff: fail; executed successfully: True; findings: 28; unexcepted: 28; accepted advisories: none.
+- detect-secrets: fail; executed successfully: True; findings: 75; unexcepted: 75; accepted advisories: none.
+- pip-audit: pass_with_exceptions; executed successfully: True; findings: 4; unexcepted: 0; accepted advisories: PYSEC-2026-311, PYSEC-2026-3813, PYSEC-2026-3814, PYSEC-2026-3815.
+- product_catalogue: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39736987922.
+- get_products: passed=True; student-Chufeng/tests/test_catalogue.py::test_get_and_search_products.
+- create_cart_item: passed=True; student-Chufeng/tests/test_catalogue.py::test_add_cart_item.
+- inventory: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39736988041.
+- create_product: passed=True; student-Ryan_Nolan/tests/inventory_tests.py::test_create_product.
+- update_product: passed=True; student-Ryan_Nolan/tests/inventory_tests.py::test_update_product.
+- customer_loyalty: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39736988007.
+- register: passed=True; student-Ethan Ting/tests/test_login_system.py::test_customer_registration_creates_customer_session.
+- create_loyalty_adjustment: passed=True; student-Ethan Ting/tests/test_login_system.py::test_admin_adjustment_includes_authenticated_admin_id.
+- order_returns: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39736987913.
+- create_order: passed=True; student-Howard/tests/test_api.py::test_create_order.
+- create_return: passed=True; student-Howard/tests/test_api.py::test_create_return.
+- customer_support: pass; captured CI: True; tests: 2; failures/errors/skips: 0/0/0; https://github.com/egoldman2/ASD/actions/runs/39736987950.
+- customer_create: passed=True; student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_customer_create_contract.
+- admin_update: passed=True; student-Ethan Goldman/tests/test_release2_endpoint_functions.py::test_admin_update_contract.
+FINDINGS
+- Deterministic issues: none
+- Offline captures: remote authenticity is not independently verified.
+RECOMMENDATIONS
+- Verify current exact-SHA Actions runs and resolve failed/missing evidence before release.
+ADAPTATION APPLIED
+- Preserved deterministic results; this review generates no application change or human release approval.
+
+[VALIDATE] Saved deterministic status fail to /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/docs/evidence/agentic/shared-asd-group-services-testing-20261022-184136-854716.validation.json
+
+[DONE] Agentic review completed. Evidence saved to /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/docs/evidence/agentic/shared-asd-group-services-testing-20261022-184136-854716.md

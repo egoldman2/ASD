@@ -1,0 +1,21 @@
+{
+  "observed_at_sydney": "Thursday, 22 October 2026 at 6:34:53 pm AEDT",
+  "observed_url": "https://dww8d9hiqp0ce.cloudfront.net/account/customer.html",
+  "account": "ethan-cloud-test@example.test",
+  "expected_name": "Assessment Test Updated",
+  "checks": {
+    "customer_welcome_visible": true,
+    "silver_tier_visible": true,
+    "available_points_720": true,
+    "gold_remaining_280": true,
+    "history_reason_visible": true,
+    "history_credit_720": true
+  },
+  "login_completed_by_user": true,
+  "credentials_read_or_retained": false,
+  "application_mutation_performed": false,
+  "limitations": [
+    "Browser observation only; not a new CI run, exhaustive security test or human release approval.",
+    "No deployed source SHA is exposed by this customer page, so this capture alone does not independently establish a release identity."
+  ]
+}

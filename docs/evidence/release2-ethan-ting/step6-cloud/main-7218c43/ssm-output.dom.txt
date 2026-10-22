@@ -1,0 +1,224 @@
+- navigation:
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://059643396979-wl5tuylh.ap-southeast-2.console.aws.amazon.com/console/home?region=ap-southeast-2
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://059643396979-wl5tuylh.ap-southeast-2.console.aws.amazon.com/cloudshell/home?region=ap-southeast-2
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Ethan Ting":
+        - generic: Console Dot Dream
+        - generic: Ethan Ting
+  - list
+- button "Open navigation drawer" [expanded]:
+- navigation "Breadcrumbs":
+  - list:
+    - link "AWS Systems Manager":
+      - /url: /systems-manager/home?region=ap-southeast-2
+      - generic: AWS Systems Manager
+    - link "Run Command":
+      - /url: /systems-manager/run-command?region=ap-southeast-2
+      - generic: Run Command
+    - 'link "Command ID: 8a74b7fe-0888-4baa-82ce-b61ad027ac7f"':
+      - /url: /systems-manager/run-command/8a74b7fe-0888-4baa-82ce-b61ad027ac7f?region=ap-southeast-2
+      - generic: "Command ID: 8a74b7fe-0888-4baa-82ce-b61ad027ac7f"
+    - 'link "Output on: i-03a217a6a7f61d3ae" [disabled]':
+      - generic: "Output on: i-03a217a6a7f61d3ae"
+  - list:
+    - link:
+      - /url: /systems-manager/home?region=ap-southeast-2
+      - generic: AWS Systems Manager
+    - link:
+      - /url: /systems-manager/run-command?region=ap-southeast-2
+      - generic: Run Command
+    - link:
+      - /url: /systems-manager/run-command/8a74b7fe-0888-4baa-82ce-b61ad027ac7f?region=ap-southeast-2
+      - generic: "Command ID: 8a74b7fe-0888-4baa-82ce-b61ad027ac7f"
+    - generic: "Output on: i-03a217a6a7f61d3ae"
+- region:
+  - toolbar:
+    - button "Console-to-Code":
+- navigation "Navigation drawer":
+  - button "Close navigation drawer":
+  - heading "AWS Systems Manager" [level=2]:
+    - link "AWS Systems Manager":
+      - /url: /systems-manager/home
+      - generic: AWS Systems Manager
+  - list:
+    - link "Review node insights":
+      - /url: /systems-manager/review-node-insights?region=ap-southeast-2
+      - generic: Review node insights
+  - list:
+    - link "Explore nodes":
+      - /url: /systems-manager/explore-nodes?region=ap-southeast-2
+      - generic: Explore nodes
+  - list:
+    - link "Diagnose and remediate":
+      - /url: /systems-manager/diagnose-and-remediate?region=ap-southeast-2
+      - generic: Diagnose and remediate
+  - list:
+    - link "Just-in-time node access":
+      - /url: /systems-manager/just-in-time-node-access?region=ap-southeast-2
+      - generic: Just-in-time node access
+  - list:
+    - link "Hybrid and Multicloud nodes":
+      - /url: /systems-manager/hybrid-cloud?region=ap-southeast-2
+      - generic: Hybrid and Multicloud nodes
+    - button "New":
+      - generic: New
+  - list:
+    - link "Settings":
+      - /url: /systems-manager/settings?region=ap-southeast-2
+      - generic: Settings
+  - separator
+  - list:
+    - button "Node Tools" [expanded]:
+      - generic: Node Tools
+    - group "Node Tools":
+      - list:
+        - link "Compliance":
+          - /url: /systems-manager/compliance?region=ap-southeast-2
+          - generic: Compliance
+        - link "Distributor":
+          - /url: /systems-manager/distributor?region=ap-southeast-2
+          - generic: Distributor
+        - link "Fleet Manager":
+          - /url: /systems-manager/fleet-manager?region=ap-southeast-2
+          - generic: Fleet Manager
+        - link "Hybrid Activations":
+          - /url: /systems-manager/activations?region=ap-southeast-2
+          - generic: Hybrid Activations
+        - link "Inventory":
+          - /url: /systems-manager/inventory?region=ap-southeast-2
+          - generic: Inventory
+        - link "Patch Manager":
+          - /url: /systems-manager/patch-manager?region=ap-southeast-2
+          - generic: Patch Manager
+        - link "Run Command":
+          - /url: /systems-manager/run-command?region=ap-southeast-2
+          - generic: Run Command
+        - link "Session Manager":
+          - /url: /systems-manager/session-manager?region=ap-southeast-2
+          - generic: Session Manager
+        - link "State Manager":
+          - /url: /systems-manager/state-manager?region=ap-southeast-2
+          - generic: State Manager
+  - list:
+    - button "Change Management Tools" [expanded]:
+      - generic: Change Management Tools
+    - group "Change Management Tools":
+      - list:
+        - link "Automation":
+          - /url: /systems-manager/automation?region=ap-southeast-2
+          - generic: Automation
+        - link "Change Calendar":
+          - /url: /systems-manager/change-calendar?region=ap-southeast-2
+          - generic: Change Calendar
+        - link "Change Manager":
+          - /url: /systems-manager/change-manager?region=ap-southeast-2
+          - generic: Change Manager
+        - link "Documents":
+          - /url: /systems-manager/documents?region=ap-southeast-2
+          - generic: Documents
+        - button "New":
+          - generic: New
+        - link "Maintenance Windows":
+          - /url: /systems-manager/maintenance-windows?region=ap-southeast-2
+          - generic: Maintenance Windows
+        - link "Quick Setup":
+          - /url: /systems-manager/quick-setup?region=ap-southeast-2
+          - generic: Quick Setup
+  - list:
+    - button "Application Tools" [expanded]:
+      - generic: Application Tools
+    - group "Application Tools":
+      - list:
+        - link "AppConfig":
+          - /url: /systems-manager/appconfig?region=ap-southeast-2
+          - generic: AppConfig
+        - link "Application Manager":
+          - /url: /systems-manager/appmanager?region=ap-southeast-2
+          - generic: Application Manager
+        - link "Parameter Store":
+          - /url: /systems-manager/parameters?region=ap-southeast-2
+          - generic: Parameter Store
+  - list:
+    - button "Operations Tools" [expanded]:
+      - generic: Operations Tools
+    - group "Operations Tools":
+      - list:
+        - link "Explorer":
+          - /url: /systems-manager/explorer?region=ap-southeast-2
+          - generic: Explorer
+        - link "Incident Manager":
+          - /url: /systems-manager/incidents/home?region=ap-southeast-2
+          - generic: Incident Manager
+        - link "OpsCenter":
+          - /url: /systems-manager/opsitems?region=ap-southeast-2
+          - generic: OpsCenter
+- main:
+  - region "Notifications":
+    - list "App.flashbarLabel"
+  - heading "Output on i-03a217a6a7f61d3ae" [level=1]:
+    - generic: Output on i-03a217a6a7f61d3ae
+  - heading "Step 1 - Command description and status" [level=2]:
+    - generic: Step 1 - Command description and status
+  - generic: Status
+  - generic: Success
+  - generic: Detailed status
+  - generic: Success
+  - generic: Response code
+  - generic: "0"
+  - generic: Step name
+  - generic: aws:runShellScript
+  - generic: Start time
+  - generic: Thu, 22 Oct 2026 06:58:21 GMT
+  - generic: Finish time
+  - generic: Thu, 22 Oct 2026 07:00:21 GMT
+  - heading "Output" [level=2]:
+    - button "Output" [expanded] [active]:
+      - generic: Output
+  - group "Output":
+    - text: The command output displays a maximum of 24,000 characters. You can view the complete command output in either Amazon S3 or CloudWatch Logs, if you specify an S3 bucket or a logs group when you run the command.
+    - paragraph
+    - paragraph
+    - code:
+      - paragraph: ASD_READONLY_EVIDENCE_GZIP_BASE64=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
+      - paragraph
+    - button "Copy":
+      - generic: Copy
+    - button "Download":
+      - generic: Download
+  - heading "Error" [level=2]:
+    - button "Error":
+      - generic: Error
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - link "Language":
+    - /url: https://059643396979-wl5tuylh.ap-southeast-2.console.aws.amazon.com/settings/home?region=ap-southeast-2#/localization/edit
+    - generic: Language
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"

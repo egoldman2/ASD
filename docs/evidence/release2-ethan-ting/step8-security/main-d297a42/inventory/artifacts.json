@@ -1,0 +1,45 @@
+{
+  "total_count": 2,
+  "artifacts": [
+    {
+      "id": 12407666991,
+      "node_id": "MDg6QXJ0aWZhY3QxMjQwNzY2Njk5MQ==",
+      "name": "ryan-release2-endpoints-d297a42f144cd645f38ca294a1ae42c639ff58be-1",
+      "size_in_bytes": 2248,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12407666991",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12407666991/zip",
+      "expired": false,
+      "digest": "sha256:f583662dbaeb1d5c557707d65e07420e7a63c5295486b4cbcc12b68be1061d76",
+      "created_at": "2026-10-22T06:56:00Z",
+      "updated_at": "2026-10-22T06:56:00Z",
+      "expires_at": "2027-01-20T06:55:14Z",
+      "workflow_run": {
+        "id": 39736988041,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be"
+      }
+    },
+    {
+      "id": 12407339058,
+      "node_id": "MDg6QXJ0aWZhY3QxMjQwNzMzOTA1OA==",
+      "name": "ryan-endpoint-test-report",
+      "size_in_bytes": 504,
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12407339058",
+      "archive_download_url": "https://api.github.com/repos/egoldman2/ASD/actions/artifacts/12407339058/zip",
+      "expired": false,
+      "digest": "sha256:c2b4301470945f3c3f972241ad8198292e14620008a1e041911e3d8a0747d4cd",
+      "created_at": "2026-10-22T06:55:59Z",
+      "updated_at": "2026-10-22T06:55:59Z",
+      "expires_at": "2027-01-20T06:55:14Z",
+      "workflow_run": {
+        "id": 39736988041,
+        "repository_id": 1326270780,
+        "head_repository_id": 1326270780,
+        "head_branch": "main",
+        "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be"
+      }
+    }
+  ]
+}

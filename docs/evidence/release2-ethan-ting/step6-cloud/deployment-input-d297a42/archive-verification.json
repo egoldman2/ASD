@@ -1,0 +1,28 @@
+{
+  "deployment.zip": {
+    "artifact_id": 12408240625,
+    "run_id": 39736987978,
+    "expected_digest": "sha256:284a73a7469811461560b72f8588a937e355fbf489507f49f2ef449fb0e955fb",
+    "archive": {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/deployment-input-d297a42/artifacts/deployment.zip",
+      "sha256": "284a73a7469811461560b72f8588a937e355fbf489507f49f2ef449fb0e955fb"
+    },
+    "members": [
+      ".aws-deployment/deployment-candidate.json",
+      "deployment-report.json",
+      "deployment-evidence/deployment-result.json"
+    ]
+  },
+  "workflow-gate.zip": {
+    "artifact_id": 12408315162,
+    "run_id": 39736987978,
+    "expected_digest": "sha256:6edd71199a0861f8e11a67b637060f4244d3655ec8b4f91789eafed6a2707fa7",
+    "archive": {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/deployment-input-d297a42/artifacts/workflow-gate.zip",
+      "sha256": "6edd71199a0861f8e11a67b637060f4244d3655ec8b4f91789eafed6a2707fa7"
+    },
+    "members": [
+      "workflow-gate.json"
+    ]
+  }
+}

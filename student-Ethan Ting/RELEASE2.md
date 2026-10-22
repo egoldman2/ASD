@@ -57,6 +57,40 @@ The Worker override above was used for the successful local check. The shared
 default `qwen2.5:0.5b` Worker misread the loyalty thresholds in two retained runs.
 This environment override does not change the team's committed server defaults.
 
+For a full local team demonstration on this Mac, start the existing Compose
+services first. Keep the product database's published port on loopback and point
+both backends at the already running host Multi-Agent server on port 5054:
+
+```bash
+PRODUCT_DATABASE_HOST_PORT=127.0.0.1:6001 \
+MULTI_AGENT_SERVER_URL=http://host.docker.internal:5054 \
+  docker compose up -d --build
+```
+
+Then start the shared MCP and RAG services in separate host terminals, outside
+Docker. The Docker backends can reach these loopback listeners through
+`host.docker.internal` on this Mac:
+
+```bash
+MCP_HOST=127.0.0.1 PYTHONPATH=ai-services \
+  .venv311/bin/python -m mcp_server.server
+```
+
+```bash
+OLLAMA_MODEL=llama3.1:8b RAG_HOST=127.0.0.1 PYTHONPATH=ai-services \
+  .venv311/bin/python -m rag_server.rag_http_server
+```
+
+Ollama and the Multi-Agent server also run on the host. Refresh the approved
+`ethan_ting_accounts_loyalty` RAG scope after changing its source documents.
+On 22 October 2026, all 13 Compose services were running, all six frontend
+homepages returned HTTP 200, and the Ethan backend container reached the MCP,
+RAG and Multi-Agent health endpoints. A live backend-container MCP call returned
+Silver and 280 points to Gold for a supplied 720-point balance. The local RAG
+service retrieved the approved guide and answered the Gold-threshold question
+with citations. These checks do not substitute for the group showcase or prove
+that all customer workflows were tested end to end.
+
 ```bash
 AI_MODE_ENABLED=true MULTI_AGENT_ENABLED=true docker compose up -d --build ethan-database ethan-backend ethan-frontend
 ```
@@ -144,13 +178,59 @@ final deterministic summary preserves the missing evidence instead. Customer
 browser sign-in is separately pending. No AWS mutation or redeployment occurred.
 The new capture helper/tests and evidence remain local for review.
 
+## Step 6: retrieved cloud records and measured health
+
+The [Step 6 cloud evidence](../docs/evidence/release2-ethan-ting/step6-cloud/README.md)
+now supplies the missing native public-smoke/runtime bytes and a measured health
+window. The user published `d297a42` during this task, so new same-source Actions
+artifacts and a fresh 120-second observation were captured for that deployment;
+the earlier `7218c43` observation remains separate historical evidence.
+
+For `d297a42`, all six technical checks pass: deployment acceptance, cloud Actions,
+five-student gate, 67 recorded public checks, disabled runtime baseline and stable
+health across 14 containers with no new OOM kills or restarts. The shared PAOA
+review completed locally. Overall status is still **incomplete** solely because
+no human release decision is recorded. It does not clear the earlier group
+security findings. The then-pending customer-browser login check is completed
+separately in Step 7 below.
+
+Only read-only SSM diagnostics and public-home GET observations were performed.
+No application deployment or customer mutation was performed by this step. New
+observer/assembler/tests, evidence and this documentation remain local for review.
+
+## Step 7: customer cloud browser check
+
+The user completed private sign-in for the temporary cloud customer. The
+[customer-side evidence](../docs/evidence/release2-ethan-ting/step7-customer-cloud/README.md)
+shows Assessment Test Updated, Silver tier, 720 available points, 280 points to
+Gold and the +720 Cloud assessment test history entry. The observed URL is the
+public cloud customer page, not localhost. Screenshot, visible page text and
+verification metadata are retained. No account/password/points change or human
+release approval was submitted during this read-only check.
+
+## Step 8: refreshed security ownership and Testing Review
+
+The [current security audit](../docs/evidence/release2-ethan-ting/step8-security/README.md)
+uses an isolated clean copy of published `d297a42` so local Step 6/7 files are not
+misrepresented as committed evidence. All five workflows and ten endpoint cases
+pass for that source. Ethan Ting's current feature/MCP test scope has zero Ruff
+findings and zero new unclassified secret matches, including local helper files.
+
+The group scan retains 28 Ruff warnings (16 catalogue, 11 shared AI and one
+historical evidence script), 75 raw secret detections (48 baseline metadata and
+27 existing baseline matches), and four ChromaDB advisory IDs with existing
+documented exceptions. Reviewed source context and owner actions are recorded;
+these counts are not a count of confirmed exploits. No source, baseline,
+dependency, hook, teammate code, release decision or cloud setting was changed.
+The refreshed shared Testing Review remains **fail**, not a waived release gate.
+
 ## Remaining steps
 
 - Retain genuine commit-hook output when available; manual hook runs are not commit-time evidence.
-- Resolve or specifically assess outstanding group security findings, then refresh Testing Review.
-- Review the local Step 5 capture helper/tests/evidence before publishing; the old passing run cannot certify new files.
+- Obtain owner-reviewed fixes or explicit policy decisions for the Step 8 findings, then retain fresh same-source scans/CI and rerun Testing Review.
+- Review the local Step 6 observer/assembler/tests and Step 6/7 evidence before publishing; existing CI cannot certify new files.
 - Record the student's own review/release decision and reasons; none was granted by this automation.
-- Retrieve the missing same-release cloud records, observe health, finish customer browser sign-in and rerun Cloud Deployment Review.
+- Refresh cloud records if another release is deployed; the customer browser sign-in check is now complete.
 - Update individual diagrams, report contribution and demonstration evidence.
 
 This file does not certify the shared AWS deployment or the group's completion.

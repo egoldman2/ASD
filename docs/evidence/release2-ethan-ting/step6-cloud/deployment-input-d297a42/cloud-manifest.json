@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "cloud-deployment",
+  "owner": "Ethan Ting",
+  "captured_at": "2026-10-22T18:07:43.726557+11:00",
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "command": "Capture public GitHub run/jobs/artifacts and digest-verified native archives; preserve missing captures and absent human decision.",
+  "deployment": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/deployment-input-d297a42/native/deployment-report.json",
+    "sha256": "e61ddac48bfd0e3be36ac30798cffdfe07adc8f87fcf1ebc31ce6d86e55b7256"
+  },
+  "actions": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/deployment-input-d297a42/actions.json",
+    "sha256": "5960be8d38ea4800862f7ee6abfb2761741b9620c782fb5224aad906650e0c1d"
+  },
+  "workflow_gate": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/deployment-input-d297a42/native/workflow-gate.json",
+    "sha256": "f5ec7f2e174250d8b7f1fc76efdb0dbedae1ec4d3f2e9185c95d9ffc0b452ee1"
+  }
+}

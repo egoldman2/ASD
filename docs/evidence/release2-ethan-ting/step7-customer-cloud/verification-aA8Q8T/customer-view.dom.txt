@@ -1,0 +1,56 @@
+- banner:
+  - link "ASD 2026 home":
+    - /url: /
+    - generic: ASD 2026
+  - navigation "Main navigation":
+    - link "Catalogue":
+      - /url: /catalogue
+    - link "Support":
+      - /url: /support
+    - link "Search products":
+      - /url: /catalogue
+    - button "Account":
+      - generic: Account
+- main:
+  - heading "Welcome, Assessment Test Updated" [level=1]
+  - paragraph: Manage your profile and continue shopping from one simple account page.
+  - article "Profile":
+    - heading "Profile" [level=2]
+    - generic: Full name
+    - textbox "Full name": Assessment Test Updated
+    - generic: Email address
+    - textbox "Email address": <redacted>
+    - button "Save changes"
+  - article "Change password":
+    - paragraph: Account security
+    - heading "Change password" [level=2]
+    - generic: Current password
+    - textbox "Current password"
+    - generic: New password
+    - textbox "New password"
+    - generic: Confirm new password
+    - textbox "Confirm new password"
+    - paragraph: Use at least 8 characters.
+    - button "Change password"
+  - article "Your membership":
+    - paragraph: Loyalty rewards
+    - heading "Your membership" [level=2]
+    - generic: Silver
+    - text: Available points
+    - strong: "720"
+    - generic: 280 points until Gold
+    - generic: 720 / 1000
+    - progressbar
+    - heading "Recent points activity" [level=3]
+    - table:
+      - rowgroup:
+        - row "Date Reason Points":
+          - columnheader "Date"
+          - columnheader "Reason"
+          - columnheader "Points"
+      - rowgroup:
+        - row "22 Oct 2026 Cloud assessment test +720":
+          - cell "22 Oct 2026"
+          - cell "Cloud assessment test"
+          - cell "+720"
+- contentinfo: asd(2026)-group7

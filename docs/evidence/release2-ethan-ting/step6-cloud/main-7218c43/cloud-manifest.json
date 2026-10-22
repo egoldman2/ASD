@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "cloud-deployment",
+  "owner": "Ethan Ting",
+  "captured_at": "2026-10-22T18:02:27.868087+11:00",
+  "source_sha": "7218c437182feb42c202abf15232b535675576e2",
+  "command": "Read-only SSM retrieval of accepted same-SHA native records; measured 120-second host observation and EC2 console status; human approval remains absent.",
+  "deployment": {
+    "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/native/deployment-report.json",
+    "sha256": "5a3a330a9b11275fc7dea9e0561cc20becb94218e01f8db1d12885b305052e4a"
+  },
+  "actions": {
+    "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/actions.json",
+    "sha256": "c337330bfd5c16474d09c04f9a9a107a0c9ace32cc4460eb0802b0c248c6029e"
+  },
+  "workflow_gate": {
+    "path": "docs/evidence/release2-ethan-ting/step5-cloud/main-7218c43/native/workflow-gate.json",
+    "sha256": "684e8bff11e1dcbdfc4850a97e5f8c0212e4b130f80ee8bf50298c8bec3bf448"
+  },
+  "public_smoke": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/public-smoke.json",
+    "sha256": "1a41fa7851d029203daf620b903ae4d2e81c8609e408165254aad95d7fa9fee7"
+  },
+  "runtime": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/runtime.json",
+    "sha256": "74271d819a55d3190c53a8a32dcb8785b2a23229d0703394a9583eb51a9f8bc7"
+  },
+  "health": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/health.json",
+    "sha256": "eb0f9564413828234a8d0f6f9d23ed83102acc16d8000cfed476a0f9a0ea9016"
+  }
+}

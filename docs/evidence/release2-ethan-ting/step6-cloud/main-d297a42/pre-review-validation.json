@@ -1,0 +1,106 @@
+{
+  "kind": "cloud-deployment",
+  "read_only": true,
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "status": "incomplete",
+  "technical_status": "pass",
+  "checks": [
+    {
+      "name": "ssm_acceptance",
+      "status": "pass"
+    },
+    {
+      "name": "actions",
+      "status": "pass",
+      "run_url": "https://github.com/egoldman2/ASD/actions/runs/39736987978"
+    },
+    {
+      "name": "workflow_gate",
+      "status": "pass",
+      "workflow_count": 5
+    },
+    {
+      "name": "public_smoke",
+      "status": "pass",
+      "check_count": 67,
+      "missing_crud": {
+        "inventory": [],
+        "customer_loyalty": [],
+        "customer_support": [],
+        "product_catalogue": [],
+        "order_returns": []
+      },
+      "missing_disabled": [],
+      "cleanup_status": "passed"
+    },
+    {
+      "name": "runtime",
+      "status": "pass",
+      "baseline_flags_disabled": true,
+      "current_release": "/srv/asd/releases/d297a42f144cd645f38ca294a1ae42c639ff58be-1-424f2a6f2ed4"
+    },
+    {
+      "name": "health",
+      "status": "pass",
+      "observation_seconds": 120,
+      "capacity_limit": "Only the recorded observation window is covered."
+    }
+  ],
+  "issues": [
+    "human_release_decision_missing"
+  ],
+  "human_release": {
+    "recorded": false
+  },
+  "remote_authenticity_verified": false,
+  "limitations": [
+    "Supplied captures are checked offline; remote authenticity is not independently verified.",
+    "A technical result or model recommendation cannot grant a human release approval.",
+    "Recorded core CRUD does not establish unrecorded returns/supplier operations or production capacity."
+  ],
+  "release": {
+    "release_id": "d297a42f144cd645f38ca294a1ae42c639ff58be-1",
+    "source_sha256": "424f2a6f2ed49f1891645e00cdc086959a55d4e6f36e60dea71b52883f2c8ccd",
+    "target_url": "https://dww8d9hiqp0ce.cloudfront.net",
+    "command_id": "f880b0fb-2157-46ce-9698-a383aab8caa3",
+    "environment": "aws-cloud",
+    "region": "ap-southeast-2"
+  },
+  "inputs": [
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/cloud-manifest.json",
+      "sha256": "b7dfeea93558e635c061bb629f6bbc9f1a0727d1705165dfc76cadc9a06d08dc",
+      "bytes": 1574
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/deployment-input-d297a42/native/deployment-report.json",
+      "sha256": "e61ddac48bfd0e3be36ac30798cffdfe07adc8f87fcf1ebc31ce6d86e55b7256",
+      "bytes": 980
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/deployment-input-d297a42/actions.json",
+      "sha256": "5960be8d38ea4800862f7ee6abfb2761741b9620c782fb5224aad906650e0c1d",
+      "bytes": 46194
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/deployment-input-d297a42/native/workflow-gate.json",
+      "sha256": "f5ec7f2e174250d8b7f1fc76efdb0dbedae1ec4d3f2e9185c95d9ffc0b452ee1",
+      "bytes": 5154
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/public-smoke.json",
+      "sha256": "363dca3c8c62238fb387ee1f852d7ba6fc3634d16cd6db9efa132c543c9e1d95",
+      "bytes": 15685
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/runtime.json",
+      "sha256": "2a260b5903874a052564c801f7aee705542d8b849e8131c611f2809ef867ed60",
+      "bytes": 1215
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-d297a42/health.json",
+      "sha256": "61031e0f20241b6cc579b0ec2ec7bf2e81be6791617f7966c19d5ac1a702bd98",
+      "bytes": 1325
+    }
+  ]
+}

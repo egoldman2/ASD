@@ -1,0 +1,31 @@
+{
+  "source_sha": "7218c437182feb42c202abf15232b535675576e2",
+  "release_id": "7218c437182feb42c202abf15232b535675576e2-1",
+  "target_instance": "i-03a217a6a7f61d3ae",
+  "owner": "Ethan Ting",
+  "captured_at": "2026-10-22T18:00:21.846346+11:00",
+  "command": "SSM read-only evidence export and Docker/proc/public-home observations at 0, 60 and 120 seconds",
+  "observation_seconds": 120,
+  "command_id": "8a74b7fe-0888-4baa-82ce-b61ad027ac7f",
+  "new_oom_events": 0,
+  "unexpected_restarts": 0,
+  "containers_healthy": true,
+  "container_count": 14,
+  "instance_status": "ok",
+  "system_status": "ok",
+  "ebs_status": "ok",
+  "status": "stable",
+  "native_observation": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/host-observation.json",
+    "sha256": "88c675a8fd022da1ac3dacac0a18c1cefcf9d06453fa16442f28b9941bf16666"
+  },
+  "ec2_console_observation": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/ec2-status.dom.txt",
+    "sha256": "3b10efa502d9022d332e344b84e463ace48f19303a0011ee91ed33d8d24a63c0"
+  },
+  "limitations": [
+    "Light public-home GETs only, not a production capacity test.",
+    "EC2 instance/system status must be separately observed, never assumed.",
+    "EC2 status is a console observation, not a continuously measured API status series."
+  ]
+}

@@ -1,0 +1,301 @@
+{
+  "total_count": 2,
+  "jobs": [
+    {
+      "id": 119684885822,
+      "run_id": 39736987950,
+      "workflow_name": "Ethan Goldman Customer Support CI",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/egoldman2/ASD/actions/runs/39736987950",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTw1JPM8AAAAb3cZtPg",
+      "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/jobs/119684885822",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987950/job/119684885822",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-22T06:55:14Z",
+      "started_at": "2026-10-22T06:55:17Z",
+      "completed_at": "2026-10-22T06:58:09Z",
+      "name": "Test Customer Support integration",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-22T06:55:17Z",
+          "completed_at": "2026-10-22T06:55:18Z"
+        },
+        {
+          "name": "Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-22T06:55:18Z",
+          "completed_at": "2026-10-22T06:55:19Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-22T06:55:19Z",
+          "completed_at": "2026-10-22T06:55:22Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-22T06:55:22Z",
+          "completed_at": "2026-10-22T06:55:45Z"
+        },
+        {
+          "name": "Record and verify allocated endpoint functions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-22T06:55:45Z",
+          "completed_at": "2026-10-22T06:55:50Z"
+        },
+        {
+          "name": "Run Customer Support tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-22T06:55:50Z",
+          "completed_at": "2026-10-22T06:57:37Z"
+        },
+        {
+          "name": "Verify workflow loading and error events",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-22T06:57:37Z",
+          "completed_at": "2026-10-22T06:57:38Z"
+        },
+        {
+          "name": "Run shared MCP and RAG contract tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-22T06:57:38Z",
+          "completed_at": "2026-10-22T06:57:44Z"
+        },
+        {
+          "name": "Run shared Multi-Agent contracts in an isolated process",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-22T06:57:44Z",
+          "completed_at": "2026-10-22T06:57:45Z"
+        },
+        {
+          "name": "Run shared access, cloud and disabled-runtime checks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-22T06:57:45Z",
+          "completed_at": "2026-10-22T06:58:06Z"
+        },
+        {
+          "name": "Compile application Python modules",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-22T06:58:06Z",
+          "completed_at": "2026-10-22T06:58:06Z"
+        },
+        {
+          "name": "Upload endpoint, regression and environment evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-22T06:58:06Z",
+          "completed_at": "2026-10-22T06:58:07Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-22T06:58:07Z",
+          "completed_at": "2026-10-22T06:58:07Z"
+        },
+        {
+          "name": "Post Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-10-22T06:58:07Z",
+          "completed_at": "2026-10-22T06:58:07Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-22T06:58:07Z",
+          "completed_at": "2026-10-22T06:58:07Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/egoldman2/ASD/check-runs/119684885822",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001535,
+      "runner_name": "GitHub Actions 1000001535",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 119685886065,
+      "run_id": 39736987950,
+      "workflow_name": "Ethan Goldman Customer Support CI",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/egoldman2/ASD/actions/runs/39736987950",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTw1JPM8AAAAb3dWwcQ",
+      "head_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/jobs/119685886065",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39736987950/job/119685886065",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-22T06:58:09Z",
+      "started_at": "2026-10-22T06:58:12Z",
+      "completed_at": "2026-10-22T07:02:16Z",
+      "name": "Build and validate Customer Support services",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-22T06:58:12Z",
+          "completed_at": "2026-10-22T06:58:13Z"
+        },
+        {
+          "name": "Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-22T06:58:13Z",
+          "completed_at": "2026-10-22T06:58:14Z"
+        },
+        {
+          "name": "Build Customer Support test target",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-22T06:58:14Z",
+          "completed_at": "2026-10-22T06:59:03Z"
+        },
+        {
+          "name": "Record Docker test dependency versions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-22T06:59:03Z",
+          "completed_at": "2026-10-22T06:59:05Z"
+        },
+        {
+          "name": "Run Customer Support test target",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-22T06:59:05Z",
+          "completed_at": "2026-10-22T07:00:56Z"
+        },
+        {
+          "name": "Validate Docker Compose",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-22T07:00:56Z",
+          "completed_at": "2026-10-22T07:00:56Z"
+        },
+        {
+          "name": "Confirm local AI services are disabled in CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-22T07:00:56Z",
+          "completed_at": "2026-10-22T07:00:56Z"
+        },
+        {
+          "name": "Start support and authentication services",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-22T07:00:56Z",
+          "completed_at": "2026-10-22T07:01:42Z"
+        },
+        {
+          "name": "Verify service health and database ownership",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-22T07:01:42Z",
+          "completed_at": "2026-10-22T07:01:42Z"
+        },
+        {
+          "name": "Verify disabled AI, MCP, RAG and Multi-Agent through the frontend",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-22T07:01:42Z",
+          "completed_at": "2026-10-22T07:01:43Z"
+        },
+        {
+          "name": "Show integration logs on failure",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-22T07:01:43Z",
+          "completed_at": "2026-10-22T07:01:43Z"
+        },
+        {
+          "name": "Stop integration services",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-22T07:01:43Z",
+          "completed_at": "2026-10-22T07:02:13Z"
+        },
+        {
+          "name": "Upload Docker test evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-22T07:02:13Z",
+          "completed_at": "2026-10-22T07:02:14Z"
+        },
+        {
+          "name": "Post Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-10-22T07:02:14Z",
+          "completed_at": "2026-10-22T07:02:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-10-22T07:02:14Z",
+          "completed_at": "2026-10-22T07:02:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/egoldman2/ASD/check-runs/119685886065",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001551,
+      "runner_name": "GitHub Actions 1000001551",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

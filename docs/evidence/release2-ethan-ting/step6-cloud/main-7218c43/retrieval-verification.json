@@ -1,0 +1,37 @@
+{
+  "source_sha": "7218c437182feb42c202abf15232b535675576e2",
+  "command_id": "8a74b7fe-0888-4baa-82ce-b61ad027ac7f",
+  "native_files": [
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/deployment-result.json",
+      "sha256": "0a8c5e10853b61f4b4cf548ddb755b2f66686d974d8db6c6e5679b00af7d73f3"
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/public-smoke.json",
+      "sha256": "1a41fa7851d029203daf620b903ae4d2e81c8609e408165254aad95d7fa9fee7"
+    },
+    {
+      "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/runtime.json",
+      "sha256": "74271d819a55d3190c53a8a32dcb8785b2a23229d0703394a9583eb51a9f8bc7"
+    }
+  ],
+  "health": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/health.json",
+    "sha256": "eb0f9564413828234a8d0f6f9d23ed83102acc16d8000cfed476a0f9a0ea9016"
+  },
+  "host_result_comparison": "All accepted Actions projection fields match; full host file has additional provenance fields and different bytes.",
+  "observer_source": {
+    "path": "docs/evidence/release2-ethan-ting/step6-cloud/main-7218c43/executed-observer.py",
+    "sha256": "24b8b0df104c69af7268b0ac890da0a45dd56339c7a92fc23133ad35fdc80e7b"
+  },
+  "assembler_source_at_capture": {
+    "path_at_capture": "student-Ethan Ting/scripts/assemble_cloud_observation.py",
+    "sha256": "a75db2c01acae3e5d73e8b8dc778921cb1a52d6c27b7709c3abd9204ac2d75cf"
+  },
+  "assembly_notes": "The retained observer is the exact executed script. The historical assembler execution hash is a capture-time value, not a claim about its subsequently edited working-tree file; raw AWS captures are unchanged.",
+  "technical_status": "pass",
+  "review_status": "incomplete",
+  "human_release_recorded": false,
+  "customer_data_changed": false,
+  "committed_or_pushed": false
+}

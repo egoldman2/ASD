@@ -1,0 +1,37 @@
+{
+  "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+  "captured_at": "2026-10-22T18:07:43.726718+11:00",
+  "missing": [
+    {
+      "kind": "public_smoke",
+      "expected_host_reference": {
+        "path": "/srv/asd/releases/d297a42f144cd645f38ca294a1ae42c639ff58be-1-424f2a6f2ed4/public-smoke.json",
+        "sha256": "363dca3c8c62238fb387ee1f852d7ba6fc3634d16cd6db9efa132c543c9e1d95"
+      },
+      "reason": "The native Actions artifact exports its hash reference, not the capture bytes."
+    },
+    {
+      "kind": "runtime",
+      "expected_host_reference": {
+        "path": "/srv/asd/releases/d297a42f144cd645f38ca294a1ae42c639ff58be-1-424f2a6f2ed4/runtime.json",
+        "sha256": "2a260b5903874a052564c801f7aee705542d8b849e8131c611f2809ef867ed60"
+      },
+      "reason": "The native Actions artifact exports its hash reference, not the capture bytes."
+    },
+    {
+      "kind": "health",
+      "reason": "No same-source measured health window captured in this run's downloaded artifacts."
+    },
+    {
+      "kind": "human_release",
+      "reason": "No student release approval supplied for this source. Historical decisions are not reused."
+    },
+    {
+      "kind": "customer_browser_login",
+      "reason": "The manual customer sign-in and own-account view remain unverified."
+    }
+  ],
+  "older_capture_reused": false,
+  "local_aws_cli_available": false,
+  "limitations": "Offline validation cannot independently prove remote authenticity or substitute hashes for missing capture content."
+}

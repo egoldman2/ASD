@@ -1,0 +1,38 @@
+[
+  {
+    "tool": "ruff",
+    "exit_code": 1,
+    "captured_at": "2026-10-22T18:38:55.406783+11:00",
+    "owner": "Ethan Ting",
+    "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+    "command": "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python -m ruff check . --select S --output-format json",
+    "report": {
+      "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/security/ruff.json",
+      "sha256": "96c2e6f01cfa6f3ba6b78837bd484e953fa8ecd80879e8fddfe17d431e40bb39"
+    }
+  },
+  {
+    "tool": "detect-secrets",
+    "exit_code": 0,
+    "captured_at": "2026-10-22T18:38:57.322813+11:00",
+    "owner": "Ethan Ting",
+    "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+    "command": "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python -m detect_secrets scan --no-verify --exclude-files (?x)^(docs/evidence/.*|ai-services/multi_agent_server/(coordination_audit|workflow_history)\\.jsonl|.*\\.min\\.js|.*\\.log)$",
+    "report": {
+      "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/security/detect-secrets.json",
+      "sha256": "997995eac2d3f2c81a49da55383eced4d547878fe49b3510854ea1e9c129e392"
+    }
+  },
+  {
+    "tool": "pip-audit",
+    "exit_code": 1,
+    "captured_at": "2026-10-22T18:39:08.956689+11:00",
+    "owner": "Ethan Ting",
+    "source_sha": "d297a42f144cd645f38ca294a1ae42c639ff58be",
+    "command": "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/.venv311/bin/python -m pip_audit -r requirements-audit.txt --format json --progress-spinner off",
+    "report": {
+      "path": "docs/evidence/release2-ethan-ting/step8-security/main-d297a42/security/pip-audit.json",
+      "sha256": "99b820efec3d4354abf48289b0fba4dd638b73d2ffea45964f333e6b945b037b"
+    }
+  }
+]
