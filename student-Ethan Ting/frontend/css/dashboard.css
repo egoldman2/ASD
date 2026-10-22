@@ -209,6 +209,24 @@
   font: inherit;
 }
 
+select.searchField {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='m2 2 6 6 6-6' fill='none' stroke='%234a627a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 0.875rem auto;
+}
+
+@media (forced-colors: active) {
+  select.searchField {
+    appearance: auto;
+    -webkit-appearance: auto;
+    background-image: none;
+  }
+}
+
 .searchField:focus {
   border-color: #1d5b9e;
   outline: 3px solid rgba(29, 91, 158, 0.16);
