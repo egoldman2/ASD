@@ -1,0 +1,329 @@
+# Agentic Review Evidence
+
+- Feature: Ethan Ting - Customer Accounts and Loyalty
+- Contributor: Ethan Ting
+- Mode: multi-agent
+- Model: llama3.1:8b
+- Generated: 2026-10-22T02:32:40
+- Prompt: /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/student-Ethan Ting/agentic/review_prompt.txt
+
+## Plan
+
+Load the feature-specific prompt, collect read-only multi-agent evidence, request an initial
+review, evaluate that review, and adapt it when required.
+
+## Evidence
+
+```json
+{
+  "project_root": "/Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD",
+  "read_only": true,
+  "files": [
+    {
+      "path": "ai-services/multi_agent_server/app.py",
+      "characters": 10237,
+      "truncated": true,
+      "content": "\"\"\"Flask application entry point for the shared Multi-Agent Server.\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom typing import Any\n\nfrom flask import Flask, jsonify, request\nfrom flask_cors import CORS\nfrom werkzeug.exceptions import HTTPException\n\nfrom multi_agent_server.agents.planner_agent import (\n    PlannerAgent,\n    PlannerResponseError,\n)\nfrom multi_agent_server.agents.revie"
+    },
+    {
+      "path": "ai-services/multi_agent_server/contracts.py",
+      "characters": 12258,
+      "truncated": true,
+      "content": "\"\"\"Validated request contracts for the shared multi-agent workflow.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom enum import Enum\nimport math\nfrom types import MappingProxyType\nfrom typing import Any, Mapping\nfrom urllib.parse import urlsplit\n\n\nMAX_USER_REQUEST_CHARS = 4_000\nMAX_EVIDENCE_ITEMS = 20\nMAX_EVIDENCE_ID_CHARS = 128\nMAX_SERV"
+    },
+    {
+      "path": "ai-services/multi_agent_server/coordinator.py",
+      "characters": 4941,
+      "truncated": true,
+      "content": "\"\"\"Planner, Worker, Reviewer, and human-review workflow coordination.\"\"\"\n\nfrom __future__ import annotations\n\nfrom collections.abc import Callable\nfrom time import monotonic\nfrom typing import Any, Protocol\nfrom uuid import UUID, uuid4\n\nfrom multi_agent_server.agents.planner_agent import PlannerResult\nfrom multi_agent_server.agents.reviewer_agent import ReviewerResult\nfrom multi_agent_server.agent"
+    },
+    {
+      "path": "ai-services/multi_agent_server/workflow_store.py",
+      "characters": 14572,
+      "truncated": true,
+      "content": "\"\"\"Thread-safe workflow history and compact coordination audit storage.\"\"\"\n\nfrom __future__ import annotations\n\nfrom collections.abc import Callable\nfrom copy import deepcopy\nfrom datetime import datetime, timezone\nimport json\nimport os\nfrom pathlib import Path\nimport tempfile\nimport threading\nfrom typing import Any\n\nfrom multi_agent_server.agents.planner_agent import PlannerResult\nfrom multi_agen"
+    },
+    {
+      "path": "ai-services/multi_agent_server/agents/planner_agent.py",
+      "characters": 7708,
+      "truncated": true,
+      "content": "\"\"\"Planner Agent for feature-neutral workflow planning.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nimport json\nfrom pathlib import Path\nimport re\nfrom typing import Any\n\nfrom multi_agent_server.contracts import WorkflowRequest\nfrom multi_agent_server.model_client import (\n    AgentRole,\n    OllamaModelClient,\n)\n\n\nBASE_DIR = Path(__file__).resolve().parents[1]\nPROMPT_"
+    },
+    {
+      "path": "ai-services/multi_agent_server/agents/worker_agent.py",
+      "characters": 11124,
+      "truncated": true,
+      "content": "\"\"\"Worker Agent that executes a Planner result using supplied evidence only.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nimport json\nfrom pathlib import Path\nimport re\nfrom typing import Any\n\nfrom multi_agent_server.agents.planner_agent import PlannerResult\nfrom multi_agent_server.contracts import WorkflowRequest\nfrom multi_agent_server.evidence_context import (\n    E"
+    },
+    {
+      "path": "ai-services/multi_agent_server/agents/reviewer_agent.py",
+      "characters": 13221,
+      "truncated": true,
+      "content": "\"\"\"Independent Reviewer Agent for completed Planner and Worker results.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nimport json\nfrom pathlib import Path\nimport re\nfrom typing import Any\n\nfrom multi_agent_server.agents.planner_agent import PlannerResult\nfrom multi_agent_server.agents.worker_agent import WorkerResult\nfrom multi_agent_server.contracts import WorkflowRequ"
+    },
+    {
+      "path": "ai-services/multi_agent_validation.py",
+      "characters": 14264,
+      "truncated": true,
+      "content": "\"\"\"Bounded, read-only runtime validation for the shared Multi-Agent Server.\"\"\"\n\nfrom __future__ import annotations\n\nfrom datetime import datetime\nfrom hashlib import sha256\nimport json\nimport os\nfrom pathlib import Path\nimport re\nfrom urllib.parse import quote, urlsplit\n\nfrom mcp_validation import (\n    ProbeConfigurationError,\n    bounded_timeout,\n    local_url,\n    public_evidence,\n    read_json"
+    },
+    {
+      "path": "shared/multi_agent_client.py",
+      "characters": 14770,
+      "truncated": true,
+      "content": "\"\"\"Feature-scoped HTTP client for the shared Multi-Agent service.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom datetime import datetime\nimport math\nimport os\nfrom typing import Any, Callable\nfrom urllib.parse import quote, urlparse\n\nimport requests\n\nfrom shared.feature_flags import feature_enabled\n\n\nDEFAULT_MULTI_AGENT_SERVER_URL = \"http://127.0.0.1:5004\"\nDEFAULT_"
+    },
+    {
+      "path": "student-Ethan Ting/backend/app.py",
+      "characters": 76458,
+      "truncated": true,
+      "content": "import asyncio\nimport json\nimport os\nfrom concurrent.futures import ThreadPoolExecutor\nfrom datetime import datetime, timezone\nfrom html import escape\nfrom datetime import timedelta\nfrom functools import wraps\nfrom pathlib import Path\nimport re\nimport time\nfrom urllib.error import HTTPError, URLError\nfrom urllib.parse import urlencode, urlsplit, urlunsplit\nfrom urllib.request import Request as URL"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/js/customer-assistant.js",
+      "characters": 41612,
+      "truncated": true,
+      "content": "/* Shared component for both Ethan Ting admin pages. Dynamic data uses textContent. */\n(() => {\nconst host = document.querySelector(\"#customerAssistant\");\nif (!host) return;\nhost.innerHTML = `\n<div class=\"panelHeading\"><div><p class=\"dashboardEyebrow\">Customer support tools</p><h2 id=\"customerInsightTitle\">Customer assistant</h2><p class=\"panelDescription\">Check live loyalty records, ask AI or loo"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_multi_agent_loyalty.py",
+      "characters": 10857,
+      "truncated": true,
+      "content": "\"\"\"Accounts boundary tests: real shared client, no model or database mutation.\"\"\"\n\nfrom copy import deepcopy\nimport importlib.util\nfrom pathlib import Path\nfrom secrets import token_hex\nfrom urllib.error import HTTPError, URLError\n\nimport pytest\nimport requests\n\nfrom shared.multi_agent_client import MultiAgentClient, MultiAgentClientSettings\n\n\nBASE = \"/api/admin/multi-agent/workflows\"\n\n\n@pytest.fi"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_agentic_review.py",
+      "characters": 15682,
+      "truncated": true,
+      "content": "import importlib.util\nimport json\nimport sqlite3\nfrom pathlib import Path\n\nimport pytest\n\n\nSTUDENT_FOLDER = Path(__file__).resolve().parents[1]\nif (STUDENT_FOLDER / \"ai-services\" / \"agentic_loop.py\").is_file():\n    PROJECT_ROOT = STUDENT_FOLDER\nelse:\n    PROJECT_ROOT = STUDENT_FOLDER.parent\nAGENTIC_LOOP_PATH = PROJECT_ROOT / \"ai-services\" / \"agentic_loop.py\"\n\n\ndef load_agentic_loop(module_name=\"et"
+    },
+    {
+      "path": "docker-compose.yml",
+      "characters": 9544,
+      "truncated": true,
+      "content": "services:\n  shared-home:\n    image: nginx:1.27-alpine\n    ports:\n      - \"8000:80\"\n    volumes:\n      - ./shared:/usr/share/nginx/html:ro\n      - ./shared/nginx/home.conf:/etc/nginx/conf.d/default.conf:ro\n\n  product-catalogue:\n    build:\n      context: .\n      dockerfile: student-Chufeng/Dockerfile\n      target: frontend\n    ports:\n      - \"8001:80\"\n    volumes:\n      - ./shared/nginx/product-cata"
+    }
+  ],
+  "verified_checks": {
+    "configured_files": 14,
+    "present_files": 14,
+    "missing_files": [],
+    "truncated_files": [
+      "ai-services/multi_agent_server/app.py",
+      "ai-services/multi_agent_server/contracts.py",
+      "ai-services/multi_agent_server/coordinator.py",
+      "ai-services/multi_agent_server/workflow_store.py",
+      "ai-services/multi_agent_server/agents/planner_agent.py",
+      "ai-services/multi_agent_server/agents/worker_agent.py",
+      "ai-services/multi_agent_server/agents/reviewer_agent.py",
+      "ai-services/multi_agent_validation.py",
+      "shared/multi_agent_client.py",
+      "student-Ethan Ting/backend/app.py",
+      "student-Ethan Ting/frontend/js/customer-assistant.js",
+      "student-Ethan Ting/tests/test_multi_agent_loyalty.py",
+      "student-Ethan Ting/tests/test_agentic_review.py",
+      "docker-compose.yml"
+    ],
+    "source_checks": {
+      "loyalty_uses_shared_feature_scoped_client": true,
+      "loyalty_evidence_is_read_only_and_bounded": true,
+      "workflow_scope_and_human_identity_checked": true,
+      "boundary_tests_cover_administrator_access": true,
+      "shared_coordinator_preserves_agent_order": true
+    },
+    "required_agents": [
+      "planner",
+      "worker",
+      "reviewer"
+    ],
+    "required_features": [
+      "product_catalogue",
+      "inventory",
+      "customer_loyalty",
+      "order_returns",
+      "customer_support"
+    ],
+    "required_endpoints": [
+      "/health",
+      "/api/workflows",
+      "/api/workflows/latest",
+      "/api/workflows/<workflow_id>",
+      "/api/workflows/<workflow_id>/review"
+    ],
+    "all_required_agents_wired": true,
+    "agent_order_in_coordinator": true,
+    "all_group_features_supported": true,
+    "all_required_endpoints_registered": true,
+    "human_review_gate_present": true,
+    "multi_agent_server_not_in_compose": true
+  },
+  "runtime": {
+    "attempted": true,
+    "available": true,
+    "expected_feature": "customer_loyalty",
+    "selected_workflow_required": true,
+    "server_url": "http://127.0.0.1:5054",
+    "health_status": 200,
+    "health": {
+      "status": "ok",
+      "service": "asd-marketplace-multi-agent"
+    },
+    "latest_workflow_available": true,
+    "latest_workflow_verified": true,
+    "three_agents_completed": true,
+    "human_review_recorded": true,
+    "selection": "selected",
+    "selected_workflow_id": "ea8edb14-543a-4ec4-8666-86356b8e9e80",
+    "history_verified": true,
+    "audit_chain_verified": true,
+    "human_review_approved": true,
+    "latest_status": 200,
+    "latest_workflow": {
+      "workflow_id": "ea8edb14-543a-4ec4-8666-86356b8e9e80",
+      "feature": "customer_loyalty",
+      "status": "accepted",
+      "timestamp": "2026-10-20T02:56:38.868337Z",
+      "evidence_count": 1,
+      "agents": {
+        "planner": {
+          "present": true,
+          "completed": true,
+          "agent": "planner",
+          "model": "qwen2.5:0.5b",
+          "evidence_ids": [
+            "loyalty-customer-187"
+          ],
+          "human_approval_required": true,
+          "output_present": true
+        },
+        "worker": {
+          "present": true,
+          "completed": true,
+          "agent": "worker",
+          "model": "llama3.1:8b",
+          "evidence_ids": [
+            "loyalty-customer-187"
+          ],
+          "human_approval_required": true,
+          "output_present": true
+        },
+        "reviewer": {
+          "present": true,
+          "completed": true,
+          "agent": "reviewer",
+          "model": "llama3.1:8b",
+          "evidence_ids": [
+            "loyalty-customer-187"
+          ],
+          "human_approval_required": true,
+          "output_present": true
+        }
+      },
+      "human_review": {
+        "decision": "accept",
+        "reviewed_at": "2026-10-20T02:57:06.828693Z",
+        "reviewed_by": "admin:1"
+      }
+    },
+    "evidence_ids_verified": true,
+    "scope_verified": true,
+    "logs": {
+      "history": {
+        "path": "docs/evidence/release2-ethan-ting/step1/workflow_history.jsonl",
+        "sha256": "e8b85033e903d9fabd3a8852d5e4b7bbec74f018ccd3463b1a41955cd3b6c252",
+        "records": 3
+      },
+      "audit": {
+        "path": "docs/evidence/release2-ethan-ting/step1/coordination_audit.jsonl",
+        "sha256": "b9c4f595b9f00106c0ec0b947f1138b02b219b5fa6788f1d1dd13bb855006ed4",
+        "records": 5
+      }
+    },
+    "review_evidence_complete": true
+  }
+}
+```
+
+## Initial Review
+
+**SELECTED MODE RULES**
+multi-agent
+
+**COLLECTED EVIDENCE DIGEST**
+
+PLAN REVIEWED:
+Ethan Ting's Customer Accounts and Loyalty feature for ASD 2026 Release 2.
+
+OBSERVATIONS:
+
+* The shared Multi-Agent Server coordinates Planner, Worker, and Reviewer stages.
+* A loyalty workflow is read-only and contains a balance and up to five recent changes.
+* Completed agents and valid response structure do not guarantee factual correctness.
+* Historical automated test decisions are not new student participation or final release approval.
+
+FINDINGS:
+
+1. **High**: The selected customer_loyalty workflow (ea8edb14-543a-4ec4-8666-86356b8e9e80) is available and verified, with a recorded decision of "accept" made by admin:1.
+2. **Medium**: The loyalty history limitation to the latest five changes is implemented correctly in the shared Multi-Agent Server's workflow_store.py file (path: ai-services/multi_agent_server/workflow_store.py).
+3. **Low**: There are no obvious issues with the customer_loyalty feature scope and human identity checks.
+
+RECOMMENDATIONS:
+
+1. Verify that all required agents ("planner", "worker", and "reviewer") are wired correctly in the shared Multi-Agent Server.
+2. Ensure that the loyalty workflow's read-only nature is consistently enforced throughout the system, including any potential interactions with other features or services.
+
+PROPOSED ADAPTATION:
+None at this time; further review of specific customer_loyalty feature components and their interactions may be necessary to identify additional issues or areas for improvement.
+
+## Reviewer Feedback
+
+DECISION: ADAPT
+Deterministic evidence checks found:
+- The multi-agent response cites fewer than three configured files and is too narrow for the selected review.
+
+Model reviewer feedback:
+**DECISION: PASS**
+
+REVIEW FEEDBACK:
+
+* The review is well-structured with clear headings and follows the required format.
+* Observations are accurate and relevant to the selected mode rules.
+* Findings are specific, evidence-based, and correctly scoped within the multi-agent context.
+* Recommendations are actionable and address potential issues that require further investigation.
+
+However, there are a few minor suggestions for improvement:
+
+* In Finding 2, it would be helpful to provide more details about how the loyalty history limitation is implemented in workflow_store.py. A brief code excerpt or explanation could enhance understanding of this implementation detail.
+* Recommendation 1 should specify which files or components need verification regarding agent wiring.
+
+Overall, the review provides a thorough and evidence-based assessment of Ethan Ting's Customer Accounts and Loyalty feature for ASD 2026 Release 2 within the multi-agent context.
+
+## Final Review
+
+**SELECTED MODE RULES**
+multi-agent
+
+**COLLECTED EVIDENCE DIGEST**
+
+PLAN REVIEWED:
+Ethan Ting's Customer Accounts and Loyalty feature for ASD 2026 Release 2.
+
+OBSERVATIONS:
+
+* The shared Multi-Agent Server coordinates Planner, Worker, and Reviewer stages.
+* A loyalty workflow is read-only and contains a balance and up to five recent changes.
+* Completed agents and valid response structure do not guarantee factual correctness.
+* Historical automated test decisions are not new student participation or final release approval.
+
+FINDINGS:
+
+1. **High**: The selected customer_loyalty workflow (ea8edb14-543a-4ec4-8666-86356b8e9e80) is available and verified, with a recorded decision of "accept" made by admin:1.
+2. **Medium**: In the shared Multi-Agent Server's workflow_store.py file (path: ai-services/multi_agent_server/workflow_store.py), the loyalty history limitation to the latest five changes is implemented correctly using a thread-safe storage mechanism and compact coordination audit.
+
+RECOMMENDATIONS:
+
+1. Verify that all required agents ("planner", "worker", and "reviewer") are wired correctly in the shared Multi-Agent Server, specifically checking files ai-services/multi_agent_server/app.py, ai-services/multi_agent_server/coordinator.py.
+2. Ensure that the loyalty workflow's read-only nature is consistently enforced throughout the system.
+
+ADAPTATION APPLIED:
+None at this time; further review of specific customer_loyalty feature components and their interactions may be necessary to identify additional issues or areas for improvement.

@@ -1,0 +1,37 @@
+[
+  {
+    "feature": "product_catalogue",
+    "artifact_id": 12344107927,
+    "digest": "sha256:d47ac9b77d94406a7dd3c97bec0623e10aa75835c983c1265cffae340b692209",
+    "run_id": 39596314164,
+    "archive": "docs/evidence/release2-ethan-ting/step3-testing/main-4fa1ac8/product_catalogue/endpoints.zip"
+  },
+  {
+    "feature": "inventory",
+    "artifact_id": 12343158652,
+    "digest": "sha256:2a37f5de05197cc7d4858ae11a79ab486f6fe9f5bf60d7fd641f611cc31bb02e",
+    "run_id": 39596313885,
+    "archive": "docs/evidence/release2-ethan-ting/step3-testing/main-4fa1ac8/inventory/endpoints.zip"
+  },
+  {
+    "feature": "customer_loyalty",
+    "artifact_id": 12344372577,
+    "digest": "sha256:d4b01bf5507f1477131fb111b10c78099c75686a1b8e9c72b28c58fabb31b960",
+    "run_id": 39596314302,
+    "archive": "docs/evidence/release2-ethan-ting/step3-testing/main-4fa1ac8/customer_loyalty/endpoints.zip"
+  },
+  {
+    "feature": "order_returns",
+    "artifact_id": 12344302679,
+    "digest": "sha256:35725e45a5138f35ed3b55debb12dd76e187e2889ea711973dcd9f63fb2e94c2",
+    "run_id": 39596313969,
+    "archive": "docs/evidence/release2-ethan-ting/step3-testing/main-4fa1ac8/order_returns/endpoints.zip"
+  },
+  {
+    "feature": "customer_support",
+    "artifact_id": 12344123893,
+    "digest": "sha256:c5157b393d3f0c869789bf859dba8c633bf18c2d3c7c6bcd9f288020539d8ffe",
+    "run_id": 39596314311,
+    "archive": "docs/evidence/release2-ethan-ting/step3-testing/main-4fa1ac8/customer_support/endpoints.zip"
+  }
+]

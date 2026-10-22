@@ -1,0 +1,127 @@
+{
+  "base_source_sha": "4fa1ac861d0651b8c8a6f2861b32e2489d642a3f",
+  "captured_at": "2026-10-22T02:28:19.483751+11:00",
+  "owner": "Ethan Ting",
+  "review_model": "llama3.1:8b",
+  "working_tree_status": [
+    " M \"student-Ethan Ting/RELEASE2.md\"",
+    " M \"student-Ethan Ting/agentic/review_config.json\"",
+    " M \"student-Ethan Ting/agentic/review_prompt.txt\"",
+    " M \"student-Ethan Ting/tests/test_agentic_review.py\"",
+    "?? docs/evidence/agentic/ethan-ting-customer-accounts-and-loyalty-multi-agent-20261022-022729-101002.md",
+    "?? docs/evidence/agentic/shared-asd-group-services-testing-20261021-231020-165055.md",
+    "?? docs/evidence/agentic/shared-asd-group-services-testing-20261021-231020-165055.validation.json",
+    "?? docs/evidence/release2-ethan-ting/step3-testing/",
+    "?? docs/evidence/release2-ethan-ting/step4-multi-agent/",
+    "?? \"student-Ethan Ting/agentic/multi_agent_prompt.txt\"",
+    "?? \"student-Ethan Ting/scripts/capture_testing_review.py\"",
+    "?? \"student-Ethan Ting/scripts/review_loyalty_multi_agent.py\""
+  ],
+  "source_files": [
+    {
+      "path": "ai-services/multi_agent_server/app.py",
+      "sha256": "ad5b81c8ab8099abb108e54c6b1aa0c431f174aa8d8b2941029c6bf5844df4d2"
+    },
+    {
+      "path": "ai-services/multi_agent_server/config.py",
+      "sha256": "88ecdbe35e9b2a9805ee119472d449c066c7f76f59586ecd76fd871dd7b8e82e"
+    },
+    {
+      "path": "ai-services/multi_agent_server/contracts.py",
+      "sha256": "7ad18339e5941853e03fb16ddbbc0bb48dd76c6f1263b75fd45629c88d94e283"
+    },
+    {
+      "path": "ai-services/multi_agent_server/coordinator.py",
+      "sha256": "845e26dc7b0897646f6c79cfbf80e96d1b578d41cd70dbf272467fbc76f52923"
+    },
+    {
+      "path": "ai-services/multi_agent_server/evidence_context.py",
+      "sha256": "16ef5d5c761cde013dbabdbef425329ac22b88a42bb48e3afd5907813c687270"
+    },
+    {
+      "path": "ai-services/multi_agent_server/model_client.py",
+      "sha256": "d14fd2bc9fab5d3b5452ecc93ed72ce735c5ee3b8898e12373861b34c9f9da34"
+    },
+    {
+      "path": "ai-services/multi_agent_server/workflow_store.py",
+      "sha256": "d401b02331de14aae0477f910276b341abac110d642a89b25ebb5f57cd453873"
+    },
+    {
+      "path": "ai-services/multi_agent_server/workflow_runner.py",
+      "sha256": "46ff34ff9655e39537840f2dda127d2e3494003f11b27a6b4908bee697ccd1a1"
+    },
+    {
+      "path": "ai-services/multi_agent_server/agents/planner_agent.py",
+      "sha256": "c103d11d04e1ba50788d8c8d2e3e6aacc0fca688c97650ccb1eb9da113e8b184"
+    },
+    {
+      "path": "ai-services/multi_agent_server/agents/worker_agent.py",
+      "sha256": "f2a5441760434f21777bd0cc2c6a87cdb9d8a87fa8005c624fdedf6d24452fef"
+    },
+    {
+      "path": "ai-services/multi_agent_server/agents/reviewer_agent.py",
+      "sha256": "348fb9ddbf3b4221fbc06c9f20bb1ee85c32f2f87ec77760fa852c7df30c30c1"
+    },
+    {
+      "path": "ai-services/multi_agent_validation.py",
+      "sha256": "22f7a52022a31b7de52de75c9e55999b72ae3596a34996c2f7dd257bbb85af16"
+    },
+    {
+      "path": "ai-services/agentic_loop.py",
+      "sha256": "87317870a4131ca27f2f4378632de50f1a7fca8192be67b81cfd64012f6f7a70"
+    },
+    {
+      "path": "shared/multi_agent_client.py",
+      "sha256": "7a8084fa4ed0e6fd7942c63185aae14dc418a04529c803f6dacaf8f2ef859738"
+    },
+    {
+      "path": "student-Ethan Ting/backend/app.py",
+      "sha256": "08fcbc0b5e2f55aab0576e316bd0db34a90fe3425ba9df523edae3e37a013f5b"
+    },
+    {
+      "path": "student-Ethan Ting/frontend/js/customer-assistant.js",
+      "sha256": "4661eff1ef3b35ec0cad6b7c76ce32a8c570cb5dc2046712bd140cda1c9614b7"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_multi_agent_loyalty.py",
+      "sha256": "17dbee3aff034c9d4daecbe3d7ca5055209d919ccfb3beeec8ae065a83fbb010"
+    },
+    {
+      "path": "student-Ethan Ting/tests/test_agentic_review.py",
+      "sha256": "531e146b8c9f6728e3b3bbb2e58ea65e566481c6952fd5f21e793f13bdceef6e"
+    },
+    {
+      "path": "ai-services/multi_agent_server/tests/test_app.py",
+      "sha256": "355ad7a66a9d1f5762b9d93112baf2e921b6a78c9ca0ff0a1071d84c85e6af31"
+    },
+    {
+      "path": "ai-services/multi_agent_server/tests/test_coordinator.py",
+      "sha256": "99a75b615427ec19384da0f47178bcc78bdd0993f5074285b14580e76185a977"
+    },
+    {
+      "path": "docker-compose.yml",
+      "sha256": "c35a66d63b3f9fb421012a9b36730ad58f997740ad48b98bba562c088cff71e5"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/review_config.json",
+      "sha256": "078d44abdd3e1237d3624c8286386830f56b75ac443c374a4a0333a9be734ca9"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/review_prompt.txt",
+      "sha256": "68ca344df136ab79b50ad156e0b7515dbceb107d300bb30806e3caf778a94e1d"
+    },
+    {
+      "path": "student-Ethan Ting/agentic/multi_agent_prompt.txt",
+      "sha256": "9446a64376d90b0ccf15f64ba4c9b46138aeec874a52a636630d23797d2ae71d"
+    },
+    {
+      "path": "student-Ethan Ting/scripts/review_loyalty_multi_agent.py",
+      "sha256": "87dde7ac7a08b0cfc3804fdde031b390f79d732a85f42d82d8c40a786b2bb0c4"
+    }
+  ],
+  "limitations": [
+    "Configuration, prompt and tests can be uncommitted; base SHA alone does not identify the reviewed working tree.",
+    "The selected workflow is historical; a live GET is not a new three-agent execution.",
+    "A prior automated UI test decision does not establish new student participation or a release approval."
+  ]
+}

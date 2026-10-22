@@ -1,0 +1,11 @@
+{
+  "source_sha": "4fa1ac861d0651b8c8a6f2861b32e2489d642a3f",
+  "captured_at": "2026-10-21T23:07:10.583733+11:00",
+  "owner": "Ethan Ting",
+  "working_tree_status": [
+    "?? \"student-Ethan Ting/scripts/capture_testing_review.py\""
+  ],
+  "scope": "Source is committed HEAD; collector and generated evidence may be untracked.",
+  "commit_or_push_performed": false,
+  "human_release_decision": "not_recorded"
+}

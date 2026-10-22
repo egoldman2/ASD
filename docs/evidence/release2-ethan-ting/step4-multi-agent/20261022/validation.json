@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-10-22T02:27:29.158672+11:00",
+  "base_source_sha": "4fa1ac861d0651b8c8a6f2861b32e2489d642a3f",
+  "checks": {
+    "all_required_agents_wired": true,
+    "agent_order_in_coordinator": true,
+    "all_group_features_supported": true,
+    "all_required_endpoints_registered": true,
+    "human_review_gate_present": true,
+    "multi_agent_server_not_in_compose": true,
+    "scope_verified": true,
+    "three_agents_completed": true,
+    "evidence_ids_verified": true,
+    "history_verified": true,
+    "audit_chain_verified": true,
+    "human_review_recorded": true,
+    "review_evidence_complete": true,
+    "all_source_checks": true,
+    "all_files_present": true,
+    "logs_unchanged": true,
+    "workflow_observation_unchanged": true
+  },
+  "structural_evidence_complete": true,
+  "model_review_error": null,
+  "student_release_decision": "not_recorded",
+  "factual_accuracy_guaranteed": false,
+  "new_workflow_or_decision_created": false,
+  "historical_decision_origin": "Automated local UI validation; not a new student decision.",
+  "review_file": "docs/evidence/agentic/ethan-ting-customer-accounts-and-loyalty-multi-agent-20261022-022729-101002.md"
+}

@@ -1,12 +1,14 @@
 {
   "feature_name": "Ethan Ting - Customer Accounts and Loyalty",
+  "contributor": "Ethan Ting",
   "prompt_file": "review_prompt.txt",
   "mode_prompt_files": {
     "database": "database_prompt.txt",
     "endpoints": "endpoints_prompt.txt",
     "architecture": "architecture_prompt.txt",
     "mcp": "mcp_prompt.txt",
-    "rag": "rag_prompt.txt"
+    "rag": "rag_prompt.txt",
+    "multi-agent": "multi_agent_prompt.txt"
   },
   "database": "student-Ethan Ting/database/users.db",
   "database_rules": {
@@ -161,6 +163,74 @@
     "probes": [
       {"name": "gold-threshold", "question": "How many loyalty points are needed for Gold?", "top_k": 5, "expected": "grounded"},
       {"name": "unrelated-astronomy", "question": "quasar orbital spectroscopy wavelengths", "top_k": 5, "expected": "insufficient"}
+    ]
+  },
+  "multi-agent_files": [
+    "ai-services/multi_agent_server/app.py",
+    "ai-services/multi_agent_server/contracts.py",
+    "ai-services/multi_agent_server/coordinator.py",
+    "ai-services/multi_agent_server/workflow_store.py",
+    "ai-services/multi_agent_server/agents/planner_agent.py",
+    "ai-services/multi_agent_server/agents/worker_agent.py",
+    "ai-services/multi_agent_server/agents/reviewer_agent.py",
+    "ai-services/multi_agent_validation.py",
+    "shared/multi_agent_client.py",
+    "student-Ethan Ting/backend/app.py",
+    "student-Ethan Ting/frontend/js/customer-assistant.js",
+    "student-Ethan Ting/tests/test_multi_agent_loyalty.py",
+    "student-Ethan Ting/tests/test_agentic_review.py",
+    "docker-compose.yml"
+  ],
+  "multi_agent_server_url": "http://127.0.0.1:5004",
+  "multi_agent_timeout_seconds": 10,
+  "multi_agent_rules": {
+    "required_agents": ["planner", "worker", "reviewer"],
+    "required_features": ["product_catalogue", "inventory", "customer_loyalty", "order_returns", "customer_support"],
+    "required_endpoints": ["/health", "/api/workflows", "/api/workflows/latest", "/api/workflows/<workflow_id>", "/api/workflows/<workflow_id>/review"],
+    "expected_feature": "customer_loyalty",
+    "require_selected_workflow": true,
+    "source_files": {
+      "server": "ai-services/multi_agent_server/app.py",
+      "contracts": "ai-services/multi_agent_server/contracts.py",
+      "coordinator": "ai-services/multi_agent_server/coordinator.py",
+      "store": "ai-services/multi_agent_server/workflow_store.py",
+      "planner": "ai-services/multi_agent_server/agents/planner_agent.py",
+      "worker": "ai-services/multi_agent_server/agents/worker_agent.py",
+      "reviewer": "ai-services/multi_agent_server/agents/reviewer_agent.py",
+      "compose": "docker-compose.yml"
+    },
+    "log_files": {
+      "history": "docs/evidence/release2-ethan-ting/step1/workflow_history.jsonl",
+      "audit": "docs/evidence/release2-ethan-ting/step1/coordination_audit.jsonl"
+    }
+  },
+  "source_checks": {
+    "multi-agent": [
+      {
+        "name": "loyalty_uses_shared_feature_scoped_client",
+        "file": "student-Ethan Ting/backend/app.py",
+        "contains": ["from shared.multi_agent_client import", "return MultiAgentClient(\"customer_loyalty\")"]
+      },
+      {
+        "name": "loyalty_evidence_is_read_only_and_bounded",
+        "file": "student-Ethan Ting/backend/app.py",
+        "contains": ["Do not change points or account details.", "transactions?limit=5", "\"verified_progress\": loyalty_workflow_progress(points)", "Latest five recorded point changes, not a full ledger"]
+      },
+      {
+        "name": "workflow_scope_and_human_identity_checked",
+        "file": "student-Ethan Ting/backend/app.py",
+        "contains": ["def checked_loyalty_workflow(", "record[\"request\"][\"feature\"] != \"customer_loyalty\"", "def review_loyalty_workflow(", "\"reviewed_by\": f\"admin:{g.authenticated_user['id']}\"", "This workflow has already been reviewed."]
+      },
+      {
+        "name": "boundary_tests_cover_administrator_access",
+        "file": "student-Ethan Ting/tests/test_multi_agent_loyalty.py",
+        "contains": ["def test_every_route_is_admin_only", "def test_history_filters_customer_and_survives_new_browser_session"]
+      },
+      {
+        "name": "shared_coordinator_preserves_agent_order",
+        "file": "ai-services/multi_agent_server/coordinator.py",
+        "contains": ["self._planner.plan(", "self._worker.execute(", "self._reviewer.review("]
+      }
     ]
   }
 }

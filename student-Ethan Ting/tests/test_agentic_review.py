@@ -3,6 +3,8 @@ import json
 import sqlite3
 from pathlib import Path
 
+import pytest
+
 
 STUDENT_FOLDER = Path(__file__).resolve().parents[1]
 if (STUDENT_FOLDER / "ai-services" / "agentic_loop.py").is_file():
@@ -39,13 +41,16 @@ def test_ethan_feature_is_discoverable_and_complete():
         "architecture",
         "mcp",
         "rag",
+        "multi-agent",
     }
     assert config["mcp_rules"]["required_tools"] == ["ethan_ting_calculate_loyalty_tier", "ethan_ting_get_loyalty_history"]
     assert config["rag_rules"]["required_scope"] == "ethan_ting_accounts_loyalty"
     assert {probe["expected"] for probe in config["rag_rules"]["probes"]} == {
         "grounded", "insufficient",
     }
-    for mode in ("mcp", "rag"):
+    assert config["multi_agent_rules"]["expected_feature"] == "customer_loyalty"
+    assert config["multi_agent_rules"]["require_selected_workflow"] is True
+    for mode in ("mcp", "rag", "multi-agent"):
         assert all((PROJECT_ROOT / path).is_file() for path in config[f"{mode}_files"])
     assert set(config["database_rules"]["required_tables"]) == {
         "users",
@@ -62,6 +67,79 @@ def test_ethan_feature_is_discoverable_and_complete():
     )
     assert "Plan -> Act -> Observe -> Adapt" in prompt
     assert "must not be claimed" in prompt
+
+
+def test_loyalty_multi_agent_source_checks_pass_without_live_calls(monkeypatch):
+    runner = load_agentic_loop("loyalty_review_static")
+    config, _ = runner.load_feature("student-Ethan Ting")
+    monkeypatch.setenv("AI_MODE_ENABLED", "false")
+    monkeypatch.setenv("MULTI_AGENT_ENABLED", "true")
+
+    def forbidden(_):
+        pytest.fail("Disabled review contacted the host")
+
+    evidence = runner.collect_multi_agent_evidence(config, runtime_probe=forbidden)
+    checks = evidence["verified_checks"]
+    assert not checks["missing_files"]
+    assert all(checks["source_checks"].values())
+    for field in ("all_required_agents_wired", "agent_order_in_coordinator",
+                  "all_group_features_supported", "all_required_endpoints_registered",
+                  "human_review_gate_present", "multi_agent_server_not_in_compose"):
+        assert checks[field] is True
+    assert evidence["runtime"]["attempted"] is False
+    assert evidence["runtime"]["review_evidence_complete"] is False
+
+
+def test_loyalty_review_requires_selected_id_before_network(monkeypatch):
+    runner = load_agentic_loop("loyalty_review_selected_id")
+    config, _ = runner.load_feature("student-Ethan Ting")
+    import multi_agent_validation as validation
+
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
+    monkeypatch.setenv("MULTI_AGENT_ENABLED", "true")
+    monkeypatch.delenv("MULTI_AGENT_REVIEW_WORKFLOW_ID", raising=False)
+    monkeypatch.setattr(validation, "read_json", lambda *args, **kwargs: pytest.fail("Network call made"))
+    with pytest.raises(validation.ProbeConfigurationError, match="selected workflow ID"):
+        validation.probe_runtime(config, project_root=PROJECT_ROOT)
+
+
+@pytest.mark.parametrize("returned_feature,returned_id", [
+    ("customer_support", "selected-workflow"),
+    ("customer_loyalty", "another-workflow"),
+])
+def test_loyalty_review_rejects_other_feature_or_workflow(monkeypatch, returned_feature, returned_id):
+    runner = load_agentic_loop("loyalty_review_scope")
+    config, _ = runner.load_feature("student-Ethan Ting")
+    import multi_agent_validation as validation
+
+    monkeypatch.setenv("AI_MODE_ENABLED", "true")
+    monkeypatch.setenv("MULTI_AGENT_ENABLED", "true")
+    monkeypatch.setenv("MULTI_AGENT_SERVER_URL", "http://127.0.0.1:5054")
+    monkeypatch.setenv("MULTI_AGENT_REVIEW_WORKFLOW_ID", "selected-workflow")
+    request = {"feature": returned_feature, "user_request": "Review synthetic fixture evidence.",
+        "evidence": [{"evidence_id": "fixture-1", "data": {"points_balance": 720},
+            "source": {"service": "fixture", "endpoint": "/fixture", "retrieved_at": "2026-10-22T00:00:00+11:00"}}]}
+    workflow = {"workflow_id": returned_id, "request": request,
+        "status": "awaiting_human_review", "timestamp": "2026-10-22T00:00:00+11:00", "human_review": None}
+    for agent, output in (("planner", "plan"), ("worker", "output"), ("reviewer", "review")):
+        workflow[f"{agent}_result"] = {"agent": agent, "status": "completed", "model": "fixture-model",
+            "evidence_ids": ["fixture-1"], "human_approval_required": True, output: "Synthetic output only."}
+    workflow["planner_result"]["objective"] = request["user_request"]
+    workflow["worker_result"]["evidence_count"] = 1
+    calls = []
+
+    def read(method, url, **kwargs):
+        calls.append((method, url))
+        return (200, {"status": "ok", "service": "asd-marketplace-multi-agent"}) if url.endswith("/health") else (200, workflow)
+
+    monkeypatch.setattr(validation, "read_json", read)
+    monkeypatch.setattr(validation, "_verify_logs", lambda *args: pytest.fail("Wrong-scope logs accepted"))
+    runtime = validation.probe_runtime(config, project_root=PROJECT_ROOT)
+    assert runtime["scope_verified"] is False
+    assert runtime["latest_workflow_verified"] is False
+    assert runtime["review_evidence_complete"] is False
+    assert calls == [("GET", "http://127.0.0.1:5054/health"),
+                     ("GET", "http://127.0.0.1:5054/api/workflows/selected-workflow")]
 
 
 def test_database_evidence_redacts_password_hashes(tmp_path):

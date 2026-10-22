@@ -1,0 +1,178 @@
+
+[START] Feature=student-Ethan Ting, mode=multi-agent
+
+[PLAN] Loaded Ethan Ting - Customer Accounts and Loyalty prompt and prepared a read-only multi-agent review.
+
+[ACT] Collecting multi-agent evidence without modifying the application.
+
+[OBSERVE] Collected 15254 characters of structured evidence.
+
+[PROMPTS] Using feature prompt: /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/student-Ethan Ting/agentic/review_prompt.txt
+
+[LLM] Sending the initial evidence review to llama3.1:8b.
+**PLAN REVIEWED**
+Ethan Ting's Customer Accounts and Loyalty feature for ASD 2026 Release 1.
+
+**OBSERVATIONS**
+
+* The reviewed codebase includes multiple files, including `student-Ethan Ting/backend/app.py`, `shared/multi_agent_client.py`, and others.
+* The collected evidence shows that the customer loyalty workflow is selected (workflow ID: ea8edb14-543a-4ec4-8666-86356b8e9e80) with a status of "accepted".
+* The latest-five-history limitation for points history is observed in `ai-services/multi_agent_server/workflow_store.py`.
+* Human decision gates are present, as shown by the human review record (decision: accept).
+
+**FINDINGS**
+
+1. **High**: Missing evidence on customer account creation and update routes.
+	* Severity: High
+	* Evidence missing from collected data.
+2. **Medium**: Loyalty points adjustments not thoroughly tested.
+	* Severity: Medium
+	* Limited test cases in `student-Ethan Ting/tests/test_multi_agent_loyalty.py`.
+3. **Low**: No evidence of excessive loyalty point adjustments or balances below zero.
+
+**RECOMMENDATIONS**
+
+1. Add tests for customer account creation and update routes to ensure correct functionality.
+2. Increase testing coverage for loyalty points adjustments, including edge cases like excessive adjustments and balances below zero.
+3. Review the existing test suite (`student-Ethan Ting/tests/test_multi_agent_loyalty.py`) to identify potential gaps in testing.
+
+**PROPOSED ADAPTATION**
+
+Based on these findings, it is recommended that Ethan Ting's Customer Accounts and Loyalty feature be adapted by adding more comprehensive tests for customer account creation and update routes as well as loyalty points adjustments. This will ensure the correctness of the feature and prevent potential issues from arising during deployment.
+
+[REVIEW] Checking the first response against the same evidence.
+DECISION: ADAPT
+Deterministic evidence checks found:
+- The Multi-Agent response does not name every configured required agent.
+
+Model reviewer feedback:
+**DECISION: PASS**
+
+REVIEW FEEDBACK:
+
+* The review is well-structured with clear headings and a logical flow of observations, findings, recommendations, and proposed adaptations.
+* The reviewer has correctly identified the scope of the feature (Customer Accounts and Loyalty) for ASD 2026 Release 1.
+* Observations are concise and accurately summarize the collected evidence.
+* Findings are specific, well-supported by concrete evidence, and clearly state their severity (High, Medium, or Low).
+* Recommendations are actionable, feasible, and scoped to the selected feature.
+
+However, there is room for improvement:
+
+* The review could benefit from more explicit citations of exact file paths, route names, table names, fields, counts, status codes, or response values.
+* Some findings seem too broad (e.g., "Loyalty points adjustments not thoroughly tested") and might be better broken down into specific issues with evidence to support each one.
+
+[ADAPT] Reviewer requested an evidence-based revision.
+**PLAN REVIEWED**
+Ethan Ting's Customer Accounts and Loyalty feature for ASD 2026 Release 1.
+
+**OBSERVATIONS**
+
+* The reviewed codebase includes multiple files, including `student-Ethan Ting/backend/app.py`, `shared/multi_agent_client.py`, and others.
+* The collected evidence shows that the customer loyalty workflow is selected (workflow ID: ea8edb14-543a-4ec4-8666-86356b8e9e80) with a status of "accepted".
+* Human decision gates are present, as shown by the human review record (decision: accept).
+* The latest-five-history limitation for points history is observed in `ai-services/multi_agent_server/workflow_store.py`.
+
+**FINDINGS**
+
+1. **High**: Missing evidence on customer account creation and update routes.
+	* Severity: High
+	* Evidence missing from collected data, specifically route names or file paths where these operations are implemented (e.g., `/api/admin/customers`).
+2. **Medium**: Loyalty points adjustments not thoroughly tested.
+	* Severity: Medium
+	* Limited test cases in `student-Ethan Ting/tests/test_multi_agent_loyalty.py`, and no evidence of excessive loyalty point adjustments or balances below zero.
+
+**RECOMMENDATIONS**
+
+1. Add tests for customer account creation and update routes to ensure correct functionality, including route names (`/api/admin/customers`) and file paths where these operations are implemented.
+2. Increase testing coverage for loyalty points adjustments by adding more test cases in `student-Ethan Ting/tests/test_multi_agent_loyalty.py`, specifically edge cases like excessive adjustments and balances below zero.
+
+**ADAPTATION APPLIED**
+
+Based on the findings, it is recommended that Ethan Ting's Customer Accounts and Loyalty feature be adapted to include comprehensive tests for customer account creation and update routes as well as loyalty points adjustments. This will ensure the correctness of the feature and prevent potential issues from arising during deployment.
+
+[ADAPT] Using the deterministic evidence summary to preserve validation results.
+OBSERVATIONS
+- 21 of 21 configured Multi-Agent files were present.
+- Required agents: planner, worker, reviewer.
+- All required agents are wired into the coordinator: True.
+- Planner -> Worker -> Reviewer source order: True.
+- All five group feature identifiers are supported by the shared contract: True.
+- All required HTTP endpoints are registered: True.
+- The persisted human-review gate is present: True.
+- No Multi-Agent Server service is defined in Docker Compose: True.
+- Live Multi-Agent validation available: True; attempted: True.
+- Workflow selection: selected; expected feature: customer_loyalty; selected ID: ea8edb14-543a-4ec4-8666-86356b8e9e80.
+- Observed workflow available: True; verified: True.
+- Planner, Worker, and Reviewer completed in the observed workflow: True; human decision recorded: True.
+- Matching history: True; ordered coordination audit: True; complete review evidence: True. A ticket decision is not a release approval.
+- Source evidence: `ai-services/multi_agent_server/app.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/config.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/contracts.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/coordinator.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/evidence_context.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/model_client.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/workflow_store.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/workflow_runner.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/agents/planner_agent.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/agents/worker_agent.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/agents/reviewer_agent.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_validation.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/agentic_loop.py`; present: True; excerpt bounded: True.
+- Source evidence: `shared/multi_agent_client.py`; present: True; excerpt bounded: True.
+- Source evidence: `student-Ethan Ting/backend/app.py`; present: True; excerpt bounded: True.
+- Source evidence: `student-Ethan Ting/frontend/js/customer-assistant.js`; present: True; excerpt bounded: True.
+- Source evidence: `student-Ethan Ting/tests/test_multi_agent_loyalty.py`; present: True; excerpt bounded: True.
+- Source evidence: `student-Ethan Ting/tests/test_agentic_review.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/tests/test_app.py`; present: True; excerpt bounded: True.
+- Source evidence: `ai-services/multi_agent_server/tests/test_coordinator.py`; present: True; excerpt bounded: True.
+- Source evidence: `docker-compose.yml`; present: True; excerpt bounded: True.
+- Configured source check `loyalty_uses_shared_feature_scoped_client`: true.
+- Configured source check `loyalty_evidence_is_read_only_and_bounded`: true.
+- Configured source check `workflow_scope_and_human_identity_checked`: true.
+- Configured source check `boundary_tests_cover_administrator_access`: true.
+- Configured source check `shared_coordinator_preserves_agent_order`: true.
+- Observed workflow summary: {"workflow_id": "ea8edb14-543a-4ec4-8666-86356b8e9e80", "feature": "customer_loyalty", "status": "accepted", "timestamp": "2026-10-20T02:56:38.868337Z", "evidence_count": 1, "agents": {"planner": {"present": true, "completed": true, "agent": "planner", "model": "qwen2.5:0.5b", "evidence_ids": ["loyalty-customer-187"], "human_approval_required": true, "output_present": true}, "worker": {"present": true, "completed": true, "agent": "worker", "model": "llama3.1:8b", "evidence_ids": ["loyalty-customer-187"], "human_approval_required": true, "output_present": true}, "reviewer": {"present": true, "completed": true, "agent": "reviewer", "model": "llama3.1:8b", "evidence_ids": ["loyalty-customer-187"], "human_approval_required": true, "output_present": true}}, "human_review": {"decision": "accept", "reviewed_at": "2026-10-20T02:57:06.828693Z", "reviewed_by": "admin:1"}}.
+
+FINDINGS
+- The collected static and live evidence did not prove a shared Multi-Agent workflow defect.
+
+RECOMMENDATIONS
+- Keep the shared server feature-neutral and retain Planner, Worker, Reviewer, and human-review boundaries.
+- Keep the server and Agentic Loop host-local and outside Docker Compose.
+- Retain focused server tests as deterministic evidence separate from this model review.
+
+ADAPTATION APPLIED
+- Replaced unsupported model claims with a deterministic shared Multi-Agent evidence summary.
+- Grounding issues removed: The Multi-Agent response does not name every configured required agent.
+
+[DONE] Agentic review completed. Evidence saved to /Users/ethan/Desktop/Uni/Advanced software development/Assessment 1/ASD/docs/evidence/agentic/ethan-ting-customer-accounts-and-loyalty-multi-agent-20261022-022729-101002.md
+{
+  "captured_at": "2026-10-22T02:27:29.158672+11:00",
+  "base_source_sha": "4fa1ac861d0651b8c8a6f2861b32e2489d642a3f",
+  "checks": {
+    "all_required_agents_wired": true,
+    "agent_order_in_coordinator": true,
+    "all_group_features_supported": true,
+    "all_required_endpoints_registered": true,
+    "human_review_gate_present": true,
+    "multi_agent_server_not_in_compose": true,
+    "scope_verified": true,
+    "three_agents_completed": true,
+    "evidence_ids_verified": true,
+    "history_verified": true,
+    "audit_chain_verified": true,
+    "human_review_recorded": true,
+    "review_evidence_complete": true,
+    "all_source_checks": true,
+    "all_files_present": true,
+    "logs_unchanged": true,
+    "workflow_observation_unchanged": true
+  },
+  "structural_evidence_complete": true,
+  "model_review_error": null,
+  "student_release_decision": "not_recorded",
+  "factual_accuracy_guaranteed": false,
+  "new_workflow_or_decision_created": false,
+  "historical_decision_origin": "Automated local UI validation; not a new student decision.",
+  "review_file": "docs/evidence/agentic/ethan-ting-customer-accounts-and-loyalty-multi-agent-20261022-022729-101002.md"
+}

@@ -1,0 +1,261 @@
+{
+  "total_count": 2,
+  "jobs": [
+    {
+      "id": 119209373281,
+      "run_id": 39596314302,
+      "workflow_name": "Ethan Ting - Customer Accounts and Loyalty CI",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/egoldman2/ASD/actions/runs/39596314302",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTw1JPM8AAAAbwW6uYQ",
+      "head_sha": "4fa1ac861d0651b8c8a6f2861b32e2489d642a3f",
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/jobs/119209373281",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39596314302/job/119209373281",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-21T12:01:18Z",
+      "started_at": "2026-10-21T12:01:21Z",
+      "completed_at": "2026-10-21T12:03:02Z",
+      "name": "Test Ethan Ting customer accounts, loyalty and AI",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-21T12:01:22Z",
+          "completed_at": "2026-10-21T12:01:23Z"
+        },
+        {
+          "name": "Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-21T12:01:23Z",
+          "completed_at": "2026-10-21T12:01:25Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-21T12:01:25Z",
+          "completed_at": "2026-10-21T12:01:30Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-21T12:01:30Z",
+          "completed_at": "2026-10-21T12:01:53Z"
+        },
+        {
+          "name": "Initialise and verify the database",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-21T12:01:53Z",
+          "completed_at": "2026-10-21T12:01:55Z"
+        },
+        {
+          "name": "Record and verify allocated endpoint functions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-21T12:01:55Z",
+          "completed_at": "2026-10-21T12:01:57Z"
+        },
+        {
+          "name": "Run Ethan Ting tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-21T12:01:57Z",
+          "completed_at": "2026-10-21T12:02:50Z"
+        },
+        {
+          "name": "Run shared RAG scope and contract tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-21T12:02:50Z",
+          "completed_at": "2026-10-21T12:02:55Z"
+        },
+        {
+          "name": "Run shared MCP tool and protocol tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-21T12:02:55Z",
+          "completed_at": "2026-10-21T12:02:58Z"
+        },
+        {
+          "name": "Compile Ethan Ting Python modules",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-21T12:02:58Z",
+          "completed_at": "2026-10-21T12:02:58Z"
+        },
+        {
+          "name": "Upload endpoint and environment evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-21T12:02:58Z",
+          "completed_at": "2026-10-21T12:02:59Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-21T12:02:59Z",
+          "completed_at": "2026-10-21T12:02:59Z"
+        },
+        {
+          "name": "Post Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-21T12:02:59Z",
+          "completed_at": "2026-10-21T12:02:59Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-21T12:02:59Z",
+          "completed_at": "2026-10-21T12:02:59Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/egoldman2/ASD/check-runs/119209373281",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001372,
+      "runner_name": "GitHub Actions 1000001372",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 119210121800,
+      "run_id": 39596314302,
+      "workflow_name": "Ethan Ting - Customer Accounts and Loyalty CI",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/egoldman2/ASD/actions/runs/39596314302",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTw1JPM8AAAAbwXoaSA",
+      "head_sha": "4fa1ac861d0651b8c8a6f2861b32e2489d642a3f",
+      "url": "https://api.github.com/repos/egoldman2/ASD/actions/jobs/119210121800",
+      "html_url": "https://github.com/egoldman2/ASD/actions/runs/39596314302/job/119210121800",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-21T12:03:02Z",
+      "started_at": "2026-10-21T12:03:05Z",
+      "completed_at": "2026-10-21T12:05:02Z",
+      "name": "Build and smoke-test Ethan Ting services",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-21T12:03:06Z",
+          "completed_at": "2026-10-21T12:03:06Z"
+        },
+        {
+          "name": "Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-21T12:03:06Z",
+          "completed_at": "2026-10-21T12:03:07Z"
+        },
+        {
+          "name": "Validate Docker Compose",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-21T12:03:07Z",
+          "completed_at": "2026-10-21T12:03:09Z"
+        },
+        {
+          "name": "Build Ethan Ting containers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-21T12:03:09Z",
+          "completed_at": "2026-10-21T12:03:55Z"
+        },
+        {
+          "name": "Run tests in the Docker test container",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-21T12:03:55Z",
+          "completed_at": "2026-10-21T12:04:28Z"
+        },
+        {
+          "name": "Start Ethan Ting services",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-21T12:04:28Z",
+          "completed_at": "2026-10-21T12:04:39Z"
+        },
+        {
+          "name": "Verify login, loyalty and role protection",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-21T12:04:39Z",
+          "completed_at": "2026-10-21T12:04:40Z"
+        },
+        {
+          "name": "Show service logs on failure",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-21T12:04:40Z",
+          "completed_at": "2026-10-21T12:04:40Z"
+        },
+        {
+          "name": "Stop Ethan Ting services",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-21T12:04:40Z",
+          "completed_at": "2026-10-21T12:05:00Z"
+        },
+        {
+          "name": "Post Check out repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-21T12:05:00Z",
+          "completed_at": "2026-10-21T12:05:00Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-21T12:05:00Z",
+          "completed_at": "2026-10-21T12:05:00Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/egoldman2/ASD/check-runs/119210121800",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001385,
+      "runner_name": "GitHub Actions 1000001385",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

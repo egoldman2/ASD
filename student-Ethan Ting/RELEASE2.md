@@ -101,11 +101,39 @@ run for `4d635cc` already passed both allocated endpoint tests and Docker valida
 That run does **not** cover subsequent uncommitted security changes. No commit-time
 execution is claimed until the user makes a real commit; the hook will run then.
 
+## Step 3: current shared Testing Review
+
+The Step 2 changes and Docker test-fixture repair are published in source
+`4fa1ac8`. Its student-3 workflow passed, including the full Docker test job.
+All five exact-source team workflows and ten allocated endpoint tests were
+captured and validated in the [current Testing Review evidence](../docs/evidence/release2-ethan-ting/step3-testing/README.md).
+
+The live shared review completed with `llama3.1:8b`, retaining initial review,
+feedback, adaptation and deterministic validation. The overall testing gate is
+still **fail** because group security findings remain. Secret baseline matches
+and baseline-hash metadata are classified separately, without modifying raw
+results or waiving the failed gate. No human release approval is recorded.
+
+## Step 4: selected loyalty Multi-Agent Review
+
+This feature now configures the shared `multi-agent` review mode, restricted to an
+explicit `customer_loyalty` workflow ID. The base prompt identifies Release 2 and
+distinguishes unassessed sources from proven missing functionality. The review
+checks matching history/audit logs without creating workflows or human decisions.
+
+The [Multi-Agent Review evidence](../docs/evidence/release2-ethan-ting/step4-multi-agent/README.md)
+retains the initial review, the context-budget failure, the compact rerun, source
+hashes and test reports. The wrapper compares observations/log hashes before and
+after review. Historical automated UI acceptance is not new student participation
+or a release approval. New configuration/prompt/tests remain local until reviewed
+and published; the previous passing CI run cannot certify them.
+
 ## Remaining steps
 
-- Review these local security changes, then retain hook execution during a real commit.
-- Publish the final version and retain a new passing student-3 CI run for that commit.
-- Configure this feature's Release 2 review evidence using the latest shared modes.
+- Retain genuine commit-hook output when available; manual hook runs are not commit-time evidence.
+- Resolve or specifically assess outstanding group security findings, then refresh Testing Review.
+- Review and publish the new review configuration/prompt/tests/evidence, then retain fresh CI for that commit.
+- Record the student's own review/release decision and reasons; none was granted by this automation.
 - Validate the integrated local application and final cloud deployment.
 - Update individual diagrams, report contribution and demonstration evidence.
 
