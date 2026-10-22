@@ -2,7 +2,7 @@
 
 Updated 18 October 2026, Australia/Sydney (AEDT). **Release incomplete.** This
 is material for the group editor, not the final PDF, attendance declaration or
-human release decision. Implementation and operations were performed with Codex
+human release decision. Implementation and operations used automated coding assistance
 on `ethan-goldman`; all checkpoint commits, checks and limitations are in the
 [progress ledger](../evidence/release2-ethan-goldman/progress.md). Canvas confirms
 [Group 33](https://canvas.uts.edu.au/groups/399683). The [Release 2 assignment](https://canvas.uts.edu.au/courses/39716/assignments/267943)

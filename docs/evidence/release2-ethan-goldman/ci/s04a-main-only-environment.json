@@ -5,7 +5,7 @@
   "repository": "egoldman2/ASD",
   "environment": "aws-cloud",
   "source_parent_sha": "bec5890451f6010ec794ca7d190abb2e7b7203e3",
-  "operator": "Codex executing the authorized plan; not a human release decision",
+  "operator": "Automated assistant executing the authorized plan; not a human release decision",
   "requests": [
     {
       "method": "GET",
