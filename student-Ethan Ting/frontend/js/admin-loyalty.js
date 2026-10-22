@@ -12,6 +12,8 @@ const loyaltyHistoryBody = document.querySelector("#adminLoyaltyHistoryBody");
 
 
 let loyaltyAccounts = [];
+let adjustmentTrigger = null;
+const loyaltyPager = createAccountTablePager(document.querySelector("#loyaltyPagination"), renderAccounts);
 
 
 async function authRequest(path, options = {}) {
@@ -38,6 +40,11 @@ async function authRequest(path, options = {}) {
 function showMessage(message, success = false) {
   loyaltyMessage.textContent = message;
   loyaltyMessage.classList.toggle("success", success);
+  const formMessage = document.querySelector("#loyaltyAdjustmentMessage");
+  if (!loyaltyAdjustmentPanel.hidden) {
+    formMessage.textContent = message;
+    formMessage.classList.toggle("success", success);
+  }
 }
 
 
@@ -123,6 +130,7 @@ function renderAccounts() {
   ));
 
   loyaltyTableBody.replaceChildren();
+  const visibleAccounts = loyaltyPager.slice(matchingAccounts);
 
   if (matchingAccounts.length === 0) {
     const row = document.createElement("tr");
@@ -134,7 +142,7 @@ function renderAccounts() {
     return;
   }
 
-  for (const account of matchingAccounts) {
+  for (const account of visibleAccounts) {
     const row = document.createElement("tr");
     const nameCell = document.createElement("td");
     const emailCell = document.createElement("td");
@@ -172,6 +180,8 @@ function renderAccounts() {
 
 
 async function openAdjustment(account) {
+  adjustmentTrigger = document.activeElement;
+  document.querySelector("#loyaltyAdjustmentMessage").textContent = "";
   loyaltyAdjustmentForm.reset();
   loyaltyCustomerId.value = account.user_id;
   document.querySelector("#loyaltyCustomerName").textContent = (
@@ -245,8 +255,9 @@ loyaltyAdjustmentForm.addEventListener("submit", async (event) => {
 
 document.querySelector("#cancelLoyaltyButton").addEventListener("click", () => {
   loyaltyAdjustmentPanel.hidden = true;
+  adjustmentTrigger?.focus();
 });
-loyaltySearch.addEventListener("input", renderAccounts);
+loyaltySearch.addEventListener("input", () => { loyaltyPager.reset(); renderAccounts(); });
 
 
 async function startLoyaltyPage() {

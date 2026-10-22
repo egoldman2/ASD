@@ -6,12 +6,13 @@
     <title>Admin Dashboard | ASD 2026</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=15">
-    <link rel="stylesheet" href="css/dashboard.css?v=15">
+    <link rel="stylesheet" href="css/dashboard.css?v=16">
     <script src="http://localhost:8000/js/site-header.js?v=10" defer></script>
     <script src="http://localhost:8000/js/account-menu.js?v=12" defer></script>
     <script src="http://localhost:8000/js/htmx.min.js" defer></script>
-  <script src="js/customer-assistant.js?v=5" defer></script>
-    <script src="js/admin.js?v=15" defer></script>
+    <script src="js/customer-assistant.js?v=6" defer></script>
+    <script src="js/table-pagination.js?v=1" defer></script>
+    <script src="js/admin.js?v=16" defer></script>
   </head>
 
   <body>
@@ -24,30 +25,31 @@
           <h1>Account management</h1>
           <p id="userGreeting" class="dashboardDescription">Checking your session...</p>
         </div>
+        <div class="dashboardHeroActions">
+          <a class="secondaryButton" href="#customerAssistant">Open customer assistant</a>
+        </div>
       </section>
 
       <section class="summaryGrid" aria-label="Customer summary">
         <article class="summaryCard">
-          <span class="summaryLabel">Total customers</span>
+          <span class="summaryLabel">Customers</span>
           <strong id="totalCustomers">0</strong>
         </article>
         <article class="summaryCard">
-          <span class="summaryLabel">Active customers</span>
+          <span class="summaryLabel">Active</span>
           <strong id="activeCustomers">0</strong>
         </article>
         <article class="summaryCard">
-          <span class="summaryLabel">Disabled customers</span>
+          <span class="summaryLabel">Disabled</span>
           <strong id="disabledCustomers">0</strong>
         </article>
         <article class="summaryCard">
-          <span class="summaryLabel">Total administrators</span>
+          <span class="summaryLabel">Administrators</span>
           <strong id="totalAdministrators">0</strong>
         </article>
       </section>
 
-      <section id="customerAssistant" class="dashboardPanel aiInsightPanel customerAssistant" aria-labelledby="customerInsightTitle"></section>
-
-      <section class="dashboardPanel accountManagementPanel" aria-labelledby="accountManagementTitle">
+      <section id="accountManagementPanel" class="dashboardPanel accountManagementPanel scrollTargetPanel" aria-labelledby="accountManagementTitle">
         <div class="panelHeading panelHeading--responsive">
           <div>
             <p class="dashboardEyebrow">Accounts</p>
@@ -71,6 +73,7 @@
               type="button"
               role="tab"
               aria-selected="false"
+              tabindex="-1"
               aria-controls="administratorAccountsPanel"
             >Administrators</button>
           </div>
@@ -115,6 +118,7 @@
             </tbody>
           </table>
           </div>
+          <div id="customerPagination" class="tablePagination" data-label="customers"></div>
         </section>
 
         <section id="administratorAccountsPanel" class="accountTableView" role="tabpanel" aria-labelledby="viewAdministratorsButton" hidden>
@@ -154,6 +158,7 @@
             </tbody>
           </table>
           </div>
+          <div id="administratorPagination" class="tablePagination" data-label="administrators"></div>
         </section>
       </section>
 
@@ -167,6 +172,7 @@
         </div>
 
         <form id="customerForm" class="detailsForm">
+          <p id="accountFormMessage" class="dashboardMessage formField--wide" role="alert"></p>
           <input id="customerId" name="customerId" type="hidden">
           <input id="accountRole" name="role" type="hidden" value="customer">
 
@@ -202,6 +208,7 @@
 
 
 
+      <section id="customerAssistant" class="dashboardPanel aiInsightPanel customerAssistant scrollTargetPanel" aria-labelledby="customerInsightTitle" tabindex="-1"></section>
     </main>
 
     <footer class="footer">asd(2026)-group7</footer>

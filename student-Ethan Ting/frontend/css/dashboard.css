@@ -47,10 +47,6 @@
   padding: 1.75rem;
 }
 
-.customerPage .dashboardMessage:empty {
-  display: none;
-}
-
 .dashboardHero {
   margin-bottom: 2rem;
   display: flex;
@@ -72,6 +68,7 @@
   color: #0b2545;
   font-size: clamp(2.25rem, 5vw, 3.8rem);
   line-height: 1.08;
+  overflow-wrap: anywhere;
 }
 
 .dashboardDescription {
@@ -100,6 +97,7 @@
 .dashboardGrid {
   grid-template-columns: 1fr;
 }
+.dashboardGrid > .dashboardPanel { margin-bottom: 0; }
 
 .summaryCard,
 .dashboardPanel {
@@ -189,10 +187,6 @@
   box-shadow: 0 2px 6px rgba(29, 91, 158, 0.2);
 }
 
-.accountManagementPanel .dashboardMessage:empty {
-  display: none;
-}
-
 .accountTableView + .accountTableView {
   margin-top: 1.5rem;
 }
@@ -264,6 +258,7 @@
   margin: 0.75rem 0;
   color: #b42318;
 }
+.dashboardMessage:empty { display: none; }
 
 .dashboardMessage.success {
   color: #18794e;
@@ -304,6 +299,21 @@
 .tableWrapper {
   overflow-x: auto;
 }
+
+.tablePagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: 1rem;
+  color: #4a627a;
+  font-size: .9rem;
+}
+
+.paginationControls { display: flex; gap: .5rem; }
+.paginationControls[hidden] { display: none; }
+.paginationControls button:disabled { opacity: .5; cursor: default; }
 
 .dataTable {
   width: 100%;
@@ -457,13 +467,15 @@
   padding: .8rem 0;
   border-top: 1px solid #dce6f0;
 }
+.customerAssistant { min-width: 0; overflow-wrap: anywhere; }
+.customerAssistant:focus { outline: none; }
 .assistantStatus { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
 .assistantStatus small { flex-basis: 100%; color: #53677d; font-size: .78rem; }
 .assistantService { border: 1px solid #cbd5e1; background: #f1f5f9; border-radius: 999px; padding: .25rem .65rem; font-size: .82rem; font-weight: 650; color: #475569; }
 .assistantService--online { color: #166534; background: #ecfdf3; border-color: #86cda1; }
 .assistantService--offline { color: #9a3412; background: #fff7ed; border-color: #f3bb84; }
-.assistantTabs { display: flex; flex-wrap: wrap; gap: .25rem; margin: .65rem 0 1.2rem; padding: .25rem; border-radius: .6rem; background: #f1f5f9; }
-.assistantTabs button { flex: 1; border: 1px solid transparent; border-radius: .45rem; padding: .65rem .8rem; background: transparent; color: #334155; cursor: pointer; font: inherit; font-weight: 650; white-space: nowrap; }
+.assistantTabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .25rem; margin: .65rem 0 1.2rem; padding: .25rem; border-radius: .6rem; background: #f1f5f9; }
+.assistantTabs button { min-height: 44px; border: 1px solid transparent; border-radius: .45rem; padding: .65rem .8rem; background: transparent; color: #334155; cursor: pointer; font: inherit; font-weight: 650; }
 .assistantTabs button[aria-selected="true"] { background: white; color: #205da2; border-color: #cbd8e7; box-shadow: 0 1px 3px #1233; }
 .customerAssistant button:focus-visible, .customerAssistant select:focus-visible { outline: 3px solid #3684d5; outline-offset: 3px; }
 .customerAssistant button:disabled { opacity: .6; cursor: wait; }
@@ -475,7 +487,13 @@
 .customerAssistant .assistantGuide { border-top: 0; margin-top: 0; padding-top: 0; }
 .customerAssistant .aiInsightResult { overflow-wrap: anywhere; }
 .loyaltyReviewStage { margin: 1rem 0; padding: 1rem; border: 1px solid #cbd8e7; border-radius: .6rem; background: #f8fafc; }
-.loyaltyReviewStage p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.loyaltyReviewStage summary { cursor: pointer; color: #0b2545; }
+.loyaltyReviewStage summary:focus-visible { outline: 3px solid #3684d5; outline-offset: 4px; }
+.loyaltyReviewStage .agentModel { margin-left: .75rem; color: #60758b; font-size: .85rem; font-weight: 400; }
+.loyaltyReviewStage[open] summary { margin-bottom: .85rem; }
+.loyaltyReviewStage p { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
+#loyaltyReviewMeta { font-size: .85rem; line-height: 1.6; }
+#loyaltyHumanReview { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #d7e4ef; }
 .loyaltyReviewEvidence { padding: .8rem; max-height: 20rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; background: #f1f5f9; }
 #loyaltyReviewMessage { color: #4b637d; }
 #loyaltyReviewMessage.success { color: #18794e; }
@@ -491,10 +509,7 @@
   .customerAssistant .assistantStatusRow { align-items: start; flex-direction: column; }
   .customerAssistant .assistantQuickActions .formField { flex-basis: 100%; }
   .customerAssistant .assistantTabs button { padding: .6rem .4rem; font-size: .85rem; }
-}
-
-.aiInsightPanel .dashboardMessage:empty {
-  display: none;
+  .customerAssistant .assistantTabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .aiSafetyBadge {
@@ -543,6 +558,7 @@
 }
 
 .aiPromptButton {
+  min-height: 40px;
   padding: 0.45rem 0.7rem;
   border: 1px solid #afc6d9;
   border-radius: 999px;
@@ -783,6 +799,10 @@
     flex-direction: column;
   }
 
+  .assistantCustomerFields { grid-template-columns: minmax(0, 1fr); }
+  .assistantCustomerFields > button { justify-self: start; }
+  .searchField { min-width: 0; max-width: 100%; }
+
   .accountViewTabs {
     width: 100%;
   }
@@ -912,4 +932,11 @@
   .customerPage {
     width: min(100% - 2rem, 780px);
   }
+
+  .customerPage .dashboardPanel { padding: 1rem; }
+  .accountViewTabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .accountViewButton { min-width: 0; padding: .6rem .45rem; font-size: .9rem; }
+  .panelHeading { flex-wrap: wrap; }
+  .loyaltyProgressText { flex-wrap: wrap; }
+  .loyaltyReviewStage .agentModel { display: block; margin: .35rem 0 0 1.1rem; }
 }

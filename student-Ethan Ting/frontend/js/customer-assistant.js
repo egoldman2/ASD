@@ -3,7 +3,7 @@
 const host = document.querySelector("#customerAssistant");
 if (!host) return;
 host.innerHTML = `
-<div class="panelHeading"><div><p class="dashboardEyebrow">Customer support tools</p><h2 id="customerInsightTitle">Customer assistant</h2><p class="panelDescription">Check live loyalty records, ask AI or look up the approved guide.</p></div></div>
+<div class="panelHeading"><div><p class="dashboardEyebrow">Accounts and loyalty</p><h2 id="customerInsightTitle">Customer assistant</h2><p class="panelDescription">Check customer records, ask the guide or start a loyalty review.</p></div></div>
 <div class="assistantStatusRow"><div id="assistantServiceStatus" class="assistantStatus" role="status" aria-live="polite" hx-get="/api/admin/assistant/service-status" hx-trigger="load, every 30s" hx-request='{"timeout":9000}' hx-swap="innerHTML">Checking MCP and RAG connections...</div><button class="secondaryButton" type="button" hx-get="/api/admin/assistant/service-status" hx-target="#assistantServiceStatus" hx-request='{"timeout":9000}'>Check connections</button></div>
 <div class="assistantTabs" role="tablist" aria-label="Assistant task"><button id="assistantTab0" type="button" role="tab" aria-controls="assistantPane0" aria-selected="true" tabindex="0" data-assistant-tab="tools">Customer tools</button><button id="assistantTab1" type="button" role="tab" aria-controls="assistantPane1" aria-selected="false" tabindex="-1" data-assistant-tab="ai">Ask AI</button><button id="assistantTab2" type="button" role="tab" aria-controls="assistantPane2" aria-selected="false" tabindex="-1" data-assistant-tab="guide">Ask the guide</button><button id="assistantTab3" type="button" role="tab" aria-controls="assistantPane3" aria-selected="false" tabindex="-1" data-assistant-tab="workflow">Loyalty review</button></div>
 <div id="assistantCustomerFields" class="assistantCustomerFields">
@@ -27,7 +27,19 @@ host.innerHTML = `
         <div id="mcpTierResult" class="mcpTierResult" hidden>
           <span id="mcpTierBadge" class="loyaltyTierBadge"></span>
           <p id="mcpTierDetails"></p>
-        </div><button id="assistantToolRetry" class="secondaryButton" type="button" hidden>Try again</button></section>
+        </div><button id="assistantToolRetry" class="secondaryButton" type="button" hidden>Try again</button>
+  <div id="toolHistoryResult" class="aiInsightResult" hidden>
+    <h3>Recent point changes</h3>
+    <p id="toolHistorySummary" class="panelDescription"></p>
+    <div id="toolHistoryTable" class="tableWrapper">
+      <table class="dataTable">
+        <caption class="visuallyHidden">Recent point changes, newest first</caption>
+        <thead><tr><th scope="col">Date</th><th scope="col">Points</th><th scope="col">Reason</th></tr></thead>
+        <tbody id="toolHistoryBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
 <section id="assistantPane1" role="tabpanel" aria-labelledby="assistantTab1" hidden><p class="panelDescription">Only edit proposals require confirmation. Include a customer ID or email in typed questions.</p>        <form id="customerInsightForm" class="aiInsightForm">
           <label for="customerInsightQuestion">Question for the assistant</label>
           <textarea
@@ -168,6 +180,7 @@ host.innerHTML = `
         </div>
 
 <section id="assistantPane3" role="tabpanel" aria-labelledby="assistantTab3" hidden>
+  <p class="dashboardEyebrow">Multi-Agent</p>
   <h3>Loyalty review</h3>
   <p class="panelDescription">Planner, Worker and Reviewer assess the selected customer's balance and five recent point changes. You make the final decision. This records a review only, never an account or points change.</p>
   <div class="assistantQuickActions"><button id="startLoyaltyReview" class="primaryButton" type="button" disabled>Start review</button><button id="loadLoyaltyReview" class="secondaryButton" type="button" disabled>Load latest review</button></div>
@@ -199,6 +212,8 @@ const customerInsightMeta = document.querySelector("#customerInsightMeta");
 const customerInsightLabel = document.querySelector("#customerInsightLabel");
 const customerInsightHistory = document.querySelector("#customerInsightHistory");
 const customerInsightHistoryBody = document.querySelector("#customerInsightHistoryBody");
+// Keep each result inside its task panel so switching tabs retains the answer.
+document.querySelector("#assistantPane1").append(customerInsightMessage, customerInsightResult);
 const customerChangeProposal = document.querySelector("#customerChangeProposal");
 const confirmCustomerChangeButton = document.querySelector("#confirmCustomerChangeButton");
 const cancelCustomerChangeButton = document.querySelector("#cancelCustomerChangeButton");
@@ -249,6 +264,26 @@ function showCustomerInsightMessage(message, success = false) {
 }
 
 
+function renderTransactionRows(body, transactions) {
+  body.replaceChildren();
+  for (const transaction of transactions) {
+    const row = document.createElement("tr");
+    const timestamp = transaction.created_at.replace(" ", "T");
+    const date = new Date(/(?:Z|[+-]\d{2}:\d{2})$/.test(timestamp) ? timestamp : `${timestamp}Z`);
+    const values = [
+      Number.isNaN(date.getTime()) ? transaction.created_at : date.toLocaleString("en-AU", {timeZone: "Australia/Sydney"}),
+      `${transaction.points_change > 0 ? "+" : ""}${transaction.points_change}`,
+      transaction.reason,
+    ];
+    for (const value of values) {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.appendChild(cell);
+    }
+    body.appendChild(row);
+  }
+}
+
 function renderCustomerInsight(result) {
   pendingCustomerChange = result.proposal || null;
   customerInsightAnswer.textContent = result.answer;
@@ -258,24 +293,8 @@ function renderCustomerInsight(result) {
   ) : (
     `${result.model} · ${result.customers_analyzed} customer records · Read-only analysis`
   );
-  customerInsightHistoryBody.replaceChildren();
   const transactions = result.history?.transactions || [];
-  for (const transaction of transactions) {
-    const row = document.createElement("tr");
-    const timestamp = transaction.created_at.replace(" ", "T");
-    const date = new Date(/(?:Z|[+-]\d{2}:\d{2})$/.test(timestamp) ? timestamp : `${timestamp}Z`);
-    const values = [
-      Number.isNaN(date.getTime()) ? transaction.created_at : date.toLocaleString(),
-      `${transaction.points_change > 0 ? "+" : ""}${transaction.points_change}`,
-      transaction.reason,
-    ];
-    for (const value of values) {
-      const cell = document.createElement("td");
-      cell.textContent = value;
-      row.appendChild(cell);
-    }
-    customerInsightHistoryBody.appendChild(row);
-  }
+  renderTransactionRows(customerInsightHistoryBody, transactions);
   customerInsightHistory.hidden = transactions.length === 0;
   customerInsightAnalysis.hidden = Boolean(pendingCustomerChange);
   customerInsightResult.classList.toggle(
@@ -337,7 +356,6 @@ customerInsightForm.addEventListener("submit", async (event) => {
   }
 
   setToolBusy(true);
-  document.querySelector("#mcpTierResult").hidden = true;
   askCustomerInsightButton.disabled = true;
   askCustomerInsightButton.textContent = "Analysing...";
   pendingCustomerChange = null;
@@ -424,9 +442,10 @@ for (const promptButton of document.querySelectorAll("[data-insight-question]"))
 }
 
 
-function showRagGuideMessage(message, success = false) {
+function showRagGuideMessage(message, success = false, neutral = false) {
   ragGuideMessage.textContent = message;
   ragGuideMessage.classList.toggle("success", success);
+  ragGuideMessage.classList.toggle("pending", neutral);
 }
 
 
@@ -442,7 +461,7 @@ ragGuideForm.addEventListener("submit", async (event) => {
   askRagGuideButton.disabled = true;
   askRagGuideButton.textContent = "Checking sources...";
   ragGuideResult.hidden = true;
-  showRagGuideMessage("Looking for approved account and loyalty guidance...", true);
+  showRagGuideMessage("Looking for approved account and loyalty guidance...", false, true);
   try {
     const result = await authRequest("/api/admin/rag/answer", {
       method: "POST",
@@ -462,7 +481,7 @@ ragGuideForm.addEventListener("submit", async (event) => {
     ragGuideResult.hidden = false;
     showRagGuideMessage(result.insufficient_context
       ? "The approved guide does not contain enough evidence to answer."
-      : "Answer includes citations from the approved guide. Review the sources before acting.", true);
+      : "Answer includes citations from the approved guide. Review the sources before acting.", !result.insufficient_context, result.insufficient_context);
   } catch (error) {
     showRagGuideMessage(error.message);
   } finally {
@@ -505,6 +524,7 @@ const historyButton = document.querySelector("#assistantHistoryButton");
 const toolMessage = document.querySelector("#mcpTierMessage");
 const toolRetry = document.querySelector("#assistantToolRetry");
 const tierResult = document.querySelector("#mcpTierResult");
+const toolHistoryResult = document.querySelector("#toolHistoryResult");
 const tabs = [...host.querySelectorAll("[data-assistant-tab]")];
 let assistantCustomers = [];
 let selectedId = "";
@@ -516,6 +536,7 @@ try { selectedId = sessionStorage.getItem("ethan.assistant.customer") || ""; } c
 function clearCustomerResults() {
   clearLoyaltyWorkflow();
   tierResult.hidden = true;
+  toolHistoryResult.hidden = true;
   toolRetry.hidden = true;
   toolMessage.textContent = "";
   pendingCustomerChange = null;
@@ -526,7 +547,6 @@ function clearCustomerResults() {
 
 function switchAssistantTab(name) {
   if (busy) return;
-  clearCustomerResults();
   document.querySelector("#assistantCustomerFields").hidden = name === "guide";
   document.querySelector("#assistantSelectedContext").hidden = name === "guide";
   for (const tab of tabs) {
@@ -636,7 +656,11 @@ async function runCustomerTool(kind) {
   if (busy) return;
   const account = assistantCustomers.find(item => String(item.user_id) === selectedId);
   if (!account) { toolMessage.textContent = "Select a customer first."; return; }
-  lastTool = kind; clearCustomerResults(); setToolBusy(true);
+  lastTool = kind;
+  toolRetry.hidden = true;
+  if (kind === "tier") tierResult.hidden = true;
+  else toolHistoryResult.hidden = true;
+  setToolBusy(true);
   toolMessage.classList.remove("success");
   toolMessage.textContent = kind === "tier" ? "Checking points through MCP and asking AI to calculate progress..." : "Loading recorded point changes through MCP...";
   let completionMessage = "Loaded through MCP. Nothing was changed.";
@@ -676,7 +700,12 @@ async function runCustomerTool(kind) {
       });
       if (result.history?.customer_id !== account.user_id || result.history?.limit !== 5
         || result.source !== "mcp" || result.read_only !== true) throw new Error("History could not be matched to this customer. Try again.");
-      renderCustomerInsight(result);
+      const transactions = result.history.transactions;
+      if (!Array.isArray(transactions)) throw new Error("Point history is unavailable. Try again.");
+      document.querySelector("#toolHistorySummary").textContent = `${account.full_name}: ${transactions.length ? `${transactions.length} recorded point change${transactions.length === 1 ? "" : "s"}, newest first. Dates use Sydney time.` : "No points activity yet."}`;
+      renderTransactionRows(document.querySelector("#toolHistoryBody"), transactions);
+      document.querySelector("#toolHistoryTable").hidden = transactions.length === 0;
+      toolHistoryResult.hidden = false;
     }
     toolMessage.textContent = completionMessage;
     toolMessage.classList.toggle("success", calculationVerified);
@@ -735,9 +764,13 @@ function renderLoyaltyWorkflow(record) {
   for (const [name, key] of [["planner", "plan"], ["worker", "output"], ["reviewer", "review"]]) {
     const stage = record[`${name}_result`];
     if (stage?.status !== "completed" || typeof stage[key] !== "string") throw new Error("The agent chain is incomplete.");
-    const section = document.createElement("section");
+    const section = document.createElement("details");
     section.className = "loyaltyReviewStage";
-    const title = document.createElement("h4"); title.textContent = `${name[0].toUpperCase()}${name.slice(1)} · ${stage.model}`;
+    section.open = name === "reviewer";
+    const title = document.createElement("summary");
+    const role = document.createElement("strong"); role.textContent = name[0].toUpperCase() + name.slice(1);
+    const model = document.createElement("span"); model.className = "agentModel"; model.textContent = stage.model;
+    title.append(role, model);
     const output = document.createElement("p"); output.textContent = stage[key];
     section.append(title, output); stages.appendChild(section);
   }
@@ -769,7 +802,8 @@ async function requestLoyaltyWorkflow(action) {
     currentLoyaltyWorkflow = null;
     reviewMessage.classList.add("error");
     humanReviewForm.hidden = true;
-    reviewMessage.textContent = `${error.message} After a timeout, use Load latest review before starting another.`;
+    reviewMessage.textContent = /timeout|timed out/i.test(error.message)
+      ? `${error.message} Use Load latest review before starting another.` : error.message;
   } finally { setToolBusy(false); }
 }
 startReviewButton.addEventListener("click", () => requestLoyaltyWorkflow("start"));

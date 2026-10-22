@@ -6,7 +6,7 @@
     <title>My Account | ASD 2026</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="http://localhost:8000/css/styles.css?v=15">
-    <link rel="stylesheet" href="css/dashboard.css?v=9">
+    <link rel="stylesheet" href="css/dashboard.css?v=16">
     <script src="http://localhost:8000/js/site-header.js?v=10" defer></script>
     <script src="http://localhost:8000/js/account-menu.js?v=12" defer></script>
     <script src="js/customer.js?v=7" defer></script>
@@ -34,12 +34,12 @@
           <form id="profileForm" class="detailsForm">
             <div class="formField">
               <label for="profileName">Full name</label>
-              <input id="profileName" name="full_name" type="text" maxlength="100" required>
+              <input id="profileName" name="full_name" type="text" maxlength="100" autocomplete="name" required>
             </div>
 
             <div class="formField">
               <label for="profileEmail">Email address</label>
-              <input id="profileEmail" name="email" type="email" maxlength="254" required>
+              <input id="profileEmail" name="email" type="email" maxlength="254" autocomplete="email" required>
             </div>
 
             <div class="formActions">
@@ -103,7 +103,7 @@
                 <span id="loyaltyProgressMessage">Loading your loyalty details...</span>
                 <span id="loyaltyProgressCount"></span>
               </div>
-              <progress id="loyaltyProgress" class="loyaltyProgress" value="0" max="500"></progress>
+              <progress id="loyaltyProgress" class="loyaltyProgress" value="0" max="500" aria-labelledby="loyaltyProgressMessage"></progress>
             </div>
           </div>
 

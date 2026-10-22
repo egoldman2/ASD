@@ -13,6 +13,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.request import Request as URLRequest
 from urllib.request import HTTPRedirectHandler, build_opener
+from zoneinfo import ZoneInfo
 
 import httpx
 from flask import Flask, Response, g, jsonify, request, session
@@ -1391,9 +1392,9 @@ def get_assistant_service_status():
         f'<span class="assistantService assistantService--{state}">{escape(kind)}: {escape(label)}</span>'
         for kind, state, label in statuses
     )
-    checked = datetime.now(timezone.utc).strftime("%H:%M:%S UTC")
+    checked = datetime.now(ZoneInfo("Australia/Sydney")).strftime("%I:%M:%S %p")
     return Response(
-        badges + f'<small>Checked {checked}. Service connection only; requests may still fail.</small>',
+        badges + f'<small>Checked {checked} Sydney time. Service connection only; requests may still fail.</small>',
         mimetype="text/html",
         headers={"Cache-Control": "no-store", "Vary": "Cookie", "X-Content-Type-Options": "nosniff"},
     )

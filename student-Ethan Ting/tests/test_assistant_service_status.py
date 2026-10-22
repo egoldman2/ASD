@@ -99,6 +99,7 @@ def test_fragment_uses_fixed_health_urls_without_customer_credentials(module, mo
     assert result.status_code == 200 and result.mimetype == "text/html"
     assert "MCP: Reachable" in text and "RAG: Reachable" in text
     assert "requests may still fail" in text
+    assert "Sydney time" in text and "UTC" not in text
     assert "no-store" in result.headers["Cache-Control"]
     assert "Cookie" in result.headers["Vary"]
     assert sorted(calls) == ["http://mcp.test:8765/health", "http://rag.test:5003/health"]

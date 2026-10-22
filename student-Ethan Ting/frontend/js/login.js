@@ -87,6 +87,7 @@ function showAuthView(view) {
   registerPanel.hidden = !showingRegistration;
   loginMessage.textContent = "";
   registerMessage.textContent = "";
+  document.title = `${showingRegistration ? "Create Account" : "Sign In"} | ASD 2026`;
 
   const firstField = showingRegistration
     ? registerName
@@ -202,5 +203,16 @@ registerForm.addEventListener("submit", async (event) => {
 
 const requestedView = new URLSearchParams(window.location.search).get("view");
 showAuthView(requestedView === "register" ? "register" : "login");
+for (const link of document.querySelectorAll("[data-auth-view]")) {
+  link.addEventListener("click", event => {
+    event.preventDefault();
+    const view = link.dataset.authView;
+    const url = new URL(window.location.href);
+    if (view === "register") url.searchParams.set("view", "register");
+    else url.searchParams.delete("view");
+    window.history.replaceState(null, "", url);
+    showAuthView(view);
+  });
+}
 
 checkExistingSession();

@@ -21,6 +21,9 @@ const customerEmailInput = document.querySelector("#customerEmail");
 
 let customers = [];
 let administrators = [];
+let accountFormTrigger = null;
+const customerPager = createAccountTablePager(document.querySelector("#customerPagination"), renderCustomers);
+const administratorPager = createAccountTablePager(document.querySelector("#administratorPagination"), renderAdministrators);
 
 
 
@@ -48,6 +51,11 @@ async function authRequest(path, options = {}) {
 function showMessage(message, success = false) {
   adminMessage.textContent = message;
   adminMessage.classList.toggle("success", success);
+  const formMessage = document.querySelector("#accountFormMessage");
+  if (!customerFormPanel.hidden) {
+    formMessage.textContent = message;
+    formMessage.classList.toggle("success", success);
+  }
 }
 
 
@@ -83,6 +91,7 @@ function renderCustomers() {
   ));
 
   customerTableBody.replaceChildren();
+  const visibleCustomers = customerPager.slice(matchingCustomers);
 
   if (matchingCustomers.length === 0) {
     const row = document.createElement("tr");
@@ -94,7 +103,7 @@ function renderCustomers() {
     return;
   }
 
-  for (const customer of matchingCustomers) {
+  for (const customer of visibleCustomers) {
     const row = document.createElement("tr");
     const nameCell = document.createElement("td");
     const emailCell = document.createElement("td");
@@ -152,6 +161,7 @@ function renderAdministrators() {
   ));
 
   administratorTableBody.replaceChildren();
+  const visibleAdministrators = administratorPager.slice(matchingAdministrators);
 
   if (matchingAdministrators.length === 0) {
     const row = document.createElement("tr");
@@ -163,7 +173,7 @@ function renderAdministrators() {
     return;
   }
 
-  for (const administrator of matchingAdministrators) {
+  for (const administrator of visibleAdministrators) {
     const row = document.createElement("tr");
     const nameCell = document.createElement("td");
     const emailCell = document.createElement("td");
@@ -199,6 +209,8 @@ function renderAdministrators() {
 
 
 function openCreateForm(role = "customer") {
+  accountFormTrigger = document.activeElement;
+  document.querySelector("#accountFormMessage").textContent = "";
   customerForm.reset();
   customerIdInput.value = "";
   accountRoleInput.value = role;
@@ -209,11 +221,14 @@ function openCreateForm(role = "customer") {
   document.querySelector("#customerFormTitle").textContent = `Create ${accountType}`;
   document.querySelector("#saveCustomerButton").textContent = `Save ${accountType}`;
   customerFormPanel.hidden = false;
+  customerFormPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   document.querySelector("#customerName").focus();
 }
 
 
 function openEditForm(customer, role = "customer") {
+  accountFormTrigger = document.activeElement;
+  document.querySelector("#accountFormMessage").textContent = "";
   customerForm.reset();
   customerIdInput.value = customer.id;
   accountRoleInput.value = role;
@@ -228,6 +243,7 @@ function openEditForm(customer, role = "customer") {
   customerNameInput.value = customer.full_name;
   customerEmailInput.value = customer.email;
   customerFormPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  customerNameInput.focus({preventScroll: true});
 }
 
 
@@ -254,6 +270,8 @@ function showAccountView(role) {
   viewAdministratorsButton.classList.toggle("active", showingAdministrators);
   viewCustomersButton.setAttribute("aria-selected", String(!showingAdministrators));
   viewAdministratorsButton.setAttribute("aria-selected", String(showingAdministrators));
+  viewCustomersButton.tabIndex = showingAdministrators ? -1 : 0;
+  viewAdministratorsButton.tabIndex = showingAdministrators ? 0 : -1;
   customerFormPanel.hidden = true;
   showMessage("");
 }
@@ -344,9 +362,20 @@ viewCustomersButton.addEventListener("click", () => showAccountView("customer"))
 viewAdministratorsButton.addEventListener("click", () => showAccountView("admin"));
 document.querySelector("#cancelCustomerButton").addEventListener("click", () => {
   customerFormPanel.hidden = true;
+  accountFormTrigger?.focus();
 });
-customerSearch.addEventListener("input", renderCustomers);
-administratorSearch.addEventListener("input", renderAdministrators);
+customerSearch.addEventListener("input", () => { customerPager.reset(); renderCustomers(); });
+administratorSearch.addEventListener("input", () => { administratorPager.reset(); renderAdministrators(); });
+for (const button of [viewCustomersButton, viewAdministratorsButton]) {
+  button.addEventListener("keydown", event => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const target = event.key === "Home" ? viewCustomersButton
+      : event.key === "End" ? viewAdministratorsButton
+      : button === viewCustomersButton ? viewAdministratorsButton : viewCustomersButton;
+    target.click(); target.focus();
+  });
+}
 async function startAdminPage() {
   try {
     const sessionResult = await authRequest("/api/session");

@@ -77,12 +77,19 @@ MCP_HOST=127.0.0.1 PYTHONPATH=ai-services \
 ```
 
 ```bash
+RAG_CHROMA_PATH="$HOME/Library/Caches/asd-release2-rag/chroma" \
+RAG_AUDIT_PATH="$HOME/Library/Caches/asd-release2-rag/rag-audit.jsonl" \
 OLLAMA_MODEL=llama3.1:8b RAG_HOST=127.0.0.1 PYTHONPATH=ai-services \
   .venv311/bin/python -m rag_server.rag_http_server
 ```
 
 Ollama and the Multi-Agent server also run on the host. Refresh the approved
 `ethan_ting_accounts_loyalty` RAG scope after changing its source documents.
+The Mac startup command above keeps generated RAG data outside the checkout.
+Use **Refresh guide** once when starting with this new cache directory. Restoring
+tracked cache files is not a substitute for rebuilding the approved guide index.
+The cloud baseline does not connect to these laptop services; its four AI flags
+remain disabled. The required local demonstration uses the local website.
 On 22 October 2026, all 13 Compose services were running, all six frontend
 homepages returned HTTP 200, and the Ethan backend container reached the MCP,
 RAG and Multi-Agent health endpoints. A live backend-container MCP call returned
@@ -226,10 +233,16 @@ The refreshed shared Testing Review remains **fail**, not a waived release gate.
 
 ## Remaining steps
 
-- Retain genuine commit-hook output when available; manual hook runs are not commit-time evidence.
+- The two local evidence commits, `14d6cf9` and `910a654`, remain unpushed for
+  review. The first commit's hook passed Ruff security rules, secret detection
+  and Python dependency audit; the second docs-only commit passed the dependency
+  audit while the file-scoped hooks skipped.
 - Obtain owner-reviewed fixes or explicit policy decisions for the Step 8 findings, then retain fresh same-source scans/CI and rerun Testing Review.
 - Review the local Step 6 observer/assembler/tests and Step 6/7 evidence before publishing; existing CI cannot certify new files.
-- Record the student's own review/release decision and reasons; none was granted by this automation.
+- Ethan Ting [deferred approval](../docs/evidence/release2-ethan-ting/step10-release-decision/README.md)
+  for deployed source `d297a42` until the findings are resolved. This is not a
+  final accept, conditional-accept or reject decision; Cloud Deployment Review
+  remains incomplete.
 - Refresh cloud records if another release is deployed; the customer browser sign-in check is now complete.
 - Update individual diagrams, report contribution and demonstration evidence.
 

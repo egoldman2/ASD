@@ -65,6 +65,11 @@
   color: #18794e;
 }
 
+.loginMessage:empty { display: none; }
+.authSwitch { margin-top: 1.5rem; color: #4a627a; line-height: 1.5; }
+.authSwitch a { color: #1d5b9e; font-weight: 700; text-underline-offset: .2em; }
+.authSwitch a:focus-visible { outline: 3px solid #3684d5; outline-offset: 4px; }
+
 @media (max-width: 520px) {
   .loginPage {
     padding: 2rem 0;
