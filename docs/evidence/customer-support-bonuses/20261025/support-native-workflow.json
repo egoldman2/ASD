@@ -1,0 +1,11 @@
+{
+  "captured_at": "2026-10-25T08:39:33.156021+00:00",
+  "command_id": "6d6877ba-55d2-44b2-91af-e3fccba44ced",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "support-native-workflow",
+  "script_sha256": "9b83c91f8cc88a966f6edcef29132c5f7e19bd8296b40a43a53a38a75a463606",
+  "status": "Failed",
+  "response_code": 1,
+  "output_not_json": true
+}

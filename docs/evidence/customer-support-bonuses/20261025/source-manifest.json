@@ -1,0 +1,90 @@
+{
+  "captured_at": "2026-10-25T08:18:13.633182+00:00",
+  "archive_sha256": "4aec3080306cc2ad8847ed8a93d6d3e79c5655c8b37366cec08f3b359fcc440d",
+  "bytes": 29740,
+  "files": [
+    {
+      "path": "Dockerfile.rag",
+      "sha256": "9adc056d0a589f9a1543a3643f29ef4bd93af2fa495cf1af499b9b824fc8114d"
+    },
+    {
+      "path": "ai-services/rag_server/README.md",
+      "sha256": "cd1e65d4d59c56ec33aca4a9a9fbcf8ad81ad0a364193955470f94a2f17cb70b"
+    },
+    {
+      "path": "ai-services/rag_server/__init__.py",
+      "sha256": "3d50790f03c4a8950c6de6b9b4bbebc32200b643facc5b12b2428764f3169e35"
+    },
+    {
+      "path": "ai-services/rag_server/config.py",
+      "sha256": "7cf5496cf434c502893cdd2caa02319f77ebd3b2995aa205c1596d167f7eedfa"
+    },
+    {
+      "path": "ai-services/rag_server/knowledge/ethan_goldman/staff_assistant_guide.md",
+      "sha256": "589b39e8c1e5f135fe788c4e3885a0febd69546fa7632e191358b018190d29f2"
+    },
+    {
+      "path": "ai-services/rag_server/knowledge/ethan_goldman/ticket_workflow.md",
+      "sha256": "54008799c7b09ce4207d4e17e7946487da56de874510a37e7a823d61c8992079"
+    },
+    {
+      "path": "ai-services/rag_server/ollama_client.py",
+      "sha256": "4a6252a88eb1563f4bccfbbc7197e22b1aa3f6052d79707ea92f0b572d1a741a"
+    },
+    {
+      "path": "ai-services/rag_server/rag_eval.py",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "ai-services/rag_server/rag_http_server.py",
+      "sha256": "297d46904b87f11da231a8c290fa936d3302fae70e56fbd0761d55ba6c2ed8e0"
+    },
+    {
+      "path": "ai-services/rag_server/rag_pipeline.py",
+      "sha256": "169a12b64e32865381497b0381729bc10f698b382f198b0c23d93aef9b2b8d43"
+    },
+    {
+      "path": "ai-services/rag_server/rag_server.py",
+      "sha256": "04b86762e0a87cfe555d02a39da16e8c67b1f5c9a8870aa828f1d9c8a7fc8419"
+    },
+    {
+      "path": "ai-services/rag_server/requirements.txt",
+      "sha256": "036b009e14ac5d1553439f1d1153007796db6fe02b97894f94892d5135b652b1"
+    },
+    {
+      "path": "ai-services/rag_server/response.py",
+      "sha256": "6dc034873d93b09bf07ca00d89a29b6484aa88de4e13cc2c1e7c65ac561c0fba"
+    },
+    {
+      "path": "ai-services/rag_server/sources/__init__.py",
+      "sha256": "793d9499ac8070e1dad3ed83d91b48f3d78368cf33792e855dc3db86a7811a24"
+    },
+    {
+      "path": "ai-services/rag_server/sources/base.py",
+      "sha256": "ddfad452eeb78fb9ef194d90a6c579ecf934ce606406aff99452bbd6fc72ab8d"
+    },
+    {
+      "path": "ai-services/rag_server/sources/chufeng_catalogue.py",
+      "sha256": "dad2484ddb34fdad21aa07f2023b03708176ba788ea995c0cebb0044e98deca7"
+    },
+    {
+      "path": "ai-services/rag_server/sources/markdown_knowledge.py",
+      "sha256": "f25e1375701db9f977fdca7cda9efdb8e1275eaa71a847f84e1aa1d4d6d1ad0e"
+    },
+    {
+      "path": "ai-services/rag_server/sources/ryan_inventory.py",
+      "sha256": "d3e0010140331293ce6c0d84ea20867e5832f9f9595e6cc2138db91727a05f30"
+    },
+    {
+      "path": "ready.py",
+      "sha256": "3a68c7c7da09a85577bb3d8b4435ae8aeed73315e2d3ffff75f1b3e9b5ab98fd"
+    },
+    {
+      "path": "shared/feature_flags.py",
+      "sha256": "76f5bab20227770b2340b0f3540cee4c640c768c75285a951a469ed5a6bbd543"
+    }
+  ],
+  "knowledge_scope": "ethan_goldman_support",
+  "bucket": "asd-release2-releasebucket-6xxwoto09slr",
+  "key": "releases/bonus-ai/4aec3080306cc2ad8847ed8a93d6d3e79c5655c8b37366cec08f3b359fcc440d.tar.gz"
+}

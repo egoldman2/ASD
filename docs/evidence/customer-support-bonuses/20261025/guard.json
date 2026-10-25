@@ -1,0 +1,11 @@
+{
+  "name": "/Users/ethan/Desktop/ASD/assignment 1/ASD/cloud/support-inference.yml",
+  "metadata": {},
+  "status": "PASS",
+  "not_compliant": [],
+  "not_applicable": [],
+  "compliant": [
+    "encrypted_disposable_cpu_host",
+    "private_inference"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "configuration_directory": "/srv/asd/bonuses/customer-support-20261025",
+  "files": {
+    "support-bonus.sh": "69e27e0e0c102f43f2c8b36948e2bd98b0ec2c1a4288f10843358428a72dbe6b",
+    "support-mcp.compose.yml": "a938f8a3f6c4ca2ba63bf24e4c14916ee74d5f14d45cc344004e4e86e54150b0",
+    "support-ai.compose.yml": "9d0d85dde8983daba139fdc0f57bb9517e7f17e46d77bcb35f1572e9b0c61ec1"
+  },
+  "scope": "customer_support only; legacy account MCP overlay disabled",
+  "inference_env_sha256": "aa9cf2f23dfba4f560ec6d5667acb7441711b45f8c65c3208ceb3a601ca76dba",
+  "support_ollama_url": "http://10.33.0.189:11434",
+  "support_rag_url": "http://10.33.0.189:5003",
+  "models": {
+    "AI": "qwen2.5:0.5b",
+    "RAG": "qwen2.5:3b",
+    "Planner": "qwen2.5:3b",
+    "Worker": "qwen2.5:3b",
+    "Reviewer": "llama3.1:8b"
+  },
+  "rag_model_change_evidence": "support-rag-model-change.json",
+  "support_public_guides_read_only_bind": "/srv/asd/bonuses/customer-support-20261025/support-knowledge:/app/ai-services/rag_server/knowledge/ethan_goldman:ro",
+  "citation_guide_hashes": {
+    "ticket_workflow.md": "54008799c7b09ce4207d4e17e7946487da56de874510a37e7a823d61c8992079",
+    "staff_assistant_guide.md": "589b39e8c1e5f135fe788c4e3885a0febd69546fa7632e191358b018190d29f2"
+  },
+  "packaging_fix_evidence": "support-citation-packaging-fix.json"
+}

@@ -1,0 +1,18 @@
+{
+  "captured_at": "2026-10-25T08:36:12.351686+00:00",
+  "command_id": "5f9aaf70-ba2d-4713-a260-8a31fb57aa10",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "support-rag-client-source-check",
+  "script_sha256": "07471f6f5c662921cdcc266e4dd92f5e049af4c3828ddc24eb978f65d20ffbf6",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "knowledge_directory": "/app/student-Ethan Goldman/support_backend/knowledge",
+    "directory_exists": false,
+    "approved_sources_present": {
+      "ticket_workflow.md": false,
+      "staff_assistant_guide.md": false
+    }
+  }
+}

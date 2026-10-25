@@ -1,0 +1,41 @@
+{
+  "captured_at": "2026-10-25T08:47:39.727911+00:00",
+  "feature": "customer_support",
+  "cloud_demonstrations": {
+    "B1": "Validated staff ticket analysis, qwen2.5:0.5b",
+    "B2": "MCP ticket context, 3/3 messages",
+    "B3": "Grounded unresolved queue definition with approved Support guide citation",
+    "B4": "82d95447-da3f-4684-a5db-c546799393af, all stages completed, human review pending"
+  },
+  "security": {
+    "B5_public_checks": 10,
+    "B5_public_passed": true,
+    "B5_role_checks": "Same-day Support-only subset at 06:39 UTC, customer 403/admin 200",
+    "B6_ticket_unchanged": true,
+    "B6_retained_support_volume_encrypted": true
+  },
+  "tests": [
+    {
+      "artifact": "support-regressions.xml",
+      "passed": 327,
+      "skipped": 23
+    },
+    {
+      "artifact": "support-packaging-tests.xml",
+      "passed": 17,
+      "skipped": 0
+    }
+  ],
+  "test_total_note": "Suites overlap; counts are not summed.",
+  "lint": "ruff and bash syntax checks passed",
+  "temporary_cloud_cleanup_passed": true,
+  "application_cleanup_mode": "customer_support_mcp_only",
+  "limitations": [
+    "No sustained-load or production readiness validation",
+    "Worker repeats an already-confirmed address check; Reviewer did not flag it",
+    "Initial synchronous browser workflow request times out; recorded history successfully recovers result",
+    "CloudFront origin uses HTTP; captured TLS minimum is TLSv1; WAF/HSTS not demonstrated",
+    "Existing embedded ChromaDB advisory exceptions remain; no public Chroma server",
+    "No automatic credential rotation or backup restore demonstration"
+  ]
+}

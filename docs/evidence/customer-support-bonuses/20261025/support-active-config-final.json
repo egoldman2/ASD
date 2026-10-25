@@ -1,0 +1,58 @@
+{
+  "captured_at": "2026-10-25T08:43:27.585868+00:00",
+  "command_id": "120ccc4e-b59a-44e7-aaf3-72ce1e613a52",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "support-active-config-final",
+  "script_sha256": "1060b56ed5161c3b21ae8bd736c47595f802cffc11b412b32b671a6a1661b122",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:43:26.875969+00:00",
+    "files": {
+      "support-bonus.sh": "69e27e0e0c102f43f2c8b36948e2bd98b0ec2c1a4288f10843358428a72dbe6b",
+      "support-mcp.compose.yml": "a938f8a3f6c4ca2ba63bf24e4c14916ee74d5f14d45cc344004e4e86e54150b0",
+      "support-ai.compose.yml": "9d0d85dde8983daba139fdc0f57bb9517e7f17e46d77bcb35f1572e9b0c61ec1",
+      "support-knowledge/staff_assistant_guide.md": "589b39e8c1e5f135fe788c4e3885a0febd69546fa7632e191358b018190d29f2",
+      "support-knowledge/ticket_workflow.md": "54008799c7b09ce4207d4e17e7946487da56de874510a37e7a823d61c8992079"
+    },
+    "containers": [
+      {
+        "name": "/asd-cloud-customer-support-backend-1",
+        "image": "sha256:079ecc4a2e28ce3d6576a455ec71c63e5dbaf5350fc0da04d99cde4381d2fa9b",
+        "flags": {
+          "AI_MODE_ENABLED": "true",
+          "MCP_ENABLED": "true",
+          "RAG_ENABLED": "true",
+          "MULTI_AGENT_ENABLED": "true"
+        },
+        "host_ports": {},
+        "mounts": [
+          {
+            "source": "/srv/asd/bonuses/customer-support-20261025/support-knowledge",
+            "destination": "/app/ai-services/rag_server/knowledge/ethan_goldman",
+            "read_only": true
+          }
+        ]
+      },
+      {
+        "name": "/asd-cloud-multi-agent-server-1",
+        "image": "sha256:079ecc4a2e28ce3d6576a455ec71c63e5dbaf5350fc0da04d99cde4381d2fa9b",
+        "flags": {
+          "AI_MODE_ENABLED": null,
+          "MCP_ENABLED": null,
+          "RAG_ENABLED": null,
+          "MULTI_AGENT_ENABLED": null
+        },
+        "host_ports": {},
+        "mounts": [
+          {
+            "source": "/srv/asd/bonuses/customer-support-20261025/state",
+            "destination": "/state",
+            "read_only": false
+          }
+        ]
+      }
+    ]
+  }
+}

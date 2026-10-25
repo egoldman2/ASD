@@ -1,0 +1,60 @@
+{
+  "captured_at": "2026-10-25T08:19:10.243409+00:00",
+  "command_id": "1150c84f-49e7-4f78-a194-21d4f7b445a0",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "application-before-correction",
+  "script_sha256": "473fb387f0189234dd5e137e525a6fe9a1e81e5b02c5611024e3f6414d3eb1e0",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:19:07.666120+00:00",
+    "release": "/srv/asd/releases/43e6fc546b89f8228defeba7a5a98579ee618807-1-bec2c0f26118",
+    "containers": [
+      {
+        "name": "/asd-cloud-customer-support-backend-1",
+        "image_id": "sha256:079ecc4a2e28ce3d6576a455ec71c63e5dbaf5350fc0da04d99cde4381d2fa9b",
+        "flags": {
+          "AI_MODE_ENABLED": "false",
+          "MCP_ENABLED": "false",
+          "RAG_ENABLED": "false",
+          "MULTI_AGENT_ENABLED": "false"
+        },
+        "mounts": []
+      },
+      {
+        "name": "/asd-cloud-ethan-backend-1",
+        "image_id": "sha256:079ecc4a2e28ce3d6576a455ec71c63e5dbaf5350fc0da04d99cde4381d2fa9b",
+        "flags": {
+          "AI_MODE_ENABLED": "false",
+          "MCP_ENABLED": "true",
+          "RAG_ENABLED": "false",
+          "MULTI_AGENT_ENABLED": "false"
+        },
+        "mounts": []
+      },
+      {
+        "name": "/asd-cloud-customer-support-database-1",
+        "image_id": "sha256:079ecc4a2e28ce3d6576a455ec71c63e5dbaf5350fc0da04d99cde4381d2fa9b",
+        "flags": {
+          "AI_MODE_ENABLED": null,
+          "MCP_ENABLED": null,
+          "RAG_ENABLED": null,
+          "MULTI_AGENT_ENABLED": null
+        },
+        "mounts": [
+          {
+            "source": "/srv/asd/data/support",
+            "destination": "/data"
+          }
+        ]
+      }
+    ],
+    "source_hashes": {
+      "student-Ethan Goldman/support_backend/ai.py": "f7281c4bfe1dceb5ad3ae23fabde1b828fc76de4d68d2efc2b6990ceb67550fc",
+      "student-Ethan Goldman/support_backend/mcp_routes.py": "f7dd891d26d804481371855796fe778f84a122190c5795532b921d7e7e83776f",
+      "student-Ethan Goldman/support_backend/multi_agent.py": "70b32002077452b1a4aced860e0890ae720fcce2fa2e4c5e322e165dc45a8db7",
+      "student-Ethan Goldman/support_backend/rag_client.py": "e349f9f8caf907f3e508ace4f1b18753c44beb9d1eae2e17a29886fe7c7b40db"
+    }
+  }
+}

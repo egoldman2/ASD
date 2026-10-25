@@ -1,0 +1,18 @@
+{
+  "captured_at": "2026-10-25T08:39:13.466120+00:00",
+  "command_id": "85c8c349-289b-44b8-aa9a-52a314ecc85c",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "support-citation-packaging-fix",
+  "script_sha256": "7a9b2366eff6c5aa522cd3f0a014e6349c8220e070e5cf272b01d6f359594aff",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "knowledge_directory": "/app/ai-services/rag_server/knowledge/ethan_goldman",
+    "directory_exists": true,
+    "approved_sources_present": {
+      "ticket_workflow.md": true,
+      "staff_assistant_guide.md": true
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "captured_at": "2026-10-25T08:35:26.902058+00:00",
+  "command_id": "4f8d496c-208a-44a7-9799-79b57725da24",
+  "instance_id": "i-032c47ee7c2754159",
+  "region": "ap-southeast-2",
+  "name": "support-rag-retrieved-context",
+  "script_sha256": "f72148d94bb5589aa2309b035264864c2dfb81579a0b3d24ac2917496dd928eb",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "status": 200,
+    "response": {
+      "success": true,
+      "operation": "retrieve_context",
+      "data": {
+        "query": "What does unresolved mean in the support queue? Please cite the guide.",
+        "scope": "ethan_goldman_support",
+        "results": [
+          {
+            "rank": 1,
+            "document_id": "ethan_goldman_support:staff_assistant_guide.md:0",
+            "text": "Customer Support staff assistant guide: Queue totals and ticket attention\n\nThe queue summary counts all tickets matching the selected category and assignee filters, rather than just the displayed page. Unresolved means any ticket whose status is not solved. The unresolved unassigned count includes only unresolved tickets without an assigned staff member.",
+            "metadata": {
+              "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+              "citation_label": "Customer Support staff assistant guide: Queue totals and ticket attention",
+              "scope": "ethan_goldman_support",
+              "section": "Queue totals and ticket attention",
+              "source_file": "staff_assistant_guide.md",
+              "chunk_index": 0,
+              "curated": true,
+              "revision": "589b39e8c1e5f135fe788c4e3885a0febd69546fa7632e191358b018190d29f2"
+            },
+            "distance": 0.564721,
+            "relevance_score": 0.435279,
+            "citation": {
+              "rank": 1,
+              "document_id": "ethan_goldman_support:staff_assistant_guide.md:0",
+              "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+              "label": "Customer Support staff assistant guide: Queue totals and ticket attention",
+              "scope": "ethan_goldman_support"
+            }
+          },
+          {
+            "rank": 2,
+            "document_id": "ethan_goldman_support:staff_assistant_guide.md:2",
+            "text": "Customer Support staff assistant guide: Queue totals and ticket attention\n\nSource: student-Ethan Goldman/database_service/database.py and support_backend/tool_reads.py. Reviewed against the implemented application on 27 September 2026.",
+            "metadata": {
+              "section": "Queue totals and ticket attention",
+              "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+              "source_file": "staff_assistant_guide.md",
+              "chunk_index": 2,
+              "curated": true,
+              "citation_label": "Customer Support staff assistant guide: Queue totals and ticket attention",
+              "scope": "ethan_goldman_support",
+              "revision": "589b39e8c1e5f135fe788c4e3885a0febd69546fa7632e191358b018190d29f2"
+            },
+            "distance": 0.689238,
+            "relevance_score": 0.310762,
+            "citation": {
+              "rank": 2,
+              "document_id": "ethan_goldman_support:staff_assistant_guide.md:2",
+              "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+              "label": "Customer Support staff assistant guide: Queue totals and ticket attention",
+              "scope": "ethan_goldman_support"
+            }
+          },
+          {
+            "rank": 3,
+            "document_id": "ethan_goldman_support:staff_assistant_guide.md:5",
+            "text": "Customer Support staff assistant guide: Choosing a staff question\n\nSource: student-Ethan Goldman/support_backend/mcp_assistant.py, ui.py and validation.py. Reviewed against the implemented application on 27 September 2026. This guide contains no customer ticket data.",
+            "metadata": {
+              "source_file": "staff_assistant_guide.md",
+              "chunk_index": 5,
+              "revision": "589b39e8c1e5f135fe788c4e3885a0febd69546fa7632e191358b018190d29f2",
+              "scope": "ethan_goldman_support",
+              "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+              "section": "Choosing a staff question",
+              "citation_label": "Customer Support staff assistant guide: Choosing a staff question",
+              "curated": true
+            },
+            "distance": 0.718264,
+            "relevance_score": 0.281736,
+            "citation": {
+              "rank": 3,
+              "document_id": "ethan_goldman_support:staff_assistant_guide.md:5",
+              "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+              "label": "Customer Support staff assistant guide: Choosing a staff question",
+              "scope": "ethan_goldman_support"
+            }
+          },
+          {
+            "rank": 4,
+            "document_id": "ethan_goldman_support:staff_assistant_guide.md:3",
+            "text": "Customer Support staff assistant guide: Choosing a staff question\n\nUse the support data assistant for current ticket facts, searches, queue totals and attention reasons. Ticket context shows a bounded selection of the newest conversation messages in chronological order and reports when earlier messages were omitted. Search and attention results report the full matching count and whether another page exists. These reads do not change ticket records.",
+            "metadata": {
+              "section": "Choosing a staff question",
+              "citation_label": "Customer Support staff assistant guide: Choosing a staff question",
+              "revision": "589b39e8c1e5f135fe788c4e3885a0febd69546fa7632e191358b018190d29f2",
+              "chunk_index": 3,
+              "source_file": "staff_assistant_guide.md",
+              "scope": "ethan_goldman_support",
+              "curated": true,
+              "source_id": "ethan_goldman_support/staff_assistant_guide.md"
+            },
+            "distance": 0.7339,
+            "relevance_score": 0.2661,
+            "citation": {
+              "rank": 4,
+              "document_id": "ethan_goldman_support:staff_assistant_guide.md:3",
+              "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+              "label": "Customer Support staff assistant guide: Choosing a staff question",
+              "scope": "ethan_goldman_support"
+            }
+          }
+        ],
+        "result_count": 4
+      },
+      "citations": [
+        {
+          "rank": 1,
+          "document_id": "ethan_goldman_support:staff_assistant_guide.md:0",
+          "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+          "label": "Customer Support staff assistant guide: Queue totals and ticket attention",
+          "scope": "ethan_goldman_support"
+        },
+        {
+          "rank": 2,
+          "document_id": "ethan_goldman_support:staff_assistant_guide.md:2",
+          "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+          "label": "Customer Support staff assistant guide: Queue totals and ticket attention",
+          "scope": "ethan_goldman_support"
+        },
+        {
+          "rank": 3,
+          "document_id": "ethan_goldman_support:staff_assistant_guide.md:5",
+          "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+          "label": "Customer Support staff assistant guide: Choosing a staff question",
+          "scope": "ethan_goldman_support"
+        },
+        {
+          "rank": 4,
+          "document_id": "ethan_goldman_support:staff_assistant_guide.md:3",
+          "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+          "label": "Customer Support staff assistant guide: Choosing a staff question",
+          "scope": "ethan_goldman_support"
+        }
+      ],
+      "confidence": "medium",
+      "insufficient_context": false,
+      "error": null,
+      "metadata": {
+        "requested_top_k": 5,
+        "indexed_document_count": 11,
+        "minimum_relevance_score": 0.25,
+        "distance_metric": "cosine",
+        "embedding": "deterministic_sha256",
+        "embedding_dimensions": 256
+      }
+    },
+    "purpose": "Support-guide retrieval only; no ticket records."
+  }
+}

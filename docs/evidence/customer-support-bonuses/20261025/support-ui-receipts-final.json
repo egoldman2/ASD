@@ -1,0 +1,181 @@
+{
+  "captured_at": "2026-10-25T08:40:47.158433+00:00",
+  "command_id": "8505ecfd-de0c-4368-8705-886451e2ee40",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "support-ui-receipts-final",
+  "script_sha256": "a83312e724755db136abd351afb8b129ad04fcd4b75d20a8069ad8c759457f3a",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:40:46.460021+00:00",
+    "feature": "customer_support",
+    "sources": {
+      "asd-cloud-customer-support-backend-1": [],
+      "asd-cloud-mcp-server-1": [
+        {
+          "timestamp": "2026-10-25T08:21:33.782017827Z",
+          "method": "POST",
+          "path": "/mcp",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:21:33.788545722Z",
+          "method": "POST",
+          "path": "/mcp",
+          "status": 202
+        },
+        {
+          "timestamp": "2026-10-25T08:21:33.815722349Z",
+          "method": "POST",
+          "path": "/mcp",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:21:33.823468658Z",
+          "method": "POST",
+          "path": "/mcp",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:21:33.797072148Z",
+          "event": "MCP CallToolRequest"
+        }
+      ],
+      "asd-cloud-gateway-1": [
+        {
+          "timestamp": "2026-10-25T08:19:25.931228674Z",
+          "method": "GET",
+          "path": "/api/support/ui/admin/tickets/2002",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:19:26.006030136Z",
+          "method": "GET",
+          "path": "/api/support/ui/admin/multi-agent/tickets/2002/workflows",
+          "status": 503
+        },
+        {
+          "timestamp": "2026-10-25T08:21:33.847891874Z",
+          "method": "POST",
+          "path": "/api/support/ui/admin/mcp/tools/context",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:25:23.290113431Z",
+          "method": "GET",
+          "path": "/api/support/admin/tool-data/tickets/2002",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:25:23.328486636Z",
+          "method": "POST",
+          "path": "/api/support/admin/tickets/2002/ai-analysis",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:25:23.365482458Z",
+          "method": "POST",
+          "path": "/api/support/admin/mcp/tools/call",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:25:23.580350878Z",
+          "method": "POST",
+          "path": "/api/support/admin/rag/answer",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:25:24.607261851Z",
+          "method": "POST",
+          "path": "/api/support/admin/multi-agent/tickets/2002/workflows",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:26:16.732145520Z",
+          "method": "GET",
+          "path": "/api/support/admin/tool-data/tickets/2002",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:26:16.759327297Z",
+          "method": "POST",
+          "path": "/api/support/admin/tickets/2002/ai-analysis",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:26:16.786983538Z",
+          "method": "POST",
+          "path": "/api/support/admin/mcp/tools/call",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:26:16.811976896Z",
+          "method": "POST",
+          "path": "/api/support/admin/rag/answer",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:26:16.838705127Z",
+          "method": "POST",
+          "path": "/api/support/admin/multi-agent/tickets/2002/workflows",
+          "status": 401
+        },
+        {
+          "timestamp": "2026-10-25T08:27:09.302909892Z",
+          "method": "POST",
+          "path": "/api/support/ui/admin/tickets/2002/ai-analysis",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:28:00.113165143Z",
+          "method": "POST",
+          "path": "/api/support/ui/admin/rag/answer",
+          "status": 502
+        },
+        {
+          "timestamp": "2026-10-25T08:28:43.317781332Z",
+          "method": "POST",
+          "path": "/api/support/ui/admin/rag/answer",
+          "status": 502
+        },
+        {
+          "timestamp": "2026-10-25T08:32:03.721142537Z",
+          "method": "POST",
+          "path": "/api/support/ui/admin/rag/answer",
+          "status": 499
+        },
+        {
+          "timestamp": "2026-10-25T08:34:57.451885482Z",
+          "method": "POST",
+          "path": "/api/support/ui/admin/rag/answer",
+          "status": 502
+        },
+        {
+          "timestamp": "2026-10-25T08:39:07.744980958Z",
+          "method": "GET",
+          "path": "/api/support/ui/admin/tickets/2002",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:39:07.846072015Z",
+          "method": "GET",
+          "path": "/api/support/ui/admin/multi-agent/tickets/2002/workflows",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:39:19.395634122Z",
+          "method": "POST",
+          "path": "/api/support/ui/admin/rag/answer",
+          "status": 200
+        },
+        {
+          "timestamp": "2026-10-25T08:40:18.000135741Z",
+          "method": "POST",
+          "path": "/api/support/ui/admin/multi-agent/tickets/2002/workflows",
+          "status": 499
+        }
+      ]
+    }
+  }
+}

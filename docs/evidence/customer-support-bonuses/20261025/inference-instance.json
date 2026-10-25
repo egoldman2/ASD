@@ -1,0 +1,27 @@
+{
+    "InstanceId": "i-032c47ee7c2754159",
+    "State": "running",
+    "InstanceType": "m7i-flex.large",
+    "PrivateIp": "10.33.0.189",
+    "PublicIp": "16.176.5.232",
+    "Volumes": [
+        {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+                "AttachTime": "2026-10-25T08:20:54+00:00",
+                "DeleteOnTermination": true,
+                "Status": "attached",
+                "VolumeId": "vol-0148100eaa52f33af",
+                "EbsCardIndex": 0
+            }
+        }
+    ],
+    "Metadata": {
+        "State": "applied",
+        "HttpTokens": "required",
+        "HttpPutResponseHopLimit": 1,
+        "HttpEndpoint": "enabled",
+        "HttpProtocolIpv6": "disabled",
+        "InstanceMetadataTags": "disabled"
+    }
+}

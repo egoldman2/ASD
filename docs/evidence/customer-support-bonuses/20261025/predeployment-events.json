@@ -1,0 +1,27 @@
+{
+  "OperationEvents": [
+    {
+      "EventId": "9e7ab180-bd8e-4092-95ec-7c9dc21ff0b9",
+      "StackId": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-support-bonus-20261025/a04c8fa0-d04c-11f1-a4ca-02fff87b32c1",
+      "OperationId": "a04dc820-d04c-11f1-a4ca-02fff87b32c1",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "asd-support-bonus-20261025",
+      "PhysicalResourceId": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-support-bonus-20261025/a04c8fa0-d04c-11f1-a4ca-02fff87b32c1",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-10-25T08:18:15.127000+00:00",
+      "ResourceStatus": "CREATE_IN_PROGRESS",
+      "ResourceStatusReason": "User Initiated",
+      "ClientRequestToken": "79a8ad67-6985-48a3-85ec-301141f8b1ce"
+    },
+    {
+      "EventId": "b01eb6e3-505d-4ee6-aeab-14ffd94ea525",
+      "StackId": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-support-bonus-20261025/a04c8fa0-d04c-11f1-a4ca-02fff87b32c1",
+      "OperationId": "a04dc820-d04c-11f1-a4ca-02fff87b32c1",
+      "OperationType": "CREATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT",
+      "Timestamp": "2026-10-25T08:18:15.046000+00:00",
+      "StartTime": "2026-10-25T08:18:15.046000+00:00"
+    }
+  ]
+}

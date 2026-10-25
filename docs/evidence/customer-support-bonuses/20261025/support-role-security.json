@@ -1,0 +1,45 @@
+{
+  "captured_at": "2026-10-25T06:39:22.776962+00:00",
+  "scope": "Customer Support staff/customer separation; filtered from same-day shared security capture",
+  "source_path": "docs/evidence/bonus-b5-b6/20261025/authenticated-endpoints.json",
+  "source_sha256": "7ec23ea3e72cd3e9eb1bf0c8cb18415132c7822f26d2614fb52a04bbf08545da",
+  "checks": [
+    {
+      "name": "customer_cannot_read_admin_api",
+      "method": "GET",
+      "path": "/api/support/admin/tickets",
+      "expected_status": 403,
+      "status": 403,
+      "passed": true,
+      "captured_at": "2026-10-25T06:39:22.608112+00:00"
+    },
+    {
+      "name": "admin_can_read_admin_api",
+      "method": "GET",
+      "path": "/api/support/admin/tickets",
+      "expected_status": 200,
+      "status": 200,
+      "passed": true,
+      "captured_at": "2026-10-25T06:39:22.746444+00:00"
+    }
+  ],
+  "shared_session_cookie_attribute_evidence": [
+    {
+      "role": "admin_login",
+      "attributes": {
+        "secure": true,
+        "http_only": true,
+        "same_site_lax": true
+      }
+    },
+    {
+      "role": "customer_login",
+      "attributes": {
+        "secure": true,
+        "http_only": true,
+        "same_site_lax": true
+      }
+    }
+  ],
+  "notes": "These two support-role checks were captured earlier today. They are not presented as a newly executed customer login during the corrected support demo."
+}

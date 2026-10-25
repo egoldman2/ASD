@@ -1,0 +1,28 @@
+{
+  "captured_at": "2026-10-25T08:30:21.185680+00:00",
+  "command_id": "e6ce1e2b-f2e1-4c9d-96c4-65113c504e65",
+  "instance_id": "i-032c47ee7c2754159",
+  "region": "ap-southeast-2",
+  "name": "support-rag-diagnostic",
+  "script_sha256": "0033931f0f5d78ebe2b6b15511adbdf432d84d95b6cde2114ab2251b27c0a68b",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:30:20.919383+00:00",
+    "scope": "ethan_goldman_support",
+    "status": 502,
+    "response": {
+      "success": false,
+      "operation": "answer_question",
+      "data": null,
+      "citations": [],
+      "confidence": null,
+      "insufficient_context": false,
+      "error": {
+        "code": "UPSTREAM_ERROR",
+        "message": "The local model omitted a source citation from an answer paragraph."
+      }
+    },
+    "purpose": "Private RAG diagnostic for the same approved support-guide question; no ticket data or credentials."
+  }
+}

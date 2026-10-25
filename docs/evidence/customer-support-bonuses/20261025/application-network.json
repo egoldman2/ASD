@@ -1,0 +1,12 @@
+{
+  "Id": "i-03a217a6a7f61d3ae",
+  "State": "running",
+  "Vpc": "vpc-0c7d5c2d7b272bf04",
+  "Subnet": "subnet-0dfdc3e168d210b32",
+  "SecurityGroups": [
+    {
+      "GroupId": "sg-0d9c7217b0a923a3d",
+      "GroupName": "asd-release2-OriginSecurityGroup-CFKmzNWq5Rti"
+    }
+  ]
+}

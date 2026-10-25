@@ -1,0 +1,17 @@
+{
+    "Id": "vol-0148100eaa52f33af",
+    "Encrypted": true,
+    "Size": 30,
+    "Type": "gp3",
+    "Attachments": [
+        {
+            "DeleteOnTermination": true,
+            "EbsCardIndex": 0,
+            "VolumeId": "vol-0148100eaa52f33af",
+            "InstanceId": "i-032c47ee7c2754159",
+            "Device": "/dev/xvda",
+            "State": "attached",
+            "AttachTime": "2026-10-25T08:20:54+00:00"
+        }
+    ]
+}

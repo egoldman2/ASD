@@ -1,0 +1,11 @@
+{
+  "bucket": "asd-release2-releasebucket-6xxwoto09slr",
+  "key": "releases/bonus-ai/4aec3080306cc2ad8847ed8a93d6d3e79c5655c8b37366cec08f3b359fcc440d.tar.gz",
+  "response": {
+    "ETag": "\"7bff70848902d7900f5ac6632c3aa1e6\"",
+    "ChecksumCRC64NVME": "/Nm8Sis8xhU=",
+    "ChecksumType": "FULL_OBJECT",
+    "ServerSideEncryption": "AES256",
+    "VersionId": "rimbk2bBJTW_ccB8ia9QzhjWKJquw2.Q"
+  }
+}

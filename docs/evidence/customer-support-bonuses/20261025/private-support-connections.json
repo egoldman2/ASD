@@ -1,0 +1,26 @@
+{
+  "captured_at": "2026-10-25T08:28:52.142544+00:00",
+  "command_id": "45a4c399-27d4-49e2-b2e5-b2d55e93e69d",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "private-support-connections",
+  "script_sha256": "6c9695d52b405796a840b96271145f16c9fd67cc2b443306d97fe8a2a66b3c2c",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:28:49.977146+00:00",
+    "application_host_to_private_ollama": {
+      "status": 200,
+      "body": {
+        "version": "0.40.11"
+      }
+    },
+    "support_container_to_private_multi_agent": {
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "service": "asd-marketplace-multi-agent"
+      }
+    }
+  }
+}

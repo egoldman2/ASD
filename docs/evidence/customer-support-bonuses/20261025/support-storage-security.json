@@ -1,0 +1,28 @@
+{
+  "captured_at": "2026-10-25T08:23:20.111808+00:00",
+  "command_id": "ec11f862-4b69-4fbd-80d9-46d751e58bee",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "support-storage-security",
+  "script_sha256": "0638a281e40185ed500499b60501eb9439d0cc9a16a59a3577af54b1ae1397ee",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:23:17.540455+00:00",
+    "support_data_mount": "/dev/nvme1n1 ext4   /srv/asd",
+    "support_bind_directory": "/srv/asd/data/support",
+    "file_modes_only": [
+      {
+        "path": "/srv/asd/releases/43e6fc546b89f8228defeba7a5a98579ee618807-1-bec2c0f26118/cloud.env",
+        "exists": true,
+        "mode": "0o600"
+      },
+      {
+        "path": "/srv/asd/session-secret",
+        "exists": true,
+        "mode": "0o600"
+      }
+    ],
+    "contents_read": false
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "Parameters": [
+    {
+      "ParameterKey": "SourceBucket",
+      "NoEcho": false
+    },
+    {
+      "ParameterKey": "OllamaImage",
+      "NoEcho": false
+    },
+    {
+      "ParameterKey": "SourceKey",
+      "NoEcho": false
+    },
+    {
+      "ParameterKey": "ApplicationSecurityGroupId",
+      "NoEcho": false
+    },
+    {
+      "ParameterKey": "VpcId",
+      "NoEcho": false
+    },
+    {
+      "ParameterKey": "ImageId",
+      "DefaultValue": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64",
+      "NoEcho": false
+    },
+    {
+      "ParameterKey": "AutoStopMinutes",
+      "DefaultValue": "720",
+      "NoEcho": false,
+      "Description": "One-time first-boot shutdown safety timer; stopped root storage still incurs charges."
+    },
+    {
+      "ParameterKey": "SubnetId",
+      "NoEcho": false
+    },
+    {
+      "ParameterKey": "InstanceType",
+      "DefaultValue": "m7i-flex.large",
+      "NoEcho": false
+    },
+    {
+      "ParameterKey": "SourceSha256",
+      "NoEcho": false
+    }
+  ],
+  "Description": "Temporary private Ollama and support-only RAG host for Customer Support bonus demonstrations in Sydney.",
+  "Capabilities": [
+    "CAPABILITY_IAM"
+  ],
+  "CapabilitiesReason": "The following resource(s) require capabilities: [AWS::IAM::Role]"
+}

@@ -1,0 +1,63 @@
+{
+  "captured_at": "2026-10-25T08:45:55.960837+00:00",
+  "command_id": "5c618be6-15a5-46b0-87fc-8ef73797e660",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "cleanup-application",
+  "script_sha256": "069c8472140152762b8b321645d390ccbf78009a2a55de5cd2206eb2e814ed4c",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:45:53.626893+00:00",
+    "mode": "customer_support_mcp_only",
+    "removed_disposable_files": [
+      "/srv/asd/bonuses/customer-support-20261025/state/workflow_history.jsonl",
+      "/srv/asd/bonuses/customer-support-20261025/state/coordination_audit.jsonl",
+      "/srv/asd/bonuses/customer-support-20261025/inference.env",
+      "/srv/asd/bonuses/customer-support-20261025/support-knowledge/staff_assistant_guide.md",
+      "/srv/asd/bonuses/customer-support-20261025/support-knowledge/ticket_workflow.md"
+    ],
+    "containers": [
+      {
+        "name": "/asd-cloud-customer-support-backend-1",
+        "running": true,
+        "image": "sha256:079ecc4a2e28ce3d6576a455ec71c63e5dbaf5350fc0da04d99cde4381d2fa9b",
+        "flags": {
+          "AI_MODE_ENABLED": "false",
+          "MCP_ENABLED": "true",
+          "RAG_ENABLED": "false",
+          "MULTI_AGENT_ENABLED": "false"
+        },
+        "host_ports": {},
+        "mounts": []
+      },
+      {
+        "name": "/asd-cloud-ethan-backend-1",
+        "running": true,
+        "image": "sha256:079ecc4a2e28ce3d6576a455ec71c63e5dbaf5350fc0da04d99cde4381d2fa9b",
+        "flags": {
+          "AI_MODE_ENABLED": "false",
+          "MCP_ENABLED": "false",
+          "RAG_ENABLED": "false",
+          "MULTI_AGENT_ENABLED": "false"
+        },
+        "host_ports": {},
+        "mounts": []
+      },
+      {
+        "name": "/asd-cloud-mcp-server-1",
+        "running": true,
+        "image": "sha256:079ecc4a2e28ce3d6576a455ec71c63e5dbaf5350fc0da04d99cde4381d2fa9b",
+        "flags": {
+          "AI_MODE_ENABLED": null,
+          "MCP_ENABLED": null,
+          "RAG_ENABLED": null,
+          "MULTI_AGENT_ENABLED": null
+        },
+        "host_ports": {},
+        "mounts": []
+      }
+    ],
+    "multi_agent_container_absent": true
+  }
+}

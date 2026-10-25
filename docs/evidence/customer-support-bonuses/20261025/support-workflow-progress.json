@@ -1,0 +1,38 @@
+{
+  "captured_at": "2026-10-25T08:40:57.192410+00:00",
+  "command_id": "a8fa4db2-2875-4756-a91e-d6530fdf5bf8",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "support-workflow-progress",
+  "script_sha256": "f49186179c30d726eff9c5f6a2ee2f52000e1d90c85c791fb16b11c23d77bbbc",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "asd-cloud-multi-agent-server-1": [
+      "",
+      "2026-10-25T08:39:03.141181223Z 2026-10-25 08:39:03,140 INFO werkzeug: 127.0.0.1 - - [25/Oct/2026 08:39:03] \"GET /health HTTP/1.1\" 200 -",
+      "2026-10-25T08:39:07.843718181Z 2026-10-25 08:39:07,843 INFO werkzeug: 172.18.0.10 - - [25/Oct/2026 08:39:07] \"GET /api/workflows HTTP/1.1\" 200 -",
+      "2026-10-25T08:39:33.524132545Z 2026-10-25 08:39:33,523 INFO werkzeug: 127.0.0.1 - - [25/Oct/2026 08:39:33] \"GET /health HTTP/1.1\" 200 -",
+      "2026-10-25T08:40:03.981321824Z 2026-10-25 08:40:03,981 INFO werkzeug: 127.0.0.1 - - [25/Oct/2026 08:40:03] \"GET /health HTTP/1.1\" 200 -",
+      "2026-10-25T08:40:34.330722607Z 2026-10-25 08:40:34,330 INFO werkzeug: 127.0.0.1 - - [25/Oct/2026 08:40:34] \"GET /health HTTP/1.1\" 200 -",
+      "2026-10-25T08:40:47.938037606Z 2026-10-25 08:40:47,937 INFO werkzeug: 172.18.0.10 - - [25/Oct/2026 08:40:47] \"GET /api/workflows HTTP/1.1\" 200 -"
+    ],
+    "asd-cloud-customer-support-backend-1": [
+      "",
+      "2026-10-25T08:39:06.689848504Z [2026-10-25 08:39:06 +0000] [1] [INFO] Starting gunicorn 23.0.0",
+      "2026-10-25T08:39:06.690486145Z [2026-10-25 08:39:06 +0000] [1] [INFO] Listening at: http://0.0.0.0:6005 (1)",
+      "2026-10-25T08:39:06.690499543Z [2026-10-25 08:39:06 +0000] [1] [INFO] Using worker: gthread",
+      "2026-10-25T08:39:06.693190489Z [2026-10-25 08:39:06 +0000] [7] [INFO] Booting worker with pid: 7"
+    ],
+    "state_files": [
+      {
+        "name": "coordination_audit.jsonl",
+        "size": 0
+      },
+      {
+        "name": "workflow_history.jsonl",
+        "size": 0
+      }
+    ]
+  }
+}

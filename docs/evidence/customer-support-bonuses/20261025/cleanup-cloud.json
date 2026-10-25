@@ -1,0 +1,50 @@
+{
+  "started_at": "2026-10-25T08:45:52.148393+00:00",
+  "stack_id": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-support-bonus-20261025/a04c8fa0-d04c-11f1-a4ca-02fff87b32c1",
+  "instance_id": "i-032c47ee7c2754159",
+  "root_volume_id": "vol-0148100eaa52f33af",
+  "preserved_support_data_volume": "vol-02087b3eeb07eec99",
+  "delete_stack": {
+    "returncode": 0,
+    "error": ""
+  },
+  "stack_status": "DELETE_COMPLETE",
+  "source_object": {
+    "bucket": "asd-release2-releasebucket-6xxwoto09slr",
+    "key": "releases/bonus-ai/4aec3080306cc2ad8847ed8a93d6d3e79c5655c8b37366cec08f3b359fcc440d.tar.gz",
+    "version_id": "rimbk2bBJTW_ccB8ia9QzhjWKJquw2.Q"
+  },
+  "delete_source_version": {
+    "VersionId": "rimbk2bBJTW_ccB8ia9QzhjWKJquw2.Q"
+  },
+  "instance": {
+    "Id": "i-032c47ee7c2754159",
+    "State": "terminated"
+  },
+  "root_volume": {
+    "returncode": 254,
+    "error": "aws: [ERROR]: An error occurred (InvalidVolume.NotFound) when calling the DescribeVolumes operation: The volume 'vol-0148100eaa52f33af' does not exist."
+  },
+  "source_version_head": {
+    "returncode": 254,
+    "error": "aws: [ERROR]: An error occurred (404) when calling the HeadObject operation: Not Found"
+  },
+  "support_volume": {
+    "Id": "vol-02087b3eeb07eec99",
+    "Encrypted": true,
+    "State": "in-use",
+    "Attachments": [
+      {
+        "DeleteOnTermination": false,
+        "EbsCardIndex": 0,
+        "VolumeId": "vol-02087b3eeb07eec99",
+        "InstanceId": "i-03a217a6a7f61d3ae",
+        "Device": "/dev/sdf",
+        "State": "attached",
+        "AttachTime": "2026-10-09T04:24:46+00:00"
+      }
+    ]
+  },
+  "completed_at": "2026-10-25T08:46:51.690035+00:00",
+  "passed": true
+}
