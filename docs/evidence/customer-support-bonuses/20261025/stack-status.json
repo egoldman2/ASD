@@ -1,0 +1,25 @@
+{
+  "Status": "CREATE_COMPLETE",
+  "Outputs": [
+    {
+      "OutputKey": "RagUrl",
+      "OutputValue": "http://10.33.0.189:5003"
+    },
+    {
+      "OutputKey": "InstanceId",
+      "OutputValue": "i-032c47ee7c2754159"
+    },
+    {
+      "OutputKey": "PrivateIp",
+      "OutputValue": "10.33.0.189"
+    },
+    {
+      "OutputKey": "SecurityGroupId",
+      "OutputValue": "sg-089bff32b7b952975"
+    },
+    {
+      "OutputKey": "OllamaUrl",
+      "OutputValue": "http://10.33.0.189:11434"
+    }
+  ]
+}

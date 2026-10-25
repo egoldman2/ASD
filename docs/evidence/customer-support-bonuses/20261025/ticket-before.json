@@ -1,0 +1,25 @@
+{
+  "captured_at": "2026-10-25T08:22:25.760465+00:00",
+  "command_id": "a6f19e9f-9f5f-4136-831c-6f2a0320434d",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "ticket-before",
+  "script_sha256": "2891c380059eee57de18aa13dbdc0c828d25ebc611599ae677eaafe17728baaf",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:22:23.574851+00:00",
+    "ticket_id": 2002,
+    "ticket_and_message_sha256": "399b6f4c29cb7e140204d9c515611a0ed649f01f7358560779152d57d22aeb2a",
+    "message_count": 3,
+    "category": "delivery",
+    "priority": "high",
+    "status": "open",
+    "updated_at": "2026-08-24T10:02:00Z",
+    "database_path": "/data/support_tickets.db",
+    "database_mode": "0o644",
+    "integrity": "ok",
+    "foreign_key_errors": 0,
+    "read_only_connection": true
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "captured_at": "2026-10-25T08:24:48.815400+00:00",
+  "command_id": "d1c03e08-cf15-49da-b682-7df54c212de3",
+  "instance_id": "i-032c47ee7c2754159",
+  "region": "ap-southeast-2",
+  "name": "inference-ready",
+  "script_sha256": "3aaaebf814976eae5cddcb3450769b65042b42cd1cd66cd06da341d123f862c4",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:24:46.600958+00:00",
+    "ready": true,
+    "containers": [
+      "asd-rag",
+      "asd-ollama"
+    ],
+    "models": {
+      "models": [
+        {
+          "name": "llama3.1:8b",
+          "model": "llama3.1:8b",
+          "modified_at": "2026-10-25T08:24:10.095800921Z",
+          "size": 4920753328,
+          "digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "llama",
+            "families": [
+              "llama"
+            ],
+            "parameter_size": "8.0B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 131072,
+            "embedding_length": 4096,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools"
+          ]
+        },
+        {
+          "name": "qwen2.5:3b",
+          "model": "qwen2.5:3b",
+          "modified_at": "2026-10-25T08:23:10.035556359Z",
+          "size": 1929912432,
+          "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "3.1B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 32768,
+            "embedding_length": 2048,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools"
+          ]
+        },
+        {
+          "name": "qwen2.5:0.5b",
+          "model": "qwen2.5:0.5b",
+          "modified_at": "2026-10-25T08:22:58.815518895Z",
+          "size": 397821319,
+          "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "494.03M",
+            "quantization_level": "Q4_K_M",
+            "context_length": 32768,
+            "embedding_length": 896,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools"
+          ]
+        }
+      ]
+    },
+    "bootstrap_tail": [
+      "#12 naming to docker.io/library/asd-rag-bonus:local done",
+      "#12 DONE 1.3s",
+      "cc8f1328325c92b169c270002d09b41b293b1b00f6d459685b566730e1c2a123",
+      "{\"rag_ready\": true, \"scope\": \"ethan_goldman_support\", \"model\": \"qwen2.5:0.5b\"}",
+      "Cloud-init v. 22.2.2 finished at Sun, 25 Oct 2026 08:24:45 +0000. Datasource DataSourceEc2.  Up 227.22 seconds"
+    ]
+  }
+}

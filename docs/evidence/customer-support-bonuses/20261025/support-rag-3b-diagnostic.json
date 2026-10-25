@@ -1,0 +1,50 @@
+{
+  "captured_at": "2026-10-25T08:33:38.550055+00:00",
+  "command_id": "fe38bafb-0947-4916-bdb4-e68be7eab53d",
+  "instance_id": "i-032c47ee7c2754159",
+  "region": "ap-southeast-2",
+  "name": "support-rag-3b-diagnostic",
+  "script_sha256": "89ffd8cd35dd43582b5ba96f242aa28a8d29bc261d706b630c4be0dde2f8da6f",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:33:36.195624+00:00",
+    "scope": "ethan_goldman_support",
+    "status": 200,
+    "response": {
+      "success": true,
+      "operation": "answer_question",
+      "data": {
+        "question": "What is the maximum initial message length for a support ticket? Answer in one sentence and cite the guide.",
+        "scope": "ethan_goldman_support",
+        "answer": "Insufficient context to answer this question. [1]",
+        "retrieved_count": 5,
+        "model": "qwen2.5:3b"
+      },
+      "citations": [
+        {
+          "rank": 1,
+          "document_id": "ethan_goldman_support:staff_assistant_guide.md:3",
+          "source_id": "ethan_goldman_support/staff_assistant_guide.md",
+          "label": "Customer Support staff assistant guide: Choosing a staff question",
+          "scope": "ethan_goldman_support"
+        }
+      ],
+      "confidence": "medium",
+      "insufficient_context": false,
+      "error": null,
+      "metadata": {
+        "grounded": true,
+        "model_invoked": true,
+        "generation_attempts": 1,
+        "context_characters": 3573,
+        "confidence_basis": "retrieval_similarity_not_probability_of_correctness",
+        "requested_top_k": 5,
+        "minimum_relevance_score": 0.25,
+        "distance_metric": "cosine",
+        "embedding": "deterministic_sha256"
+      }
+    },
+    "purpose": "Private RAG diagnostic for the same approved support-guide question; no ticket data or credentials."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "captured_at": "2026-10-25T08:28:48.933868+00:00",
+  "command_id": "ca460e61-6886-486d-9ccd-8a37ac0c0174",
+  "instance_id": "i-032c47ee7c2754159",
+  "region": "ap-southeast-2",
+  "name": "support-rag-runtime-initial",
+  "script_sha256": "72362efaf6c1172491b38c5e273f5d65c9190be7cf1e6b80f7fd2c687a0aeb17",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:28:46.198576+00:00",
+    "corpus_markdown": [
+      "ai-services/rag_server/knowledge/ethan_goldman/staff_assistant_guide.md",
+      "ai-services/rag_server/knowledge/ethan_goldman/ticket_workflow.md"
+    ],
+    "audit": [],
+    "container": {
+      "state": "running",
+      "oom_killed": false,
+      "restart_count": 0,
+      "image": "sha256:18d0a4593dd7d9147f5db704904138e364af267e0d7b8d32de565759df18453d"
+    },
+    "warnings": [
+      "2026-10-25T08:24:41.520358858Z                     INFO     \u001b[31m\u001b[1mWARNING: This is a           _internal.py:97"
+    ]
+  }
+}

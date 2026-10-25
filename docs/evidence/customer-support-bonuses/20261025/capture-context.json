@@ -1,0 +1,12 @@
+{
+  "captured_at": "2026-10-25T08:47:39.727911+00:00",
+  "feature": "customer_support",
+  "owner": "Ethan Goldman",
+  "region": "ap-southeast-2",
+  "help_level": "LOW",
+  "source_head": "91cf9d790318814b144b2fcc01a21376ce1eb30b",
+  "branch": "ethan-goldman",
+  "deployment_kind": "Manual Support-only overlay on the accepted existing API image; uncommitted packaging/runbook changes are not a CI release.",
+  "original_other_feature_evidence": "../retired-other-feature-bonus-20261025 (excluded from Support claims)",
+  "credential_handling": "Existing authenticated Chrome session; no password/session secret/origin-header values copied to this pack."
+}

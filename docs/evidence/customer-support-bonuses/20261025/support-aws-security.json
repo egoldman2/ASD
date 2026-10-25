@@ -1,0 +1,80 @@
+{
+  "captured_at": "2026-10-25T08:25:49.276929+00:00",
+  "scope": "Shared cloud controls as applied to Customer Support routes and /srv/asd/data/support",
+  "support_data_volume": {
+    "Id": "vol-02087b3eeb07eec99",
+    "Encrypted": true,
+    "Size": 30,
+    "Attachments": [
+      {
+        "InstanceId": "i-03a217a6a7f61d3ae",
+        "DeleteOnTermination": false
+      }
+    ]
+  },
+  "frontend_ingress": {
+    "Id": "sg-0d9c7217b0a923a3d",
+    "Ingress": [
+      {
+        "IpProtocol": "tcp",
+        "FromPort": 80,
+        "ToPort": 80,
+        "UserIdGroupPairs": [],
+        "IpRanges": [],
+        "Ipv6Ranges": [],
+        "PrefixListIds": [
+          {
+            "PrefixListId": "pl-b8a742d1"
+          }
+        ]
+      }
+    ]
+  },
+  "cloudfront": {
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "Origins": [
+      {
+        "Id": "marketplace",
+        "OriginProtocolPolicy": "http-only",
+        "OriginHeaderNames": [
+          "X-Origin-Verify"
+        ]
+      }
+    ],
+    "MinimumTLS": "TLSv1",
+    "WebACLId": ""
+  },
+  "private_support_inference_ingress": {
+    "Id": "sg-089bff32b7b952975",
+    "Ingress": [
+      {
+        "IpProtocol": "tcp",
+        "FromPort": 5003,
+        "ToPort": 5003,
+        "UserIdGroupPairs": [
+          {
+            "UserId": "059643396979",
+            "GroupId": "sg-0d9c7217b0a923a3d"
+          }
+        ],
+        "IpRanges": [],
+        "Ipv6Ranges": [],
+        "PrefixListIds": []
+      },
+      {
+        "IpProtocol": "tcp",
+        "FromPort": 11434,
+        "ToPort": 11434,
+        "UserIdGroupPairs": [
+          {
+            "UserId": "059643396979",
+            "GroupId": "sg-0d9c7217b0a923a3d"
+          }
+        ],
+        "IpRanges": [],
+        "Ipv6Ranges": [],
+        "PrefixListIds": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "captured_at": "2026-10-25T08:42:02.747327+00:00",
+  "command_id": "e97bdb62-08f0-4569-a4d5-df64e9988b6e",
+  "instance_id": "i-032c47ee7c2754159",
+  "region": "ap-southeast-2",
+  "name": "support-model-progress",
+  "script_sha256": "45ae617458778cbef0c364199ce78059d7b9ccfed182b715f8a3458c73600afb",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:42:00.604758+00:00",
+    "ready": true,
+    "version": {
+      "version": "0.40.11"
+    },
+    "model_tags": {
+      "models": [
+        {
+          "name": "llama3.1:8b",
+          "model": "llama3.1:8b",
+          "modified_at": "2026-10-25T08:24:10.095800921Z",
+          "size": 4920753328,
+          "digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "llama",
+            "families": [
+              "llama"
+            ],
+            "parameter_size": "8.0B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 131072,
+            "embedding_length": 4096,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools"
+          ]
+        },
+        {
+          "name": "qwen2.5:3b",
+          "model": "qwen2.5:3b",
+          "modified_at": "2026-10-25T08:23:10.035556359Z",
+          "size": 1929912432,
+          "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "3.1B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 32768,
+            "embedding_length": 2048,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools"
+          ]
+        },
+        {
+          "name": "qwen2.5:0.5b",
+          "model": "qwen2.5:0.5b",
+          "modified_at": "2026-10-25T08:22:58.815518895Z",
+          "size": 397821319,
+          "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "494.03M",
+            "quantization_level": "Q4_K_M",
+            "context_length": 32768,
+            "embedding_length": 896,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools"
+          ]
+        }
+      ]
+    },
+    "loaded_models": {
+      "models": []
+    },
+    "container": {
+      "image_id": "sha256:5aefd07598b55ea910b65abe42d1b5ad8ce3311d35b598c16586a318b5294459",
+      "state": "running",
+      "oom_killed": false,
+      "restart_count": 0,
+      "memory_limit": 6979321856,
+      "device_requests": null
+    },
+    "model_http_receipts": [
+      {
+        "timestamp": "2026-10-25T08:24:45.473378881Z",
+        "method": "POST",
+        "path": "/api/generate",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:27:09.290764177Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:27:57.990966897Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:28:00.056708196Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:28:41.820677203Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:28:43.313197463Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:30:19.427180811Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:30:20.916198462Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:32:07.248110148Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:33:36.192567455Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:34:57.447443402Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:39:19.383573636Z",
+        "method": "POST",
+        "path": "/api/chat",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:40:27.021739358Z",
+        "method": "POST",
+        "path": "/api/generate",
+        "status": 200
+      },
+      {
+        "timestamp": "2026-10-25T08:41:32.012518188Z",
+        "method": "POST",
+        "path": "/api/generate",
+        "status": 200
+      }
+    ],
+    "input_truncation_warnings": []
+  }
+}

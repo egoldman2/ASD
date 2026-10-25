@@ -1,0 +1,76 @@
+{
+  "captured_at": "2026-10-25T08:24:00.605195+00:00",
+  "command_id": "4219f748-c280-4d2c-a9bc-38bc72c559c4",
+  "instance_id": "i-032c47ee7c2754159",
+  "region": "ap-southeast-2",
+  "name": "inference-bootstrap-progress",
+  "script_sha256": "96e715a7b2dcc2d333e3c8a5c6d09699e097c9cf5f3d8530559a64d3f833554a",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:23:58.143118+00:00",
+    "ready": false,
+    "containers": [
+      "asd-ollama"
+    ],
+    "models": {
+      "models": [
+        {
+          "name": "qwen2.5:3b",
+          "model": "qwen2.5:3b",
+          "modified_at": "2026-10-25T08:23:10.035556359Z",
+          "size": 1929912432,
+          "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "3.1B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 32768,
+            "embedding_length": 2048,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools"
+          ]
+        },
+        {
+          "name": "qwen2.5:0.5b",
+          "model": "qwen2.5:0.5b",
+          "modified_at": "2026-10-25T08:22:58.815518895Z",
+          "size": 397821319,
+          "digest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "494.03M",
+            "quantization_level": "Q4_K_M",
+            "context_length": 32768,
+            "embedding_length": 896,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools"
+          ]
+        }
+      ]
+    },
+    "bootstrap_tail": [
+      "verifying sha256 digest \u2827 \u001b[K\u001b[?25h\u001b[?2026l\u001b[?2026h\u001b[?25l\u001b[A\u001b[A\u001b[A\u001b[A\u001b[1Gpulling manifest \u001b[K",
+      "pulling 667b0c1932bc: 100% \u2595\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258f 4.9 GB                         \u001b[K",
+      "pulling 948af2743fc7: 100% \u2595\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258f 1.5 KB                         \u001b[K",
+      "pulling 455f34728c9b: 100% \u2595\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258f  487 B                         \u001b[K",
+      "verifying sha256 digest \u2807 \u001b[K\u001b[?25h\u001b[?2026l"
+    ]
+  }
+}

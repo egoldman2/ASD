@@ -1,0 +1,57 @@
+{
+  "captured_at": "2026-10-25T08:42:26.616990+00:00",
+  "command_id": "8b4a4da1-eed3-4378-875f-6b82843f1b21",
+  "instance_id": "i-032c47ee7c2754159",
+  "region": "ap-southeast-2",
+  "name": "support-reviewer-resource-check",
+  "script_sha256": "c67fb85892bd1f9ca93dfb628ebba1f59a742b9f527441d172398054acd54762",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:42:24.009790+00:00",
+    "diagnostics": [
+      "2026-10-25T08:41:32.012518188Z [GIN] 2026/10/25 - 08:41:32 | 200 |     1m0s |     10.33.0.123 | POST     \"/api/generate\"",
+      "2026-10-25T08:41:32.117491173Z time=2026-10-25T08:41:32.117Z level=INFO source=sched.go:658 msg=\"system memory\" total=\"6.5 GiB\" free=\"3.5 GiB\" free_swap=\"0 B\"",
+      "2026-10-25T08:41:32.117500587Z time=2026-10-25T08:41:32.117Z level=INFO source=llama_server.go:1088 msg=\"loading model via llama-server\" model=/root/.ollama/models/blobs/sha256-667b0c1932bc6ffc593ed1d03f895bf2dc8dc6df21db3042284a6f4416b06a29",
+      "2026-10-25T08:41:32.128392791Z srv    load_model: loading model '/root/.ollama/models/blobs/sha256-667b0c1932bc6ffc593ed1d03f895bf2dc8dc6df21db3042284a6f4416b06a29'",
+      "2026-10-25T08:41:32.128407911Z cmn  common_init_: fitting params to device memory ...",
+      "2026-10-25T08:41:32.128415266Z common_params_fit_impl: getting device memory data for initial parameters:",
+      "2026-10-25T08:41:32.307503105Z common_memory_breakdown_print: | memory breakdown [MiB] | total   free    self   model   context   compute    unaccounted |",
+      "2026-10-25T08:41:32.307548515Z common_memory_breakdown_print: |   - Host               |                  922 =   282 +     512 +     128                |",
+      "2026-10-25T08:41:32.307550948Z common_memory_breakdown_print: |   - AMX                |                 4491 =  4491 +       0 +       0                |",
+      "2026-10-25T08:41:32.344253130Z common_params_fit_impl: projected to use 922 MiB of host memory vs. 7779 MiB of total host memory",
+      "2026-10-25T08:41:32.344313979Z common_params_fit_impl: will leave 6856 >= 1024 MiB of system memory, no changes needed",
+      "2026-10-25T08:41:32.344318214Z common_fit_params: successfully fit params to free device memory",
+      "2026-10-25T08:41:32.344320167Z common_fit_params: fitting params to free memory took 0.22 seconds",
+      "2026-10-25T08:41:32.369429745Z time=2026-10-25T08:41:32.369Z level=INFO source=llama_server.go:1396 msg=\"waiting for llama-server to become available\" status=\"llm server loading model\"",
+      "2026-10-25T08:41:32.486813509Z load_tensors: loading model tensors, this can take a while... (load_mode = none)",
+      "2026-10-25T08:42:09.219766424Z srv  llama_server: listening on http://127.0.0.1:41515",
+      "2026-10-25T08:42:09.275610742Z time=2026-10-25T08:42:09.275Z level=INFO source=sched.go:782 msg=\"loaded runners\" count=1",
+      "2026-10-25T08:42:09.284296444Z slot   operator(): id  0 | task 0 | cached n_tokens = 0, memory_seq_rm [0, end)"
+    ],
+    "resources": [
+      {
+        "BlockIO": "8.41GB / 7.25GB",
+        "CPUPerc": "101.01%",
+        "Container": "asd-ollama",
+        "ID": "19f3b634c981",
+        "MemPerc": "95.13%",
+        "MemUsage": "6.184GiB / 6.5GiB",
+        "Name": "asd-ollama",
+        "NetIO": "7.3GB / 23.5MB",
+        "PIDs": "34"
+      },
+      {
+        "BlockIO": "770kB / 295kB",
+        "CPUPerc": "0.01%",
+        "Container": "asd-rag",
+        "ID": "cb5d98aa5b49",
+        "MemPerc": "8.79%",
+        "MemUsage": "90.05MiB / 1GiB",
+        "Name": "asd-rag",
+        "NetIO": "9.85kB / 31.1kB",
+        "PIDs": "4"
+      }
+    ]
+  }
+}

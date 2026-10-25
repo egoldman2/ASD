@@ -1,0 +1,11 @@
+{
+  "ticket_id": 2002,
+  "unchanged": true,
+  "sha256": "399b6f4c29cb7e140204d9c515611a0ed649f01f7358560779152d57d22aeb2a",
+  "message_count_before": 3,
+  "message_count_after": 3,
+  "before_evidence": "ticket-before.json",
+  "after_evidence": "ticket-after.json",
+  "integrity": "ok",
+  "foreign_key_errors": 0
+}

@@ -1,0 +1,29 @@
+{
+  "captured_at": "2026-10-25T08:34:09.176198+00:00",
+  "command_id": "e8203e34-1185-4ce4-a06e-11cb544d8a53",
+  "instance_id": "i-03a217a6a7f61d3ae",
+  "region": "ap-southeast-2",
+  "name": "support-volume-mapping",
+  "script_sha256": "5feb6edfc713d2056f3dc3894fc4e6bb8d32b56ef4058484888518983aac1908",
+  "status": "Success",
+  "response_code": 0,
+  "observation": {
+    "captured_at": "2026-10-25T08:34:06.569642+00:00",
+    "support_data_mount": "/dev/nvme1n1 ext4   /srv/asd",
+    "block_device_serial": "vol02087b3eeb07eec99",
+    "support_bind_directory": "/srv/asd/data/support",
+    "file_modes_only": [
+      {
+        "path": "/srv/asd/releases/43e6fc546b89f8228defeba7a5a98579ee618807-1-bec2c0f26118/cloud.env",
+        "exists": true,
+        "mode": "0o600"
+      },
+      {
+        "path": "/srv/asd/session-secret",
+        "exists": true,
+        "mode": "0o600"
+      }
+    ],
+    "contents_read": false
+  }
+}

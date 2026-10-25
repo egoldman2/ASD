@@ -1,0 +1,159 @@
+{
+  "captured_at": "2026-10-25T08:26:16.887892+00:00",
+  "scope": "Customer Support frontend and APIs only",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/support/staff-ticket.html?ticket=2002",
+      "status": 302,
+      "expected_status": 302,
+      "passed": true,
+      "forged_cookie_test": false,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": "/account/index.html?return_url=%2Fsupport%2F"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/customer/tickets",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true,
+      "forged_cookie_test": false,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true,
+      "forged_cookie_test": false,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tool-data/tickets/2002",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true,
+      "forged_cookie_test": false,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": null
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/tickets/2002/ai-analysis",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true,
+      "forged_cookie_test": false,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": null
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/mcp/tools/call",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true,
+      "forged_cookie_test": false,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": null
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/rag/answer",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true,
+      "forged_cookie_test": false,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": null
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/support/admin/multi-agent/tickets/2002/workflows",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true,
+      "forged_cookie_test": false,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/support/admin/tickets",
+      "status": 401,
+      "expected_status": 401,
+      "passed": true,
+      "forged_cookie_test": true,
+      "response_headers": {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "same-origin",
+        "Access-Control-Allow-Origin": "https://dww8d9hiqp0ce.cloudfront.net",
+        "Location": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "http://dww8d9hiqp0ce.cloudfront.net/support/",
+      "status": 301,
+      "location": "https://dww8d9hiqp0ce.cloudfront.net/support/",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "credentials": "No real password or session cookie read; only an explicitly invalid test cookie used."
+}

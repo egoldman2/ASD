@@ -1,0 +1,38 @@
+{
+  "captured_at": "2026-10-25T08:18:15.301491+00:00",
+  "parameters": [
+    {
+      "ParameterKey": "VpcId",
+      "ParameterValue": "vpc-0c7d5c2d7b272bf04"
+    },
+    {
+      "ParameterKey": "SubnetId",
+      "ParameterValue": "subnet-0dfdc3e168d210b32"
+    },
+    {
+      "ParameterKey": "ApplicationSecurityGroupId",
+      "ParameterValue": "sg-0d9c7217b0a923a3d"
+    },
+    {
+      "ParameterKey": "SourceBucket",
+      "ParameterValue": "asd-release2-releasebucket-6xxwoto09slr"
+    },
+    {
+      "ParameterKey": "SourceKey",
+      "ParameterValue": "releases/bonus-ai/4aec3080306cc2ad8847ed8a93d6d3e79c5655c8b37366cec08f3b359fcc440d.tar.gz"
+    },
+    {
+      "ParameterKey": "SourceSha256",
+      "ParameterValue": "4aec3080306cc2ad8847ed8a93d6d3e79c5655c8b37366cec08f3b359fcc440d"
+    },
+    {
+      "ParameterKey": "OllamaImage",
+      "ParameterValue": "ollama/ollama@sha256:dea72d1e22270fe095b68fdf756d2b489d615643c5a2eaebbc5f569181e322d8"
+    }
+  ],
+  "template_sha256": "a90f8791715a8cdad9478ed5327bb46b8fdf889d5df995fb55c2b286fa128278",
+  "response": {
+    "StackId": "arn:aws:cloudformation:ap-southeast-2:059643396979:stack/asd-support-bonus-20261025/a04c8fa0-d04c-11f1-a4ca-02fff87b32c1",
+    "OperationId": "a04dc820-d04c-11f1-a4ca-02fff87b32c1"
+  }
+}
